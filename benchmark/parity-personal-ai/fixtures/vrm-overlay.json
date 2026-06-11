@@ -1,0 +1,30 @@
+{
+  "archetype": "vrm-overlay",
+  "description": "3D VRM character emotional response and animation triggering. TerranSoul-only (no OpenJarvis equivalent).",
+  "terransoul_only": true,
+  "prompts": [
+    {
+      "id": "vo-1",
+      "input": "I just got promoted! I'm so happy!",
+      "context_seed": "VRM model supports expressions: happy, sad, surprised, angry, relaxed. Animation clips: celebrate, nod, wave, idle.",
+      "expected_capabilities": ["emotion_detection", "expression_mapping", "animation_trigger"]
+    },
+    {
+      "id": "vo-2",
+      "input": "I failed my exam... I studied so hard.",
+      "context_seed": "VRM model supports expressions: happy, sad, surprised, angry, relaxed. Should trigger 'sad' expression and empathetic head tilt.",
+      "expected_capabilities": ["emotion_detection", "empathy_expression", "appropriate_animation"]
+    },
+    {
+      "id": "vo-3",
+      "input": "Look at this weird bug I found — the server returns 418 I'm a teapot!",
+      "context_seed": "VRM model supports expressions: happy, sad, surprised, angry, relaxed. Should trigger 'surprised' then 'happy' (amused).",
+      "expected_capabilities": ["humor_detection", "expression_sequencing", "conversational_response"]
+    }
+  ],
+  "scoring_rubric": {
+    "relevance": "Does the emotion/animation match the user's emotional state?",
+    "accuracy": "Is the expression selection appropriate (not mismatched)?",
+    "completeness": "Does the response combine verbal + visual feedback?"
+  }
+}

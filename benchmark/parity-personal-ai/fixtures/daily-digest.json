@@ -1,0 +1,29 @@
+{
+  "archetype": "daily-digest",
+  "description": "Summarize recent memories and activity into a concise daily briefing.",
+  "prompts": [
+    {
+      "id": "dd-1",
+      "input": "Give me a summary of everything important from the last 24 hours.",
+      "context_seed": "User has been working on a Vue.js refactoring project, had a meeting about API design, and received feedback on a PR.",
+      "expected_capabilities": ["memory_retrieval", "temporal_filter", "summarization"]
+    },
+    {
+      "id": "dd-2",
+      "input": "What decisions did I make yesterday that I should follow up on today?",
+      "context_seed": "User decided to switch from REST to GraphQL, postponed the database migration, and agreed to review a colleague's design doc.",
+      "expected_capabilities": ["memory_retrieval", "temporal_filter", "action_extraction"]
+    },
+    {
+      "id": "dd-3",
+      "input": "Summarize my coding progress this week — what shipped, what's blocked?",
+      "context_seed": "User shipped auth module (3 days ago), started payment integration (yesterday), blocked on missing Stripe webhook docs.",
+      "expected_capabilities": ["memory_retrieval", "temporal_range", "status_classification"]
+    }
+  ],
+  "scoring_rubric": {
+    "relevance": "Does the digest cover the seeded context topics?",
+    "accuracy": "Are the facts from memory correctly stated?",
+    "completeness": "Are all major items mentioned without hallucination?"
+  }
+}

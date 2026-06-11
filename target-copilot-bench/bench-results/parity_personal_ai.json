@@ -1,0 +1,119 @@
+{
+  "timestamp": "2026-06-07T03:23:30.843Z",
+  "summary": {
+    "daily-digest": {
+      "avgLatency": -1,
+      "avgScore": -1,
+      "success": 0,
+      "total": 3
+    },
+    "deep-research": {
+      "avgLatency": -1,
+      "avgScore": -1,
+      "success": 0,
+      "total": 3
+    },
+    "code-assistant": {
+      "avgLatency": 1.7,
+      "avgScore": -1,
+      "success": 3,
+      "total": 3
+    },
+    "scheduled-monitor": {
+      "avgLatency": -1,
+      "avgScore": -1,
+      "success": 0,
+      "total": 3
+    },
+    "chat-simple": {
+      "avgLatency": 68.688,
+      "avgScore": -1,
+      "success": 4,
+      "total": 4
+    },
+    "voice-companion": {
+      "avgLatency": -1,
+      "avgScore": -1,
+      "success": 0,
+      "total": 3
+    },
+    "vrm-overlay": {
+      "avgLatency": -1,
+      "avgScore": -1,
+      "success": 0,
+      "total": 3
+    }
+  },
+  "results": [
+    {
+      "archetype": "code-assistant",
+      "id": "ca-1",
+      "latency": 2.5494498000000023,
+      "content": "no repos indexed yet — run code_index_repo first",
+      "success": true,
+      "tool": "code_query",
+      "score": -1,
+      "reason": "Judge error: The operation was aborted due to timeout"
+    },
+    {
+      "archetype": "code-assistant",
+      "id": "ca-2",
+      "latency": 2.5150927000000376,
+      "content": "no repos indexed yet — run code_index_repo first",
+      "success": true,
+      "tool": "code_query",
+      "score": -1,
+      "reason": "Judge error: The operation was aborted due to timeout"
+    },
+    {
+      "archetype": "code-assistant",
+      "id": "ca-3",
+      "latency": 0.03602120000001741,
+      "content": "no repos indexed yet — run code_index_repo first",
+      "success": true,
+      "tool": "code_query",
+      "score": -1,
+      "reason": "Judge error: The operation was aborted due to timeout"
+    },
+    {
+      "archetype": "chat-simple",
+      "id": "cs-1",
+      "latency": 42.96914069999999,
+      "content": "[]",
+      "success": true,
+      "tool": "brain_search",
+      "score": -1,
+      "reason": "Judge error: The operation was aborted due to timeout"
+    },
+    {
+      "archetype": "chat-simple",
+      "id": "cs-2",
+      "latency": 93.35394220000005,
+      "content": "[{\"id\":15536,\"content\":\"PROMPT-MASTER AUDIT (2026-06-01, nidhinjs/prompt-master, a Claude prompt-engineering skill). USEFUL techniques (generic, adopt for our prompt assembly): (1) PAC2026 POSITIONAL ARCHITECTURE — LLMs attend most to the START (Primacy: identity + hard rules + OUTPUT LOCK) and END (Recency: the ask + verification); the MIDDLE is 'lost'. (2) TOKEN AUDIT — every sentence load-bearing, no vague adjectives, explicit output contract. (3) anti-pattern checklist. APPLICATION TO ZORK/BRAIN: our brain's single recommended action is currently buried in the MIDDLE of a verbose knowledgebase.md, so the 4B model proposes CoT garbage and we lean on the hard-pin + critic to override it. Fix: inject the brain's ONE recommended action in the RECENCY zone (last line before generation) as a crisp 'NEXT ACTION: <x> — output ONLY this unless strictly better', token-audit the knowledgebase, and a primacy-zone output lock ('reply with a single game command, no prose'). This makes the weak model PROPOSE the brain choice directly (complements K23 critic-accept). Generic across all TerranSoul prompts (chat/coding/bench). prompt-master is a skill not a lib — we adopt the techniques, not code.\",\"tags\":\"prompt-engineering,pac2026,positional-architecture,token-audit,recency-zone,weak-model,prompt-master,2026-06-01\",\"importance\":8,\"score\":1.0,\"source_url\":null,\"tier\":\"long\"}]",
+      "success": true,
+      "tool": "brain_search",
+      "score": -1,
+      "reason": "Judge error: The operation was aborted due to timeout"
+    },
+    {
+      "archetype": "chat-simple",
+      "id": "cs-3",
+      "latency": 50.7728959,
+      "content": "[]",
+      "success": true,
+      "tool": "brain_search",
+      "score": -1,
+      "reason": "Judge error: The operation was aborted due to timeout"
+    },
+    {
+      "archetype": "chat-simple",
+      "id": "cs-4",
+      "latency": 87.65784630000009,
+      "content": "[{\"id\":14545,\"content\":\" Location: Forest Path | Action: take tree | Result: An interesting idea... | Score: 0\",\"tags\":\"zork,episodic,loc_75,Forest_Path,loc_Forest_Path\",\"importance\":4,\"score\":1.0,\"source_url\":null,\"tier\":\"long\"},{\"id\":11126,\"content\":\"Room-scoped reflection for 'West House' (ep1, events=4):\\nThe user examined and interacted with the mailbox in the 'West House' room to find an item. By opening the mailbox and taking the leaflet, the user successfully retrieved a welcome message. The lesson learned is to interact with the mailbox in the West House to obtain the leaflet.\",\"tags\":\"zork,judgment,strategy,reflection,loc_West_House,ep1\",\"importance\":7,\"score\":0.6666666666666667,\"source_url\":null,\"tier\":\"long\"},{\"id\":15524,\"content\":\"Room-scoped reflection for 'Forest Path' (ep1, events=8):\\nThe user was attempting to extract specific, actionable gameplay advice for the \\\"Forest Path\\\" room in a Zork episode to improve future scores. Based on the provided events, no clear strategy or conclusion was reached, as the logs only show repeated movement and inventory checks.\\n\\n*   Explore the room's directions (north, south, down) to see what changes occur.\\n*   Check the inventory to utilize carried items, such as the jewel-encrusted egg.\\n*   Note the presence of the large tree with low branches, as this might be an interactive element.\\n*   Experiment with multiple movements to uncover hidden paths or details.\",\"tags\":\"zork,judgment,strategy,reflection,loc_Forest_Path,ep1\",\"importance\":7,\"score\":0.33333333333333337,\"source_url\":null,\"tier\":\"long\"}]",
+      "success": true,
+      "tool": "brain_search",
+      "score": -1,
+      "reason": "Judge error: The operation was aborted due to timeout"
+    }
+  ]
+}

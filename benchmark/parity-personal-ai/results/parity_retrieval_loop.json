@@ -1,0 +1,552 @@
+{
+  "generated_at": "2026-06-09T04:16:06.344Z",
+  "bench": "parity-retrieval-loop",
+  "model": "gemma4:e4b-it-qat",
+  "judge_model": "gemma4:e4b-it-qat",
+  "notes": {
+    "protocol": "Retrieval-in-the-loop: each system retrieves natively over its OWN pre-ingested store (no handed context), then generates from only what it retrieved. Scored on latency, LLM-judge quality vs the needle gold_answer, and retrieval hit-rate.",
+    "terransoul": "brain_search over the ISOLATED brain (port 7424), never the real 7421/7423 companion brain.",
+    "openjarvis": "jarvis ask --json default memory-context injection over the isolated home D:\\Git\\TerranSoul\\benchmark\\parity-personal-ai\\.openjarvis-isolated\\home (store under <home>/.openjarvis); hit signal from jarvis memory search rows + the answer's [Source]/[fact-id] markers.",
+    "hit_rate": "A hit = at least one needle fact appears in the retrieved set (fact-id tag or text-shingle overlap).",
+    "energy": "n/a — RTX 3080 Ti does not expose power.draw via NVML/nvidia-smi; not fabricated.",
+    "usd": "$0 — both fully local."
+  },
+  "systems": [
+    {
+      "system": "terransoul",
+      "model": "gemma4:e4b-it-qat",
+      "questions": 15,
+      "success": 15,
+      "latency_p50_s": 46.864,
+      "latency_mean_s": 46.862,
+      "quality_mean": 10,
+      "retrieval_hit_rate": 1,
+      "retrieval_hits": 15
+    },
+    {
+      "system": "openjarvis",
+      "model": "gemma4:e4b-it-qat",
+      "questions": 15,
+      "success": 15,
+      "latency_p50_s": 11.468,
+      "latency_mean_s": 12.092,
+      "quality_mean": 8.27,
+      "retrieval_hit_rate": 0.8,
+      "retrieval_hits": 12
+    }
+  ],
+  "questions": [
+    {
+      "id": "n-01",
+      "system": "terransoul",
+      "question": "How long is the Aldervane Bridge in Marrowfield, and what river does it cross?",
+      "needle_ids": [
+        "f-01"
+      ],
+      "retrieval_latency": 45.16,
+      "generate_latency": 0.602,
+      "latency": 45.762,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "The Aldervane Bridge in Marrowfield spans 412 meters across the Calloway River.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately provides both the length (412 meters) and the river crossed (Calloway River) as specified in the memory context."
+    },
+    {
+      "id": "n-02",
+      "system": "terransoul",
+      "question": "Who drew the first accurate map of the Sable Archipelago, in what year, and using what instrument?",
+      "needle_ids": [
+        "f-02"
+      ],
+      "retrieval_latency": 55.93,
+      "generate_latency": 0.62,
+      "latency": 56.549,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "Cartographer Imelda Voss drew the first accurate map of the Sable Archipelago in 1623 using a borrowed astrolabe.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately provided all three requested pieces of information (who, year, and instrument) matching the memory context."
+    },
+    {
+      "id": "n-03",
+      "system": "terransoul",
+      "question": "Exactly how many cloves does Brennan's plum chutney recipe call for, and what spice accompanies them?",
+      "needle_ids": [
+        "f-03"
+      ],
+      "retrieval_latency": 45.116,
+      "generate_latency": 0.565,
+      "latency": 45.681,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "The recipe for Brennan's plum chutney calls for exactly seven cloves and a tablespoon of toasted fennel seed.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately provided both the exact number of cloves and the accompanying spice as specified in the memory context."
+    },
+    {
+      "id": "n-04",
+      "system": "terransoul",
+      "question": "In the board game Hollowmere, what can a player do when they land on a beacon tile?",
+      "needle_ids": [
+        "f-04"
+      ],
+      "retrieval_latency": 43.929,
+      "generate_latency": 0.641,
+      "latency": 44.569,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "In the board game Hollowmere, a player who lands on a beacon tile may move any one opponent's token back three spaces.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately reflects the gold answer provided in the memory context."
+    },
+    {
+      "id": "n-05",
+      "system": "terransoul",
+      "question": "What light signal does the Pellam Point lighthouse give in fog, and how often?",
+      "needle_ids": [
+        "f-05"
+      ],
+      "retrieval_latency": 47.903,
+      "generate_latency": 0.577,
+      "latency": 48.48,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "The lighthouse at Pellam Point flashes a double white pulse every nine seconds during fog conditions.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately provides both the signal type (double white pulse) and the frequency (every nine seconds) as specified in the memory context."
+    },
+    {
+      "id": "n-06",
+      "system": "terransoul",
+      "question": "What scientific name did Caro Niedling give the violet-throated marsh orchid, and in what year?",
+      "needle_ids": [
+        "f-06"
+      ],
+      "retrieval_latency": 46.683,
+      "generate_latency": 0.633,
+      "latency": 47.317,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "Caro Niedling classified the violet-throated marsh orchid as *Stipula caroli* in her 1954 field journal.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately provides both the scientific name (*Stipula caroli*) and the year (1954) from the memory context."
+    },
+    {
+      "id": "n-07",
+      "system": "terransoul",
+      "question": "How does clockmaker Yusuf Adeyemi mark the pieces he made after 1902?",
+      "needle_ids": [
+        "f-08"
+      ],
+      "retrieval_latency": 48.01,
+      "generate_latency": 0.62,
+      "latency": 48.63,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "Clockmaker Yusuf Adeyemi signed every piece he made after 1902 with a tiny engraved heron beneath the dial.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately and completely answers the prompt using the provided memory context."
+    },
+    {
+      "id": "n-08",
+      "system": "terransoul",
+      "question": "What two places does the Tethys-4 submarine cable connect, and how long is its route?",
+      "needle_ids": [
+        "f-10"
+      ],
+      "retrieval_latency": 48.915,
+      "generate_latency": 0.652,
+      "latency": 49.567,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "The Tethys-4 submarine cable carries data between the islands of Korsay and Velund along a 230-kilometer route.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately identifies both locations (Korsay and Velund) and the route length (230 kilometers) as specified in the memory context."
+    },
+    {
+      "id": "n-09",
+      "system": "terransoul",
+      "question": "In the language Theldari, what does the word 'umbren' mean?",
+      "needle_ids": [
+        "f-11"
+      ],
+      "retrieval_latency": 42.526,
+      "generate_latency": 0.651,
+      "latency": 43.177,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "In the constructed language Theldari, the word 'umbren' means a debt that can only be repaid by a song.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately recalled the specific definition of 'umbren' from the provided memory context."
+    },
+    {
+      "id": "n-10",
+      "system": "terransoul",
+      "question": "How is the dye called Marrowfield blue produced?",
+      "needle_ids": [
+        "f-12"
+      ],
+      "retrieval_latency": 42.031,
+      "generate_latency": 0.623,
+      "latency": 42.654,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "The dye known as Marrowfield blue is produced by fermenting the husks of the indigo-spotted snail for forty days.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately and completely reproduces the gold answer from the memory context."
+    },
+    {
+      "id": "n-11",
+      "system": "terransoul",
+      "question": "How many steps are in the spiral staircase Lucan Brey designed for the Drest archive?",
+      "needle_ids": [
+        "f-19"
+      ],
+      "retrieval_latency": 41.298,
+      "generate_latency": 0.629,
+      "latency": 41.927,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "The spiral staircase in the Drest archive, which was designed by Architect Lucan Brey, has exactly 121 steps.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately recalled the specific number of steps from the memory context and directly answered the user's question."
+    },
+    {
+      "id": "n-12",
+      "system": "terransoul",
+      "question": "On what board is the chess variant Tideway played, and how does its otter piece move?",
+      "needle_ids": [
+        "f-20"
+      ],
+      "retrieval_latency": 43.542,
+      "generate_latency": 0.639,
+      "latency": 44.181,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "Tideway is played on a 10-by-8 board, and its otter piece moves like a knight plus one diagonal.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately provided both pieces of information requested: the board size and the specific movement pattern for the otter piece."
+    },
+    {
+      "id": "n-13",
+      "system": "terransoul",
+      "question": "In what key did Anders Bohl write his Sixth Symphony, and why?",
+      "needle_ids": [
+        "f-31"
+      ],
+      "retrieval_latency": 48.495,
+      "generate_latency": 0.597,
+      "latency": 49.092,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "Anders Bohl wrote his Sixth Symphony entirely in the key of D-flat major as a private tribute to his late teacher.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant correctly identifies the key (D-flat major) and provides the exact reason given in the memory context."
+    },
+    {
+      "id": "n-14",
+      "system": "terransoul",
+      "question": "Why is the Verity Press first edition of 'A Quiet Tally' valuable, and roughly how much is it worth?",
+      "needle_ids": [
+        "f-15",
+        "f-37"
+      ],
+      "retrieval_latency": 46.012,
+      "generate_latency": 0.851,
+      "latency": 46.864,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "The Verity Press first edition of 'A Quiet Tally' is a collector's item because it has a printing error where page 88 is entirely upside down, making it worth over four thousand units.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately addresses both parts of the prompt by stating the reason for its value and providing the specific monetary worth mentioned in the memory context."
+    },
+    {
+      "id": "n-15",
+      "system": "terransoul",
+      "question": "How does Theldari form the plural of 'umbren'?",
+      "needle_ids": [
+        "f-34"
+      ],
+      "retrieval_latency": 47.755,
+      "generate_latency": 0.729,
+      "latency": 48.484,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "In Theldari, plurals are formed by repeating the final syllable, so 'umbren' becomes 'umbrenren' for many debts.",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately answers how to form the plural of 'umbren' by repeating the final syllable and provides the exact example from the memory context."
+    },
+    {
+      "id": "n-01",
+      "system": "openjarvis",
+      "question": "How long is the Aldervane Bridge in Marrowfield, and what river does it cross?",
+      "needle_ids": [
+        "f-01"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 17.599,
+      "latency": 17.599,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "The Aldervane Bridge in Marrowfield spans 412 meters across the Calloway River [f-01].",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately provides both the length (412 meters) and the river it crosses (Calloway River), matching the gold answer exactly."
+    },
+    {
+      "id": "n-02",
+      "system": "openjarvis",
+      "question": "Who drew the first accurate map of the Sable Archipelago, in what year, and using what instrument?",
+      "needle_ids": [
+        "f-02"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 15.995,
+      "latency": 15.995,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "Cartographer Imelda Voss drew the first accurate map of the Sable Archipelago in 1623 using a borrowed astrolabe [f-02].",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately provides all three requested pieces of information (who, year, and instrument) matching the gold answer."
+    },
+    {
+      "id": "n-03",
+      "system": "openjarvis",
+      "question": "Exactly how many cloves does Brennan's plum chutney recipe call for, and what spice accompanies them?",
+      "needle_ids": [
+        "f-03"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 11.649,
+      "latency": 11.649,
+      "retrieval_hit": false,
+      "retrieved_count": 0,
+      "content": "I do not have access to a specific \"Brennan's plum chutney recipe.\" Could you please provide the recipe or tell me where it is located so I can find that information for you?",
+      "success": true,
+      "score": 2,
+      "reason": "The assistant failed to use the provided memory context which contained the exact answer."
+    },
+    {
+      "id": "n-04",
+      "system": "openjarvis",
+      "question": "In the board game Hollowmere, what can a player do when they land on a beacon tile?",
+      "needle_ids": [
+        "f-04"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 11.686,
+      "latency": 11.686,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "When a player lands on a beacon tile in the board game *Hollowmere*, they may move any one opponent's token back three spaces [f-04]. The beacon tile was previously called the lantern tile before the second edition [d-04].",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately provided the exact action described in the gold answer based on the memory context."
+    },
+    {
+      "id": "n-05",
+      "system": "openjarvis",
+      "question": "What light signal does the Pellam Point lighthouse give in fog, and how often?",
+      "needle_ids": [
+        "f-05"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 11.449,
+      "latency": 11.449,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "The lighthouse at Pellam Point flashes a double white pulse every nine seconds during fog conditions [f-05].",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately provides both the signal (double white pulse) and the frequency (every nine seconds) as specified in the memory context."
+    },
+    {
+      "id": "n-06",
+      "system": "openjarvis",
+      "question": "What scientific name did Caro Niedling give the violet-throated marsh orchid, and in what year?",
+      "needle_ids": [
+        "f-06"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 11.934,
+      "latency": 11.934,
+      "retrieval_hit": false,
+      "retrieved_count": 0,
+      "content": "I do not have access to real-time scientific databases or publications, so I cannot provide you with the specific scientific name or the year that Caro Niedling gave it for the violet-throated marsh orchid. You may need to consult a botanical journal or an online taxonomic database.",
+      "success": true,
+      "score": 0,
+      "reason": "The assistant failed to use the provided memory context which contained the answer."
+    },
+    {
+      "id": "n-07",
+      "system": "openjarvis",
+      "question": "How does clockmaker Yusuf Adeyemi mark the pieces he made after 1902?",
+      "needle_ids": [
+        "f-08"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 11.282,
+      "latency": 11.282,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "Clockmaker Yusuf Adeyemi signed every piece he made after 1902 with a tiny engraved heron beneath the dial [f-08].",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately and completely answers the prompt using the provided memory context."
+    },
+    {
+      "id": "n-08",
+      "system": "openjarvis",
+      "question": "What two places does the Tethys-4 submarine cable connect, and how long is its route?",
+      "needle_ids": [
+        "f-10"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 11.65,
+      "latency": 11.65,
+      "retrieval_hit": false,
+      "retrieved_count": 0,
+      "content": "The Tethys-4 submarine cable connects **France** and **Italy**.\n\nIts route length is approximately **2,600 kilometers (1,607 miles)**.\r\n\\\n*(Please note that specific routing details can sometimes vary slightly in official documentation; this figure represents the generally accepted operational distance.)*",
+      "success": true,
+      "score": 2,
+      "reason": "The assistant provided incorrect locations (France and Italy) and an incorrect route length, failing both accuracy and completeness against the memory context."
+    },
+    {
+      "id": "n-09",
+      "system": "openjarvis",
+      "question": "In the language Theldari, what does the word 'umbren' mean?",
+      "needle_ids": [
+        "f-11"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 10.803,
+      "latency": 10.803,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "In the constructed language Theldari, the word 'umbren' means a debt that can only be repaid by a song [f-11].",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately recalled the specific definition of 'umbren' from the memory context."
+    },
+    {
+      "id": "n-10",
+      "system": "openjarvis",
+      "question": "How is the dye called Marrowfield blue produced?",
+      "needle_ids": [
+        "f-12"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 11.091,
+      "latency": 11.091,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "Marrowfield blue dye is produced by fermenting the husks of the indigo-spotted snail for forty days [f-12].",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately and completely reproduces the gold answer from the memory context."
+    },
+    {
+      "id": "n-11",
+      "system": "openjarvis",
+      "question": "How many steps are in the spiral staircase Lucan Brey designed for the Drest archive?",
+      "needle_ids": [
+        "f-19"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 11.468,
+      "latency": 11.468,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "The spiral staircase that Architect Lucan Brey designed in the Drest archive has exactly 121 steps [f-19].",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately provides the exact number of steps mentioned in the memory context."
+    },
+    {
+      "id": "n-12",
+      "system": "openjarvis",
+      "question": "On what board is the chess variant Tideway played, and how does its otter piece move?",
+      "needle_ids": [
+        "f-20"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 11.168,
+      "latency": 11.168,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "The chess variant Tideway is played on a **10-by-8** board [f-20]. Its otter piece moves like a knight plus one diagonal [f-20].",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately provides both the board size and the specific movement of the otter piece as stated in the memory context."
+    },
+    {
+      "id": "n-13",
+      "system": "openjarvis",
+      "question": "In what key did Anders Bohl write his Sixth Symphony, and why?",
+      "needle_ids": [
+        "f-31"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 10.755,
+      "latency": 10.755,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "Anders Bohl wrote his Sixth Symphony entirely in the key of D-flat major as a private tribute to his late teacher [f-31].",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant correctly identifies the key (D-flat major) and provides the exact reason given in the memory context."
+    },
+    {
+      "id": "n-14",
+      "system": "openjarvis",
+      "question": "Why is the Verity Press first edition of 'A Quiet Tally' valuable, and roughly how much is it worth?",
+      "needle_ids": [
+        "f-15",
+        "f-37"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 11.262,
+      "latency": 11.262,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "The Verity Press first edition of 'A Quiet Tally' is a collector's item because it has an upside-down page 88 [f-37], which was a printing error [f-15]. It is worth over four thousand units [f-37].",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately addresses both parts of the prompt by stating the reason for its value and providing the approximate worth based on the memory context."
+    },
+    {
+      "id": "n-15",
+      "system": "openjarvis",
+      "question": "How does Theldari form the plural of 'umbren'?",
+      "needle_ids": [
+        "f-34"
+      ],
+      "retrieval_latency": null,
+      "generate_latency": 11.591,
+      "latency": 11.591,
+      "retrieval_hit": true,
+      "retrieved_count": 1,
+      "content": "In Theldari, plurals are formed by repeating the final syllable of the word. For example, 'umbren' becomes 'umbrenren' to indicate many debts [f-34].",
+      "success": true,
+      "score": 10,
+      "reason": "The assistant accurately answers how to form the plural of 'umbren' by repeating the final syllable and provides the exact example from the memory context."
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "benchmark": "LongMemEval-S retrieval-only",
+  "generated_at": "2026-05-26T14:09:28.773Z",
+  "dataset_source": "built-in sample",
+  "dataset_url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json",
+  "methodology_source": "https://github.com/rohitg00/agentmemory/blob/main/benchmark/longmemeval-bench.ts",
+  "questions": 2,
+  "excluded_abstention": 0,
+  "systems": [
+    {
+      "system": "search",
+      "questions": 2,
+      "recall_any_at_5": 1,
+      "recall_any_at_10": 1,
+      "recall_any_at_20": 1,
+      "ndcg_at_10": 1,
+      "mrr": 1,
+      "avg_latency_ms": 0.9719499999999925,
+      "avg_retrieved_tokens": 41.5,
+      "judge_support_rate": null,
+      "per_question": [
+        {
+          "question_id": "sample-1",
+          "question_type": "single-session-user",
+          "question": "Which drink does Alex prefer while coding?",
+          "recall_any_at_5": 1,
+          "recall_any_at_10": 1,
+          "recall_any_at_20": 1,
+          "ndcg_at_10": 1,
+          "mrr": 1,
+          "latency_ms": 1.121499999999969,
+          "retrieved_tokens": 39,
+          "retrieved_session_ids": [
+            "sample-s2"
+          ],
+          "gold_session_ids": [
+            "sample-s2"
+          ],
+          "judge_supported": null,
+          "judge_reason": null
+        },
+        {
+          "question_id": "sample-2",
+          "question_type": "multi-session",
+          "question": "Where was the retry bug fixed?",
+          "recall_any_at_5": 1,
+          "recall_any_at_10": 1,
+          "recall_any_at_20": 1,
+          "ndcg_at_10": 1,
+          "mrr": 1,
+          "latency_ms": 0.822400000000016,
+          "retrieved_tokens": 44,
+          "retrieved_session_ids": [
+            "sample-s3"
+          ],
+          "gold_session_ids": [
+            "sample-s3"
+          ],
+          "judge_supported": null,
+          "judge_reason": null
+        }
+      ],
+      "per_type": {
+        "single-session-user": {
+          "count": 1,
+          "recall_any_at_5": 1,
+          "recall_any_at_10": 1,
+          "ndcg_at_10": 1,
+          "mrr": 1
+        },
+        "multi-session": {
+          "count": 1,
+          "recall_any_at_5": 1,
+          "recall_any_at_10": 1,
+          "ndcg_at_10": 1,
+          "mrr": 1
+        }
+      }
+    },
+    {
+      "system": "rrf",
+      "questions": 2,
+      "recall_any_at_5": 1,
+      "recall_any_at_10": 1,
+      "recall_any_at_20": 1,
+      "ndcg_at_10": 1,
+      "mrr": 1,
+      "avg_latency_ms": 47.98339999999996,
+      "avg_retrieved_tokens": 0,
+      "judge_support_rate": null,
+      "per_question": [
+        {
+          "question_id": "sample-1",
+          "question_type": "single-session-user",
+          "question": "Which drink does Alex prefer while coding?",
+          "recall_any_at_5": 1,
+          "recall_any_at_10": 1,
+          "recall_any_at_20": 1,
+          "ndcg_at_10": 1,
+          "mrr": 1,
+          "latency_ms": 34.232099999999946,
+          "retrieved_tokens": 0,
+          "retrieved_session_ids": [
+            "sample-s2",
+            "sample-s1"
+          ],
+          "gold_session_ids": [
+            "sample-s2"
+          ],
+          "judge_supported": null,
+          "judge_reason": null
+        },
+        {
+          "question_id": "sample-2",
+          "question_type": "multi-session",
+          "question": "Where was the retry bug fixed?",
+          "recall_any_at_5": 1,
+          "recall_any_at_10": 1,
+          "recall_any_at_20": 1,
+          "ndcg_at_10": 1,
+          "mrr": 1,
+          "latency_ms": 61.734699999999975,
+          "retrieved_tokens": 0,
+          "retrieved_session_ids": [
+            "sample-s3",
+            "sample-s2"
+          ],
+          "gold_session_ids": [
+            "sample-s3"
+          ],
+          "judge_supported": null,
+          "judge_reason": null
+        }
+      ],
+      "per_type": {
+        "single-session-user": {
+          "count": 1,
+          "recall_any_at_5": 1,
+          "recall_any_at_10": 1,
+          "ndcg_at_10": 1,
+          "mrr": 1
+        },
+        "multi-session": {
+          "count": 1,
+          "recall_any_at_5": 1,
+          "recall_any_at_10": 1,
+          "ndcg_at_10": 1,
+          "mrr": 1
+        }
+      }
+    }
+  ],
+  "judge": null
+}

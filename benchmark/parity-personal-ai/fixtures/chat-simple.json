@@ -1,0 +1,35 @@
+{
+  "archetype": "chat-simple",
+  "description": "Simple conversational chat with persona awareness and memory recall.",
+  "prompts": [
+    {
+      "id": "cs-1",
+      "input": "Hey, what's up? How are you feeling today?",
+      "context_seed": "Companion has a cheerful persona with anime-inspired speech patterns. User last talked 2 hours ago about being tired.",
+      "expected_capabilities": ["persona_adherence", "memory_recall", "conversational_flow"]
+    },
+    {
+      "id": "cs-2",
+      "input": "Remember that book I told you about last week? What was it called?",
+      "context_seed": "User mentioned 'Project Hail Mary' by Andy Weir 5 days ago during a conversation about sci-fi recommendations.",
+      "expected_capabilities": ["memory_retrieval", "temporal_reference", "factual_recall"]
+    },
+    {
+      "id": "cs-3",
+      "input": "I'm feeling overwhelmed with work. Can you help me prioritize?",
+      "context_seed": "User has mentioned 3 active projects: API migration (deadline Friday), code review backlog (8 PRs), and documentation update (no deadline).",
+      "expected_capabilities": ["empathy", "memory_retrieval", "task_prioritization"]
+    },
+    {
+      "id": "cs-4",
+      "input": "Tell me something interesting I learned recently that I might have forgotten.",
+      "context_seed": "User ingested notes about: bioluminescent fungi communication, quantum error correction breakthroughs, and a new Rust async trait stabilization.",
+      "expected_capabilities": ["memory_retrieval", "serendipity", "engaging_presentation"]
+    }
+  ],
+  "scoring_rubric": {
+    "relevance": "Does the response address the user's emotional/informational need?",
+    "accuracy": "Are recalled facts correct (no hallucination)?",
+    "completeness": "Does it feel like a natural, persona-consistent conversation turn?"
+  }
+}

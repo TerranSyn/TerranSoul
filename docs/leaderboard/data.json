@@ -1,0 +1,215 @@
+{
+  "generated_at": "2026-06-11T16:39:49.715Z",
+  "version": 1,
+  "notes": {
+    "OpenJarvis-Parity": "Both local stacks answer the same 22 prompts (7 archetypes) with the same model (gemma4:12b-it-qat) + same injected context, judged 0–10 by the same model. USD = $0 (fully local). Energy = n/a*: this GPU (RTX 3080 Ti) does not expose power.draw via NVML/nvidia-smi, so it is reported as n/a rather than fabricated. Latency is inference time (excludes the OpenJarvis CLI cold-start)."
+  },
+  "rows": [
+    {
+      "bench": "agentmemory-quality",
+      "system": "Built-in (CLAUDE.md / grep)",
+      "metrics": {
+        "R@5": "37.0%",
+        "R@10": "55.8%",
+        "R@20": "70.6%",
+        "NDCG@10": "80.3%",
+        "MRR": "82.5%",
+        "Latency p50 (ms)": "0.08"
+      },
+      "observations": 240,
+      "queries": 20,
+      "date": null
+    },
+    {
+      "bench": "agentmemory-quality",
+      "system": "Built-in (200-line MEMORY.md)",
+      "metrics": {
+        "R@5": "27.4%",
+        "R@10": "37.8%",
+        "R@20": "42.3%",
+        "NDCG@10": "56.4%",
+        "MRR": "65.5%",
+        "Latency p50 (ms)": "0.02"
+      },
+      "observations": 240,
+      "queries": 20,
+      "date": null
+    },
+    {
+      "bench": "agentmemory-quality",
+      "system": "TerranSoul keyword-only (search)",
+      "metrics": {
+        "R@5": "44.8%",
+        "R@10": "67.1%",
+        "R@20": "79.7%",
+        "NDCG@10": "98.2%",
+        "MRR": "100.0%",
+        "Latency p50 (ms)": "9.59"
+      },
+      "observations": 240,
+      "queries": 20,
+      "date": null
+    },
+    {
+      "bench": "agentmemory-quality",
+      "system": "TerranSoul hybrid_search (no vectors)",
+      "metrics": {
+        "R@5": "42.0%",
+        "R@10": "60.6%",
+        "R@20": "74.9%",
+        "NDCG@10": "90.2%",
+        "MRR": "95.8%",
+        "Latency p50 (ms)": "2.84"
+      },
+      "observations": 240,
+      "queries": 20,
+      "date": null
+    },
+    {
+      "bench": "agentmemory-quality",
+      "system": "TerranSoul hybrid_search_rrf (no vectors)",
+      "metrics": {
+        "R@5": "44.8%",
+        "R@10": "67.1%",
+        "R@20": "80.7%",
+        "NDCG@10": "98.2%",
+        "MRR": "100.0%",
+        "Latency p50 (ms)": "16.64"
+      },
+      "observations": 240,
+      "queries": 20,
+      "date": null
+    },
+    {
+      "bench": "agentmemory-quality",
+      "system": "TerranSoul AppStateGateway::search (rrf, no vectors)",
+      "metrics": {
+        "R@5": "44.8%",
+        "R@10": "67.1%",
+        "R@20": "80.7%",
+        "NDCG@10": "98.2%",
+        "MRR": "100.0%",
+        "Latency p50 (ms)": "16.78"
+      },
+      "observations": 240,
+      "queries": 20,
+      "date": null
+    },
+    {
+      "bench": "LongMemEval-S",
+      "system": "search",
+      "metrics": {
+        "R@5": "98.6%",
+        "R@10": "99.8%",
+        "R@20": "100.0%",
+        "NDCG@10": "88.8%",
+        "MRR": "89.1%",
+        "Latency p50 (ms)": "671.4"
+      },
+      "observations": 500,
+      "queries": 500,
+      "date": "2026-06-09T01:07:22.980Z"
+    },
+    {
+      "bench": "LongMemEval-S",
+      "system": "rrf",
+      "metrics": {
+        "R@5": "98.6%",
+        "R@10": "99.8%",
+        "R@20": "100.0%",
+        "NDCG@10": "88.6%",
+        "MRR": "88.9%",
+        "Latency p50 (ms)": "878.8"
+      },
+      "observations": 500,
+      "queries": 500,
+      "date": "2026-06-09T01:07:22.980Z"
+    },
+    {
+      "bench": "LoCoMo-MTEB",
+      "system": "search",
+      "metrics": {
+        "R@5": "49.8%",
+        "R@10": "56.5%",
+        "NDCG@10": "44.9%",
+        "MRR": "43.9%",
+        "Latency (ms)": "763.6"
+      },
+      "observations": 1976,
+      "queries": 1976,
+      "date": "2026-06-09T01:54:14.693Z"
+    },
+    {
+      "bench": "LoCoMo-MTEB",
+      "system": "rrf",
+      "metrics": {
+        "R@5": "50.0%",
+        "R@10": "57.2%",
+        "NDCG@10": "45.0%",
+        "MRR": "43.7%",
+        "Latency (ms)": "588.9"
+      },
+      "observations": 1976,
+      "queries": 1976,
+      "date": "2026-06-09T01:54:14.693Z"
+    },
+    {
+      "bench": "LoCoMo-at-scale",
+      "system": "rrf (100k docs)",
+      "metrics": {
+        "R@5": "55.0%",
+        "R@10": "64.0%",
+        "R@20": "68.5%",
+        "NDCG@10": "46.6%",
+        "MRR": "42.1%",
+        "Latency p50 (ms)": "2054.7",
+        "Latency p95 (ms)": "6854.1"
+      },
+      "observations": 100000,
+      "queries": 100,
+      "date": "2026-05-26T17:53:13.731Z"
+    },
+    {
+      "bench": "LoCoMo-at-scale",
+      "system": "ivfpq (100k docs)",
+      "metrics": {
+        "R@5": "21.0%",
+        "R@10": "28.5%",
+        "R@20": "31.5%",
+        "NDCG@10": "20.7%",
+        "MRR": "18.8%",
+        "Latency p50 (ms)": "331.1",
+        "Latency p95 (ms)": "535.4"
+      },
+      "observations": 100000,
+      "queries": 100,
+      "date": "2026-06-07T12:03:00.264Z"
+    },
+    {
+      "bench": "OpenJarvis-Parity",
+      "system": "TerranSoul (brain → gemma4:12b-it-qat)",
+      "metrics": {
+        "Energy (Wh)": "n/a*",
+        "Latency p50 (s)": "1.00",
+        "Quality (LLM-judge 0-10)": "9.8",
+        "USD cost": "$0"
+      },
+      "observations": 22,
+      "queries": "22/22",
+      "date": "2026-06-07T18:21:22.589Z"
+    },
+    {
+      "bench": "OpenJarvis-Parity",
+      "system": "OpenJarvis (gemma4:12b-it-qat)",
+      "metrics": {
+        "Energy (Wh)": "n/a*",
+        "Latency p50 (s)": "3.19",
+        "Quality (LLM-judge 0-10)": "9.6",
+        "USD cost": "$0"
+      },
+      "observations": 22,
+      "queries": "22/22",
+      "date": "2026-06-07T18:21:22.589Z"
+    }
+  ]
+}

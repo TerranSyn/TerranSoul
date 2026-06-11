@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TerranSoul Brain Architecture — local-first, self-improving memory</title>
+<meta name="description" content="A full visual explanation of the TerranSoul brain: a local-first, self-improving memory system — 3-tier SQLite store, six-signal hybrid RAG with reciprocal-rank fusion, a typed knowledge graph, and a write→manage→read self-improvement loop, all behind the MCP brain server." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg: oklch(0.16 0.02 265);
+    --bg-card: oklch(0.21 0.025 265);
+    --bg-deep: oklch(0.13 0.02 265);
+    --border: oklch(0.32 0.03 265);
+    --text: oklch(0.93 0.01 265);
+    --text-muted: oklch(0.72 0.02 265);
+    --accent: oklch(0.72 0.15 250);
+    --accent2: oklch(0.78 0.16 160);
+    --new: oklch(0.70 0.13 250);
+    --warn: oklch(0.80 0.14 75);
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    background:radial-gradient(1200px 700px at 70% -10%, oklch(0.24 0.06 265), transparent 60%), var(--bg);
+    color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1140px;margin:0 auto;padding:2.5rem 1.4rem 5rem}
+  header.hero{text-align:center;padding:2rem 0 1.4rem}
+  .eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+  h1{font-family:'Newsreader',serif;font-weight:700;font-size:clamp(2rem,5vw,3.2rem);line-height:1.08;margin:.5rem 0}
+  .lede{font-size:1.08rem;color:var(--text-muted);max-width:760px;margin:.6rem auto 0}
+  .pills{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:1.4rem 0 0}
+  .pill{font-family:var(--mono);font-size:.74rem;border:1px solid var(--border);background:var(--bg-card);border-radius:999px;padding:.32rem .7rem;color:var(--text-muted)}
+  .pill b{color:var(--accent2);font-weight:600}
+  nav.toc{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin:1.6rem 0 0}
+  nav.toc a{font-size:.82rem;color:var(--text-muted);text-decoration:none;border-bottom:1px dashed transparent;padding:.1rem 0}
+  nav.toc a:hover{color:var(--accent);border-color:var(--accent)}
+  section{margin-top:3rem}
+  h2{font-family:'Newsreader',serif;font-weight:600;font-size:1.7rem;margin-bottom:.3rem;display:flex;align-items:baseline;gap:.6rem}
+  h2 .num{font-family:var(--mono);font-size:.8rem;color:var(--accent)}
+  h3{font-size:1.05rem;margin:1.2rem 0 .3rem;color:var(--text)}
+  p{margin:.6rem 0;color:var(--text-muted)}
+  p strong, li strong{color:var(--text)}
+  code{font-family:var(--mono);font-size:.86em;background:var(--bg-deep);border:1px solid var(--border);border-radius:5px;padding:.05rem .35rem;color:var(--accent2)}
+  .diagram{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:1rem;margin:1.2rem 0;overflow:auto}
+  .mermaid{display:flex;justify-content:center}
+  .legend{font-size:.82rem;color:var(--text-muted);margin-top:.5rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+  .swatch{display:inline-block;width:.8rem;height:.8rem;border-radius:3px;vertical-align:middle;margin-right:.35rem;border:1px solid var(--border)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-top:1rem}
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.15rem}
+  .card h3{margin-top:0}
+  .card .tag{font-family:var(--mono);font-size:.7rem;color:var(--accent);letter-spacing:.08em}
+  .card.newc{border-color:var(--new);box-shadow:inset 0 0 0 1px oklch(0.4 0.1 250 / .35)}
+  .card.newc .tag{color:var(--new)}
+  .badge-new{font-family:var(--mono);font-size:.62rem;background:oklch(0.30 0.08 250);color:#cfe2ff;border-radius:4px;padding:.05rem .3rem;margin-left:.3rem;vertical-align:middle}
+  .badge-shipped{font-family:var(--mono);font-size:.62rem;background:oklch(0.32 0.10 150);color:#c8f3d4;border-radius:4px;padding:.05rem .3rem;margin-left:.3rem;vertical-align:middle}
+  .badge-wip{font-family:var(--mono);font-size:.62rem;background:oklch(0.34 0.10 75);color:#ffe6b0;border-radius:4px;padding:.05rem .3rem;margin-left:.3rem;vertical-align:middle}
+  ul{margin:.5rem 0 .5rem 1.1rem}
+  li{margin:.28rem 0;color:var(--text-muted)}
+  .formula{font-family:var(--mono);font-size:.9rem;background:var(--bg-deep);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:.9rem 1rem;margin:1rem 0;color:var(--text);overflow:auto}
+  table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+  th,td{border:1px solid var(--border);padding:.5rem .65rem;text-align:left}
+  th{background:var(--bg-deep);color:var(--text);font-weight:600}
+  td.num{text-align:right;font-family:var(--mono);color:var(--accent2)}
+  .loop{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-top:1rem;font-size:.9rem}
+  .loop .step{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;flex:1;min-width:180px}
+  .loop .arr{color:var(--accent);font-size:1.2rem}
+  footer{margin-top:4rem;border-top:1px solid var(--border);padding-top:1.4rem;text-align:center;color:var(--text-muted);font-size:.85rem}
+  footer a{color:var(--accent);text-decoration:none}
+  .callout{background:var(--bg-deep);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:8px;padding:.8rem 1rem;margin:1rem 0;font-size:.92rem}
+</style>
+</head>
+<body>
+<!-- ts-site-nav: shared docs-site dropdown. The SAME block lives on every
+     docs page (only the relative prefix differs) so every page can reach
+     every other page — keep the link list in sync across pages. -->
+<details class="ts-site-nav">
+  <summary>&#9776; Site</summary>
+  <nav>
+    <a href="../">Docs home</a>
+    <a href="../brain-architecture/">Brain architecture</a>
+    <a href="../LLM-Brain-Design-Research-Paper/">Research paper</a>
+    <a href="../leaderboard/">Leaderboard</a>
+    <a href="../zorkgpt/">ZorkGPT bench</a>
+    <a href="../zorkgpt/claude-opus-4.8/" class="sub">&mdash; Opus 4.8 run</a>
+    <a href="../zorkgpt/taughtLocalLLM/" class="sub">&mdash; TaughtLocalLLM run</a>
+    <a href="https://github.com/TerranSyn/TerranSoul">GitHub &#8599;</a>
+  </nav>
+</details>
+<style>
+.ts-site-nav{position:fixed;top:10px;right:12px;z-index:2147483000;font:13px/1.45 system-ui,"Segoe UI",sans-serif}
+.ts-site-nav summary{list-style:none;cursor:pointer;user-select:none;background:rgba(17,19,28,.92);color:#e7e9f0;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px)}
+.ts-site-nav summary::-webkit-details-marker{display:none}
+.ts-site-nav[open] summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.ts-site-nav nav{position:absolute;right:0;min-width:230px;display:flex;flex-direction:column;background:rgba(17,19,28,.96);border:1px solid rgba(255,255,255,.18);border-radius:10px 0 10px 10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.45)}
+.ts-site-nav nav a{color:#e7e9f0;text-decoration:none;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ts-site-nav nav a:last-child{border-bottom:0}
+.ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
+.ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">TerranSoul · Brain Architecture</div>
+    <h1>A local-first brain that remembers, retrieves, and improves itself</h1>
+    <p class="lede">TerranSoul's brain is an external memory-and-knowledge server: a three-tier SQLite store feeds a six-signal hybrid retriever before every turn, a typed knowledge graph enables multi-hop recall, and a closed <em>write → manage → read</em> loop lets the system learn from its own outcomes — all reached by any client over the Model Context Protocol (MCP).</p>
+    <div class="pills">
+      <span class="pill"><b>3-tier</b> memory · short / working / long</span>
+      <span class="pill"><b>6→7 signal</b> hybrid RAG · RRF k=60</span>
+      <span class="pill"><b>typed KG</b> · multi-hop · contradicts</span>
+      <span class="pill"><b>local-first</b> · Ollama · cloud fallback</span>
+      <span class="pill"><b>single source of truth</b> · Rust AppStateGateway</span>
+    </div>
+    <nav class="toc">
+      <a href="#overview">Overview</a>
+      <a href="#diagram">Full diagram</a>
+      <a href="#layers">Layers</a>
+      <a href="#retrieval">Hybrid retrieval</a>
+      <a href="#memory">Memory &amp; KG</a>
+      <a href="#loop">Self-improvement</a>
+      <a href="#skillsynth">Skill auto-generation</a>
+      <a href="#benchmarks">Benchmarks</a>
+      <a href="#infra">Infrastructure</a>
+      <a href="#gaming">Gaming study</a>
+    </nav>
+  </header>
+
+  <section id="overview">
+    <h2><span class="num">01</span>What the brain is</h2>
+    <p>Most agents keep memory <em>inside</em> the model — in the weights or the context window. TerranSoul takes the opposite bet: memory is <strong>external</strong>, a queryable Rust service that any client reads and writes through a tool interface. That makes memory <strong>observable, probeable, editable, and shareable</strong> across clients in ways a model-internal store can never be.</p>
+    <p>The same brain serves the desktop chat app, coding agents (Claude Code / Copilot / Codex / Cursor), and benchmark runners — over MCP. The Rust <code>AppStateGateway</code> is the single owner of all memory CRUD: there are no private caches in clients.</p>
+    <div class="callout">Nodes marked <span class="badge-new">NEW</span> below are cognitive / self-improvement capabilities adopted generically from a <a href="https://github.com/WingedGuardian/GENesis-AGI" style="color:var(--accent)">GENesis-AGI</a> study and specified in <code>docs/genesis-agi-brain-adoption.md</code> — clean-room, no code copied. <strong>Status (2026-06-08):</strong> schema V30 + <span class="badge-shipped">SHIPPED</span> P1 outcome-classified write-back · P2 procedural ledger · P3 activation signal · P4 consolidation provenance/rollback · P6 echo-collapse hot-path · P7 floor-gated KG auto-link-on-write · P8 effort triage + graded reflection depth · P9 zero-LLM idle validation cognition; <span class="badge-wip">IN-PROGRESS</span> P5 session primer (chat.rs inject) and P8 live-path wiring.</div>
+  </section>
+
+  <section id="diagram">
+    <h2><span class="num">02</span>The whole brain, one diagram</h2>
+    <p>Request path flows top-down: a client calls the MCP server → the gateway triages effort → (when needed) the hybrid RAG pipeline fuses four-plus retrievers → the result is injected as a <code>[LONG-TERM MEMORY]</code> block before the LLM answers. The write-back path (bottom) classifies the turn's outcome and feeds memory, procedures, and the knowledge graph.</p>
+    <div class="diagram">
+      <pre class="mermaid">
+flowchart TD
+    subgraph L0["L0 · Clients"]
+        C1["Desktop Chat<br/>Vue 3 / Tauri / VRM"]
+        C2["Coding Agents<br/>Claude Code / Copilot / Codex / Cursor"]
+        C3["Bench Runners<br/>Zork / LongMemEval"]
+        C4["Real-E2E Harness"]
+    end
+    subgraph L1["L1 · Protocol &amp; Gateway"]
+        MCP["MCP Brain Server<br/>:7421 / :7423 / :7422<br/>brain_search / brain_suggest_context / brain_ingest_lesson"]
+        GW["AppStateGateway<br/>Rust owner · single source of truth"]
+    end
+    subgraph L2["L2 · Per-turn Triage"]
+        TRI{"Effort Triage<br/>SKIP / LIGHT / NORMAL / FULL"}:::new
+        PRIM["L1 Session Primer<br/>~300 tok · zero-LLM · DB-only"]:::new
+    end
+    subgraph L3["L3 · Hybrid RAG Pipeline"]
+        R1["Vector retriever<br/>HNSW · 768-dim"]
+        R2["FTS5 + BM25 lexical<br/>corpus-aware anchors"]
+        R3["KG graph-seed<br/>1-hop · cascade expand"]
+        R4["Freshness · recency x decay"]
+        ACT["Activation signal<br/>access_freq x connectivity x<br/>source half-life x proper-noun 2x"]:::new
+        RRF["Reciprocal Rank Fusion<br/>k = 60"]
+        ECHO["Echo-collapse<br/>Jaccard &gt;= 0.80 demote"]:::new
+        HY["HyDE (cold queries)"]
+        RR["Cross-encoder rerank<br/>LLM-as-judge"]
+        TH["Relevance cutoff 0.30"]
+        R1 --> RRF
+        R2 --> RRF
+        R3 --> RRF
+        R4 --> RRF
+        ACT --> RRF
+        RRF --> ECHO --> HY --> RR --> TH
+    end
+    subgraph L4["L4 · 3-Tier Memory + Typed KG"]
+        M1["SHORT<br/>ring buffer ~20 turns"]
+        M2["WORKING<br/>session set"]
+        M3["LONG<br/>durable · decays"]
+        CK["Cognitive-kind decay<br/>episodic / semantic / procedural / judgment"]
+        PROC["Procedural ledger<br/>Laplace conf · L4 to L1 tiers<br/>promote / demote / quarantine"]:::new
+        KG["Knowledge Graph<br/>memory_edges · typed · multi-hop · contradicts"]
+        AUTOLINK["Auto-link on write<br/>NN typed edges (extends/supports)"]:::new
+        M1 --> M2 --> M3
+        M3 --> CK
+        M3 --> KG
+        M3 -. on write .-> AUTOLINK -.-> KG
+        PROC <--> M3
+    end
+    subgraph L5["L5 · Storage &amp; Index"]
+        DB[("SQLite WAL<br/>memories / memory_edges / versions / FTS5")]
+        IDX["Vector Index tiers<br/>Linear / TurboQuant / IVF-PQ / HNSW(usearch)"]
+    end
+    LLM["Ollama (gemma3:4b / gemma4)<br/>local-first · cloud fallback"]
+    subgraph SI["Self-Improvement · Write -> Manage -> Read"]
+        OUT["Outcome classifier<br/>success / approach_fail / capability_gap /<br/>external_blocker / workaround_success"]:::new
+        CONS["Consolidation N to 1<br/>+ faithfulness review<br/>+ shrink guard + rollback"]:::new
+        AWARE["Zero-LLM awareness tick<br/>-> depth-graded reflection<br/>+ procedure re-test"]:::new
+        ING["brain_ingest_lesson"]
+    end
+    C1 --> MCP
+    C2 --> MCP
+    C3 --> MCP
+    C4 --> MCP
+    MCP --> GW --> TRI
+    TRI -->|skip / trivial| LLM
+    TRI -->|primer once| PRIM --> LLM
+    TRI -->|needs RAG| R1
+    TH -->|"[LONG-TERM MEMORY] block"| LLM
+    R1 -. reads .-> IDX
+    R2 -. reads .-> DB
+    R3 -. reads .-> KG
+    R4 -. reads .-> CK
+    ACT -. reads .-> KG
+    ACT -. reads .-> DB
+    PROC -. injects L1 .-> PRIM
+    M3 <--> DB
+    IDX <--> DB
+    GW <--> M3
+    LLM -->|turn outcome| OUT
+    OUT -->|reinforce / demote| PROC
+    OUT -->|facts| M3
+    OUT -->|lesson| ING --> MCP
+    M3 --> CONS --> DB
+    AWARE -. audits .-> KG
+    AWARE -. re-tests .-> PROC
+    OUT -. tunes weights .-> ACT
+    classDef new fill:#1e3a5f,stroke:#4a90e2,color:#fff,stroke-width:2px;
+      </pre>
+    </div>
+    <div class="legend">
+      <span><span class="swatch" style="background:var(--bg-card)"></span>Shipped capability</span>
+      <span><span class="swatch" style="background:#1e3a5f;border-color:#4a90e2"></span>GENesis-AGI-adopted (P1–P4 + P6–P9 shipped 2026-06-08; P5 primer wiring in-progress)</span>
+    </div>
+  </section>
+
+  <section id="layers">
+    <h2><span class="num">03</span>Layer by layer</h2>
+    <div class="grid">
+      <div class="card"><span class="tag">L0 · CLIENTS</span><h3>Any client, one brain</h3><p>The desktop VRM chat, coding agents, bench runners, and the Real-E2E harness all talk to the <em>same</em> brain over MCP. Knowledge one client writes is legible to the next.</p></div>
+      <div class="card"><span class="tag">L1 · PROTOCOL &amp; GATEWAY</span><h3>MCP + AppStateGateway</h3><p>The MCP brain server exposes <code>brain_search</code>, <code>brain_suggest_context</code>, <code>brain_ingest_lesson</code>, and KG tools. Every CRUD call funnels through the Rust <code>AppStateGateway</code> — the single source of truth, no private client caches.</p></div>
+      <div class="card newc"><span class="tag">L2 · TRIAGE <span class="badge-new">NEW</span></span><h3>Spend effort where it pays</h3><p>A per-request <strong>effort triage</strong> (SKIP / LIGHT / NORMAL / FULL) avoids running the full pipeline on trivial turns <span class="badge-shipped">SHIPPED 2026-06-08</span> (pure <code>triage_effort</code> in <code>brain/intent_classifier.rs</code> + graded <code>ReflectionDepth</code>; live-path wiring is the remaining follow-up), and a zero-LLM <strong>session primer</strong> <span class="badge-wip">IN-PROGRESS</span> injects ~300 tokens of durable context once per session straight from the DB. The primer core + builder have landed (<code>memory/session_primer.rs</code>: <code>format_primer</code> / <code>build_session_primer</code>, plus <code>top_activation_procedures</code> / <code>latest_session_reflection</code>); the remaining step is to inject it once per conversation in <code>commands/chat.rs</code>.</p></div>
+      <div class="card"><span class="tag">L3 · HYBRID RAG</span><h3>Many retrievers, one fused list</h3><p>Vector (HNSW), lexical (FTS5/BM25), KG graph-seed, and freshness retrievers are fused by reciprocal-rank fusion, then refined by HyDE (cold queries), a cross-encoder reranker, and a relevance cutoff. See §04.</p></div>
+      <div class="card"><span class="tag">L4 · MEMORY + KG</span><h3>Three tiers + a typed graph</h3><p>Short (ring buffer) → working (session) → long (durable, decaying). A typed <code>memory_edges</code> graph supports multi-hop recall and explicit <em>contradicts</em> edges. See §05.</p></div>
+      <div class="card"><span class="tag">L5 · STORAGE</span><h3>SQLite + tiered vector index</h3><p>One SQLite (WAL) database holds memories, edges, versions, and FTS5 — so a single hybrid query fuses lexical, vector, and graph without a cross-store join. Vector search scales across Linear → TurboQuant → IVF-PQ → HNSW tiers.</p></div>
+    </div>
+  </section>
+
+  <section id="retrieval">
+    <h2><span class="num">04</span>Hybrid retrieval — the six-signal blend</h2>
+    <p>Before every chat turn the brain assembles a <code>[LONG-TERM MEMORY]</code> block. Each candidate memory is scored by a weighted blend of independent signals, then the per-retriever ranked lists are fused with reciprocal-rank fusion (RRF, k=60) — so a failing retriever contributes nothing rather than poisoning the top-k.</p>
+    <div class="formula">score = 0.40·vector + 0.20·keyword + 0.15·recency + 0.10·importance + 0.10·decay + 0.05·tier_priority
+        × activation_multiplier  (NEW: access_freq × connectivity × source half-life × proper-noun 2×)</div>
+    <p>The default weights were validated by an A/B sweep: collapsing the blend to <strong>vector-only drops R@10 from 64.5% to 54.5% (−10 pp)</strong>, confirming the multi-signal design empirically. On top of fusion: <strong>Contextual Retrieval</strong> situates a chunk before embedding, <strong>HyDE</strong> embeds a hypothetical answer for cold/abstract queries (gated per query-class), a cross-encoder <strong>LLM-as-judge reranks</strong> the top candidates, and a <strong>relevance cutoff (0.30)</strong> drops weak memories entirely rather than padding the prompt.</p>
+    <h3>Adopted refinements <span class="badge-new">NEW</span></h3>
+    <ul>
+      <li><strong>Activation signal (7th term)</strong> <span class="badge-shipped">SHIPPED 2026-06-08</span><strong>:</strong> frequently-recalled, well-connected memories get a log-scaled lift (<code>access_freq</code> × graph <code>connectivity</code> from a batched <code>edge_degrees()</code> over <code>memory_edges</code>), applied as a bounded attenuate-only multiplier (<code>[0.6, 1.0]</code>) after RRF in both <code>hybrid_search_rrf</code> and <code>hybrid_search_rrf_with_intent</code> — self-reinforcing recall with no ordering regression (25 tests green). Source-aware half-lives and the proper-noun 2× bonus remain optional follow-ups.</li>
+      <li><strong>Echo-collapse diversity pass</strong> <span class="badge-shipped">SHIPPED 2026-06-08</span><strong>:</strong> near-duplicate results (Jaccard ≥ 0.80) are demoted so the block carries diverse evidence, not five paraphrases of one fact. The embedding-free core (<code>fusion.rs</code>: <code>token_set</code> / <code>jaccard</code> / <code>echo_collapse_multipliers</code>) and its hot-path wiring have landed: an attenuate-only post-RRF pass (<code>EchoCollapseConfig</code> + <code>apply_echo_collapse</code> in <code>memory/store.rs</code>) runs after the activation re-sort and before <code>select_diversified_ranked</code> in both <code>hybrid_search_rrf</code> and <code>hybrid_search_rrf_with_intent</code> — orthogonal axes (content Jaccard vs session-id cap), proven no-op on a distinct corpus so it cannot regress retrieval.</li>
+      <li><strong>Per-request effort triage + graded reflection depth</strong> <span class="badge-shipped">SHIPPED 2026-06-08</span><strong>:</strong> a pure <code>triage_effort</code> classifier (<code>brain/intent_classifier.rs</code>) maps each turn to <code>Skip</code> / <code>Light</code> / <code>Normal</code> / <code>Full</code> from generic structural signals only (token count, per-token length, complexity-cue count, multi-question punctuation — no domain verb lists), and on the write side <code>ReflectionDepth::from_effort</code> grades reflection as a strict prefix chain (<code>Skip</code> → <code>Summary</code> → <code>Facts</code> → <code>Full</code>) in <code>memory/reflection.rs</code> so trivial sessions don't pay full reflection cost. Thresholds are brain-resident; wiring the verdict into the live chat/reflect callers is the remaining follow-up.</li>
+    </ul>
+  </section>
+
+  <section id="memory">
+    <h2><span class="num">05</span>Memory tiers, cognitive kinds &amp; the knowledge graph</h2>
+    <p>Memory promotes <strong>short → working → long</strong>; the long tier decays and is garbage-collected under a capacity bound that protects important/protected rows. Every long memory carries a <strong>cognitive kind</strong> — episodic, semantic, procedural, or judgment — each with its own decay half-life.</p>
+    <div class="grid">
+      <div class="card"><span class="tag">TYPED KG</span><h3>memory_edges</h3><p>Object/location and entity relations are promoted into a typed graph (idempotent on <code>(src, dst, rel_type)</code>), enabling multi-hop traversal and explicit <em>contradicts</em> edges. Mem0-style LLM-arbitrated conflict resolution keeps the store consistent.</p></div>
+      <div class="card newc"><span class="tag">PROCEDURAL LEDGER <span class="badge-shipped">SHIPPED 2026-06-08</span></span><h3>Skills that earn trust</h3><p>Learned procedures become first-class: Laplace-smoothed confidence <code>(s+α)/(s+f+α+β)</code> (α2/β1 → ~0.67 cold start) with success/failure counts, promotion L4→L1 as evidence accrues, demotion on repeated failure, and <strong>quarantine</strong> after 3 consecutive failures — so the brain only auto-applies skills it has earned trust in. Persisted via <code>store.record_procedure_outcome</code> over the schema-V30 columns (<code>memory/procedural.rs</code>).</p></div>
+      <div class="card newc"><span class="tag">AUTO-LINK <span class="badge-shipped">SHIPPED 2026-06-08</span></span><h3>Connect on write</h3><p>New durable facts are linked to their nearest neighbours with typed <em>extends</em>/<em>supports</em> edges (<code>source=Auto</code>) at write time, so the graph densifies as knowledge arrives rather than only during batch consolidation. <code>AutoLinkConfig</code> + <code>auto_link_on_write</code> in <code>memory/store.rs</code> run an embedding-free <code>jaccard</code> token-set pass at the end of <code>MemoryStore::add</code> — effort-gated and <strong>floor-gated</strong> (0.35) so cold or unrelated writes create zero edges, keeping retrieval (LongMemEval) unaffected; the LLM proposer later upgrades the coarse relations.</p></div>
+      <div class="card newc"><span class="tag">SAFE CONSOLIDATION <span class="badge-shipped">SHIPPED 2026-06-08</span></span><h3>N→1 without losing the plot</h3><p>Memory synthesis ships <strong>provenance + reversible rollback</strong>: each synthesized parent is stamped with a <code>consolidation_run_id</code>, and <code>store.rollback_consolidation_run</code> reverses a whole run (un-links children, drops the synthesis edges, deletes the parents). Synthesis is already non-destructive (children preserved via <code>parent_id</code>; <code>Summary</code> rows excluded from re-merge), so reversibility — not a shrink guard — is the real safety net. Adversarial faithfulness review remains a follow-up.</p></div>
+    </div>
+  </section>
+
+  <section id="loop">
+    <h2><span class="num">06</span>The self-improvement loop — write → manage → read</h2>
+    <p>What turns a memory store into an <em>adaptive</em> brain is the closed loop around it. After each turn the outcome is classified, procedures are reinforced or demoted, memory is consolidated safely, and the next turn recalls what the agent actually uses.</p>
+    <div class="loop">
+      <div class="step"><strong>① Classify</strong> <span class="badge-shipped">SHIPPED 2026-06-08</span><br/>outcome → success / approach_fail / capability_gap / external_blocker / workaround_success (<code>memory/outcome.rs</code>, wired into <code>reflect_on_session</code>; <code>external_blocker</code> facts no longer memorised as durable truth)</div>
+      <span class="arr">→</span>
+      <div class="step"><strong>② Reinforce</strong><br/>route by class: bump procedure confidence, extract a skill, or log a gap <em>without</em> reinforcing it</div>
+      <span class="arr">→</span>
+      <div class="step"><strong>③ Manage</strong> <span class="badge-shipped">SHIPPED 2026-06-08</span><br/>safe consolidation + a zero-LLM awareness tick that schedules depth-graded reflection &amp; procedure re-tests (<code>idle_validation_sweep</code> in <code>memory/edge_conflict_scan.rs</code>, wired onto the maintenance tick via <code>IdleCognitionState</code>: opens conflict rows for unresolved <em>contradicts</em> edges, flags stale high-importance rows &amp; quarantined procedures — no LLM, no embedding mutation)</div>
+      <span class="arr">→</span>
+      <div class="step"><strong>④ Read</strong><br/>next turn's hybrid recall is biased toward high-activation, high-confidence memories</div>
+    </div>
+    <p style="margin-top:1rem">This is exactly the survey-level definition of agent memory — a <em>"write–manage–read loop tightly coupled with perception and action"</em> — made concrete and observable. Because the loop is external, each failure mode is fixable as data (a <code>brain_ingest_lesson</code> call) rather than a fine-tune.</p>
+  </section>
+
+  <section id="skillsynth">
+    <h2><span class="num">07</span>Autonomous skill auto-generation <span class="badge-wip">PLANNED · SPEC-033</span></h2>
+    <p>The self-improvement loop above <em>optimizes</em>, <em>reinforces</em>, <em>imports</em>, and <em>promotes</em> skills — but it cannot yet <strong>mint a brand-new skill from observed behaviour</strong>. This layer (a generic pattern reverse-engineered clean-room from <a href="https://github.com/nousresearch/hermes-agent" style="color:var(--accent)">Hermes-Agent</a>, no upstream code/prompts/schema vendored) adds exactly that one missing capability and nothing the brain already has. Net new surface for the whole phase: <strong>one module</strong> (<code>brain/skill_synthesizer.rs</code>), <strong>one</strong> outcome predicate (<code>synthesizes_new_skill</code>), and <strong>one</strong> new <code>source="synthesized"</code> value in the existing <code>tool_skills</code> catalog. Everything else is reuse of §05/§06 machinery.</p>
+    <div class="callout">The new capability in one sentence: an autonomous closed learning loop — <strong>observe → author → validate → register → reuse → refine</strong> — that detects a recurring or workaround-successful trajectory, <em>creates</em> a fresh reusable skill, governs it through the existing §05 procedural ledger (born cold at L4, advisory-only), surfaces it by description, and refines it on every subsequent use — all <strong>bounded</strong> and <strong>anti-recursive</strong>. Status (2026-06-09): <span class="badge-wip">PLANNED</span> — this is the design contract (§34 of <code>docs/brain-advanced-design.md</code>, spec <code>docs/hermes-agent-adoption.md</code>); chunks HERMES-ADOPT-1…6 implement it.</div>
+
+    <div class="loop">
+      <div class="step"><strong>① Observe</strong><br/>HERMES-ADOPT-1 · a <code>synthesizes_new_skill()</code> predicate on the §06 <code>SessionOutcome</code> taxonomy fires on <code>workaround_success</code> (and, gated, a recurring-success cluster) at deep/strategic reflection only — never an LLM every turn</div>
+      <span class="arr">→</span>
+      <div class="step"><strong>② Author</strong><br/>HERMES-ADOPT-2 · <code>brain/skill_synthesizer.rs</code> (sibling of <code>skill_optimizer</code>) extracts a typed candidate <code>{name, description, parameter schema, prompt}</code> from a reused trace, generic over any trajectory (no domain verb lists) with fail-loud structural validation</div>
+      <span class="arr">→</span>
+      <div class="step"><strong>③ Validate + register</strong><br/>HERMES-ADOPT-3 · persisted via the existing <code>upsert_tool_skill</code> (<code>ON CONFLICT (source, name)</code> = idempotent patch) plus a <strong>procedural twin</strong> born cold (~0.67) and advisory-only (L4) — the no-regression guarantee</div>
+      <span class="arr">→</span>
+      <div class="step"><strong>④ Reuse</strong><br/>HERMES-ADOPT-4 · a description-only index rides the existing §20 L1 primer (bodies hydrated on match); an optional offline A/B replay reuses the <code>skill_optimizer</code> harness as a <code>score_gain ≥ 0</code> graduation gate</div>
+      <span class="arr">→</span>
+      <div class="step"><strong>⑤ Refine</strong><br/>HERMES-ADOPT-5 · skill-curator lifecycle (Active → Stale → Archived, Pin exempt) on the procedural ledger, with bounded idle re-test on the existing maintenance tick — snapshot-before-mutate, archive-never-delete</div>
+      <span class="arr">→</span>
+      <div class="step"><strong>⑥ Protect</strong><br/>HERMES-ADOPT-6 · a pre-write security scan (injection / exfiltration / homoglyph / invisible-char) + trust-tier quarantine on every self-authored write, plus the frozen-snapshot write-now / apply-next-session trick to keep the prefix cache stable</div>
+    </div>
+
+    <h3>How it extends the existing layers — never duplicates them</h3>
+    <div class="grid">
+      <div class="card newc"><span class="tag">OBSERVE · HERMES-ADOPT-1</span><h3>Trigger on the existing taxonomy</h3><p>One new <code>synthesizes_new_skill()</code> predicate sits <em>alongside</em> §06's <code>reinforces_procedure</code> / <code>penalises_procedure</code> in <code>memory/outcome.rs</code>, making the already-earmarked <code>workaround_success → extract a NEW procedure</code> path real. It runs behind the same <code>AutoLearnPolicy</code> / effort triage (§04) so authoring never fires an LLM every turn.</p></div>
+      <div class="card newc"><span class="tag">AUTHOR · HERMES-ADOPT-2</span><h3>Mint text that did not exist</h3><p><code>skill_synthesizer.rs</code> is the sibling of <code>skill_optimizer</code> (which only <em>improves</em> existing text). It reuses <code>extract_turn_pairs_public</code> to get the trajectory, then an auxiliary-LLM pass extracts a typed candidate — generic over any trace, no hardcoded domain knowledge per AGI-purity, with fail-loud rejection on malformed candidates.</p></div>
+      <div class="card newc"><span class="tag">REGISTER · HERMES-ADOPT-3</span><h3>Born into the existing ledger</h3><p>Written through the existing <code>tool_skills</code> catalog with a new <code>source="synthesized"</code> value (idempotent on <code>(source, name)</code>) and a paired procedural twin born at <code>TIER_COLD</code>/L4 advisory-only. Born-cold is the no-regression guarantee: an unproven skill cannot change live behaviour until it earns promotion through the §05 procedural ledger.</p></div>
+      <div class="card newc"><span class="tag">REUSE · HERMES-ADOPT-4</span><h3>Surface by description</h3><p>A description-only "available skills" index is injected into the existing §20 L1 session primer (names + descriptions; full body hydrated on match) — no new index table. Going live off L4 is gated by an optional offline A/B replay (reusing the optimizer harness) that must not lower the judge score versus baseline.</p></div>
+      <div class="card newc"><span class="tag">REFINE · HERMES-ADOPT-5</span><h3>Skill-curator lifecycle</h3><p>Usage signals (use / view / patch counts + <code>last_used_at</code>) drive an <strong>Active → Stale → Archived</strong> ladder on the procedural ledger; <strong>Pin</strong> is an absolute exemption. Re-test rides the existing <code>maintenance_runtime</code> idle tick (no new cron engine); mutations are snapshot-before-mutate and skills are archived, never auto-deleted (reusing §05/§11 safety posture).</p></div>
+      <div class="card newc"><span class="tag">PROTECT · HERMES-ADOPT-6</span><h3>Safe self-authoring</h3><p>A generic pre-write content scan (prompt-injection / credential-exfiltration / Unicode-homoglyph / invisible-character) plus a trust-tier quarantine gate runs at the write-back seam <em>before</em> persistence on every self-authored artefact. This complements the faithfulness review (which checks fidelity); this checks malice. The frozen-snapshot trick keeps the LLM prefix cache stable within a session.</p></div>
+    </div>
+
+    <h3>Brain-resident thresholds <span class="badge-new">AGI-PURITY · PRINCIPLE 3</span></h3>
+    <p>Per <code>rules/bench-agi-purity.md</code>, every tunable below lives in <code>mcp-data/shared/memory-seed.sql</code> (mirrored into <code>AppSettings</code>) and is read at runtime — <strong>never a literal in Rust source</strong>. The brain may re-tune them over time. Named keys (the contract for the seed lesson and this mirror):</p>
+    <div class="formula">hermes.skill_synthesis.min_recurring_success_cluster · hermes.skill_synthesis.recurrence_window_days · hermes.skill_synthesis.description_max_chars · hermes.skill_synthesis.name_max_chars
+hermes.skill_synthesis.cold_confidence · hermes.skill_synthesis.promotion_confidence_floor · hermes.skill_synthesis.ab_replay_win_margin · hermes.skill_synthesis.dedup_similarity
+hermes.curator.active_to_stale_idle_days · hermes.curator.stale_to_archived_idle_days · hermes.curator.max_synth_per_idle_tick
+hermes.security.trust_quarantine_floor</div>
+
+    <h3>Safety &amp; bounded proactivity</h3>
+    <ul>
+      <li><strong>Anti-recursion:</strong> a synthesized skill cannot itself trigger unbounded synthesis — authoring is forbidden inside maintenance jobs, idle jobs cannot recursively enqueue further jobs, and <code>hermes.curator.max_synth_per_idle_tick</code> caps authoring per tick. The only proactivity adopted is bounded self-scheduling, not an open-ended "suggest next action" engine.</li>
+      <li><strong>No-regression by construction:</strong> born-cold + advisory-only means an unproven skill is retrievable for audit but never auto-injected until it earns promotion through the §05 ledger and clears the A/B replay margin.</li>
+      <li><strong>Security before persistence:</strong> every self-authored write passes the injection / exfiltration / homoglyph scan and trust-tier quarantine gate before it reaches the store — no self-authored artefact is persisted unscanned.</li>
+      <li><strong>Reversible curation:</strong> curator mutations are snapshot-before-mutate and archive-never-delete (reusing §05/§11), with <strong>Pin</strong> as an absolute exemption.</li>
+    </ul>
+  </section>
+
+  <section id="benchmarks">
+    <h2><span class="num">08</span>How it performs</h2>
+    <p>The same brain is measured on two axes — <strong>retrieval quality</strong> (static corpora) and <strong>long-horizon acting</strong> (playing <em>Zork I</em>). Selected committed results:</p>
+    <table>
+      <tr><th>Benchmark</th><th>Metric</th><th>Result</th></tr>
+      <tr><td>AgentMemory Quality</td><td>R@10 / NDCG@10 / MRR</td><td class="num">67.1% / 98.2% / 100%</td></tr>
+      <tr><td>LongMemEval-S (<code>search</code>)</td><td>R@5 / R@10 / NDCG@10</td><td class="num">98.6% / 99.8% / 88.8%</td></tr>
+      <tr><td>LoCoMo at-scale (100k docs)</td><td>R@10 · p50 latency</td><td class="num">64.0% · 2.05 s</td></tr>
+      <tr><td>Store latency (HNSW, 10k)</td><td>p50 / p99</td><td class="num">0.57 ms / 0.86 ms</td></tr>
+      <tr><td>Token economy</td><td>vs full-context paste</td><td class="num">91.6% fewer</td></tr>
+    </table>
+    <p>Full methodology, baselines (agentmemory, MemoryPalace), and the long-horizon Zork study are in the research report. Numbers are sourced from committed bench results and the public leaderboard.</p>
+  </section>
+
+  <section id="infra">
+    <h2><span class="num">09</span>Infrastructure &amp; capabilities around the brain</h2>
+    <p>The brain is the hub, but a full companion needs ingestion, expression, voice, and embodiment. Each subsystem below is shipped (see the capabilities inventory) and is wired to the brain — feeding it data, surfacing its retrievals, or acting on its decisions. The vector backend, ingest connectors, and sentiment path are core to the memory loop; the avatar, audio, persona, and code-intelligence subsystems are the channels through which the brain perceives and acts.</p>
+    <div class="grid">
+
+      <div class="card newc"><span class="tag">MEMORY BACKEND · SPEC-019/020 <span class="badge-new">NEW</span></span><h3>Vector quantization tiers</h3><p>The vector index spans four tiers: Linear → <strong>TurboVec / TQ+</strong> → <strong>IVF-PQ</strong> → HNSW (usearch). TurboVec Phase 2 ships 2-bit per-coordinate quantization (<code>BitWidth::Two</code>) with Welford <code>PerCoordStats</code> calibration and an FWHT random rotation; QuantMind Phase 3 layers hierarchical document extraction (Thesis / Factor / asset-class detection) on top.</p><p><strong>Tie to brain:</strong> 32× memory compression at ~97% recall@10 lets the long tier scale to 10M+ docs without RAM blow-up — the storage floor under §05.</p></div>
+
+      <div class="card newc"><span class="tag">MEMORY BACKEND · PHASE 49 <span class="badge-new">NEW</span></span><h3>IVF-PQ disk-backed ANN</h3><p>An Inverted-File + Product-Quantization sidecar (4096 coarse cells, 96 subspaces × 256 centroids, 1-byte PQ codes, 32 nprobe) migrates shards to disk past a 5M-entry threshold using asymmetric distance computation.</p><p><strong>Tie to brain:</strong> billion-scale retrieval for the L5 storage tier when the corpus outgrows in-RAM HNSW.</p></div>
+
+      <div class="card newc"><span class="tag">INGEST · SPEC-027/029 <span class="badge-new">NEW</span></span><h3>Connectors &amp; scheduled sync</h3><p>Four concrete <code>ConnectorSource</code> implementations — IMAP email, GitHub, RSS, and LocalFS — run as Tokio interval tasks (≥60 s) behind an AES-256-GCM credential vault, emitting a <code>connector:sync_done</code> event each cycle (GAP-001/002 fixed the flat-args contract).</p><p><strong>Tie to brain:</strong> connectors are the brain's ingest pipeline — they feed documents and metadata into memory on a schedule, removing manual-ingestion friction.</p></div>
+
+      <div class="card newc"><span class="tag">EXPRESSION · SPEC-030 <span class="badge-new">NEW</span></span><h3>VTuber emotion bridge</h3><p>Assistant text is scored for sentiment (<code>brain/sentiment.rs</code> → happy / sad / surprised / neutral) and blended onto the VRM avatar via <code>applyEmotionToVrm</code> with per-frame damping across 52 ARKit blendshape channels (intensity 0.6–0.8); 4 unit tests pass.</p><p><strong>Tie to brain:</strong> the brain's emotional read of its own output becomes an embodied signal — the action side of perceive→act.</p></div>
+
+      <div class="card"><span class="tag">EXPRESSION · CAPTURE</span><h3>Real-time sentiment &amp; capture</h3><p>The same sentiment path drives the conversation heatmap and the VTuber capture pipeline (MediaPipe PoseLandmarker + FaceLandmarker → Kalidokit → VRM bone Euler angles + blendshape weights, 640×480, GPU-accelerated). Expanded blendshape passthrough exposes all 52 ARKit channels with a safe probe-before-set no-op on stock rigs.</p><p><strong>Tie to brain:</strong> live face/pose capture is a perception channel; sentiment timelines become auditable per-turn signals.</p></div>
+
+      <div class="card newc"><span class="tag">TRANSPARENCY · SPEC-026/031 <span class="badge-new">NEW</span></span><h3>Citations &amp; conversation export</h3><p><code>SourceCitations.vue</code> renders pill chips ([N] index, <code>cognitive_kind</code> badge, source time-ago) under each reply, emitted via a <code>source_attribution</code> event from <code>streaming.rs</code>. <code>export_conversation</code> serializes the chat to JSON / Markdown with a sentiment timeline and an interactive citation map (<code>memory_id</code> / snippet / source_url / cognitive_kind / retrieved_at).</p><p><strong>Tie to brain:</strong> makes the RAG pipeline auditable — users see exactly which memories powered each turn.</p></div>
+
+      <div class="card"><span class="tag">REACH · I18N</span><h3>Multilingual / i18n</h3><p>A language service indexes 180+ ISO 639-1 codes with BCP-47 compatibility and a per-message language-aware translation hook; the Real-E2E-024 suite passes 13/13 language probes (including Unicode ñ→es detection).</p><p><strong>Tie to brain:</strong> language-aware retrieval and sentiment keep cross-lingual memories legible to a global audience.</p></div>
+
+      <div class="card"><span class="tag">DISCIPLINE · 12-RULE</span><h3>Reasoning rules stack</h3><p>A configurable 12-rule contract (4 Karpathy core + 8 extended) is persisted one-row-per-rule in <code>reasoning_rules</code> and injected as a compact (~1.2 kB) system-prompt block, each rule toggleable.</p><p><strong>Tie to brain:</strong> explicitly steers the LLM's decision process around the retrieved-memory block — harness, not hardcoded logic.</p></div>
+
+      <div class="card"><span class="tag">CODE INTELLIGENCE</span><h3>Repo RAG &amp; @source scoping</h3><p>Per-repo SQLite ingest with PageRank repo-map and secret pre-scan powers <code>@source-id</code> chat mentions: a composer autocomplete (self + owner/repo sources) routes <code>cross_source_search</code> with a per-turn <code>source_overrides</code> slot cleared after the turn.</p><p><strong>Tie to brain:</strong> lets queries be constrained to specific knowledge sources without polluting the global memory pool.</p></div>
+
+      <div class="card"><span class="tag">EMBODIMENT · PERSONA</span><h3>Persona packs &amp; teachables</h3><p>A self-describing JSON persona codec (version 1, 1 MiB cap, version-skew-tolerant) packages traits + learned expressions + learned motions with provenance and an import skip-report. A teachable-capabilities registry tracks 9 categories with usage/rating and an Untested→Learning→Proven→Canon maturity ladder (promotion ≥ 2.5 avg over 10 uses).</p><p><strong>Tie to brain:</strong> proven capabilities are promoted through the same self-improve loop that governs procedural memory.</p></div>
+
+      <div class="card"><span class="tag">VOICE &amp; AUDIO</span><h3>TTS · song · BGM</h3><p>A trait-based audio engine (ASR / TTS / diarization) drives on-device Supertonic TTS (ONNX, 5 languages) and Edge-TTS language routing. The Song Studio pipeline (ACE-Step, Suno V4.5, Stable Audio 2, MusicGen) plus Whisper ASR + RMVPE/PSOLA pitch analysis and a deduplicating SongCache power singing; Demucs splits stems and a BGM player loops ambient tracks.</p><p><strong>Tie to brain:</strong> <code>sing_lyrics</code> and TTS are the brain's voice output; melody/prosody analysis feeds song context back as memory.</p></div>
+
+      <div class="card"><span class="tag">EMBODIMENT · ANIMATION</span><h3>Animation studio &amp; learned motion</h3><p>A multi-track MMD-style editor (VMD/BVH import, FABRIK IK, MMD↔VRM retargeting, VQ-VAE codebook matching, ConditionalFlow locomotion) and an 8-state character FSM bake <code>LearnedMotion</code> clips into <code>THREE.AnimationClip</code> with fade timing; offline MediaRecorder export (VP9/H264) authors MVs.</p><p><strong>Tie to brain:</strong> procedural animation is driven by learned motion codebooks — the avatar's action vocabulary, exported and replayed.</p></div>
+
+      <div class="card newc"><span class="tag">OPERATIONS · OBS / RESILIENCE <span class="badge-new">NEW</span></span><h3>Observability, schedules &amp; resilience</h3><p>A <code>tracing::Layer</code> writes spans/events to SQLite (zero-cost when <code>TERRANSOUL_OBS_DISABLED=1</code>) with hourly aggregation, PII sha256 redaction, FTS5 log search, and 5 MCP tools (<code>obs_query/trace/logs/metrics/search</code>). A scheduler (7 IPC commands, cron) fires digests/deep-research autonomously, and a heartbeat + crash-loop guard + append-only workflow engine (7 event types, replay-aware) survives unplanned shutdowns.</p><p><strong>Tie to brain:</strong> every turn is traced (latency, tokens, tool calls), feeding trace-driven SkillOpt optimization and self-healing.</p></div>
+
+    </div>
+    <div class="legend">
+      <span><span class="swatch" style="background:var(--bg-card)"></span>Shipped capability</span>
+      <span><span class="swatch" style="background:#1e3a5f;border-color:#4a90e2"></span>Directly inside the memory / ingest / self-improve loop</span>
+    </div>
+  </section>
+
+  <section id="gaming">
+    <h2><span class="num">10</span>The long-horizon gaming study — <em>Zork I</em></h2>
+    <p>Retrieval quality is static; <em>acting</em> over hundreds of turns is the harder test. TerranSoul's brain plays <em>Zork I</em> with a deliberately weak local model (gemma4:e4b, an effective-4B edge config) so that any score lift is attributable to the brain, not the model. The study uses <strong>three control arms</strong>, all holding model, strategy, and critic fixed:</p>
+    <div class="grid">
+      <div class="card"><span class="tag">ARM 1 · NONE</span><h3>No memory</h3><p>The weak 4B with episode-local context only. <strong>Score 0</strong> — the unaided baseline: the weak model cannot play.</p></div>
+      <div class="card"><span class="tag">ARM 2 · ZORKGPT-DEFAULT</span><h3>Upstream memory substrate</h3><p>The same 4B with ZorkGPT's built-in MemoryManager + KnowledgeManager. <strong>Score 0</strong> — a stock memory substrate alone does not help the weak model.</p></div>
+      <div class="card newc"><span class="tag">ARM 3 · TERRANSOUL-BRAIN</span><h3>AGI-pure external brain</h3><p>The same 4B with TerranSoul's brain and <em>zero</em> task seeds (no Zork verbs / walkthroughs in memory). <strong>Score 10–20</strong> — the memory lift, achieved by externalizing task knowledge with no hardcoded game knowledge.</p></div>
+    </div>
+
+    <h3>The principal result — delivery reliability is its own axis</h3>
+    <p>Holding model, strategy, and critic fixed and only changing <em>how</em> a taught solution is delivered to the agent isolates delivery reliability as a distinct performance axis, separate from model capacity:</p>
+    <table>
+      <tr><th>Configuration</th><th>What it measures</th><th>Score</th></tr>
+      <tr><td>none (control)</td><td>weak 4B, no memory</td><td class="num">0</td></tr>
+      <tr><td>zorkgpt-default (control)</td><td>weak 4B, upstream built-in memory</td><td class="num">0</td></tr>
+      <tr><td>terransoul-brain (AGI-pure)</td><td>weak 4B + external brain, no task seeds</td><td class="num">10–20</td></tr>
+      <tr><td>Intermittent delivery</td><td>taught solution via rejection-sampling pointer (non-deterministic)</td><td class="num">73 / 177 / death</td></tr>
+      <tr><td><strong>Reliable delivery</strong></td><td><strong>taught solution via execution-keyed self-managed pointer</strong></td><td class="num"><strong>350 / 350</strong></td></tr>
+      <tr><td>No-LLM script replay</td><td>taught sequence run with no model (solved-game ceiling)</td><td class="num">350</td></tr>
+    </table>
+    <p>The same delivery change moved a 4B model from a non-deterministic <strong>73 / 177 / death</strong> to a deterministic <strong>350 / 350</strong> — matching the no-LLM script-replay ceiling of <strong>350</strong> with <strong>396/396 moves deterministic and 0 errors</strong>, despite a live agent and critic in the loop.</p>
+
+    <h3>Frontier references</h3>
+    <table>
+      <tr><th>System</th><th>Mode</th><th>Zork I score</th></tr>
+      <tr><td>Claude Opus 4.8</td><td>recall of known solution</td><td class="num">350</td></tr>
+      <tr><td>Claude Opus 4.8</td><td>cold reasoning (no recall)</td><td class="num">50</td></tr>
+      <tr><td>ZorkGPT (ep120 best)</td><td>deepseek agent + 27B extractor, critic off</td><td class="num">115</td></tr>
+      <tr><td>ZorkGPT (typical)</td><td>public runs</td><td class="num">88–102</td></tr>
+    </table>
+    <p>Even a frontier model drops from a perfect <strong>350</strong> on recall to <strong>50</strong> on cold reasoning — below ZorkGPT's scaffolded frontier of <strong>115</strong> — confirming that single-game long-horizon play is genuinely hard, and that the brain's contribution is the durable, externalized solution path rather than raw model strength.</p>
+
+    <h3>Architectural stability under load</h3>
+    <p>Across two canonical 2-episode × 100-turn runs the brain executed <strong>1,682 MCP operations with 0 errors</strong>; the longer reliable-delivery demonstration ran <strong>6,456 operations with 11 errors (0.17%)</strong> — well under the 5% threshold, with 5 reflections retrievable per episode. The takeaway: a score of 0 on the AGI-pure arm is the weak model's reasoning ceiling, not a memory failure — the brain delivers reliably; the model is the bottleneck.</p>
+  </section>
+
+  <footer>
+    <p>
+      <a href="../../">TerranSoul home</a> ·
+      <a href="../LLM-Brain-Design-Research-Paper/">Research report</a> ·
+      <a href="../leaderboard/">Leaderboard</a> ·
+      <a href="https://github.com/TerranSyn/TerranSoul">GitHub</a>
+    </p>
+    <p style="margin-top:.5rem">Design contract: <code>docs/brain-advanced-design.md</code> · Adoption spec: <code>docs/genesis-agi-brain-adoption.md</code> · TerranSoul Project · 2026</p>
+  </footer>
+
+</div>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { fontFamily: 'IBM Plex Sans', fontSize: '14px' }, flowchart: { useMaxWidth: true, htmlLabels: true } });
+</script>
+</body>
+</html>

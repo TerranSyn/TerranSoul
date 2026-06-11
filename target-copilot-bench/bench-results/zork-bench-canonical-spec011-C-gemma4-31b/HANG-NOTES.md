@@ -1,0 +1,1 @@
+iter-C result: gemma4:31b (19.8GB) > GPU VRAM, Ollama returned 500 errors continuously, circuit breaker tripped both episodes. ep1 turns: all 'look' in West House after t2 (harness_loop_break=14). ep2: all 'look' in West House (harness_loop_break=17). Both score=0. Conclusion: gemma4:31b unrunnable on this hardware. Winner of A/B/C is qwen2.5:7b (iter-A, AGI signal SC3b PASS).

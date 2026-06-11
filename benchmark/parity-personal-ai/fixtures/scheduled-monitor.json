@@ -1,0 +1,29 @@
+{
+  "archetype": "scheduled-monitor",
+  "description": "Periodic URL ingestion and change detection with alerting.",
+  "prompts": [
+    {
+      "id": "sm-1",
+      "input": "Monitor https://example.com/api/status every hour and tell me if anything changes.",
+      "context_seed": "System supports brain_ingest_url for URL content extraction and memory diffing for change detection.",
+      "expected_capabilities": ["url_ingestion", "scheduling", "change_detection"]
+    },
+    {
+      "id": "sm-2",
+      "input": "Has the Ollama releases page changed since I last checked it?",
+      "context_seed": "Previous ingestion stored content snapshot from ollama.ai/releases with version 0.6.2 as latest.",
+      "expected_capabilities": ["memory_retrieval", "temporal_comparison", "diff_reporting"]
+    },
+    {
+      "id": "sm-3",
+      "input": "Set up a daily check on the Rust release blog and summarize any new posts.",
+      "context_seed": "System can schedule recurring ingestion tasks and generate diffs between stored versions.",
+      "expected_capabilities": ["scheduling", "url_ingestion", "incremental_summarization"]
+    }
+  ],
+  "scoring_rubric": {
+    "relevance": "Does the system acknowledge the monitoring/scheduling request correctly?",
+    "accuracy": "Does it reference correct capabilities for fulfillment?",
+    "completeness": "Does the response cover setup, frequency, and notification?"
+  }
+}

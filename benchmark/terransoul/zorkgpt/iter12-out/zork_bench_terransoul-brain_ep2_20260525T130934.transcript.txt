@@ -1,0 +1,124 @@
+# ZorkGPT × TerranSoul bench transcript
+# arm=terransoul-brain  episode=bench-terransoul-brain-20260525T130934-ep2
+
+=== Episode start ===
+Copyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved. ZORK is a registered trademark of Infocom, Inc. Revision 88 / Serial number 840726  West of House You are standing in an open field west of a white house, with a boarded front door. There is a small mailbox here.
+
+--- Turn 1 ---
+> verbose
+Maximum verbosity.
+
+[brain-override] LLM picked 'go west' → brain overrides with 'open mailbox'
+--- Turn 2 ---
+> open mailbox
+Opening the small mailbox reveals a leaflet.
+
+--- Turn 3 ---
+> take leaflet
+Taken.
+
+[brain-override] LLM picked 'go west' → brain overrides with 'south'
+--- Turn 4 ---
+> south
+South of House You are facing the south side of a white house. There is no door here, and all the windows are boarded.
+
+[brain-override] LLM picked 'go north' → brain overrides with 'east'
+--- Turn 5 ---
+> east
+Behind House You are behind the white house. A path leads into the forest to the east. In one corner of the house there is a small window which is slightly ajar.
+
+[brain-override] LLM picked 'go north' → brain overrides with 'open window'
+--- Turn 6 ---
+> open window
+With great effort, you open the window far enough to allow entry.
+
+[brain-override] LLM picked 'open window' → brain overrides with 'west'
+--- Turn 7 ---
+> west
+Kitchen You are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is open. On the table is an elongated brown sack, smelling of hot peppers. A bottle is sitting on the table. The glass bottle contains:   A quantity of water
+
+--- Turn 8 ---
+> open window
+Look around.
+
+--- Turn 9 ---
+> examine kitchen table
+On the table is an elongated brown sack, smelling of hot peppers. A bottle is sitting on the table. The glass bottle contains:   A quantity of water
+
+--- Turn 10 ---
+> examine bottle
+The glass bottle contains:   A quantity of water
+
+--- Turn 11 ---
+> examine bottle
+The glass bottle contains:   A quantity of water
+
+--- Turn 12 ---
+> take sack
+Taken.
+
+--- Turn 13 ---
+> examine brown sack
+The brown sack is closed.
+
+--- Turn 14 ---
+> open brown sack
+Opening the brown sack reveals a lunch, and a clove of garlic.
+
+--- Turn 15 ---
+> take lunch
+take clove of garlic
+Taken.
+
+--- Turn 16 ---
+> go west
+Living Room You are in the living room. There is a doorway to the east, a wooden door with strange gothic lettering to the west, which appears to be nailed shut, a trophy case, and a large oriental rug in the center of the room. Above the trophy case hangs an elvish sword of great antiquity. A battery powered brass lantern is on the trophy case.
+
+--- Turn 17 ---
+> `
+examine elvish sword
+I don't know the word "`".
+
+--- Turn 18 ---
+> `
+examine trophy case
+I don't know the word "`".
+
+--- Turn 19 ---
+> `
+take brass lantern
+I don't know the word "`".
+
+--- Turn 20 ---
+> take sword
+response: i don't know the word "".
+`
+Taken.
+
+--- Turn 21 ---
+> take brass lantern
+Taken.
+
+--- Turn 22 ---
+> take brass lantern
+You already have that!
+
+--- Turn 23 ---
+> go east
+Kitchen You are in the kitchen of the white house. A table seems to have been used recently for the preparation of food. A passage leads to the west and a dark staircase can be seen leading upward. A dark chimney leads down and to the east is a small window which is open. A bottle is sitting on the table. The glass bottle contains:   A quantity of water
+
+--- Turn 24 ---
+> take bottle
+Taken.
+
+--- Turn 25 ---
+> take glass bottle
+You already have that!
+
+--- Turn 26 ---
+> take glass bottle
+You already have that!
+
+
+=== Episode end ===
+final_score=10  turns=25  elapsed_sec=235.5

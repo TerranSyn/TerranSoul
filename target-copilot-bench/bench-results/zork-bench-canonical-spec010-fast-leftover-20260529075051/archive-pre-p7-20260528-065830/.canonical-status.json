@@ -1,0 +1,77 @@
+{
+  "episodes_per_arm": 3,
+  "stages": [
+    "[x] stage 0 — model pull",
+    "[x] stage 1 — docker rebuild",
+    "[ ] stage 2 — arm=none",
+    "[ ] stage 3 — arm=zorkgpt-default",
+    "[ ] stage 4 — arm=terransoul-brain",
+    "[ ] stage 5 — collect summaries + transcripts"
+  ],
+  "model": "gemma4:e4b",
+  "max_turns": 300,
+  "arms": {
+    "zorkgpt-default": {
+      "episodes_done": 0,
+      "active_turns": [],
+      "max_total_turns": 0,
+      "wall_clock": "-",
+      "final_scores": [
+        "-",
+        "-",
+        "-"
+      ],
+      "active_episodes": 0,
+      "turns": [
+        "-",
+        "-",
+        "-"
+      ],
+      "total_turns": 0
+    },
+    "terransoul-brain": {
+      "episodes_done": 1,
+      "active_turns": [
+        1413
+      ],
+      "max_total_turns": 300,
+      "wall_clock": "-",
+      "final_scores": [
+        "40",
+        "-",
+        "-"
+      ],
+      "active_episodes": 1,
+      "turns": [
+        "300",
+        "-",
+        "-"
+      ],
+      "total_turns": 1413
+    },
+    "none": {
+      "episodes_done": 2,
+      "active_turns": [],
+      "max_total_turns": 0,
+      "wall_clock": "-",
+      "final_scores": [
+        "0",
+        "0",
+        "-"
+      ],
+      "active_episodes": 0,
+      "turns": [
+        "300",
+        "300",
+        "-"
+      ],
+      "total_turns": 0
+    }
+  },
+  "phase": "running (1 active episode(s))",
+  "last_event": "started arm=terransoul-brain at 2026-05-27T01:56:09Z",
+  "updated_at": "2026-05-27T15:37:26Z",
+  "started_at": "2026-05-27T01:56:09Z",
+  "notes": "  - Sequential per-arm (Ollama single-inference).\n  - Watcher cadence: 5 min.",
+  "episodes_done": 3
+}

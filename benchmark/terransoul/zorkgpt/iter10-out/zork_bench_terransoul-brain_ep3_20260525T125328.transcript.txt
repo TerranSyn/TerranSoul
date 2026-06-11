@@ -1,0 +1,118 @@
+# ZorkGPT × TerranSoul bench transcript
+# arm=terransoul-brain  episode=bench-terransoul-brain-20260525T125328-ep3
+
+=== Episode start ===
+Copyright (c) 1981, 1982, 1983 Infocom, Inc. All rights reserved. ZORK is a registered trademark of Infocom, Inc. Revision 88 / Serial number 840726  West of House You are standing in an open field west of a white house, with a boarded front door. There is a small mailbox here.
+
+--- Turn 1 ---
+> verbose
+Maximum verbosity.
+
+[brain-override] LLM picked 'take mailbox' → brain overrides with 'open mailbox'
+--- Turn 2 ---
+> open mailbox
+Opening the small mailbox reveals a leaflet.
+
+[brain-override] LLM picked 'examine leaflet' → brain overrides with 'take leaflet'
+--- Turn 3 ---
+> take leaflet
+Taken.
+
+[brain-override] LLM picked 'examine leaflet' → brain overrides with 'south'
+--- Turn 4 ---
+> south
+South of House You are facing the south side of a white house. There is no door here, and all the windows are boarded.
+
+--- Turn 5 ---
+> go east
+Behind House You are behind the white house. A path leads into the forest to the east. In one corner of the house there is a small window which is slightly ajar.
+
+--- Turn 6 ---
+> look
+Behind House You are behind the white house. A path leads into the forest to the east. In one corner of the house there is a small window which is slightly ajar.
+
+--- Turn 7 ---
+> `
+look
+I don't know the word "`".
+
+--- Turn 8 ---
+> examine clearing
+I don't know the word "clearing".
+
+--- Turn 9 ---
+> look clearing
+I don't know the word "clearing".
+
+--- Turn 10 ---
+> take leaflet
+You already have that!
+
+--- Turn 11 ---
+> take leaflet
+You already have that!
+
+--- Turn 12 ---
+> go west
+The kitchen window is closed.
+
+--- Turn 13 ---
+> go west
+The kitchen window is closed.
+
+--- Turn 14 ---
+> examine window
+The window is slightly ajar, but not enough to allow entry.
+
+--- Turn 15 ---
+> take leaflet
+You already have that!
+
+--- Turn 16 ---
+> enter window
+The kitchen window is closed.
+
+--- Turn 17 ---
+> enter window
+result: the kitchen window is closed
+The kitchen window is closed.
+
+--- Turn 18 ---
+> go west
+The kitchen window is closed.
+
+--- Turn 19 ---
+> go east
+Clearing You are in a small clearing in a well marked forest path that extends to the east and west.
+
+--- Turn 20 ---
+> look
+Clearing You are in a small clearing in a well marked forest path that extends to the east and west.
+
+--- Turn 21 ---
+> examine leaflet
+"WELCOME TO ZORK!  ZORK is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortals. No computer should be without one!"
+
+--- Turn 22 ---
+> examine leaflet
+"WELCOME TO ZORK!  ZORK is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortals. No computer should be without one!"
+
+--- Turn 23 ---
+> read leaflet
+"WELCOME TO ZORK!  ZORK is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortals. No computer should be without one!"
+
+--- Turn 24 ---
+> read leaflet
+"WELCOME TO ZORK!  ZORK is a game of adventure, danger, and low cunning. In it you will explore some of the most amazing territory ever seen by mortals. No computer should be without one!"
+
+--- Turn 25 ---
+> throw leaflet
+What do you want to throw the leaflet at?
+
+--- Turn 26 ---
+> throw leaflet
+Thrown.
+
+
+=== Episode end ===
+final_score=0  turns=25  elapsed_sec=293.3

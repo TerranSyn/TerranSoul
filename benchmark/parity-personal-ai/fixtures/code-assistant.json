@@ -1,0 +1,29 @@
+{
+  "archetype": "code-assistant",
+  "description": "Code-aware Q&A leveraging indexed repository knowledge.",
+  "prompts": [
+    {
+      "id": "ca-1",
+      "input": "How does the memory store handle concurrent writes from multiple threads?",
+      "context_seed": "Repository has src-tauri/src/memory/store.rs with Mutex<MemoryStore> pattern, WAL mode SQLite, and connection pooling.",
+      "expected_capabilities": ["code_search", "architectural_understanding", "concurrency_analysis"]
+    },
+    {
+      "id": "ca-2",
+      "input": "What Tauri commands are related to the brain module and how do they connect to the frontend?",
+      "context_seed": "Repository has src-tauri/src/commands/ with brain.rs (20+ commands), invoked from src/stores/brain.ts via @tauri-apps/api/core invoke().",
+      "expected_capabilities": ["code_search", "cross_layer_tracing", "api_surface_mapping"]
+    },
+    {
+      "id": "ca-3",
+      "input": "Find all places where embeddings are generated and explain the embedding pipeline.",
+      "context_seed": "Embeddings in ollama_agent.rs (embed_text), cloud_embeddings.rs (embed_for_mode), ann_index.rs (HNSW insert), store.rs (hybrid_search vector component).",
+      "expected_capabilities": ["code_search", "pipeline_tracing", "multi_file_synthesis"]
+    }
+  ],
+  "scoring_rubric": {
+    "relevance": "Does the answer reference actual code structures?",
+    "accuracy": "Are file paths, function names, and relationships correct?",
+    "completeness": "Does it trace the full pipeline across layers?"
+  }
+}

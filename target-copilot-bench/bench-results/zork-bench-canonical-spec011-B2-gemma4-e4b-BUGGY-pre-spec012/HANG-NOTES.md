@@ -1,0 +1,1 @@
+iter-B2 (gemma4:e4b @ 20t x 2ep, self-healing enabled): completed cleanly. ep1: 5 rooms, 731s. ep2: 4 rooms, 642s. AGI signal SC3b FAIL (ep2 < ep1 rooms). harness_sanitise 5/4 (long-sentence actions). Conclusion: gemma4:e4b runs but does NOT show cross-episode self-improvement on Zork; instruction-following still weak. qwen2.5:7b (iter-A) remains winner.

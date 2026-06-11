@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zork I Benchmark — TerranSoul brain × ZorkGPT</title>
+<style>
+  :root{--bg:#0d0d1a;--card:#16162a;--ink:#e8e6f0;--soft:#a9a6c0;--faint:#6f6c88;--accent:#8b7cff;--rule:#2a2942;--good:#5fd38d;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(160deg,#1a1028,#0d0d1a);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.6}
+  a{color:var(--accent)}
+  .topbar{position:sticky;top:0;background:rgba(13,13,26,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);z-index:10}
+  .topbar-in{max-width:960px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:14px;font-size:14px}
+  .brand{font-weight:600;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .brand .mark{width:10px;height:10px;border-radius:3px;background:var(--accent)}
+  .crumbs{color:var(--faint);font-family:var(--mono);font-size:12px}
+  .spacer{flex:1}
+  .topbar a.lnk{color:var(--soft);text-decoration:none;font-size:13px}.topbar a.lnk:hover{color:var(--ink)}
+  main{max-width:960px;margin:0 auto;padding:40px 24px 80px}
+  h1{font-size:32px;margin:0 0 6px;letter-spacing:-.01em}
+  .sub{color:var(--soft);margin:0 0 28px;max-width:70ch}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0 28px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule)}
+  th{color:var(--faint);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  td.n{text-align:right;font-family:var(--mono)}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:720px){.cards{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:22px;text-decoration:none;color:inherit;display:block;transition:border-color .15s}
+  .card:hover{border-color:var(--accent)}
+  .card h3{margin:0 0 6px}.card .big{font-family:var(--mono);font-size:30px;color:var(--good)}
+  .card p{color:var(--soft);font-size:14px;margin:8px 0 0}
+  footer{max-width:960px;margin:0 auto;padding:24px;border-top:1px solid var(--rule);color:var(--faint);font-size:13px;display:flex;gap:18px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<!-- ts-site-nav: shared docs-site dropdown. The SAME block lives on every
+     docs page (only the relative prefix differs) so every page can reach
+     every other page — keep the link list in sync across pages. -->
+<details class="ts-site-nav">
+  <summary>&#9776; Site</summary>
+  <nav>
+    <a href="../">Docs home</a>
+    <a href="../brain-architecture/">Brain architecture</a>
+    <a href="../LLM-Brain-Design-Research-Paper/">Research paper</a>
+    <a href="../leaderboard/">Leaderboard</a>
+    <a href="../zorkgpt/">ZorkGPT bench</a>
+    <a href="../zorkgpt/claude-opus-4.8/" class="sub">&mdash; Opus 4.8 run</a>
+    <a href="../zorkgpt/taughtLocalLLM/" class="sub">&mdash; TaughtLocalLLM run</a>
+    <a href="https://github.com/TerranSyn/TerranSoul">GitHub &#8599;</a>
+  </nav>
+</details>
+<style>
+.ts-site-nav{position:fixed;top:10px;right:12px;z-index:2147483000;font:13px/1.45 system-ui,"Segoe UI",sans-serif}
+.ts-site-nav summary{list-style:none;cursor:pointer;user-select:none;background:rgba(17,19,28,.92);color:#e7e9f0;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px)}
+.ts-site-nav summary::-webkit-details-marker{display:none}
+.ts-site-nav[open] summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.ts-site-nav nav{position:absolute;right:0;min-width:230px;display:flex;flex-direction:column;background:rgba(17,19,28,.96);border:1px solid rgba(255,255,255,.18);border-radius:10px 0 10px 10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.45)}
+.ts-site-nav nav a{color:#e7e9f0;text-decoration:none;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ts-site-nav nav a:last-child{border-bottom:0}
+.ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
+.ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+</style>
+
+<div class="topbar"><div class="topbar-in">
+  <a class="brand" href="../"><span class="mark"></span> TerranSoul</a>
+  <span class="crumbs">/ Zork bench</span>
+  <span class="spacer"></span>
+  <a class="lnk" href="../">← Back to main</a>
+</div></div>
+
+<main>
+  <h1>Zork I benchmark — brain × ZorkGPT</h1>
+  <p class="sub">Can the TerranSoul brain + harness make a <b>weak local model</b> play Zork&nbsp;I? All runs are on the
+  same Jericho <code>zork1.z5</code> engine as <a href="https://zorkgpt.com/">zorkgpt.com</a> (0–350), and all are
+  <b>real agent runs</b> (the agent's commands, the game's responses) — no engine auto-solver.</p>
+
+  <table>
+    <tr><th>Agent</th><th>Model</th><th class="n">Score</th><th>Note</th></tr>
+    <tr><td><a href="claude-opus-4.8/">Opus 4.8 (recall)</a></td><td>frontier</td><td class="n" style="color:var(--good)">350</td><td>reproduces the solution it knows; real Jericho run, winning game</td></tr>
+    <tr><td>Opus 4.8 (no recall, cold)</td><td>frontier</td><td class="n">50</td><td>from-scratch reasoning — below deepseek's 94</td></tr>
+    <tr><td><a href="taughtLocalLLM/">TaughtLocalLLM</a></td><td>gemma4:e4b · 4B</td><td class="n" style="color:var(--good)">350</td><td>brain taught the solution (from Opus 4.8's 350 run); orchestrator-fork serves it every turn</td></tr>
+    <tr><td>ZorkGPT ep120</td><td>deepseek-v3.2+27B</td><td class="n">115</td><td>frontier, best of 122 public episodes</td></tr>
+    <tr><td>ZorkGPT typical</td><td>deepseek-v3.2+27B</td><td class="n">88–102</td><td>public SOTA-ish</td></tr>
+    <tr><td>TerranSoul brain</td><td>gemma4:e4b · 4B</td><td class="n">10–20</td><td>brain + harness, no taught solution</td></tr>
+    <tr><td>TerranSoul brain</td><td>gemma4:12b-it-qat · 12B</td><td class="n" style="color:var(--good)">10–15</td><td>brain + harness, no taught solution (2026-06-07). 8 episodes over 4 runs: mean 13.1 ± 2.4. Same AGI-pure band as the 4B — the multi-step planning ceiling binds the score, not the memory layer</td></tr>
+    <tr><td>zorkgpt-default / none</td><td>gemma4:e4b · 4B</td><td class="n">0</td><td>baselines, never enter the house</td></tr>
+  </table>
+
+  <div class="cards">
+    <a class="card" href="claude-opus-4.8/">
+      <h3>Claude Opus 4.8 →</h3><div class="big">350/350</div>
+      <p>Recall-based: reproduces the solution it knows (real run, 350). From-scratch reasoning (no recall) is 50 — honest breakdown inside.</p>
+    </a>
+    <a class="card" href="taughtLocalLLM/">
+      <h3>TaughtLocalLLM →</h3><div class="big">350/350</div>
+      <p>Teach the brain the solution; the weak 4B follows it step-by-step (396/396 moves served 1:1, 0 errors). Demonstrates <b>context → capability</b>.</p>
+    </a>
+  </div>
+</main>
+
+<footer>
+  <a href="../">← TerranSoul home</a>
+  <a href="https://github.com/TerranSyn/TerranSoul">GitHub</a>
+  <a href="https://zorkgpt.com/">zorkgpt.com</a>
+  <span class="spacer"></span><span>Real Jericho runs · 2026-06-02 (e4b / Opus) · 12B 2026-06-07</span>
+</footer>
+</body>
+</html>

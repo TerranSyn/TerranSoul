@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Memory as a First-Class Architectural Layer — LLM external-memory bench, Zork I</title>
+<meta name="description" content="Holding a 4B model, a taught solution, and the critic fixed, only the reliability of delivery moved a weak agent from a non-deterministic 73/177 to a deterministic 350 on Zork I. A research report — ZorkGPT × external-memory bench, May–June 2026 — with citations and public artifacts." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg: oklch(0.985 0.008 80);
+    --bg-card: oklch(0.97 0.01 80);
+    --bg-deep: oklch(0.93 0.012 75);
+    --ink: oklch(0.22 0.015 60);
+    --ink-soft: oklch(0.42 0.012 65);
+    --ink-faint: oklch(0.62 0.01 70);
+    --rule: oklch(0.88 0.012 75);
+    --accent: oklch(0.62 0.14 45);
+    --accent-soft: oklch(0.92 0.04 55);
+    --accent-ink: oklch(0.38 0.10 45);
+    --sans: "IBM Plex Sans", system-ui, sans-serif;
+    --serif: "Newsreader", Georgia, serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    --maxw: 1280px;
+    --col: 720px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:400;line-height:1.55;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--accent-soft);color:var(--accent-ink)}
+  a{color:var(--accent-ink);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;text-decoration-color:color-mix(in oklch, var(--accent-ink) 35%, transparent)}
+  a:hover{text-decoration-color:var(--accent-ink)}
+
+  .topbar{position:sticky;top:0;z-index:50;background:color-mix(in oklch, var(--bg) 88%, transparent);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--rule)}
+  .topbar-in{max-width:var(--maxw);margin:0 auto;padding:12px 32px;display:flex;align-items:center;gap:20px;font-size:13px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:600;font-size:17px;letter-spacing:-0.01em}
+  .brand-mark{width:18px;height:18px;border-radius:50%;background:var(--accent);position:relative}
+  .brand-mark::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg)}
+  .crumbs{color:var(--ink-faint);display:flex;gap:10px;align-items:center}
+  .crumbs span{color:var(--ink-soft)}
+  .crumbs em{font-style:normal;color:var(--ink)}
+  .topbar .spacer{flex:1}
+  .topbar a.lnk{color:var(--ink-soft);text-decoration:none}
+  .topbar a.lnk:hover{color:var(--ink)}
+  .topbar .meta{color:var(--ink-faint);font-family:var(--mono);font-size:11px;letter-spacing:0.05em;text-transform:uppercase}
+  @media (max-width:780px){.crumbs,.topbar .meta{display:none}.topbar-in{gap:12px;padding:10px 18px}}
+
+  .page{max-width:var(--maxw);margin:0 auto;padding:0 32px;display:grid;grid-template-columns:1fr;gap:48px}
+  article{padding:64px 0 96px;max-width:var(--col);margin:0 auto}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:24px}
+  .eyebrow .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);vertical-align:middle;margin:0 10px 2px 0}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(36px, 4.6vw, 50px);line-height:1.08;letter-spacing:-0.02em;margin:0 0 24px;color:var(--ink);text-wrap:balance}
+  h1 em{font-style:italic;color:var(--accent-ink);font-weight:500}
+  .deck{font-family:var(--serif);font-size:22px;line-height:1.45;color:var(--ink-soft);font-weight:400;font-style:italic;margin:0 0 40px;text-wrap:pretty}
+  .byline{display:flex;gap:16px;align-items:center;padding:16px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font-size:13px;color:var(--ink-soft);margin-bottom:48px;flex-wrap:wrap}
+  .byline .who{display:flex;gap:10px;align-items:center}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;font-family:var(--serif);font-weight:600;color:var(--accent-ink);font-size:13px}
+  .byline strong{color:var(--ink);font-weight:500}
+  .byline .sep{color:var(--ink-faint)}
+
+  article h2{font-family:var(--serif);font-weight:600;font-size:32px;line-height:1.18;letter-spacing:-0.01em;margin:64px 0 6px;color:var(--ink);text-wrap:balance}
+  article h2 .scene-num{display:block;font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-ink);font-weight:500;margin-bottom:10px}
+  article h3{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.3;margin:36px 0 8px;color:var(--ink)}
+  article p{font-size:18px;line-height:1.65;margin:0 0 20px;color:var(--ink);text-wrap:pretty}
+  article p.lede{font-size:20px;line-height:1.55}
+  article ul, article ol{font-size:18px;line-height:1.65;padding-left:24px;margin:0 0 24px}
+  article ul li, article ol li{margin-bottom:8px}
+  article blockquote{margin:24px 0;padding:4px 0 4px 24px;border-left:3px solid var(--accent);font-family:var(--serif);font-style:italic;font-size:21px;line-height:1.5;color:var(--ink-soft)}
+  article blockquote cite{display:block;font-style:normal;font-family:var(--sans);font-size:13px;color:var(--ink-faint);margin-top:8px}
+  article hr{border:0;border-top:1px solid var(--rule);margin:48px 0}
+  article code, article kbd{font-family:var(--mono);font-size:0.86em;background:var(--bg-deep);padding:1px 6px;border-radius:3px;color:var(--accent-ink)}
+  article pre{background:var(--ink);color:var(--bg);padding:18px 22px;border-radius:6px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.55;margin:20px 0}
+  article pre code{background:transparent;color:inherit;padding:0;font-size:13px}
+  .small{font-size:14px;color:var(--ink-soft)}
+  ol.refs{font-size:14px;line-height:1.5;color:var(--ink-soft)}
+  ol.refs li{margin-bottom:7px}
+  ol.refs cite{font-style:italic;color:var(--ink)}
+  .refgroup{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent-ink);margin:28px 0 6px}
+
+  table.compare{width:100%;border-collapse:collapse;font-size:15px;margin:16px 0 24px}
+  table.compare th, table.compare td{padding:12px 14px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+  table.compare th{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:500}
+  table.compare td{color:var(--ink)}
+  table.compare tr:last-child td{border-bottom:0}
+  table.compare td.num{font-family:var(--mono);text-align:right}
+  table.compare .delta-good{color:var(--accent-ink);font-weight:500}
+
+  .summary-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;padding:20px 24px;margin:32px 0 40px;display:grid;gap:8px}
+  .summary-card h6{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent-ink);margin:0 0 4px;font-weight:500}
+  .summary-card ul{padding-left:20px;margin:0;font-size:15px;line-height:1.55;color:var(--ink-soft)}
+  .summary-card ul li{margin-bottom:6px}
+  .summary-card strong{color:var(--ink);font-weight:500}
+
+  .disclosure-card{background:oklch(0.96 0.015 55);border:1px solid oklch(0.85 0.03 50);border-radius:8px;padding:16px 20px;margin:0 0 40px;font-size:14px;color:var(--ink-soft);line-height:1.55}
+  .disclosure-card strong{color:var(--ink);font-weight:600}
+
+  .pill{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent-ink);padding:2px 10px;border-radius:99px;border:1px solid color-mix(in oklch, var(--accent-ink) 30%, transparent)}
+
+  footer.page-foot{border-top:1px solid var(--rule);padding:48px 32px;max-width:var(--maxw);margin:48px auto 0;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;font-size:13px;color:var(--ink-soft)}
+  footer.page-foot .links{display:flex;gap:20px;flex-wrap:wrap}
+  footer.page-foot a{color:var(--ink)}
+
+  .endmark{display:flex;align-items:center;gap:14px;color:var(--ink-faint);font-family:var(--mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;margin:40px 0 0}
+  .endmark::before,.endmark::after{content:"";flex:1;height:1px;background:var(--rule)}
+</style>
+</head>
+<body>
+<!-- ts-site-nav: shared docs-site dropdown. The SAME block lives on every
+     docs page (only the relative prefix differs) so every page can reach
+     every other page — keep the link list in sync across pages. -->
+<details class="ts-site-nav">
+  <summary>&#9776; Site</summary>
+  <nav>
+    <a href="../">Docs home</a>
+    <a href="../brain-architecture/">Brain architecture</a>
+    <a href="../LLM-Brain-Design-Research-Paper/">Research paper</a>
+    <a href="../leaderboard/">Leaderboard</a>
+    <a href="../zorkgpt/">ZorkGPT bench</a>
+    <a href="../zorkgpt/claude-opus-4.8/" class="sub">&mdash; Opus 4.8 run</a>
+    <a href="../zorkgpt/taughtLocalLLM/" class="sub">&mdash; TaughtLocalLLM run</a>
+    <a href="https://github.com/TerranSyn/TerranSoul">GitHub &#8599;</a>
+  </nav>
+</details>
+<style>
+.ts-site-nav{position:fixed;top:10px;right:12px;z-index:2147483000;font:13px/1.45 system-ui,"Segoe UI",sans-serif}
+.ts-site-nav summary{list-style:none;cursor:pointer;user-select:none;background:rgba(17,19,28,.92);color:#e7e9f0;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px)}
+.ts-site-nav summary::-webkit-details-marker{display:none}
+.ts-site-nav[open] summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.ts-site-nav nav{position:absolute;right:0;min-width:230px;display:flex;flex-direction:column;background:rgba(17,19,28,.96);border:1px solid rgba(255,255,255,.18);border-radius:10px 0 10px 10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.45)}
+.ts-site-nav nav a{color:#e7e9f0;text-decoration:none;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ts-site-nav nav a:last-child{border-bottom:0}
+.ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
+.ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+</style>
+
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="brand-mark"></span> <a href="../" style="color:var(--ink);text-decoration:none">TerranSoul</a></div>
+    <div class="crumbs">
+      <span>Papers</span> <span>/</span> <em>LLM external-memory bench</em>
+    </div>
+    <div class="spacer"></div>
+    <a class="lnk" href="../zorkgpt/">Zork bench →</a>
+    <a class="lnk" href="../leaderboard/">Leaderboard</a>
+    <div class="meta">2026-06</div>
+  </div>
+</div>
+
+<div class="page">
+  <article>
+    <div class="eyebrow"><span class="dot"></span>Research</div>
+    <h1>Memory as a First-Class Architectural Layer: <em>in a controlled taught-solution setting, delivery reliability — not model capacity — bounds a weak agent</em> on Zork I.</h1>
+    <p class="deck">Holding the local effective-4B model, <b>gemma4:e4b</b> in this study, the taught solution stored in the <b>external memory server</b>, and the critic fixed, the factor that moved the agent to a deterministic 350/350 score on <b>Zork I</b> was not model size. It was how reliably the chosen move reached the game engine.</p>
+
+    <div class="summary-card">
+      <h6>Scope of the result</h6>
+      <ul>
+        <li>The paper isolates <strong>delivery reliability</strong> as an agent-performance variable.</li>
+        <li>The 350/350 result is a <strong>taught-solution delivery-reliability demonstration</strong>: a correct strategy is held fixed and only delivery reliability is varied. The model's <em>unaided</em> (AGI-pure) score is 10–20.</li>
+        <li>Three claims are kept strictly apart: a memory <strong>lift</strong> (§4.3), a delivery-<strong>reliability</strong> result (§4.4), and an economic <strong>distillation-through-memory</strong> architecture (§5).</li>
+      </ul>
+    </div>
+
+    
+
+    <div class="byline">
+      <div class="who"><div class="avatar">R</div><div><strong>Research</strong><br /><span class="small">ZorkGPT × external-memory bench, June 2026.</span></div></div>
+      <div class="sep">·</div>
+      <div>Evaluation artifacts: <a href="../zorkgpt/taughtLocalLLM/">TaughtLocalLLM</a> · <a href="../zorkgpt/claude-opus-4.8/">Opus&nbsp;4.8</a> · <a href="../leaderboard/">leaderboard</a>.</div>
+    </div>
+
+    <h2><span class="scene-num">Abstract</span>What this paper measures</h2>
+    <p>Whether an LLM agent's long-term memory belongs <em>inside</em> the model or <em>outside</em> it is an open architectural question, and one that the 2025–2026 literature treats as central. A recent survey formalises agent memory as <em>"a write–manage–read loop tightly coupled with perception and action"</em> and argues that <em>"memory … is what turns a stateless text generator into a genuinely adaptive agent"</em> [<a href="#ref-15">15</a>]. We study the question with a deliberately weak local model — <code>gemma4:e4b</code>, an effective-4B edge model whose E4B configuration uses per-layer embeddings (so its effective parameter count is smaller than its total footprint), served by Ollama — wired to the <strong>system under test</strong> (TerranSoul's external memory server, referred to as "the brain" or "the external memory server" throughout), reached over the Model Context Protocol (MCP), and measured on <em>Zork I</em> through the Jericho Z-machine interface [<a href="#ref-11">11</a>]. The external memory server is evaluated alongside two controls and a frontier reference (Claude Opus 4.8, ZorkGPT ep120), with the memory substrate as the sole independent variable.</p>
+    <p>The task is hard by design: the TALES suite reports that <em>"even the top LLM-driven agents fail to achieve 15% on games designed for human enjoyment"</em> and that <em>"Zork1 still proves an insurmountable challenge even for modern state-of-the-art LLMs"</em> [<a href="#ref-14">14</a>]. We run the upstream <code>stickystyle/ZorkGPT</code> agent — an existing system we did not author — unmodified and swap only its memory/knowledge managers, leaving the substrate as the sole variable. We report: (1) <strong>stability</strong> — 1 682 memory operations across four canonical episodes at 0 errors, and 6 456 at 0.17% in a later run; (2) <strong>four failure classes</strong> — silent ingest, mis-scoped reflection, frozen prompts, grammar-without-strategy seeds — each fixed at the brain layer, the first being the concrete face of the survey's warning that <em>"one bad write can pollute the store for many steps downstream"</em> [<a href="#ref-15">15</a>]; (3) <strong>AGI-pure lift</strong> — with no task seeds, the external memory server raises the same 4B from 0 to 10–20; (4) the <strong>reliability result</strong> — holding model, knowledge and critic fixed, only delivery reliability separates a non-deterministic 73/177 from a deterministic 350; (5) a <strong>frontier reference</strong> — Claude Opus 4.8 reaches 350 by recall, 50 by cold reasoning, against a public frontier-scaffold best of 115. The pattern separates three claims: the system under test <strong>lifts</strong> the unaided 4B; with a strategy held fixed, <strong>delivery reliability</strong> — not added capacity — was the binding constraint; and the system under test enables an economic <strong>distillation through memory</strong>. We position delivery reliability as a third performance axis alongside retrieval quality and model capacity. On the orthogonal retrieval axis, the same external memory server is competitive or leading on four public memory benchmarks against published baselines (agentmemory, MemoryPalace), with retrieval holding R@10 64.0% at 100k-document scale and store operations meeting interactive latency/token budgets to the million-entry tier (§4.6–4.7). Scope is explicit: this is a single-ROM, single-model-family demonstration, and repeated-trial statistics and cross-game generalisation are future work.</p>
+
+    <h2><span class="scene-num">01 · Introduction</span>Inside the model, or beside it?</h2>
+    <p>A capable agent must remember what it learned in the last episode, what failed in the last room, and what lies beyond its context window. Du's 2026 survey puts it plainly: without memory, <em>"every Monday morning it rediscovers the directory layout, re-reads the same README"</em> [<a href="#ref-15">15</a>]. Two architectures answer the need. The <em>model-internal</em> approach grows the context window or fine-tunes weights; the <em>model-external</em> approach factors memory into a queryable store the agent reads and writes through tools — the lineage of MemGPT/Letta [<a href="#ref-2">2</a>], Mem0 [<a href="#ref-1">1</a>], HippoRAG [<a href="#ref-4">4</a>], and temporal knowledge-graph systems such as Zep/Graphiti [<a href="#ref-10">10</a>], now surveyed from several angles [<a href="#ref-15">15</a>,<a href="#ref-31">31</a>,<a href="#ref-32">32</a>,<a href="#ref-33">33</a>].</p>
+    <p>The system under test takes the external-memory approach: a Rust memory server with a six-signal hybrid retriever (BM25/FTS5 + dense HNSW + reciprocal-rank fusion, <code>k=60</code>) and a typed knowledge graph, exposed to any client over MCP. We ask the sharpest version of the question — does an external memory server help a model too small to hold the task in its head? A 4B model is a stringent probe, so the answer is legible either way. We measure on <em>Zork I</em> because text adventures, as BALROG argues, demand <em>"intricate interactions, advanced spatial reasoning, long-term planning, and continuous exploration of new strategies"</em> [<a href="#ref-13">13</a>], and current models fall far short [<a href="#ref-13">13</a>,<a href="#ref-14">14</a>]. That a 4B (<code>gemma4:e4b</code>) scores near zero unaided is expected; it is what makes the system's measurable lift, and the reliability result, meaningful rather than trivial.</p>
+
+    <h2><span class="scene-num">02 · Related work</span>Where this sits</h2>
+    <p><strong>Agent memory and 2025–2026 surveys.</strong> The external-memory lineage runs from MemGPT/Letta [<a href="#ref-2">2</a>] through Mem0 [<a href="#ref-1">1</a>] — whose LLM-arbitrated conflict resolution the system under test adopts at its graph layer [<a href="#ref-20">20</a>] — to HippoRAG [<a href="#ref-4">4</a>] and spatial schemes [<a href="#ref-3">3</a>]. Du formalises memory as a <em>"write–manage–read loop"</em> [<a href="#ref-15">15</a>]; <em>From Storage to Experience</em> traces three stages toward <em>"the ultimate goal of continual learning"</em> [<a href="#ref-32">32</a>]; a unified survey organises methods by construction, update, and query [<a href="#ref-33">33</a>]; and the <em>Mnemonic Sovereignty</em> security survey calls agent memory <em>"malleable, rewritable, and socially propagating"</em> [<a href="#ref-31">31</a>] — context for our §4.2.</p>
+    <p><strong>Benchmarks.</strong> LoCoMo [<a href="#ref-34">34</a>], LongMemEval [<a href="#ref-35">35</a>], and BEAM anchor the field; MemoryAgentBench [<a href="#ref-22">22</a>] grounds evaluation in cognitive science (retrieval, test-time learning, long-range understanding, selective forgetting) and AMA-Bench [<a href="#ref-23">23</a>] targets long-horizon agentic memory. Du reports a sobering gap: <em>"models that score near-perfectly on LoCoMo plummet to 40–60% in MemoryArena"</em> [<a href="#ref-15">15</a>] — which is exactly why we report both retrieval (§4.6) and acting (§4.1–4.4).</p>
+    <p><strong>Retrieval and graph memory.</strong> The system's retriever fuses lexical and dense channels with reciprocal-rank fusion and applies Contextual Retrieval [<a href="#ref-8">8</a>] and HyDE [<a href="#ref-9">9</a>], the latter gated per query class [<a href="#ref-20">20</a>]. The graph layer follows GraphRAG's Leiden lineage and the typed-edge designs of Zep/Graphiti [<a href="#ref-10">10</a>], MAGMA [<a href="#ref-24">24</a>], and PersonalAI [<a href="#ref-25">25</a>]. Singh, Ehtesham et al. survey the move to <em>agentic</em> retrieval — agents that <em>"leverage agentic design patterns reflection, planning, tool use, and multi-agent collaboration"</em> — and name <em>"Memory Management and Long-Term Adaptation"</em> and <em>"Safety, Trust, and Governance"</em> as open challenges [<a href="#ref-26">26</a>], the territory of our §4.2 and §4.4.</p>
+    <p><strong>Reasoning, self-evolution, skills.</strong> ReAct [<a href="#ref-5">5</a>] interleaves reasoning and acting; Reflexion [<a href="#ref-6">6</a>] adds verbal self-feedback; Voyager [<a href="#ref-7">7</a>] accumulates a skill library; AutoSkill [<a href="#ref-27">27</a>] and RL-with-skill-library frameworks [<a href="#ref-28">28</a>] extend this. Our room-scoped reflections (§4.2) are Reflexion with spatial scope; our taught skill (§4.4) is a Voyager-style library entry — but we separate <em>having</em> a skill from <em>executing</em> it, which is what exposes the delivery axis.</p>
+    <p><strong>Games and text-adventure agents.</strong> Jericho exposes 55 interactive-fiction games with ground-truth state and scores [<a href="#ref-11">11</a>]. BALROG reports broad struggle on hard tasks [<a href="#ref-13">13</a>]; TALES unifies Jericho, ALFWorld, ScienceWorld and TextWorld and finds that <em>"all models struggle to reason across extremely long-horizon contexts where important information is sparsely scattered throughout,"</em> that <em>"Claude models demonstrate the best overall performance,"</em> and that Zork I remains <em>"insurmountable … even for modern state-of-the-art LLMs"</em> [<a href="#ref-14">14</a>]. TextQuests [<a href="#ref-29">29</a>] and Dual-Scale World Models [<a href="#ref-30">30</a>] extend the line. The upstream agent we run, ZorkGPT [<a href="#ref-12">12</a>], peaks at 115/350 with a frontier model — our scaffold reference (§4.5).</p>
+
+    <h2><span class="scene-num">03 · Methods</span>Three arms, one variable</h2>
+    <p>We run upstream ZorkGPT [<a href="#ref-12">12</a>] against Jericho's <code>zork1.z5</code> [<a href="#ref-11">11</a>] in a sealed Docker image. Agent, critic, extractor and strategy-generator are all the same model (<code>gemma4:e4b</code>); seed, temperature and ROM are fixed. Only the substrate changes:</p>
+    <table class="compare">
+      <tr><th>Arm</th><th>Memory + knowledge substrate</th></tr>
+      <tr><td><code>none</code></td><td>bare LLM, episode-local only</td></tr>
+      <tr><td><code>zorkgpt-default</code></td><td>ZorkGPT's own managers (the upstream thesis)</td></tr>
+      <tr><td><strong><code>terransoul-brain</code></strong></td><td>external memory server over MCP — <code>brain_search</code> reads, <code>brain_ingest_lesson</code> writes, typed KG edges</td></tr>
+    </table>
+    <p>The external memory server runs as a separate OS process; the bridge speaks MCP JSON-RPC 2.0 over a real TCP boundary (container → host), bearer-token authenticated, with explicit error accounting — the same transport a production client uses. The bridge derives memory importance from game signals rather than text heuristics (<code>score_delta&gt;0</code> → 10; first visit → 7; a 3-repeat loop → a dead-end <em>principle</em>; death → a <em>fatal</em> memory), writes structured content the KG auto-extractor turns into typed edges, and retrieves principles before episodics so cross-episode rules are not buried. Map adjacency is promoted into a <code>memory_edges</code> graph via <code>brain_add_edge</code>; a probe confirms <code>Living Room —exits_via_west→ Kitchen</code> survives restarts and is queryable by any client.</p>
+    <p>A sequence of <em>domain-agnostic</em> perception/decision gates was added at the bridge layer, each validated by a sub-10-second reproduction first: ID-keyed mapping by Z-machine <code>location_id</code>, valid-exit validation, id-based loop-breaking and exit-pruning, one-shot light-acquisition, and a delivery rule that banks score-bearing items over junk (value learned from the score signal, never a hardcoded list). A standing <strong>AGI-purity</strong> rule forbids seeding Zork maps, routes, or vocabularies, enforced by a grep gate. The single exception is the labelled demonstration of §4.4, whose taught solution is demo-only, never written to the memory seed (verified by grep), and gated behind a runtime flag.</p>
+
+    <h2><span class="scene-num">04 · Results</span>Stability, four lessons, and the reliability result</h2>
+
+    <h3>4.1 Architectural stability</h3>
+    <p>Two canonical 2-episode × 100-turn runs executed <strong>1 682 MCP operations with 0 errors</strong> while the external memory server concurrently served the desktop app for four hours; the longer §4.4 run logged <strong>6 456 operations at 0.17%</strong>.</p>
+
+    <h3>4.2 Four agent-memory failure classes</h3>
+    <ol>
+      <li><strong>Verify, don't trust.</strong> Every <code>brain_ingest_lesson</code> had silently stored zero rows for the bench's history — the client read a structured error envelope as success. This is the concrete form of Du's warning that <em>"one bad write can pollute the store for many steps downstream"</em> [<a href="#ref-15">15</a>]; here the bad write was <em>no</em> write, undetected. A 14-line fix plus a per-episode retrievability probe closed it.</li>
+      <li><strong>Reflections require spatial scope.</strong> Per-room reflections tagged <code>loc_&lt;id&gt;</code> are surfaced by the next episode's room-scoped retrieval exactly when the agent re-enters the room — Reflexion [<a href="#ref-6">6</a>] at the right granularity for an embodied agent.</li>
+      <li><strong>The prompt is a snapshot, not a stream.</strong> Upstream builds the system prompt once at episode start; a lantern found at turn 11 was never seen. A <code>reload_knowledge_base()</code> push fixes it — possible only because the bridge, not the model, owns the prompt.</li>
+      <li><strong>Grammar is not strategy.</strong> A seed listing verbs without strategy left the agent examining a closed mailbox for 100 turns. Replacing the seed is a <code>brain_ingest_lesson</code> call, not a fine-tune.</li>
+    </ol>
+
+    <h3>4.3 AGI-pure arm: the external memory server lifts the weak model where controls stay at zero</h3>
+    <table class="compare">
+      <tr><th>Arm</th><th class="num">Score</th><th>Reach</th></tr>
+      <tr><td><strong><code>terransoul-brain</code></strong></td><td class="num delta-good">10–20</td><td>egg (+5) → house interior (+10) → Living Room / trophy case</td></tr>
+      <tr><td><code>zorkgpt-default</code></td><td class="num">0</td><td>stuck on the surface; never enters the house</td></tr>
+      <tr><td><code>none</code></td><td class="num">0</td><td>surface loop</td></tr>
+    </table>
+    <p>Behavioural change is real even where the score plateaus: in spec 006, episode 2 reached <em>Up a Tree</em> (the egg room), unvisited in episode 1, via a reflection hydrated from episode 1. The external memory server delivered new strategy; the 4B did not always follow through — the boundary that motivates §4.4.</p>
+
+    <h3>4.4 Reliability result: intermittent vs. reliable delivery</h3>
+    <p>Holding the model, the taught solution, and the critic fixed, we vary only <strong>how reliably the chosen move is delivered to the engine</strong>.</p>
+    <table class="compare">
+      <tr><th>Delivery mode</th><th class="num">Result</th><th>Determinism</th></tr>
+      <tr><td>Intermittent (serving invoked ~60% of turns; rejection-sampling desyncs a blind pointer)</td><td class="num">73 / 177 / death</td><td>non-deterministic</td></tr>
+      <tr><td><strong>Reliable (orchestrator-loop fork forces the brain's move every turn)</strong></td><td class="num delta-good">350 / 350</td><td>deterministic</td></tr>
+    </table>
+    <p>The cause turned out to be a loop-bookkeeping bug, not a capacity limit. The agent loop incremented its turn counter unconditionally, so any turn whose LLM call threw advanced the counter while skipping the served move — desyncing the lamp-sensitive solution. Replacing turn-count indexing with a <strong>self-managed pointer that advances only when a move is actually executed</strong> made delivery exception-safe: a failed turn leaves the pointer untouched and the next execution resumes the exact order. The same 4B then served all <strong>396/396 moves 1:1, 0 errors, reaching 350 at move 396</strong>; a no-LLM replay of the identical sequence confirms the ceiling. Agent and critic still ran every turn. The per-turn trace is published [<a href="#ref-17">17</a>].</p>
+    <p><strong>What "delivery reliability" means mechanically.</strong> The variable is not model fluency but whether the brain-selected action reaches the Z-machine on the turn it was chosen. In the intermittent regime a turn whose LLM call raised (a malformed tool call, a fallback path, or a context-saturated decode) still advanced a <em>blind</em> index into the taught sequence, desyncing the lamp-gated ordering. The execution-keyed pointer makes the delivered move equal the chosen move whenever it is valid — formally raising delivery reliability <em>R<sub>d</sub> = P(E<sub>t</sub> = A<sub>t</sub> | A<sub>t</sub> valid)</em> toward 1.0 — a harness property independent of the 4B's own proposals, which are overridden.</p>
+    <p>The rows below situate the reliability contrast using only arms measured in this revision. Additional controls are listed as future work, but no numbers are reported for unrun arms.</p>
+    <table class="compare">
+      <tr><th>Arm</th><th>Purpose</th><th>Status</th></tr>
+      <tr><td><code>none</code> / <code>zorkgpt-default</code>, no taught solution</td><td>weak-model and upstream-memory baselines</td><td>measured: 0</td></tr>
+      <tr><td><code>terransoul-brain</code>, AGI-pure</td><td>memory lift without a taught solution</td><td>measured: 10–20</td></tr>
+      <tr><td>No-LLM script replay of the taught sequence</td><td>solved-sequence ceiling</td><td>measured: 350</td></tr>
+      <tr><td>Taught solution, intermittent delivery</td><td>delivery-reliability sensitivity</td><td>measured: 73/177/death</td></tr>
+      <tr><td><strong>Taught solution, reliable delivery</strong></td><td>principal demonstration</td><td class="delta-good">measured: 350/350</td></tr>
+    </table>
+
+    <h3>4.5 Frontier reference</h3>
+    <table class="compare">
+      <tr><th>Agent</th><th>Mode</th><th class="num">Score</th></tr>
+      <tr><td>Claude Opus 4.8 — recall</td><td>reproduces a known solution, move by move</td><td class="num delta-good">350</td></tr>
+      <tr><td>Claude Opus 4.8 — no recall</td><td>cold, genuine in-context reasoning</td><td class="num">50</td></tr>
+      <tr><td>ZorkGPT ep120</td><td>frontier <code>deepseek</code> + 27B, critic off</td><td class="num">115</td></tr>
+    </table>
+    <p>Opus "leads" the scaffold by <em>recall</em>, not raw reasoning — its cold reasoning (50) sits below the 115 scaffold; that Claude leads is itself consistent with TALES' finding [<a href="#ref-14">14</a>]. The full per-turn Opus run is published [<a href="#ref-18">18</a>].</p>
+
+    <h3>4.6 The same external memory server across four retrieval benchmarks, against published baselines</h3>
+    <p>The Zork bench (§4.1–4.5) is the <em>acting</em> axis; the <em>same</em> external memory server is measured on the <em>retrieval</em> axis across four public memory benchmarks, every row against a published or built-in baseline rather than a self-reported standing. All are live on the leaderboard [<a href="#ref-21">21</a>].</p>
+    <p><strong>AgentMemory Quality</strong> (240 observations, 20 queries) — the system's hybrid-RRF retriever vs. the memory substrates an agent would otherwise use:</p>
+    <table class="compare">
+      <tr><th>System</th><th class="num">R@5</th><th class="num">R@10</th><th class="num">R@20</th><th class="num">NDCG@10</th><th class="num">MRR</th></tr>
+      <tr><td><strong>TerranSoul (hybrid RRF)</strong></td><td class="num delta-good">44.8%</td><td class="num delta-good">67.1%</td><td class="num delta-good">80.7%</td><td class="num delta-good">98.2%</td><td class="num delta-good">100.0%</td></tr>
+      <tr><td>Built-in (CLAUDE.md / grep)</td><td class="num">37.0%</td><td class="num">55.8%</td><td class="num">70.6%</td><td class="num">80.3%</td><td class="num">82.5%</td></tr>
+      <tr><td>Built-in (200-line MEMORY.md)</td><td class="num">27.4%</td><td class="num">37.8%</td><td class="num">42.3%</td><td class="num">56.4%</td><td class="num">65.5%</td></tr>
+    </table>
+    <p><strong>LongMemEval-S</strong> (500 cleaned questions) — two configurations of the system under test (corpus-aware <code>search</code> and the leaderboard <code>rrf</code>) vs. the published systems the field reports, including <strong>MemoryPalace</strong> [<a href="#ref-1">1</a>,<a href="#ref-3">3</a>]. Every system-under-test number is from a committed result file [<a href="#ref-16">16</a>]. <em>(Both rows are the direct-store, no-embed path — <code>longmemeval_s_terransoul.json</code>, 2026-06-09. The production embedding path — BENCH-AM-6.1 — measures R@10 99.6%, NDCG@10 91.3%, MRR 92.6% with corpus-aware lexical weighting; see <code>benchmark/terransoul/longmemeval-s/README.md</code>.)</em></p>
+    <table class="compare">
+      <tr><th>System</th><th class="num">R@5</th><th class="num">R@10</th><th class="num">R@20</th><th class="num">NDCG@10</th><th class="num">MRR</th></tr>
+      <tr><td><strong>TerranSoul (<code>search</code>)</strong></td><td class="num delta-good">98.6%</td><td class="num delta-good">99.8%</td><td class="num delta-good">100.0%</td><td class="num delta-good">88.8%</td><td class="num delta-good">89.1%</td></tr>
+      <tr><td>TerranSoul (<code>rrf</code>, leaderboard)</td><td class="num">95.0%</td><td class="num">99.8%</td><td class="num">100.0%</td><td class="num">74.9%</td><td class="num">69.3%</td></tr>
+      <tr><td>agentmemory (published)</td><td class="num">95.2%</td><td class="num">98.6%</td><td class="num">99.4%</td><td class="num">87.9%</td><td class="num">88.2%</td></tr>
+      <tr><td>MemoryPalace (published)</td><td class="num">~96.6%</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+    </table>
+    <p>The system under test leads at R@10/R@20 in both configs; the corpus-aware <code>search</code> config also edges agentmemory and MemoryPalace at R@5 (98.6%) and NDCG@10 (88.8%), while the leaderboard <code>rrf</code> is on par with agentmemory at R@5. We name both configs rather than headline a single best-of-runs number.</p>
+    <p><strong>LoCoMo retrieval</strong> (MTEB slice, 1 976 queries) — the committed full-slice result for the fused <code>rrf</code> retriever [<a href="#ref-16">16</a>,<a href="#ref-21">21</a>]:</p>
+    <table class="compare">
+      <tr><th>Configuration</th><th class="num">R@5</th><th class="num">R@10</th><th>Note</th></tr>
+      <tr><td><code>rrf</code> (committed, full 1 976-query slice)</td><td class="num">50.0%</td><td class="num delta-good">57.2%</td><td>fused lexical + dense + KG + freshness</td></tr>
+    </table>
+    <p>The production pipeline layers a cross-encoder reranker and per-query-class HyDE on this fused base; their measured effect is characterised in the design-contract ablations [<a href="#ref-20">20</a>]. We report only the committed <code>rrf</code> slice and do <strong>not</strong> quote a reranked headline number without a committed file to back it.</p>
+    <p><strong>LoCoMo at-scale</strong> — on a 100 k-document corpus (100 adversarial queries), the routed production retriever (<code>rrf</code>) holds <strong>R@10 64.0%</strong> (R@5 55.0%, R@20 68.5%, NDCG@10 46.6%, MRR 42.1%) at <strong>p50 2.05 s / p95 6.85 s</strong> [<a href="#ref-16">16</a>,<a href="#ref-21">21</a>] — recall barely degrades as the corpus grows. The IVF-PQ compression arm — previously zero-recall because the shard router routed queries off the single index-bearing shard, now fixed to probe all shards — retrieves <strong>R@10 28.5% at p50 331 ms</strong> on the same 100 k corpus: ≈6× faster than exact RRF at roughly half the recall (the approximate / product-quantization tradeoff). Both rows are on the public leaderboard [<a href="#ref-21">21</a>].</p>
+
+    <h3>4.7 Systems performance, ablation, and token economy</h3>
+    <p><strong>Latency at scale</strong> [<a href="#ref-16">16</a>,<a href="#ref-36">36</a>]. The HNSW vector stage returns top-10 over 768-dim vectors at <strong>p50 0.57 ms / p95 0.74 ms / p99 0.86 ms</strong> (10 k smoke tier; the hard gate is p99 ≤ 100 ms at the full 1 M tier). At 1 M entries the store bulk-writes at <strong>137 521 rows/s</strong> and full-reads at <strong>469 036 rows/s</strong>, and capacity-prunes 10 500→9 500 entries in 0.26 s — interactive budgets hold as the store scales.</p>
+    <p><strong>Blend ablation</strong> (10 k adversarial corpus, n = 100) [<a href="#ref-16">16</a>,<a href="#ref-36">36</a>]. Collapsing the six-signal RRF blend to vector-only drops R@10 from a 64.5% blended baseline to <strong>54.5% (−10 pp)</strong> — the empirical justification for the multi-retriever fuser over a vector-only default.</p>
+    <p><strong>Token economy.</strong> For equal retrieval quality the rrf retriever returns <strong>2,798 retrieved tokens/query vs. 32 660</strong> for a full-context paste — <strong>91.4% fewer</strong> (committed, the same case set as the AgentMemory rows) [<a href="#ref-16">16</a>,<a href="#ref-20">20</a>]; a session-anchored measurement records a ~29× aggregate reduction on seeded lookups (30–100× per-query; ~3–5× session-wide once non-seeded code search is included) [<a href="#ref-36">36</a>]. We report the falsifiable session number, not a headline multiple.</p>
+
+    <p><strong>Personal-AI parity (OpenJarvis head-to-head)</strong> [<a href="#ref-36">36</a>]. To check the system's assistant pipeline against an independently-built reference, both TerranSoul and <strong>OpenJarvis</strong> (Stanford, Apache-2.0) answer the same 22 prompts across seven personal-AI archetypes with the same model (<code>gemma4:12b-it-qat</code>) on the same GPU, each given identical ground-truth context, each answer scored 0–10 by the same judge. Running each stack as its real assistant — TerranSoul with its production companion prompt, its real sampling temperature (0.7), and the spec-030 emotion-expression cues its VRM avatar genuinely emits — TerranSoul scores <strong>9.82/10 at p50 1.01 s</strong> vs. OpenJarvis' <strong>9.55/10 at p50 3.19 s</strong>: the system under test leads on quality at <strong>~3.2× lower latency</strong>, both at <strong>$0</strong> marginal cost (fully local). We flag the methodology honestly — an earlier pass under-built the system's side (temperature 0, a generic prompt, no avatar emotion) and tied at 9.3/9.5; correcting it to the <em>actual</em> production pipeline (not tuning to the judge) is what surfaces the lead. The one archetype still moving the margin is the avatar-overlay task, where the system's emotion expression is a real capability OpenJarvis lacks; on the text-only archetypes the two are within judge noise. Same model, same injected context, same judge throughout. Energy is reported <code>n/a</code> rather than fabricated — the test GPU (RTX 3080 Ti) exposes no <code>power.draw</code> via NVML, so no software on this machine (OpenJarvis' own telemetry included) can measure it.</p>
+
+    <h2><span class="scene-num">05 · Discussion</span>Delivery reliability as a third axis</h2>
+    <p><strong>Claim A — Memory lift.</strong> With no task seeds, externalising task knowledge into the external memory server raised the same effective-4B from 0 (both controls) to 10–20 and removed its fixation loops — a genuine discovery-side contribution of the memory substrate, modest because the 4B's own planning ceiling binds it.</p>
+    <p><strong>Claim B — Delivery reliability.</strong> Holding model, taught solution, and critic fixed, the variable that moved the agent from a non-deterministic 73/177 to a deterministic 396-move, 350/350 completion was delivery reliability, not added model capacity. The model never grew; delivery became reliable. Where a strategy exists, model size gates execution fidelity, and a thin, exception-safe harness can close that gap without retraining. We state Claim B narrowly: a controlled isolation result on one game with one model, not evidence that small models are broadly sufficient.</p>
+    <p><strong>Claim C — Distillation through memory, not weights.</strong> The taught skill is Opus 4.8's own 350 solution (§4.5), stored in the external memory server and replayed by the 4B: a frontier model solves once, the memory server persists the result, and a cheap local model executes it thereafter — no retraining, the knowledge editable and transferable to any client that queries the same memory server. For already-solved tasks this trades repeated frontier inference for a one-time capture plus cheap local execution.</p>
+    <p><strong>The mental model, stated carefully.</strong> Rather than "the memory server is the intelligence and the LLM is the actuator," we prefer the precise version: the system under test externalises task knowledge and action selection into a persistent memory layer, while the local model acts as a <em>constrained executor</em> under the harness. In the taught-solution regime the memory server serves a stored action sequence, not fresh reasoning — exactly the property the experiment isolates.</p>
+    <p><strong>An under-studied axis.</strong> The literature optimises retrieval [<a href="#ref-1">1</a>,<a href="#ref-4">4</a>,<a href="#ref-8">8</a>,<a href="#ref-9">9</a>] and reasoning [<a href="#ref-5">5</a>,<a href="#ref-6">6</a>], and the agentic-RAG survey lists memory management and governance as open [<a href="#ref-26">26</a>]. The variable that dominated our outcome lived in neither: it was the loop's bookkeeping. This is a general hazard for any "brain decides, tool acts" stack, and it sits alongside the surveys' warning that bad <em>writes</em> propagate [<a href="#ref-15">15</a>,<a href="#ref-31">31</a>] — bad <em>delivery</em> propagates too.</p>
+    <p><strong>Memory as a first-class layer.</strong> Each §4.2 failure was observable only because memory was external: a health endpoint exposed the silent ingest; query-time filters exposed mis-scoped recall; bridge ownership of the prompt exposed the frozen snapshot; a tagged, versioned seed made strategy editable as data. A model-internal stack offers none of these affordances between episodes.</p>
+
+    <h2><span class="scene-num">06 · Limitations</span>What this does not show</h2>
+    <ul>
+      <li><strong>The AGI-pure score is low (10–20).</strong> With no taught solution the 4B's planning ceiling binds the score — the expected regime per TALES/BALROG [<a href="#ref-13">13</a>,<a href="#ref-14">14</a>]; a 13B/30B model is the next knob.</li>
+      <li><strong>The 350 is a demonstration, not a discovery.</strong> §4.4 gives the memory server the solution to isolate delivery reliability; it shows reliable serving lets a weak actuator finish, not that the 4B can solve Zork unaided. The taught knowledge never enters the AGI-pure memory server.</li>
+      <li><strong>Single ROM, single model family,</strong> plus a frontier reference; generalisation across the Jericho/TALES surface [<a href="#ref-11">11</a>,<a href="#ref-14">14</a>] is future work.</li>
+    </ul>
+
+    <h2><span class="scene-num">07 · Threats to validity</span>The attacks, and our answers</h2>
+    <table class="compare">
+      <tr><th>Threat</th><th>Our answer</th></tr>
+      <tr><td>"It is just replaying a known walkthrough."</td><td>Correct, and deliberate — §4.4 isolates delivery reliability, not discovery; the no-LLM replay row makes the solved-sequence ceiling explicit.</td></tr>
+      <tr><td>Single game (Zork I).</td><td>Our first long-horizon test; the Jericho/TALES surface [<a href="#ref-11">11</a>,<a href="#ref-14">14</a>] is the next step.</td></tr>
+      <tr><td>Single local model.</td><td>Shown for one effective-4B model; model-family generality is not established here.</td></tr>
+      <tr><td>Walkthrough leakage into the AGI-pure arm.</td><td>Taught solution is runtime-gated and never in the memory seed; a grep gate forbids Zork maps/routes/vocabularies in the bridge source.</td></tr>
+      <tr><td>Semantic leakage via embeddings.</td><td>The grep gate catches literal strings only; a web-pretrained embedder could encode Zork layout — an open limitation we acknowledge.</td></tr>
+      <tr><td>System under test vs. a flat script.</td><td>The ablation map (§4.4) includes a no-memory-server script-replay control; the system's value is retrieval, KG, and editable-seed affordances, not a lower replay score.</td></tr>
+      <tr><td>Determinism / reproducibility.</td><td>Commit, image, ROM, model, decoding, critic, and seed are pinned in the manifest; digests and repeated-trial statistics are future work.</td></tr>
+      <tr><td>KG-edge extraction accuracy.</td><td>Map adjacency is parsed from Jericho's valid-exit signal at the bridge, not free-text-extracted by the 4B.</td></tr>
+    </table>
+
+    <h2><span class="scene-num">08 · Future work</span>Toward a stronger result</h2>
+    <p>This is a controlled single-game, single-model demonstration. Future work to strengthen external validity and reproducibility includes:</p>
+    <ul>
+      <li><strong>Repeated trials per arm</strong> (10–30 runs): mean / max / min / std, completion, death, delivery-error, and move-accuracy rates instead of single deterministic runs.</li>
+      <li><strong>Cross-game generalisation:</strong> run the unchanged bridge on more Jericho games (Zork II, Enchanter, the short <em>9:05</em>).</li>
+      <li><strong>Cross-model generalisation:</strong> repeat with other local models to test whether the delivery-reliability axis is model-family-independent.</li>
+      <li><strong>Expand the ablation map:</strong> execute additional controls (brain-suggests/model-decides; reliable delivery with injected drops; fresh empty memory server).</li>
+      <li><strong>Digest-level reproducibility:</strong> attach ROM SHA-256, Docker image hash, and model digest to the manifest.</li>
+      <li><strong>Quantify the 4B's failure economy:</strong> tool-call/JSON-malformation and context-saturation rates per 100 turns to ground <em>R<sub>d</sub></em> empirically.</li>
+    </ul>
+
+    <h2><span class="scene-num">09 · Conclusion</span>Memory as a first-class layer</h2>
+    <p>We wired a deliberately weak effective-4B model to an external memory server over MCP and measured it on <em>Zork I</em> — a task TALES calls <em>"insurmountable … even for modern state-of-the-art LLMs"</em> [<a href="#ref-14">14</a>]. Three claims survive the controls: externalising task knowledge <strong>lifts</strong> the unaided 4B from 0 to 10–20 with no task seeds (§4.3); with a strategy held fixed, <strong>delivery reliability</strong> — not added model capacity — was the binding constraint that moved the <em>same</em> model from a non-deterministic 73/177 to a deterministic 350/350 (§4.4); and the system under test enables <strong>distillation through memory</strong> (§4.5→§4.4), a frontier model solving once and a cheap local model executing thereafter, with the knowledge living as editable data rather than weights.</p>
+    <p>On the orthogonal retrieval axis the same external memory server is competitive or leading on four public memory benchmarks against published baselines — agentmemory, MemoryPalace, and the agent's own built-in memory — holds R@10 64.0% retrieval at 100k-document scale, and meets interactive latency with a 91.4% token-economy advantage as the store scales to the million-entry tier (§4.6–4.7). Together these are a concrete argument for treating memory as a first-class architectural layer: observable, probeable, and editable in ways a model-internal store is not. The boundaries are explicit (§6–§7) — a single ROM and model family, single-trial runs, and at-scale recall — and define the path to a stronger result (§8).</p>
+
+    
+
+    <h2><span class="scene-num">10 · References</span>Cited work and artifacts</h2>
+    <div class="refgroup">Agent memory, retrieval, and reasoning</div>
+    <ol class="refs">
+      <li id="ref-1"><cite>Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory.</cite> 2025. arXiv:2504.19413.</li>
+      <li id="ref-2">Packer et al. <cite>MemGPT: Towards LLMs as Operating Systems</cite> (Letta). 2023. arXiv:2310.08560.</li>
+      <li id="ref-3"><cite>MemoryPalace / spatial agent memory.</cite> 2025. arXiv:2503.06868.</li>
+      <li id="ref-4">Gutiérrez et al. <cite>HippoRAG: Neurobiologically Inspired Long-Term Memory for LLMs.</cite> 2024. arXiv:2405.14831.</li>
+      <li id="ref-5">Yao et al. <cite>ReAct: Synergizing Reasoning and Acting in Language Models.</cite> 2022. arXiv:2210.03629.</li>
+      <li id="ref-6">Shinn et al. <cite>Reflexion: Language Agents with Verbal Reinforcement Learning.</cite> 2023. arXiv:2303.11366.</li>
+      <li id="ref-7">Wang et al. <cite>Voyager: An Open-Ended Embodied Agent with LLMs.</cite> 2023. arXiv:2305.16291.</li>
+      <li id="ref-8">Anthropic. <cite>Introducing Contextual Retrieval.</cite> 2024.</li>
+      <li id="ref-9">Gao et al. <cite>Precise Zero-Shot Dense Retrieval without Relevance Labels (HyDE).</cite> 2022. arXiv:2212.10496.</li>
+      <li id="ref-10">Zep AI. <cite>Zep / Graphiti: A Temporal Knowledge-Graph Architecture for Agent Memory.</cite> 2024.</li>
+    </ol>
+    <div class="refgroup">Games, text-adventure agents, and the core memory survey</div>
+    <ol class="refs" start="11">
+      <li id="ref-11">Hausknecht et al. <cite>Interactive Fiction Games: A Colossal Adventure (Jericho).</cite> 2019/2020. arXiv:1909.05398.</li>
+      <li id="ref-12">stickystyle. <cite>ZorkGPT</cite> (upstream agent, MIT). github.com/stickystyle/ZorkGPT; live run at zorkgpt.com.</li>
+      <li id="ref-13">Paglieri et al. <cite>BALROG: Benchmarking Agentic LLM and VLM Reasoning On Games.</cite> 2024. arXiv:2411.13543.</li>
+      <li id="ref-14">Cui, Yuan, Xiao, Ammanabrolu, Côté. <cite>TALES: Text Adventure Learning Environment Suite.</cite> 2025. arXiv:2504.14128.</li>
+      <li id="ref-15">Du, P. <cite>Memory for Autonomous LLM Agents: Mechanisms, Evaluation, and Emerging Frontiers.</cite> 2026. arXiv:2603.07670.</li>
+    </ol>
+    <div class="refgroup">Our own runs, code, and artifacts</div>
+    <ol class="refs" start="16">
+      <li id="ref-16">ZorkGPT × TerranSoul bench design, three-arm results, transcripts: <code>benchmark/terransoul/zorkgpt/README.md</code>.</li>
+      <li id="ref-17"><a href="../zorkgpt/taughtLocalLLM/">TaughtLocalLLM reliable-350 evaluation artifact</a> (per-turn).</li>
+      <li id="ref-18"><a href="../zorkgpt/claude-opus-4.8/">Claude Opus 4.8 evaluation artifact</a> (recall 350 / reasoning 50).</li>
+      <li id="ref-19">Brain bridge + orchestrator-fork harness: <code>benchmark/scripts/zork-bench/terransoul_brain_bridge.py</code>, <code>zork_orchestrator_patch.py</code>.</li>
+      <li id="ref-20">Brain design contract and retrieval ablations: <code>docs/brain-advanced-design.md</code> (RRF <code>k=60</code>; HyDE per query class; <code>rrf_rerank</code> R@10 68.3% on LoCoMo; Mem0-style conflict resolution; GraphRAG/Leiden). Durable lessons in <code>mcp-data/shared/memory-seed.sql</code>; external influences credited in <code>CREDITS.md</code>.</li>
+      <li id="ref-21"><a href="../leaderboard/">Retrieval-bench leaderboard</a> (AgentMemory, LongMemEval-S, LoCoMo ×2).</li>
+    </ol>
+    <div class="refgroup">Memory and agentic-RAG benchmarks and methods (2025–2026)</div>
+    <ol class="refs" start="22">
+      <li id="ref-22"><cite>MemoryAgentBench: Evaluating Memory in LLM Agents via Incremental Multi-Turn Interactions.</cite> 2025. arXiv:2507.05257.</li>
+      <li id="ref-23"><cite>AMA-Bench: Evaluating Long-Horizon Memory for Agentic Applications.</cite> 2026. arXiv:2602.22769.</li>
+      <li id="ref-24"><cite>MAGMA: A Multi-Graph based Agentic Memory Architecture for AI Agents.</cite> 2026. arXiv:2601.03236.</li>
+      <li id="ref-25"><cite>PersonalAI: A Systematic Comparison of Knowledge-Graph Storage and Retrieval for Personalized LLM Agents.</cite> 2025. arXiv:2506.17001.</li>
+      <li id="ref-26">Singh, Ehtesham, Kumar, Khoei, Vasilakos. <cite>Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG.</cite> 2025/2026. arXiv:2501.09136.</li>
+      <li id="ref-27"><cite>AutoSkill: Experience-Driven Lifelong Learning via Skill Self-Evolution.</cite> 2026. arXiv:2603.01145.</li>
+      <li id="ref-28"><cite>Reinforcement Learning for Self-Improving Agent with Skill Library (SAGE).</cite> 2025. arXiv:2512.17102.</li>
+      <li id="ref-29"><cite>TextQuests: How Good are LLMs at Text-Based Video Games?</cite> 2025. arXiv:2507.23701.</li>
+      <li id="ref-30"><cite>Dual-Scale World Models for LLM Agents Towards Hard-Exploration Problems.</cite> 2025. arXiv:2509.24116.</li>
+    </ol>
+    <div class="refgroup">Agent-memory surveys (2026)</div>
+    <ol class="refs" start="31">
+      <li id="ref-31"><cite>A Survey on the Security of Long-Term Memory in LLM Agents: Toward Mnemonic Sovereignty.</cite> 2026. arXiv:2604.16548.</li>
+      <li id="ref-32"><cite>From Storage to Experience: A Survey on the Evolution of LLM Agent Memory Mechanisms.</cite> 2026. arXiv:2605.06716.</li>
+      <li id="ref-33"><cite>LLM Agent Memory: A Survey from a Unified Representation–Management Perspective.</cite> 2026. (Preprints.org 202603.0359.)</li>
+    </ol>
+    <div class="refgroup">Long-term-memory benchmarks and TerranSoul systems artifacts (§2.2, §4.6–4.7)</div>
+    <ol class="refs" start="34">
+      <li id="ref-34">Maharana, Lee, Tulyakov, Bansal, Barbieri, Fung. <cite>Evaluating Very Long-Term Conversational Memory of LLM Agents (LoCoMo).</cite> ACL 2024. arXiv:2402.17753.</li>
+      <li id="ref-35">Wu et al. <cite>LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory.</cite> ICLR 2025. arXiv:2410.10813.</li>
+      <li id="ref-36">TerranSoul systems &amp; token-economy benches: <code>docs/benchmarking.md</code> (million-memory HNSW / 1M-CRUD / capacity-prune harness; HybridWeights A/B ablation) and <code>docs/mcp-token-usage-benchmark.md</code> (session-anchored token-reduction methodology and caveats).</li>
+    </ol>
+
+    <div class="endmark">LLM external-memory bench · ZorkGPT × TerranSoul · 2026</div>
+  </article>
+</div>
+
+<footer class="page-foot">
+  <div class="links">
+    <a href="../">← TerranSoul home</a>
+    <a href="../zorkgpt/">Zork bench</a>
+    <a href="../zorkgpt/taughtLocalLLM/">TaughtLocalLLM</a>
+    <a href="../zorkgpt/claude-opus-4.8/">Opus 4.8</a>
+    <a href="../leaderboard/">Leaderboard</a>
+    <a href="https://github.com/TerranSyn/TerranSoul">GitHub</a>
+  </div>
+  <div>Full paper + artifacts: <code>docs/LLM-Brain-Design-Research-Paper.md</code> · 2026-06.</div>
+</footer>
+
+</body>
+</html>

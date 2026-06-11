@@ -1,0 +1,34 @@
+{
+  "started_at": "2026-05-29T01:40:36Z",
+  "max_turns": 20,
+  "notes": "  - Sequential per-arm (Ollama single-inference).\n  - Watcher cadence: 3 min.",
+  "episodes_per_arm": 2,
+  "episodes_done": 2,
+  "model": "gemma4:e4b",
+  "updated_at": "2026-05-29T02:05:03Z",
+  "arms": {
+    "terransoul-brain": {
+      "final_scores": [
+        "",
+        "-",
+        "-"
+      ],
+      "turns": [
+        "",
+        "-",
+        "-"
+      ],
+      "wall_clock": "0h24m"
+    }
+  },
+  "phase": "done",
+  "last_event": "all arms finished; collect summaries + transcripts next",
+  "stages": [
+    "[x] stage 0 — model pull",
+    "[x] stage 1 — docker rebuild",
+    "[ ] stage 2 — arm=none",
+    "[ ] stage 3 — arm=zorkgpt-default",
+    "[ ] stage 4 — arm=terransoul-brain",
+    "[ ] stage 5 — collect summaries + transcripts"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "archetype": "voice-companion",
+  "description": "Voice I/O pipeline — TTS generation and ASR comprehension. TerranSoul-only (no OpenJarvis equivalent).",
+  "terransoul_only": true,
+  "prompts": [
+    {
+      "id": "vc-1",
+      "input": "Say good morning to me in a cheerful way.",
+      "context_seed": "Companion persona is energetic and uses short sentences suitable for TTS. User prefers Japanese-style greetings.",
+      "expected_capabilities": ["tts_generation", "persona_voice", "brevity"]
+    },
+    {
+      "id": "vc-2",
+      "input": "[ASR input] 'Can you remind me about my meeting at three?'",
+      "context_seed": "User has a calendar memory entry: 'Team standup at 3 PM in the main conference room'.",
+      "expected_capabilities": ["asr_comprehension", "memory_retrieval", "concise_spoken_response"]
+    },
+    {
+      "id": "vc-3",
+      "input": "Read me the summary of what I worked on today, keep it short for audio.",
+      "context_seed": "User worked on: fixed 3 bugs in auth module, reviewed 2 PRs, started new feature branch for payments.",
+      "expected_capabilities": ["summarization", "tts_optimization", "temporal_filter"]
+    }
+  ],
+  "scoring_rubric": {
+    "relevance": "Is the response appropriate for spoken delivery?",
+    "accuracy": "Are facts from memory correctly recalled?",
+    "completeness": "Is the response concise enough for TTS without losing key info?"
+  }
+}

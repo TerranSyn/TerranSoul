@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TerranSoul — Benchmark Leaderboard</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-yellow: #d29922;
+      --accent-red: #f85149;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 2rem;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+    header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .controls label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .controls select, .controls input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    .bench-section {
+      margin-bottom: 2rem;
+    }
+    .bench-section h2 {
+      font-size: 1.2rem;
+      color: var(--accent-green);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+    .bench-section .meta {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th, td {
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface);
+      color: var(--text-muted);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    tr:hover td {
+      background: rgba(88, 166, 255, 0.04);
+    }
+    .metric-best {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+    .pending {
+      color: var(--accent-yellow);
+      font-style: italic;
+    }
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 3rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 700px) {
+      body { padding: 1rem; }
+      table { font-size: 0.75rem; }
+      th, td { padding: 0.3rem 0.4rem; }
+    }
+  </style>
+</head>
+<body>
+<!-- ts-site-nav: shared docs-site dropdown. The SAME block lives on every
+     docs page (only the relative prefix differs) so every page can reach
+     every other page — keep the link list in sync across pages. -->
+<details class="ts-site-nav">
+  <summary>&#9776; Site</summary>
+  <nav>
+    <a href="../">Docs home</a>
+    <a href="../brain-architecture/">Brain architecture</a>
+    <a href="../LLM-Brain-Design-Research-Paper/">Research paper</a>
+    <a href="../leaderboard/">Leaderboard</a>
+    <a href="../zorkgpt/">ZorkGPT bench</a>
+    <a href="../zorkgpt/claude-opus-4.8/" class="sub">&mdash; Opus 4.8 run</a>
+    <a href="../zorkgpt/taughtLocalLLM/" class="sub">&mdash; TaughtLocalLLM run</a>
+    <a href="https://github.com/TerranSyn/TerranSoul">GitHub &#8599;</a>
+  </nav>
+</details>
+<style>
+.ts-site-nav{position:fixed;top:10px;right:12px;z-index:2147483000;font:13px/1.45 system-ui,"Segoe UI",sans-serif}
+.ts-site-nav summary{list-style:none;cursor:pointer;user-select:none;background:rgba(17,19,28,.92);color:#e7e9f0;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px)}
+.ts-site-nav summary::-webkit-details-marker{display:none}
+.ts-site-nav[open] summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.ts-site-nav nav{position:absolute;right:0;min-width:230px;display:flex;flex-direction:column;background:rgba(17,19,28,.96);border:1px solid rgba(255,255,255,.18);border-radius:10px 0 10px 10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.45)}
+.ts-site-nav nav a{color:#e7e9f0;text-decoration:none;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ts-site-nav nav a:last-child{border-bottom:0}
+.ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
+.ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+</style>
+
+  <nav style="max-width:1100px;margin:0 auto 1rem;font-size:.85rem;font-family:ui-monospace,Menlo,monospace">
+    <a href="../" style="color:var(--accent);text-decoration:none">← TerranSoul home</a>
+    <span style="color:var(--text-muted)"> · </span>
+    <a href="../zorkgpt/" style="color:var(--accent);text-decoration:none">Zork bench</a>
+  </nav>
+  <header>
+    <h1>TerranSoul Benchmark Leaderboard</h1>
+    <p>Auto-generated from <code>target-copilot-bench/bench-results/</code> — updated on each bench-result merge.</p>
+  </header>
+
+  <div class="controls">
+    <label for="bench-filter">Filter bench:</label>
+    <select id="bench-filter">
+      <option value="all">All benchmarks</option>
+    </select>
+  </div>
+
+  <main id="leaderboard"></main>
+
+  <footer>
+    <p>Generated: <span id="generated-at">—</span></p>
+    <p><a href="https://github.com/nicebenny23/TerranSoul">TerranSoul</a> — Vue 3 + Tauri 2 Desktop AI Companion</p>
+    <p>Reproduce: <code>node docs/leaderboard/build.mjs</code></p>
+  </footer>
+
+  <script>
+    (async () => {
+      let data;
+      try {
+        const resp = await fetch('./data.json');
+        data = await resp.json();
+      } catch {
+        document.getElementById('leaderboard').innerHTML =
+          '<p style="color:var(--accent-red)">Failed to load data.json. Run <code>node docs/leaderboard/build.mjs</code> first.</p>';
+        return;
+      }
+
+      document.getElementById('generated-at').textContent = data.generated_at || '—';
+
+      // Group rows by bench
+      const grouped = {};
+      for (const row of data.rows) {
+        if (!grouped[row.bench]) grouped[row.bench] = [];
+        grouped[row.bench].push(row);
+      }
+
+      // Populate filter
+      const filter = document.getElementById('bench-filter');
+      for (const bench of Object.keys(grouped)) {
+        const opt = document.createElement('option');
+        opt.value = bench;
+        opt.textContent = bench;
+        filter.appendChild(opt);
+      }
+
+      function render(benchFilter) {
+        const main = document.getElementById('leaderboard');
+        main.innerHTML = '';
+
+        for (const [bench, rows] of Object.entries(grouped)) {
+          if (benchFilter !== 'all' && bench !== benchFilter) continue;
+
+          const section = document.createElement('div');
+          section.className = 'bench-section';
+
+          const h2 = document.createElement('h2');
+          h2.textContent = bench;
+          section.appendChild(h2);
+
+          if (data.notes && data.notes[bench]) {
+            const note = document.createElement('div');
+            note.className = 'meta';
+            note.textContent = data.notes[bench];
+            section.appendChild(note);
+          }
+
+          // Determine all unique metric keys
+          const metricKeys = [];
+          const seenKeys = new Set();
+          for (const row of rows) {
+            for (const k of Object.keys(row.metrics)) {
+              if (!seenKeys.has(k)) { seenKeys.add(k); metricKeys.push(k); }
+            }
+          }
+
+          // Find best values per metric. Higher is better for R@/NDCG/MRR/
+          // Score/Quality; lower is better for latency/energy/cost.
+          const lowerIsBetter = (k) => /latency|energy|cost|usd/i.test(k);
+          const bestPerMetric = {};
+          for (const k of metricKeys) {
+            const lower = lowerIsBetter(k);
+            let best = lower ? Infinity : -Infinity;
+            for (const row of rows) {
+              const v = parseMetric(row.metrics[k]);
+              if (v == null) continue;
+              if (lower ? v < best : v > best) best = v;
+            }
+            if (Number.isFinite(best)) bestPerMetric[k] = best;
+          }
+
+          // Build table
+          const table = document.createElement('table');
+          const thead = document.createElement('thead');
+          const hrow = document.createElement('tr');
+          hrow.innerHTML = '<th>System</th>' + metricKeys.map(k => `<th>${k}</th>`).join('') +
+            '<th>Queries</th><th>Date</th>';
+          thead.appendChild(hrow);
+          table.appendChild(thead);
+
+          const tbody = document.createElement('tbody');
+          for (const row of rows) {
+            const tr = document.createElement('tr');
+            let systemCell = `<td>${row.system}</td>`;
+            if (row.metrics[Object.keys(row.metrics)[0]] === '-' && row.date == null) {
+              systemCell = `<td class="pending">${row.system}</td>`;
+            }
+            tr.innerHTML = systemCell + metricKeys.map(k => {
+              const val = row.metrics[k] || '-';
+              const numVal = parseMetric(val);
+              const isBest = numVal != null && bestPerMetric[k] != null && rows.length > 1 &&
+                (lowerIsBetter(k) ? numVal <= bestPerMetric[k] : numVal >= bestPerMetric[k]);
+              return `<td class="${isBest ? 'metric-best' : ''}">${val}</td>`;
+            }).join('') +
+              `<td>${row.queries ?? '-'}</td>` +
+              `<td>${row.date ? formatDate(row.date) : '-'}</td>`;
+            tbody.appendChild(tr);
+          }
+          table.appendChild(tbody);
+          section.appendChild(table);
+          main.appendChild(section);
+        }
+      }
+
+      function parseMetric(val) {
+        if (!val || val === '-') return null;
+        if (val.endsWith('%')) return parseFloat(val);
+        const n = parseFloat(val);
+        return isNaN(n) ? null : n;
+      }
+
+      function formatDate(d) {
+        if (!d) return '-';
+        // Handle ISO strings and compact timestamps
+        if (d.length === 15 && d[8] === 'T') {
+          // 20260524T202843 format
+          return `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
+        }
+        try { return new Date(d).toISOString().slice(0, 10); }
+        catch { return d; }
+      }
+
+      filter.addEventListener('change', () => render(filter.value));
+      render('all');
+    })();
+  </script>
+</body>
+</html>

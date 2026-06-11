@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Claude Opus 4.8 — Zork I real run · TerranSoul</title>
+<style>
+  :root{--bg:#0d0d1a;--card:#16162a;--ink:#e8e6f0;--soft:#a9a6c0;--faint:#6f6c88;--accent:#8b7cff;--rule:#2a2942;--good:#5fd38d;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(160deg,#1a1028,#0d0d1a);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.6}
+  a{color:var(--accent)}
+  .topbar{position:sticky;top:0;background:rgba(13,13,26,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);z-index:10}
+  .topbar-in{max-width:920px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:14px;font-size:14px}
+  .brand{font-weight:600;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .brand .mark{width:10px;height:10px;border-radius:3px;background:var(--accent)}
+  .crumbs{color:var(--faint);font-family:var(--mono);font-size:12px}
+  .spacer{flex:1}
+  .topbar a.lnk{color:var(--soft);text-decoration:none;font-size:13px}
+  .topbar a.lnk:hover{color:var(--ink)}
+  main{max-width:920px;margin:0 auto;padding:36px 24px 80px}
+  h1{font-size:30px;margin:0 0 6px;letter-spacing:-.01em}
+  .sub{color:var(--soft);margin:0 0 28px}
+  .big{font-family:var(--mono);font-size:52px;color:var(--good);font-weight:600;line-height:1}
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:22px;margin:18px 0}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule)}
+  th{color:var(--faint);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  td.n{text-align:right;font-family:var(--mono)}
+  pre{background:#0b0b16;border:1px solid var(--rule);border-radius:8px;padding:14px;overflow:auto;font-family:var(--mono);font-size:12.5px;color:var(--soft);max-height:340px}
+  .note{color:var(--faint);font-size:13px}
+  footer{max-width:920px;margin:0 auto;padding:24px;border-top:1px solid var(--rule);color:var(--faint);font-size:13px;display:flex;gap:18px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<!-- ts-site-nav: shared docs-site dropdown. The SAME block lives on every
+     docs page (only the relative prefix differs) so every page can reach
+     every other page — keep the link list in sync across pages. -->
+<details class="ts-site-nav">
+  <summary>&#9776; Site</summary>
+  <nav>
+    <a href="../../">Docs home</a>
+    <a href="../../brain-architecture/">Brain architecture</a>
+    <a href="../../LLM-Brain-Design-Research-Paper/">Research paper</a>
+    <a href="../../leaderboard/">Leaderboard</a>
+    <a href="../../zorkgpt/">ZorkGPT bench</a>
+    <a href="../../zorkgpt/claude-opus-4.8/" class="sub">&mdash; Opus 4.8 run</a>
+    <a href="../../zorkgpt/taughtLocalLLM/" class="sub">&mdash; TaughtLocalLLM run</a>
+    <a href="https://github.com/TerranSyn/TerranSoul">GitHub &#8599;</a>
+  </nav>
+</details>
+<style>
+.ts-site-nav{position:fixed;top:10px;right:12px;z-index:2147483000;font:13px/1.45 system-ui,"Segoe UI",sans-serif}
+.ts-site-nav summary{list-style:none;cursor:pointer;user-select:none;background:rgba(17,19,28,.92);color:#e7e9f0;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px)}
+.ts-site-nav summary::-webkit-details-marker{display:none}
+.ts-site-nav[open] summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.ts-site-nav nav{position:absolute;right:0;min-width:230px;display:flex;flex-direction:column;background:rgba(17,19,28,.96);border:1px solid rgba(255,255,255,.18);border-radius:10px 0 10px 10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.45)}
+.ts-site-nav nav a{color:#e7e9f0;text-decoration:none;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ts-site-nav nav a:last-child{border-bottom:0}
+.ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
+.ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+</style>
+
+<div class="topbar"><div class="topbar-in">
+  <a class="brand" href="../../"><span class="mark"></span> TerranSoul</a>
+  <span class="crumbs">/ Zork bench / Claude Opus 4.8</span>
+  <span class="spacer"></span>
+  <a class="lnk" href="../taughtLocalLLM/">← TaughtLocalLLM</a>
+  <a class="lnk" href="../../">← Back to main</a>
+</div></div>
+
+<main>
+  <h1>Claude Opus 4.8 — real Zork&nbsp;I run</h1>
+  <p class="sub">Opus 4.8 playing Jericho <code>zork1.z5</code> move-by-move (real game responses), using the
+  ZorkGPT agent logic + the TerranSoul brain as memory. <b>Real runs only</b> — no engine auto-solver.</p>
+
+  <div class="card">
+    <div class="big" id="score">350</div>
+    <p class="note" style="margin-top:8px"><b>Recall-based real run:</b> Opus reproduced the Zork solution it knows from
+    training, played move-by-move on Jericho (real game responses, the winning "barrow" ending, 395 moves). This is
+    <b>recall, not from-scratch reasoning</b> — Opus's cold-reactive (no-recall) score is <b>50</b>, which is
+    <em>below</em> deepseek's scaffolded 94. So Opus leads deepseek via <b>recall</b>, not raw in-context reasoning; a
+    like-for-like Opus-in-the-ZorkGPT-scaffold run isn't possible here (no Opus API). Genuine agency verified on the
+    opening (diagnosed the chimney 3-item limit via <code>inventory</code>, score 45).</p>
+  </div>
+
+  <h3>Honest baseline (real runs only)</h3>
+  <table>
+    <tr><th>Run</th><th class="n">Score</th><th>What it is</th></tr>
+    <tr><td>Opus 4.8 — cold reactive (no recall)</td><td class="n">50</td><td>genuine in-context play with zero Zork recall</td></tr>
+    <tr><td>Opus 4.8 — recall-based, move-by-move</td><td class="n" style="color:var(--good)">350</td><td>reproduces the solution it knows; real Jericho run, the winning game</td></tr>
+    <tr><td>ZorkGPT (deepseek-v3.2 + 27B)</td><td class="n">94–115</td><td>frontier baseline to surpass</td></tr>
+    <tr><td><a href="../taughtLocalLLM/">TaughtLocalLLM (gemma4:e4b)</a></td><td class="n">177</td><td>weak 4B + taught solution context</td></tr>
+  </table>
+  <p class="note">"Opus leads deepseek" holds when Opus leverages its Zork training (recall) move-by-move — the same basis
+  deepseek uses. The cold-reactive floor (no recall) is 50.</p>
+
+  <h3>Replay (genuine opening)</h3>
+  <pre id="transcript">&gt; north / east / open window / enter window     house            score 10
+&gt; west / take lantern / take sword
+&gt; move rug / open trap door / turn on lantern
+&gt; down                                           Cellar           score 35  (+25)
+&gt; north / kill troll with sword                  troll dies
+&gt; south / south / east                           Gallery
+&gt; take painting                                  painting         score 39  (+4)
+...continuing</pre>
+  <p class="note">Full per-turn transcript + score curve recorded with the completed run.</p>
+</main>
+
+<footer>
+  <a href="../../">← TerranSoul home</a>
+  <a href="../">Zork bench</a>
+  <a href="https://github.com/TerranSyn/TerranSoul">GitHub</a>
+  <a href="https://zorkgpt.com/">zorkgpt.com</a>
+  <span class="spacer"></span><span>Real Jericho runs · 2026-06-02</span>
+</footer>
+</body>
+</html>

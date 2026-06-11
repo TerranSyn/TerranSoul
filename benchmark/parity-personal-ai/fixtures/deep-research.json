@@ -1,0 +1,29 @@
+{
+  "archetype": "deep-research",
+  "description": "Multi-hop retrieval across stored knowledge to answer complex questions.",
+  "prompts": [
+    {
+      "id": "dr-1",
+      "input": "What are the trade-offs between HNSW and IVF-PQ for vector search at 1M+ documents, based on what I've learned?",
+      "context_seed": "User has memories about HNSW (O(log n) search, high memory), IVF-PQ (lower memory, approximate), and benchmarks showing HNSW wins on recall but IVF-PQ wins on memory at scale.",
+      "expected_capabilities": ["semantic_search", "multi_hop", "comparison_synthesis"]
+    },
+    {
+      "id": "dr-2",
+      "input": "How does our RAG pipeline compare to what I read about Anthropic's contextual retrieval paper?",
+      "context_seed": "User ingested notes about Anthropic's 2024 contextual retrieval paper (prepend document context to chunks) and TerranSoul implements this in contextualize.rs.",
+      "expected_capabilities": ["semantic_search", "cross_reference", "technical_comparison"]
+    },
+    {
+      "id": "dr-3",
+      "input": "What patterns from the Hermes Agent architecture could improve our orchestrator?",
+      "context_seed": "User studied Hermes Agent: YAML mcp_servers config, subagent delegation, trajectory compression, FTS5 session search, cron scheduling, tool-loop guardrails.",
+      "expected_capabilities": ["semantic_search", "knowledge_graph", "architectural_analysis"]
+    }
+  ],
+  "scoring_rubric": {
+    "relevance": "Does the answer draw from stored knowledge (not hallucinate new facts)?",
+    "accuracy": "Are the retrieved facts correctly synthesized?",
+    "completeness": "Does it cover multiple knowledge sources and connect them?"
+  }
+}

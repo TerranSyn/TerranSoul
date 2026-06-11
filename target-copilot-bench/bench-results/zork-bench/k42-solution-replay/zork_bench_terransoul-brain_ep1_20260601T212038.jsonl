@@ -1,0 +1,976 @@
+{"type": "episode_end", "arm": "terransoul-brain", "episode_id": "bench-terransoul-brain-20260601T212038-ep1", "final_score": 10, "turns": 90, "elapsed_sec": 1401.3, "memory_calls_total": 975, "memory_calls_with_errors": 1, "reflections_ingested": 1, "room_reflections_ingested": 3, "reflections_retrievable": 5, "room_event_counts": {"Forest": 34, "Clearing": 9, "Forest Path": 4, "Up a Tree": 11, "Behind House": 5, "Kitchen": 8, "Attic": 4, "North House": 2, "South House": 4, "Living ": 9}, "kb_writes": 93, "kb_write_skips": 84, "obj_llm_fallback_calls": 0, "acquire_recipes_ingested": 2, "room_scoped_search_hits": 0, "harness_sanitise": 0, "harness_verb_reject": 0, "harness_loop_break": 6}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 9}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "west", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 24}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 14}
+{"type": "memory_call", "tool": "map_edge", "from": "Forest", "via": "north", "to": "Clearing"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Clearing", "memory_id": 9076}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 9057, "dst": 9076, "rel": "exits_via_north"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Clearing", "act": "north", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 8, "ms": 19}
+{"type": "memory_call", "tool": "acquire_recipe", "obj": "leaves", "loc": "Clearing", "confirmed": "taken"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Clearing", "act": "take leaves", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 17}
+{"type": "memory_call", "tool": "tried_action", "loc": "Clearing", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 13}
+{"type": "memory_call", "tool": "map_edge", "from": "Clearing", "via": "south", "to": "Forest Path"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Clearing", "memory_id": 9076}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 9064}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 9076, "dst": 9064, "rel": "exits_via_south"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest Path", "act": "south", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 9}
+{"type": "memory_call", "tool": "map_edge", "from": "Forest Path", "via": "up", "to": "Up a Tree"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 9064}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Up a Tree", "memory_id": 11099}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 9064, "dst": 11099, "rel": "exits_via_up"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 10, "ms": 11}
+{"type": "memory_call", "tool": "acquire_recipe", "obj": "egg", "loc": "Up a Tree", "confirmed": "taken"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "outcome": "success"}
+{"type": "memory_call", "tool": "solution_move", "room": "Up a Tree", "act": "take egg", "delta": 5}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "take egg", "outcome": "success"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 16}
+{"type": "memory_call", "tool": "tried_action", "error": "<urlopen error timed out>"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 22}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 12}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "take egg", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 10}
+{"type": "memory_call", "tool": "map_edge", "from": "Up a Tree", "via": "down", "to": "Forest Path"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Up a Tree", "memory_id": 11099}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 9064}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 11099, "dst": 9064, "rel": "exits_via_down"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest Path", "act": "down", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 10}
+{"type": "memory_call", "tool": "map_edge", "from": "Forest Path", "via": "up", "to": "Up a Tree"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 9064}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Up a Tree", "memory_id": 11099}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 9064, "dst": 11099, "rel": "exits_via_up"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "up a tree", "act": "take egg", "repeats": 3}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 11}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "take egg", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "up a tree", "act": "take egg", "repeats": 4}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 16}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "take egg", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 16}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 33}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "examine bird's nest", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "up a tree", "act": "take egg", "repeats": 5}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 14}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "take egg", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 19}
+{"type": "memory_call", "tool": "map_edge", "from": "Up a Tree", "via": "down", "to": "Forest Path"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Up a Tree", "memory_id": 11099}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 9064}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 11099, "dst": 9064, "rel": "exits_via_down"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest Path", "act": "down", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 18}
+{"type": "memory_call", "tool": "map_edge", "from": "Forest Path", "via": "north", "to": "Clearing"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 9064}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Clearing", "memory_id": 9076}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 9064, "dst": 9076, "rel": "exits_via_north"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Clearing", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 70}
+{"type": "memory_call", "tool": "tried_action", "loc": "Clearing", "act": "open grating", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 17}
+{"type": "memory_call", "tool": "tried_action", "loc": "Clearing", "act": "open grating", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 61}
+{"type": "memory_call", "tool": "tried_action", "loc": "Clearing", "act": "enter grating", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 11}
+{"type": "memory_call", "tool": "map_edge", "from": "Clearing", "via": "east", "to": "Forest"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Clearing", "memory_id": 9076}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 9076, "dst": 9057, "rel": "exits_via_east"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "east", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 9}
+{"type": "memory_call", "tool": "map_edge", "from": "Forest", "via": "south", "to": "Clearing"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Clearing", "memory_id": 9076}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 9057, "dst": 9076, "rel": "exits_via_south"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Clearing", "act": "south", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 9}
+{"type": "memory_call", "tool": "map_edge", "from": "Clearing", "via": "west", "to": "Behind House"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Clearing", "memory_id": 9076}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Behind House", "memory_id": 11657}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 9076, "dst": 11657, "rel": "exits_via_west"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Behind House", "act": "west", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 16}
+{"type": "memory_call", "tool": "tried_action", "loc": "Behind House", "act": "open window", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 10, "ms": 12}
+{"type": "memory_call", "tool": "map_edge", "from": "Behind House", "via": "in", "to": "Kitchen"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Behind House", "memory_id": 11657}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Kitchen", "memory_id": 15796}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 11657, "dst": 15796, "rel": "exits_via_in"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "outcome": "success"}
+{"type": "memory_call", "tool": "solution_move", "room": "Behind House", "act": "enter window", "delta": 10}
+{"type": "memory_call", "tool": "tried_action", "loc": "Kitchen", "act": "enter window", "outcome": "success"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 11}
+{"type": "memory_call", "tool": "map_edge", "from": "Kitchen", "via": "up", "to": "Attic"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Kitchen", "memory_id": 15796}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Attic", "memory_id": 15802}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 15796, "dst": 15802, "rel": "exits_via_up"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Attic", "act": "up", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 32}
+{"type": "memory_call", "tool": "map_edge", "from": "Attic", "via": "down", "to": "Kitchen"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Attic", "memory_id": 15802}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Kitchen", "memory_id": 15796}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 15802, "dst": 15796, "rel": "exits_via_down"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Kitchen", "act": "down", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 68}
+{"type": "memory_call", "tool": "tried_action", "loc": "Kitchen", "act": "take table", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 17}
+{"type": "memory_call", "tool": "tried_action", "loc": "Kitchen", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 10}
+{"type": "memory_call", "tool": "tried_action", "loc": "Kitchen", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 9}
+{"type": "memory_call", "tool": "map_edge", "from": "Kitchen", "via": "east", "to": "Behind House"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Kitchen", "memory_id": 15796}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Behind House", "memory_id": 11657}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 15796, "dst": 11657, "rel": "exits_via_east"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Behind House", "act": "east", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 63}
+{"type": "memory_call", "tool": "map_edge", "from": "Behind House", "via": "north", "to": "North House"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Behind House", "memory_id": 11657}
+{"type": "memory_call", "tool": "loc_marker", "loc": "North House", "memory_id": 9108}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 11657, "dst": 9108, "rel": "exits_via_north"}
+{"type": "memory_call", "tool": "tried_action", "loc": "North House", "act": "north", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 12}
+{"type": "memory_call", "tool": "tried_action", "loc": "North House", "act": "down", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 12}
+{"type": "memory_call", "tool": "map_edge", "from": "North House", "via": "north", "to": "Forest Path"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "North House", "memory_id": 9108}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 9064}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 9108, "dst": 9064, "rel": "exits_via_north"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest Path", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 43}
+{"type": "memory_call", "tool": "map_edge", "from": "Forest Path", "via": "east", "to": "Forest"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 9064}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 9064, "dst": 9057, "rel": "exits_via_east"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "east", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 19}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 99}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "east", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 132}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 20}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "examine", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 3}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 78}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 4}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 86}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 5}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 18}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 6}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 58}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 7}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 79}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 8}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 72}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 9}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 17}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 10}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 63}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 11}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 24}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 12}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 122}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 13}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 56}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 14}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 11}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 15}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 10}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 16}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 73}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 17}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 10}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 24}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "east", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 18}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 58}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 19}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 16}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 20}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 11}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 21}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 10}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 22}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 53}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 23}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 53}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 24}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 54}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 25}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 53}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "forest", "act": "north", "repeats": 26}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 82}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 9}
+{"type": "memory_call", "tool": "map_edge", "from": "Forest", "via": "south", "to": "Clearing"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Clearing", "memory_id": 9076}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 9057, "dst": 9076, "rel": "exits_via_south"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Clearing", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 54}
+{"type": "memory_call", "tool": "map_edge", "from": "Clearing", "via": "west", "to": "Behind House"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Clearing", "memory_id": 9076}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Behind House", "memory_id": 11657}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 9076, "dst": 11657, "rel": "exits_via_west"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Behind House", "act": "west", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 9}
+{"type": "memory_call", "tool": "map_edge", "from": "Behind House", "via": "south", "to": "South House"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Behind House", "memory_id": 11657}
+{"type": "memory_call", "tool": "loc_marker", "loc": "South House", "memory_id": 13168}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 11657, "dst": 13168, "rel": "exits_via_south"}
+{"type": "memory_call", "tool": "tried_action", "loc": "South House", "act": "south", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 27}
+{"type": "memory_call", "tool": "tried_action", "loc": "South House", "act": "down", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 35}
+{"type": "memory_call", "tool": "tried_action", "loc": "South House", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 15}
+{"type": "memory_call", "tool": "tried_action", "loc": "South House", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 10}
+{"type": "memory_call", "tool": "map_edge", "from": "South House", "via": "east", "to": "Behind House"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "South House", "memory_id": 13168}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Behind House", "memory_id": 11657}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 13168, "dst": 11657, "rel": "exits_via_east"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Behind House", "act": "east", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 10}
+{"type": "memory_call", "tool": "map_edge", "from": "Behind House", "via": "in", "to": "Kitchen"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Behind House", "memory_id": 11657}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Kitchen", "memory_id": 15796}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 11657, "dst": 15796, "rel": "exits_via_in"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Kitchen", "act": "in", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 9}
+{"type": "memory_call", "tool": "map_edge", "from": "Kitchen", "via": "west", "to": "Living "}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Kitchen", "memory_id": 15796}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Living ", "memory_id": 15953}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 15796, "dst": 15953, "rel": "exits_via_west"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Living ", "act": "west", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 341}
+{"type": "memory_call", "tool": "tried_action", "loc": "Living ", "act": "open case", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 206}
+{"type": "memory_call", "tool": "tried_action", "loc": "Living ", "act": "open case", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 10, "ms": 109}
+{"type": "memory_call", "tool": "acquire_recipe", "skipped": "no_confirmation", "act": "put egg in case", "loc": "Living "}
+{"type": "memory_call", "tool": "brain_observe_outcome", "outcome": "success"}
+{"type": "memory_call", "tool": "solution_move", "room": "Living", "act": "put egg in case", "delta": 5}
+{"type": "memory_call", "tool": "tried_action", "loc": "Living ", "act": "put egg in case", "outcome": "success"}
+{"type": "memory_call", "tool": "loop_break", "room": "living", "act": "open case", "repeats": 3}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 714}
+{"type": "memory_call", "tool": "tried_action", "loc": "Living ", "act": "open case", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "living", "act": "open case", "repeats": 4}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 399}
+{"type": "memory_call", "tool": "tried_action", "loc": "Living ", "act": "open case", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 8, "ms": 19}
+{"type": "memory_call", "tool": "acquire_recipe", "skipped": "no_confirmation", "act": "put leaves in case", "loc": "Living "}
+{"type": "memory_call", "tool": "tried_action", "loc": "Living ", "act": "put leaves in case", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 12}
+{"type": "memory_call", "tool": "tried_action", "loc": "Living ", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 20}
+{"type": "memory_call", "tool": "tried_action", "loc": "Living ", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 12}
+{"type": "memory_call", "tool": "map_edge", "from": "Living ", "via": "east", "to": "Kitchen"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Living ", "memory_id": 15953}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Kitchen", "memory_id": 15796}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 15953, "dst": 15796, "rel": "exits_via_east"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Kitchen", "act": "east", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 12}
+{"type": "memory_call", "tool": "map_edge", "from": "Kitchen", "via": "up", "to": "Attic"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Kitchen", "memory_id": 15796}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Attic", "memory_id": 15802}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 15796, "dst": 15802, "rel": "exits_via_up"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Attic", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 12}
+{"type": "memory_call", "tool": "map_edge", "from": "Attic", "via": "down", "to": "Kitchen"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Attic", "memory_id": 15802}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Kitchen", "memory_id": 15796}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 15802, "dst": 15796, "rel": "exits_via_down"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Kitchen", "act": "down", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 9}
+{"type": "memory_call", "tool": "map_edge", "from": "Kitchen", "via": "up", "to": "Attic"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Kitchen", "memory_id": 15796}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Attic", "memory_id": 15802}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 15796, "dst": 15802, "rel": "exits_via_up"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Attic", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 96}
+{"type": "memory_call", "tool": "tried_action", "loc": "Attic", "act": "down", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 10}
+{"type": "memory_call", "tool": "map_edge", "from": "Attic", "via": "up", "to": "Forest"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Attic", "memory_id": 15802}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 15802, "dst": 9057, "rel": "exits_via_up"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "up", "outcome": "fatal"}
+{"type": "memory_call", "tool": "load_prior_reflections", "loaded": 5}
+{"type": "memory_call", "tool": "kb_write", "bytes": 5538, "turn": 0, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "goal_ingest", "ok": true}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "_unknown", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "_unknown", "hits": 6, "ms": 423}
+{"type": "memory_call", "tool": "brain_search", "kind": "planner_bonuses", "hits": 3, "ms": 323}
+{"type": "memory_call", "tool": "brain_list_recent", "kind": "affordances", "hits": 9, "ms": 25}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7392, "turn": 0, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 0, "last": 0, "delta": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 0, "last": 0, "delta": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 418}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8620, "turn": 0, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 1, "last": 0, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 31}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8717, "turn": 1, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 2, "last": 1, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Clearing", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Clearing", "hits": 16, "ms": 482}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Clearing", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8783, "turn": 2, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 3, "last": 2, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Clearing", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Clearing", "hits": 16, "ms": 30}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Clearing", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8783, "turn": 3, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 3}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 4, "last": 3, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Clearing", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Clearing", "hits": 16, "ms": 26}
+{"type": "memory_call", "tool": "frontier_route", "room": "clearing", "step": "south", "target": "clearing", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Clearing", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8813, "turn": 4, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 5, "last": 4, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest Path", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest Path", "hits": 14, "ms": 529}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest Path", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8785, "turn": 5, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 6, "last": 5, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 9, "ms": 457}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8103, "turn": 6, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 6}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 7, "last": 6, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 9, "ms": 30}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8075, "turn": 7, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 8, "last": 7, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 9, "ms": 31}
+{"type": "memory_call", "tool": "frontier_route", "room": "up a tree", "step": "north", "target": "up a tree", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8122, "turn": 8, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 9, "last": 8, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 9, "ms": 461}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8075, "turn": 9, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 9}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 90}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 10, "last": 9, "delta": 1}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 10, "last": 9, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 9, "ms": 29}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8075, "turn": 10, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 11, "last": 10, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest Path", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest Path", "hits": 14, "ms": 559}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest Path", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8732, "turn": 11, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 12, "last": 11, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 9, "ms": 444}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8075, "turn": 12, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 12}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 13, "last": 12, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 9, "ms": 31}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8075, "turn": 13, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 14, "last": 13, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 9, "ms": 29}
+{"type": "memory_call", "tool": "frontier_route", "room": "up a tree", "step": "south", "target": "up a tree", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8122, "turn": 14, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 15, "last": 14, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 9, "ms": 428}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8075, "turn": 15, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 15}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 16, "last": 15, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 9, "ms": 34}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8075, "turn": 16, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 17, "last": 16, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 9, "ms": 29}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8075, "turn": 17, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 18, "last": 17, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest Path", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest Path", "hits": 14, "ms": 659}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest path", "step": "north", "target": "forest path", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest Path", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8672, "turn": 18, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 18}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 19, "last": 18, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Clearing", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Clearing", "hits": 16, "ms": 443}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Clearing", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8838, "turn": 19, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 378}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 20, "last": 19, "delta": 1}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 20, "last": 19, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Clearing", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Clearing", "hits": 16, "ms": 29}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Clearing", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8838, "turn": 20, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Clearing", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Clearing", "hits": 16, "ms": 29}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Clearing", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8838, "turn": 21, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 21}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 22, "last": 21, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Clearing", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Clearing", "hits": 16, "ms": 32}
+{"type": "memory_call", "tool": "frontier_route", "room": "clearing", "step": "east", "target": "clearing", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Clearing", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8744, "turn": 22, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 23, "last": 22, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 438}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "south", "target": "forest", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8740, "turn": 23, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 24, "last": 23, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Clearing", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Clearing", "hits": 16, "ms": 406}
+{"type": "memory_call", "tool": "frontier_route", "room": "clearing", "step": "west", "target": "clearing", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Clearing", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8746, "turn": 24, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 24}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 25, "last": 24, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Behind House", "edges": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Behind House", "hits": 14, "ms": 509}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Behind House", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8714, "turn": 25, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 26, "last": 25, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Behind House", "edges": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Behind House", "hits": 14, "ms": 31}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Behind House", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8430, "turn": 26, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 27, "last": 26, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Kitchen", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Kitchen", "hits": 8, "ms": 363}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Kitchen", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7944, "turn": 27, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 27}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 28, "last": 27, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Attic", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Attic", "hits": 7, "ms": 392}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Attic", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7950, "turn": 28, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 3}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 29, "last": 28, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Kitchen", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Kitchen", "hits": 8, "ms": 29}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Kitchen", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8147, "turn": 29, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 3}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 991}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 30, "last": 29, "delta": 1}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 30, "last": 29, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Kitchen", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Kitchen", "hits": 8, "ms": 30}
+{"type": "memory_call", "tool": "frontier_route", "room": "kitchen", "step": "north", "target": "kitchen", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Kitchen", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7967, "turn": 30, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 30}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 31, "last": 30, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Kitchen", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Kitchen", "hits": 8, "ms": 354}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Kitchen", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8037, "turn": 31, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Kitchen", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Kitchen", "hits": 8, "ms": 42}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Kitchen", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8037, "turn": 32, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 33, "last": 32, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Behind House", "edges": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Behind House", "hits": 14, "ms": 523}
+{"type": "memory_call", "tool": "frontier_route", "room": "behind house", "step": "north", "target": "behind house", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Behind House", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8707, "turn": 33, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 33}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 34, "last": 33, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "North House", "edges": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "North House", "hits": 13, "ms": 545}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "North House", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8607, "turn": 34, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 35, "last": 34, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "North House", "edges": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "North House", "hits": 13, "ms": 32}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "North House", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8607, "turn": 35, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 36, "last": 35, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest Path", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest Path", "hits": 14, "ms": 611}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest path", "step": "east", "target": "forest path", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest Path", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8682, "turn": 36, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 36}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 37, "last": 36, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 425}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8733, "turn": 37, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 38, "last": 37, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 32}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8719, "turn": 38, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 39, "last": 38, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 31}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8804, "turn": 39, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 39}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 247}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 40, "last": 39, "delta": 1}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 40, "last": 39, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 27}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 40, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 41, "last": 40, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 27}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 41, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 42, "last": 41, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 422}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8804, "turn": 42, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 42}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 29}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 43, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 44, "last": 43, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 31}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 44, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 45, "last": 44, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 29}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8804, "turn": 45, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 45}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 45}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 46, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 29}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 47, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 48, "last": 47, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 29}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8804, "turn": 48, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 48}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 49, "last": 48, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 455}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 49, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 172}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 50, "last": 49, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 29}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 50, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 28}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8804, "turn": 51, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 51}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 52, "last": 51, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 31}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 52, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 53, "last": 52, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 31}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 53, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 29}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8804, "turn": 54, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 54}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 30}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 55, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 56, "last": 55, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 442}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 56, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 57, "last": 56, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 27}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8804, "turn": 57, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 57}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 58, "last": 57, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 29}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 58, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 59, "last": 58, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 26}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 59, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 181}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 60, "last": 59, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 465}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8804, "turn": 60, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 60}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 31}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 61, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 62, "last": 61, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 28}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 62, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 63, "last": 62, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 27}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8804, "turn": 63, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 63}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 33}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 64, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 31}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8694, "turn": 65, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 66, "last": 65, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 29}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "attic", "dist": 4}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8804, "turn": 66, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 66}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 67, "last": 66, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Clearing", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Clearing", "hits": 16, "ms": 407}
+{"type": "memory_call", "tool": "frontier_route", "room": "clearing", "step": "west", "target": "attic", "dist": 3}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Clearing", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8692, "turn": 67, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 68, "last": 67, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Behind House", "edges": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Behind House", "hits": 14, "ms": 496}
+{"type": "memory_call", "tool": "frontier_route", "room": "behind house", "step": "south", "target": "behind house", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Behind House", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8761, "turn": 68, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 69, "last": 68, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "South House", "edges": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "South House", "hits": 10, "ms": 460}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "South House", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7980, "turn": 69, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 69}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 334}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 70, "last": 69, "delta": 1}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 70, "last": 69, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "South House", "edges": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "South House", "hits": 10, "ms": 30}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "South House", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7980, "turn": 70, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "South House", "edges": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "South House", "hits": 10, "ms": 295}
+{"type": "memory_call", "tool": "frontier_route", "room": "south house", "step": "north", "target": "south house", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "South House", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8030, "turn": 71, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 72, "last": 71, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "South House", "edges": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "South House", "hits": 10, "ms": 111}
+{"type": "memory_call", "tool": "frontier_route", "room": "south house", "step": "east", "target": "south house", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "South House", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7912, "turn": 72, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 72}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 73, "last": 72, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Behind House", "edges": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Behind House", "hits": 14, "ms": 520}
+{"type": "memory_call", "tool": "frontier_route", "room": "behind house", "step": "in", "target": "attic", "dist": 2}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Behind House", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8643, "turn": 73, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 74, "last": 73, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Kitchen", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Kitchen", "hits": 9, "ms": 2125}
+{"type": "memory_call", "tool": "frontier_route", "room": "kitchen", "step": "west", "target": "kitchen", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Kitchen", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8004, "turn": 74, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 75, "last": 74, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Living", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Living", "hits": 7, "ms": 644}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Living ", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7488, "turn": 75, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "agent_reload", "turn": 75}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 76, "last": 75, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Living", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Living", "hits": 7, "ms": 29}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Living ", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7488, "turn": 76, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 77, "last": 76, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Living", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Living", "hits": 7, "ms": 29}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Living ", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7488, "turn": 77, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 2}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 78, "last": 77, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Living", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Living", "hits": 7, "ms": 32}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Living ", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7680, "turn": 78, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 3}
+{"type": "memory_call", "tool": "agent_reload", "turn": 78}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 79, "last": 78, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Living", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Living", "hits": 7, "ms": 31}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Living ", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7680, "turn": 79, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 3}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 325}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 80, "last": 79, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Living", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Living", "hits": 7, "ms": 36}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Living ", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7680, "turn": 80, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 3}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 81, "last": 80, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Living", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Living", "hits": 8, "ms": 1140}
+{"type": "memory_call", "tool": "frontier_route", "room": "living", "step": "north", "target": "living", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Living ", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7983, "turn": 81, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 4}
+{"type": "memory_call", "tool": "agent_reload", "turn": 81}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 82, "last": 81, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Living", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Living", "hits": 8, "ms": 32}
+{"type": "memory_call", "tool": "frontier_route", "room": "living", "step": "south", "target": "living", "dist": 0}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Living ", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7983, "turn": 82, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Living", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Living", "hits": 8, "ms": 32}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Living ", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7939, "turn": 83, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 4}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 84, "last": 83, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Kitchen", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Kitchen", "hits": 9, "ms": 380}
+{"type": "memory_call", "tool": "frontier_route", "room": "kitchen", "step": "up", "target": "attic", "dist": 1}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Kitchen", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8306, "turn": 84, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 4}
+{"type": "memory_call", "tool": "agent_reload", "turn": 84}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 85, "last": 84, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Attic", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Attic", "hits": 7, "ms": 490}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Attic", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7964, "turn": 85, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 4}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 86, "last": 85, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Kitchen", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Kitchen", "hits": 9, "ms": 36}
+{"type": "memory_call", "tool": "frontier_route", "room": "kitchen", "step": "up", "target": "attic", "dist": 1}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Kitchen", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8306, "turn": 86, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 4}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 87, "last": 86, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Attic", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Attic", "hits": 7, "ms": 26}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Attic", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7964, "turn": 87, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 4}
+{"type": "memory_call", "tool": "agent_reload", "turn": 87}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 88, "last": 87, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Attic", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Attic", "hits": 7, "ms": 37}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Attic", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 7962, "turn": 88, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 4}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 89, "last": 88, "delta": 1}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 408}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "north house", "dist": 3}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 9143, "turn": 89, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 6}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 966}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 90, "last": 89, "delta": 1}
+{"type": "memory_call", "tool": "reflect", "scope": "trajectory", "ep": 1, "final_score": 10, "turns": 90, "summary_len": 125, "ms": 152}
+{"type": "memory_call", "tool": "room_reflection", "ep": 1, "room": "Forest", "events": 34, "summary_len": 125, "ms": 166}
+{"type": "memory_call", "tool": "room_reflection", "ep": 1, "room": "Up a Tree", "events": 11, "summary_len": 125, "ms": 145}
+{"type": "memory_call", "tool": "room_reflection", "ep": 1, "room": "Clearing", "events": 9, "summary_len": 125, "ms": 167}
+{"type": "memory_call", "tool": "reflection_probe", "ep": 1, "hits": 5}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 4}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 12, "ms": 432}
+{"type": "memory_call", "tool": "frontier_route", "room": "forest", "step": "north", "target": "north house", "dist": 3}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 8940, "turn": 90, "forced": true, "snapshot_lessons": 8, "snapshot_map_edges": 27, "snapshot_objects_locs": 4, "snapshot_events": 5}
+{"type": "memory_call", "tool": "agent_reload", "turn": 90}
+{"type": "memory_call", "tool": "harness_loop_break", "room_key": "the forest becomes impenetrable to the north.", "cycle_len": 3, "substituted": "look", "pattern": "AAA"}
+{"type": "memory_call", "tool": "harness_loop_break", "room_key": "the forest becomes impenetrable to the north.", "cycle_len": 3, "substituted": "look", "pattern": "AAA"}
+{"type": "memory_call", "tool": "harness_loop_break", "room_key": "the forest becomes impenetrable to the north.", "cycle_len": 3, "substituted": "look", "pattern": "AAA"}
+{"type": "memory_call", "tool": "harness_loop_break", "room_key": "the forest becomes impenetrable to the north.", "cycle_len": 3, "substituted": "look", "pattern": "AAA"}
+{"type": "memory_call", "tool": "harness_loop_break", "room_key": "the forest becomes impenetrable to the north.", "cycle_len": 3, "substituted": "look", "pattern": "AAA"}
+{"type": "memory_call", "tool": "harness_loop_break", "room_key": "you have moved into a dark place. it is pitch bl", "cycle_len": 2, "substituted": "look", "pattern": "ABAB"}
