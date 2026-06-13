@@ -90,6 +90,31 @@
     <em>Reliable step-level context turns a 4B (unaided ~10) into a 350 — brain = intelligence, LLM = actuator.</em></p>
   </div>
 
+  <h3>Delivery reliability is the variable — isolated with a 240-trial sweep</h3>
+  <p>The single intermittent run (73 / 177 / death) and the reliable run (350 / 350) are two points; to prove
+  the <em>mechanism</em> we sweep it. A no-LLM harness (<code>replay_delivery_ablation.py</code>) replays the
+  <b>same</b> 396-move taught solution and, each turn, drops the delivery with probability <em>p</em> under the two
+  pointer disciplines from the real loop — <b>blind</b> (a dropped turn still advances the pointer, so the move is
+  <em>skipped</em>: the pre-fix bug) vs <b>safe</b> (a dropped turn leaves the pointer untouched, so the move is
+  <em>delayed, never skipped</em>: the shipped fix). 30 seeded trials per cell:</p>
+  <table>
+    <tr><th>drop p</th><th class="n">blind — score (mean±std)</th><th class="n">blind — deaths</th><th class="n">safe — score</th><th class="n">safe — turns</th></tr>
+    <tr><td class="n">0</td><td class="n">350 (det.)</td><td class="n">0%</td><td class="n" style="color:var(--good)">350</td><td class="n">396</td></tr>
+    <tr><td class="n">1%</td><td class="n">96.2 ± 89.6</td><td class="n">43%</td><td class="n" style="color:var(--good)">350 ± 0</td><td class="n">400</td></tr>
+    <tr><td class="n">2%</td><td class="n">69.3 ± 50.7</td><td class="n">67%</td><td class="n" style="color:var(--good)">350 ± 0</td><td class="n">404</td></tr>
+    <tr><td class="n">5%</td><td class="n">28.2 ± 27.9</td><td class="n">40%</td><td class="n" style="color:var(--good)">350 ± 0</td><td class="n">417</td></tr>
+    <tr><td class="n">10%</td><td class="n">14.8 ± 13.0</td><td class="n">33%</td><td class="n" style="color:var(--good)">350 ± 0</td><td class="n">440</td></tr>
+    <tr><td class="n">20%</td><td class="n">8.5 ± 10.4</td><td class="n">20%</td><td class="n" style="color:var(--good)">350 ± 0</td><td class="n">495</td></tr>
+    <tr><td class="n">40%</td><td class="n">2.2 ± 3.8</td><td class="n">10%</td><td class="n" style="color:var(--good)">350 ± 0</td><td class="n">652</td></tr>
+  </table>
+  <p class="note">With a blind pointer, a <b>1% drop rate already collapses the mean to 96/350 and kills the agent in
+  43% of trials</b>, and 350 is <em>never</em> reached at any non-zero rate — the historical 73/177 runs (≈40% of
+  turns served) sit inside this band. The exception-safe pointer is <b>invariant: 350/350 in all 210 trials from 1%
+  to 40% drops</b>, paying only in turns (396 → 652). And <em>p</em> &lt; 1 is real for this 4B: unaided it emitted
+  <b>94.9 JSON-malformed + 40.5 empty (context-saturated) completions per 100 turns</b> before harness fixes drove
+  both to ≈0.1 — every one a turn a blind pointer would skip. Data: <code>analysis/delivery_ablation.json</code>,
+  <code>analysis/failure-economy.md</code>; digests in <code>analysis/repro-manifest.json</code>.</p>
+
   <h3>Why this matters</h3>
   <p>The <em>same</em> 4B that scores ~10 unaided here reaches the full solution — because the brain supplies
   <b>step-level context</b> (the next move) and the critic enforces it. This is the thesis in one bench:
@@ -130,7 +155,7 @@ turn 60  (on the canonical curve)  score 63</pre>
   <a href="../">Zork bench</a>
   <a href="https://github.com/TerranSyn/TerranSoul">GitHub</a>
   <a href="https://zorkgpt.com/">zorkgpt.com</a>
-  <span class="spacer"></span><span>Real Jericho runs · 2026-06-03</span>
+  <span class="spacer"></span><span>Real Jericho runs · 2026-06-03 · delivery-drop sweep 2026-06-12</span>
 </footer>
 </body>
 </html>

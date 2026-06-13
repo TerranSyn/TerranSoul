@@ -83,6 +83,8 @@
     <tr><td>ZorkGPT typical</td><td>deepseek-v3.2+27B</td><td class="n">88–102</td><td>public SOTA-ish</td></tr>
     <tr><td>TerranSoul brain</td><td>gemma4:e4b · 4B</td><td class="n">10–20</td><td>brain + harness, no taught solution</td></tr>
     <tr><td>TerranSoul brain</td><td>gemma4:12b-it-qat · 12B</td><td class="n" style="color:var(--good)">10–15</td><td>brain + harness, no taught solution (2026-06-07). 8 episodes over 4 runs: mean 13.1 ± 2.4. Same AGI-pure band as the 4B — the multi-step planning ceiling binds the score, not the memory layer</td></tr>
+    <tr><td>TerranSoul brain · <a href="bench-results/zork-12b-selfimprove-r4/">self-improve r4</a></td><td>gemma4:12b-it-qat · 12B</td><td class="n" style="color:var(--good)">ep1 10 → ep2 20</td><td>AGI-pure isolated brain, frozen harness, 2×100 turns, 2355 MCP calls, 0 errors. First measured cross-episode self-improvement win. Mechanism: generic planner-bonus band separation (frontier-bonus 6→4), replica-validated before GPU rerun. 2026-06-12</td></tr>
+    <tr><td>TerranSoul brain · <a href="bench-results/detective-12b-selfimprove-fix/">cross-game</a> (harness v2)</td><td>gemma4:12b-it-qat · 12B</td><td class="n" style="color:var(--good)">Detective ep1 20 → ep2 60</td><td>Cross-game self-improvement (n=1; harness v2 = the bridge gained 3 generic brain-routing fixes, memory-seed.sql unchanged, zorkgpt agent frozen): brain death-aversion memory (ep1 died entering the restaurant) steered ep2 away from the fatal move → 3× score, 18 vs 4 rooms (but ep2 still spent ~50 turns in a closet loop — the lift is from memory, not navigation competence; ep2 0 / ep1 1 transient-timeout errors). Zork I under v2 = no-regression 10→10 (open-first reached the Living Room; score planning-capped); 9:05 = honest null (open-first + gate fired but the parser disambiguation blocked the exit). 2026-06-13</td></tr>
     <tr><td>zorkgpt-default / none</td><td>gemma4:e4b · 4B</td><td class="n">0</td><td>baselines, never enter the house</td></tr>
   </table>
 
@@ -95,6 +97,14 @@
       <h3>TaughtLocalLLM →</h3><div class="big">350/350</div>
       <p>Teach the brain the solution; the weak 4B follows it step-by-step (396/396 moves served 1:1, 0 errors). Demonstrates <b>context → capability</b>.</p>
     </a>
+    <a class="card" href="bench-results/zork-12b-selfimprove-r4/">
+      <h3>12B self-improve r4 →</h3><div class="big">ep1 10 → ep2 20</div>
+      <p>AGI-pure, frozen harness. Brain learned the window route and egg location at runtime; ep2 doubled ep1 score via cross-episode recall. Generic planner-bonus band separation (frontier-bonus 6→4), replica-validated. 2026-06-12.</p>
+    </a>
+    <a class="card" href="bench-results/detective-12b-selfimprove-fix/">
+      <h3>Cross-game: Detective →</h3><div class="big">ep1 20 → ep2 60</div>
+      <p>Brain-mediated <b>cross-game</b> self-improvement (n=1; harness v2 = 3 generic bridge fixes, no game seeds, zorkgpt agent frozen). ep1 died entering the restaurant; ep2's death-aversion memory avoided it → 3× score, 18 vs 4 rooms (though ep2 still looped ~50 turns in a closet — the lift is from memory, not navigation). Zork I no-regression (10→10) + 9:05 null inside. 2026-06-13.</p>
+    </a>
   </div>
 </main>
 
@@ -102,7 +112,7 @@
   <a href="../">← TerranSoul home</a>
   <a href="https://github.com/TerranSyn/TerranSoul">GitHub</a>
   <a href="https://zorkgpt.com/">zorkgpt.com</a>
-  <span class="spacer"></span><span>Real Jericho runs · 2026-06-02 (e4b / Opus) · 12B 2026-06-07</span>
+  <span class="spacer"></span><span>Real Jericho runs · 2026-06-02 (e4b / Opus) · 12B 2026-06-07 · 12B self-improve r4 2026-06-12 · cross-game (Detective / Zork I / 9:05) 2026-06-13</span>
 </footer>
 </body>
 </html>

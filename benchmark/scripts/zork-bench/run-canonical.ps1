@@ -26,12 +26,30 @@ param(
     # Cold-load timeout for the warmup generate. Large models (10GB+) on first
     # load can take several minutes; 300s was too tight for gemma4:e4b cold.
     [int]$PreflightTimeoutSec = 600,
-    [string]$OllamaUrl = 'http://localhost:11434'
+    [string]$OllamaUrl = 'http://localhost:11434',
+    # MCP endpoint + data dir. Defaults preserve the historical behaviour
+    # (dev tray on 7423 reading <repo>/mcp-data). For an AGI-pure isolated
+    # brain, start a second MCP instance (TERRANSOUL_MCP_DATA_DIR=
+    # <repo>/mcp-data-bench, TERRANSOUL_MCP_PORT=7424) and pass
+    # -McpPort 7424 -McpDataDir mcp-data-bench so bench traffic never
+    # touches the developer brain.
+    [int]$McpPort = 7423,
+    [string]$McpDataDir = 'mcp-data',
+    # Optional ROM override for cross-game runs. The Jericho suite is baked into
+    # the image at /bench/jericho-game-suite/, so e.g.
+    # -Rom /bench/jericho-game-suite/905.z5 runs the unchanged bridge on a
+    # different game. Empty = the image default (zork1.z5).
+    [string]$Rom = '',
+    # Output subdir under target-copilot-bench/bench-results/. Override to an
+    # empty/fresh dir so `run_bench.py --resume` cannot count a PRIOR run's
+    # completed episodes (it globs zork_bench_<arm>_ep*.jsonl in the whole
+    # out-dir, regardless of run timestamp) and skip ep1 of a fresh run.
+    [string]$OutSubdir = 'zork-bench'
 )
 
 $ErrorActionPreference = 'Stop'
 $repoRoot   = (Resolve-Path "$PSScriptRoot/../../..").Path
-$outDir     = Join-Path $repoRoot 'target-copilot-bench\bench-results\zork-bench'
+$outDir     = Join-Path $repoRoot "target-copilot-bench\bench-results\$OutSubdir"
 $statusFile = Join-Path $outDir '.canonical-status.json'
 $watcherLog = Join-Path $outDir '.watcher.log'
 $progressMd = Join-Path $repoRoot 'benchmark\progress.md'
@@ -326,16 +344,37 @@ foreach ($arm in $Arms) {
     $logFile = Join-Path $outDir "arm-$arm-canonical.log"
     # Remove any stale container with the same name (e.g. from a previous killed run).
     docker rm -f $containerName 2>&1 | Out-Null
+    $romArgs = if ($Rom) { @('--rom', $Rom) } else { @() }
+    # Upstream ZorkGPT selects the game via pyproject.toml `game_file_path`
+    # (TOML, not env/CLI — the --rom flag reaches run_bench.py but upstream
+    # never reads it; observed 2026-06-12: a -Rom 905.z5 run silently played
+    # zork1.z5). Override by extracting the image's pyproject, rewriting the
+    # one path, and bind-mounting it read-only over /bench/pyproject.toml —
+    # zero bench/upstream code changes, game selection only.
+    $romMount = @()
+    if ($Rom) {
+        $tomlPath = Join-Path $outDir 'pyproject.rom-override.toml'
+        $toml = docker run --rm --entrypoint cat zork-bench /bench/pyproject.toml
+        if ($LASTEXITCODE -ne 0 -or -not $toml) { throw "could not extract pyproject.toml from image for ROM override" }
+        $patched = $toml -replace 'game_file_path\s*=\s*"[^"]*"', "game_file_path = `"$Rom`""
+        if (-not (($patched | Out-String) -match [regex]::Escape($Rom))) { throw "ROM override rewrite failed for $Rom" }
+        Set-Content -Path $tomlPath -Value $patched -Encoding UTF8
+        $romMount = @('-v', "${tomlPath}:/bench/pyproject.toml:ro")
+        Write-Host "[canonical] ROM override active: game_file_path=$Rom (bind-mounted pyproject)"
+    }
     docker run --rm `
         --name $containerName `
         --add-host=host.docker.internal:host-gateway `
-        -v "${repoRoot}\target-copilot-bench\bench-results\zork-bench:/out" `
-        -v "${repoRoot}\mcp-data:/mcp-data:ro" `
+        -v "${outDir}:/out" `
+        -v "${repoRoot}\${McpDataDir}:/mcp-data:ro" `
+        @romMount `
         zork-bench `
         --arm $arm `
         --episodes $Episodes `
         --max-turns $MaxTurns `
         --mcp-host host.docker.internal `
+        --mcp-port $McpPort `
+        @romArgs `
         2>&1 | Tee-Object -FilePath $logFile
 
     $armEnd = Get-Date -AsUTC

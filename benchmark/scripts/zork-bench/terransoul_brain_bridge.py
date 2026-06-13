@@ -984,6 +984,75 @@ class BrainMemoryManager:
                 if _on and _on_head and _on_head in _resp_l:
                     self._just_opened_noun = _on
 
+        # ZADOPT-gate — gate-state invalidation. Opening/unlocking a blocker
+        # can unblock a compass direction that previously failed (e.g.
+        # "south: the front door is closed"). When an open/unlock SUCCEEDS
+        # without moving us, forget the no-movement (neutral/loop) cardinal
+        # failures recorded at THIS room so the frontier re-tests them next
+        # turn. ODY-8b's ENTER-AFTER-OPEN only covers "go through <noun>"; a
+        # plain "You open the front door." has no entry cue and gates a
+        # COMPASS exit, so it needs this separate, fully generic hook (no
+        # door/noun list, no game content).
+        if (not location_changed and len(_act_toks) >= 2
+                and _act_toks[0] in ("open", "unlock", "unseal", "unlatch")):
+            _gi_resp = resp.lower()
+            _gi_ok = ("you open" in _gi_resp or "you unlock" in _gi_resp
+                      or any(c in _gi_resp for c in _open_cues))
+            _gi_fail = any(f in _gi_resp for f in (
+                "already open", "can't", "cannot", "won't", "locked",
+                "no way", "nothing"))
+            if _gi_ok and not _gi_fail:
+                _gi_room = str(loc_id_int) if loc_id_int else (loc_name or "").strip().lower()
+                _gi_cards = ("north", "south", "east", "west", "up", "down",
+                             "northeast", "northwest", "southeast", "southwest")
+                _gi_ra = self._room_action_outcomes.get(_gi_room, {})
+                _gi_cleared = []
+                for _gi_k in list(_gi_ra.keys()):
+                    if (self._normalize_direction(_gi_k) in _gi_cards
+                            and _gi_ra.get(_gi_k) in ("neutral", "loop")):
+                        _gi_ra.pop(_gi_k, None)
+                        _gi_cleared.append(_gi_k)
+                if _gi_cleared:
+                    self.calls.append({"tool": "gate_invalidate", "room": _gi_room, "cleared": _gi_cleared})
+
+        # ZADOPT-openfirst — brain-mediated OPEN-FIRST self-learning. A
+        # traversal that fails because something is closed/locked teaches a
+        # generic principle: open that thing first. The lesson is WRITTEN to
+        # the MCP brain at runtime (no seed, no game content — the game itself
+        # NAMES the closed noun, e.g. "The kitchen window is closed."); the
+        # planner READS it back next turn and promotes `open <noun>`. Symmetric
+        # with death-aversion: self-improvement flows through the brain, not a
+        # hardcoded rule. Fixes the recurring closed-blocker gap seen on both
+        # 9:05's front door and Zork's kitchen window.
+        if not location_changed:
+            _of_m = _re.search(r"\bthe\s+([a-z][a-z ]*?)\s+is\s+(?:closed|locked)\b",
+                               resp, _re.IGNORECASE)
+            if _of_m:
+                _of_noun = _of_m.group(1).strip().lower()
+                _of_head = _of_noun.split()[-1] if _of_noun.split() else _of_noun
+                _of_room = str(loc_id_int) if loc_id_int else (loc_name or "").strip().lower()
+                if _of_head:
+                    try:
+                        self.mcp.tool(
+                            "brain_ingest_lesson",
+                            {
+                                "content": (
+                                    f"OPEN-FIRST: at room id={_of_room} the '{_of_noun}' is "
+                                    f"closed — open {_of_head} first before traversing it."
+                                ),
+                                "tags": _tags_str([
+                                    "zork", "open_hint",
+                                    f"loc_{_of_room}",
+                                    f"openhint_{_of_head}",
+                                ]),
+                                "category": "zork-bench",
+                                "importance": 8,
+                            },
+                        )
+                        self.calls.append({"tool": "open_hint", "room": _of_room, "noun": _of_head})
+                    except Exception as e:
+                        self.calls.append({"tool": "open_hint", "error": str(e)})
+
         # Track location for first_visit semantics
         self.memory_cache.setdefault(loc_id_int, {"name": loc_name, "visits": 0})
         self.memory_cache[loc_id_int]["visits"] = self.memory_cache[loc_id_int].get("visits", 0) + 1
@@ -1501,6 +1570,42 @@ class BrainMemoryManager:
         except Exception as e:
             self.calls.append({"tool": "tried_action", "error": str(e)})
 
+        # ZADOPT-death — cross-episode DEATH-AVERSION (origin- + id-keyed).
+        # The avoidance machinery already exists (tried_map "fatal" -> score
+        # -100), but a death was never written as a retrievable fatal signal:
+        # it landed as a [NEW LOCATION]=progress episodic under the room you
+        # DIE IN, not the room you ACTED FROM. Fix: write a dedicated death
+        # memory keyed to the ISSUING room (a location-changing fatal move is
+        # issued from the previous room; an in-place fatal from the current
+        # room) and to its Z-machine location_id (so two identically named
+        # rooms never share a fatal verdict). Generic — no game content.
+        # NB: computed BEFORE self._prev_loc_name is overwritten below.
+        _da_name = _da_id = None
+        if died:
+            _da_name = (self._prev_loc_name if location_changed else loc_name) or loc_name
+            _da_id = (self._prev_loc_id if location_changed else loc_id_int) or loc_id_int
+            if act:
+                try:
+                    self.mcp.tool(
+                        "brain_ingest_lesson",
+                        {
+                            "content": (
+                                f"DEATH-AVERSION: action='{act}' at room id={_da_id} "
+                                f"('{_da_name}') was FATAL — skip it here."
+                            ),
+                            "tags": _tags_str([
+                                "zork", "death",
+                                f"loc_{_da_id}",
+                                f"loc_{(_da_name or '').replace(' ', '_')}",
+                            ]),
+                            "category": "zork-bench",
+                            "importance": 9,
+                        },
+                    )
+                    self.calls.append({"tool": "death_aversion", "loc_id": _da_id, "act": act})
+                except Exception as e:
+                    self.calls.append({"tool": "death_aversion", "error": str(e)})
+
         # Rolling action window for future acquisition attribution.
         self._last_actions.append((loc_name, act))
         if len(self._last_actions) > 5:
@@ -1534,7 +1639,11 @@ class BrainMemoryManager:
                 if score_delta > 0:
                     km.record_event("score", loc_name, act, resp, score=score_delta)
                 elif died:
-                    km.record_event("death", loc_name, act, resp)
+                    # Origin-key: attribute the death to the room the fatal
+                    # move was issued FROM (_da_name, captured above before
+                    # self._prev_loc_name was overwritten), not the room you
+                    # died in.
+                    km.record_event("death", _da_name or loc_name, act, resp)
                 elif is_loop and verdict == "dead_end":
                     km.record_event("dead_end", loc_name, act, resp)
                 elif location_changed and first_visit:
@@ -3596,6 +3705,70 @@ class BrainKnowledgeManager:
                         tried_map[act_key] = "advisory"
             except Exception as _e:
                 self.calls.append({"tool": "brain_search", "kind": "deadend", "error": str(_e)})
+            # ZADOPT-death — cross-episode DEATH-AVERSION fold. A move that
+            # killed the agent in a prior episode is hard-skipped (tried_map
+            # "fatal" -> score -100 at the planner). ID-keyed: only applies
+            # when THIS room's location_id matches the death's ORIGIN id, so
+            # identically named rooms (e.g. Detective's two "Outside" rooms,
+            # ids 36 vs 37) never bleed a fatal verdict onto a safe sibling.
+            # Mirrors the K18 dead-end fold above.
+            try:
+                death_result = self.mcp.tool(
+                    "brain_search",
+                    {
+                        "query": f"fatal death action at {room_safe}",
+                        "tags": ["zork", "death", f"loc_{room_id_key}"],
+                        "limit": 12,
+                        "rerank": False,
+                    },
+                )
+                _death_hits = 0
+                for h in _extract_hits(death_result):
+                    content = (h.get("content") or "").strip()
+                    m_id = _re.search(r"room id=([0-9a-z_]+)", content, _re.IGNORECASE)
+                    # id-key guard: skip a death filed under a different room id
+                    # (tags are OR-matched so other rooms' deaths leak in here).
+                    if not m_id or str(m_id.group(1)).lower() != str(room_id_key).lower():
+                        continue
+                    m_act = _re.search(r"action=['\"]([^'\"]+)['\"]", content)
+                    if not m_act:
+                        continue
+                    tried_map[m_act.group(1).strip().lower()] = "fatal"
+                    _death_hits += 1
+                self.calls.append({"tool": "brain_search", "kind": "death", "room": room_safe, "hits": _death_hits})
+            except Exception as _e:
+                self.calls.append({"tool": "brain_search", "kind": "death", "error": str(_e)})
+            # ZADOPT-openfirst — promote `open <noun>` when the brain learned
+            # (at runtime, from its own closed-blocker failure) that this room
+            # has something to open before a path clears. ID-keyed; only boosts
+            # an open action not already resolved. Mirrors the death fold.
+            try:
+                openhint_result = self.mcp.tool(
+                    "brain_search",
+                    {
+                        "query": f"open closed blocker before traversing at {room_safe}",
+                        "tags": ["zork", "open_hint", f"loc_{room_id_key}"],
+                        "limit": 8,
+                        "rerank": False,
+                    },
+                )
+                _oh_hits = 0
+                for h in _extract_hits(openhint_result):
+                    content = (h.get("content") or "").strip()
+                    m_id = _re.search(r"room id=([0-9a-z_]+)", content, _re.IGNORECASE)
+                    if not m_id or str(m_id.group(1)).lower() != str(room_id_key).lower():
+                        continue
+                    m_n = _re.search(r"open ([a-z]+) first", content, _re.IGNORECASE)
+                    if not m_n:
+                        continue
+                    _open_act = f"open {m_n.group(1).strip().lower()}"
+                    # Don't override a stronger/terminal verdict already learned.
+                    if tried_map.get(_open_act) not in ("success", "consumed", "fatal", "loop"):
+                        tried_map[_open_act] = "progress"
+                        _oh_hits += 1
+                self.calls.append({"tool": "brain_search", "kind": "open_hint", "room": room_safe, "hits": _oh_hits})
+            except Exception as _e:
+                self.calls.append({"tool": "brain_search", "kind": "open_hint", "error": str(_e)})
             self.calls.append({
                 "tool": "brain_search",
                 "kind": "tried",

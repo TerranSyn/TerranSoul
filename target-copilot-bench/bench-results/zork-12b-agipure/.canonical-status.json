@@ -1,0 +1,34 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "phase": "done",
+  "episodes_per_arm": 2,
+  "max_turns": 100,
+  "last_event": "all arms finished; collect summaries + transcripts next",
+  "started_at": "2026-06-12T05:22:28Z",
+  "stages": [
+    "[x] stage 0 — model pull",
+    "[x] stage 1 — docker rebuild",
+    "[ ] stage 2 — arm=none",
+    "[ ] stage 3 — arm=zorkgpt-default",
+    "[ ] stage 4 — arm=terransoul-brain",
+    "[ ] stage 5 — collect summaries + transcripts"
+  ],
+  "episodes_done": 2,
+  "updated_at": "2026-06-12T06:29:00Z",
+  "arms": {
+    "terransoul-brain": {
+      "final_scores": [
+        "",
+        "-",
+        "-"
+      ],
+      "turns": [
+        "",
+        "-",
+        "-"
+      ],
+      "wall_clock": "1h06m"
+    }
+  },
+  "notes": "  - Sequential per-arm (Ollama single-inference).\n  - Watcher cadence: 5 min."
+}

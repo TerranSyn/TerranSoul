@@ -1,0 +1,35 @@
+{
+  "description": "Digest-level reproducibility manifest for the ZorkGPT x TerranSoul bench (paper S08 'Digest-level reproducibility'). Generated 2026-06-12.",
+  "rom": {
+    "zork1.z5_sha256": "0ae5ac229e79094ff368b6669356444af0f35e21d862a1baaa546989085c15fd",
+    "note": "target-copilot-bench/zorkgpt-src/jericho-game-suite/zork1.z5 and infrastructure/zork.z5 are byte-identical (same SHA-256). The ROM is copyrighted and user-supplied, never redistributed.",
+    "905.z5_sha256": "0f41ff7811668e236060b399ced1cd0481c1bb624a8876fc7e16dc58816f1ecb",
+    "detective.z5_sha256": "f6b0b9b5f4ff8890ab481b11e63ea18350b43640c88a9b8c23d6a2b269f9a040"
+  },
+  "taught_solution": {
+    "file": "benchmark/terransoul/zorkgpt/taughtLocalLLM/zork_solution_knowledge.txt",
+    "sha256": "8461b56e2d614ce88834fed6fa1572d1d2b82182c246e6f3fff7861624df88c7",
+    "moves": 396
+  },
+  "docker": {
+    "image_2026_06_12": "zork-bench:latest feafc32f53c0 (BENCH_MODEL=gemma4:12b-it-qat, OLLAMA_BASE_HOST=host.docker.internal)",
+    "image_e4b_era": "zork-bench:k76 (AGENT_MODEL=gemma4:e4b)",
+    "dockerfile": "benchmark/scripts/zork-bench/Dockerfile"
+  },
+  "upstream": {
+    "zorkgpt_commit": "4c80f401a17b5f25b3c183d35ac171bf20268864",
+    "pinned_in": "benchmark/scripts/zork-bench/setup.mjs",
+    "jericho_version": "3.3.1"
+  },
+  "ollama_models": {
+    "gemma4:e4b-it-qat": "sha256:ee665637121887cf3be (6.15 GB)",
+    "gemma4:12b-it-qat": "sha256:38044be4f923e5a5526 (7.15 GB)",
+    "qwen2.5:7b": "pulled 2026-06-12 for cross-family delivery test",
+    "note": "digest prefixes from /api/tags; full digests retrievable via `ollama show`"
+  },
+  "mcp_brain": {
+    "isolated_bench_instance": "TERRANSOUL_MCP_DATA_DIR=<repo>/mcp-data-bench, TERRANSOUL_MCP_PORT=7424",
+    "seed_rows_at_start": 122,
+    "purity": "fresh seed from mcp-data/shared/memory-seed.sql; row id 51 (zorkgpt.com ep120 audit, contained score milestones + a room name) removed before the 2026-06-12 runs; remaining zork-tagged rows are engineering/meta lessons with no game-domain content"
+  }
+}
