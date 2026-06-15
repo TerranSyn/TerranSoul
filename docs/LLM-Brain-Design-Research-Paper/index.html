@@ -347,18 +347,20 @@
     </table>
 
     <h2><span class="scene-num">08 · Future work</span>Toward a stronger result</h2>
-    <p>This is a controlled single-game, single-model demonstration. Since the prior revision, four listed items are now <strong>done</strong> and folded into the results:</p>
+    <p>This is a controlled single-game, single-model demonstration. Since the prior revision, five listed items are now <strong>done</strong> and folded into the results:</p>
     <ul>
       <li><strong>Repeated-trial statistics for the delivery arms — done (§4.4):</strong> the injected-drop ablation runs 30 seeded trials per cell across eight drop rates × two pointer disciplines (mean/std/min/max, completion, death). The <em>LLM</em> arms remain single-run.</li>
       <li><strong>Injected-drop control — done (§4.4):</strong> reliable delivery with injected drops is now the central falsifiable sweep, not a single point.</li>
       <li><strong>Failure economy — done (§4.4):</strong> JSON-malformation (94.9→≈0.1/100 turns) and context-saturation (40.5→0/100 turns) rates measured, grounding <em>R<sub>d</sub></em>.</li>
       <li><strong>Digest-level reproducibility — done (§3.9):</strong> ROM/solution SHA-256, image IDs, commit, Jericho version, and model digests pinned in <code>repro-manifest.json</code>.</li>
+      <li><strong>Brain-driven cross-episode self-improvement (12B) — done (§4.3a):</strong> the <code>gemma4:12b-it-qat</code> arm doubled its AGI-pure score across episodes (ep1=10 → ep2=20, 0 errors), frozen harness + task-naive seed; the band-separation mechanism was validated by a 0.08&nbsp;s replica before any GPU run.</li>
     </ul>
     <p>Remaining work to strengthen external validity:</p>
     <ul>
-      <li><strong>Cross-game generalisation:</strong> run the unchanged bridge on more Jericho games (the suite ships <code>905.z5</code>, <code>detective.z5</code>, and others).</li>
+      <li><strong>Cross-game generalisation — first results (n=1, §4.3c):</strong> Detective shows a clean cross-episode death-aversion win (20→60); Zork I reproduces the modal 10→10 (the mechanism fires + reaches the treasures, but the score is planning-capped); 9:05 is an honest null. Three generic bridge bookkeeping defects surfaced and were fixed brain-side (harness v2; <code>memory-seed.sql</code> unchanged, zorkgpt frozen). Repeated trials across more games remain future work.</li>
       <li><strong>Expand the LLM-arm ablation with repeated trials:</strong> brain-suggests/model-decides and fresh-empty-memory-server controls, each across multiple seeds.</li>
       <li><strong>Cross-model generalisation:</strong> repeat the AGI-pure arm with other local model families (e.g. <code>qwen2.5:7b</code>); the delivery axis is already proven model-independent by the no-LLM ablation, so this targets the <em>memory-lift</em> claim's generality.</li>
+      <li><strong>Self-guided sub-goal curriculum to break the planning ceiling (in progress):</strong> a self-improvement-loop audit isolated the Zork I ceiling as a <em>binding</em> failure — every planner promotion comes from a structured signal, so a correct prose reflection ("you never deposited a valuable") was ignored by the weak model. We added a brain-mediated <strong>lesson-binding</strong> step (parse a reflection → structured directive → promote the action, escalated when looping; proven by sub-second unit tests + a live-planner integration smoke where the lesson reaches the top of the action gate). The path forward adapts <strong>SGS</strong> [<a href="#ref-37">37</a>] gradient-free to a frozen actor: a brain-side Conjecturer–Guide curriculum that decomposes the unreachable deposit target into Guide-vetted, target-relevant sub-goals the weak model can climb — all learning in the brain, no weight updates.</li>
     </ul>
 
     <h2><span class="scene-num">09 · Conclusion</span>Memory as a first-class layer</h2>
@@ -421,6 +423,7 @@
       <li id="ref-34">Maharana, Lee, Tulyakov, Bansal, Barbieri, Fung. <cite>Evaluating Very Long-Term Conversational Memory of LLM Agents (LoCoMo).</cite> ACL 2024. arXiv:2402.17753.</li>
       <li id="ref-35">Wu et al. <cite>LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory.</cite> ICLR 2025. arXiv:2410.10813.</li>
       <li id="ref-36">TerranSoul systems &amp; token-economy benches: <code>docs/benchmarking.md</code> (million-memory HNSW / 1M-CRUD / capacity-prune harness; HybridWeights A/B ablation) and <code>docs/mcp-token-usage-benchmark.md</code> (session-anchored token-reduction methodology and caveats).</li>
+      <li id="ref-37">Bailey, Wen, Dong, Hashimoto, Ma. <cite>Scaling Self-Play with Self-Guidance (SGS).</cite> 2026. arXiv:2604.20209. (Self-play with a frozen Guide scoring self-generated sub-problems for relevance + naturalness; we adapt the gradient-free Guide/Conjecturer curriculum to a frozen actor — §2.4, §8.)</li>
     </ol>
 
     <div class="endmark">LLM external-memory bench · ZorkGPT × TerranSoul · 2026</div>

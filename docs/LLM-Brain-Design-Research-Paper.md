@@ -232,11 +232,24 @@ ReAct [5] interleaves reasoning and acting; Reflexion [6] adds verbal self-feedb
 across episodes; Voyager [7] shows an LLM accumulating a *skill library* in
 Minecraft. The 2025–2026 self-evolution wave extends this: **AutoSkill** [27]
 performs *"experience-driven lifelong learning via skill self-evolution,"* and RL
-frameworks now fold a validated skill library into training [28]. Our room-scoped
-reflections (§4.2) are Reflexion-style feedback given *spatial* scope; our "taught
-skill" (§4.4) is a Voyager-style library entry. We deliberately separate *having*
-the skill from *executing* it — the distinction the self-evolution literature
-tends to merge — which is what exposes the delivery-reliability axis.
+frameworks now fold a validated skill library into training [28]. **Self-Guided
+Self-Play (SGS)** [37] is the most relevant recent point: the model takes three
+roles — Solver, Conjecturer, and a *frozen Guide* that scores the Conjecturer's
+self-generated sub-problems for *relevance to the unsolved target* and
+*naturalness* (`R_guide = max(0, relevance + (2−complexity) + (1−redundancy))`),
+preventing the curriculum from collapsing into degenerate, reward-hacked problems.
+SGS trains the Solver and Conjecturer with RL; we cannot adopt that under our
+frozen-harness/AGI-pure discipline, but the Guide is gradient-free, and that role —
+a frozen brain decomposing an unsolved target into a relevant, achievable sub-goal
+and vetting it without ever training the actor — transplants directly (§8).
+Our room-scoped reflections (§4.2) are Reflexion-style feedback given *spatial*
+scope; our "taught skill" (§4.4) is a Voyager-style library entry. We deliberately
+separate *having* the skill from *executing* it — the distinction the
+self-evolution literature tends to merge — which is what exposes the
+delivery-reliability axis (§4.4) and, for a weak external-memory agent, a second
+**binding** axis: a learned lesson changes behaviour only when it is compiled into
+a structured planner constraint, not when it is offered as prose the weak model
+may ignore (§8).
 
 ### 2.5 Games as agent benchmarks; text-adventure agents
 
@@ -955,6 +968,25 @@ Remaining work to strengthen external validity:
    now measures R@10 28.5 % at 100 k (§4.6). The remaining step is running the same
    fixed path at the 10 M-document tier (and tuning `nprobe`) for a measured 10 M
    recall.
+5. **Self-guided sub-goal curriculum to break the planning ceiling (in progress).**
+   §4.3c shows the brain-mediated lift is bounded on Zork I by the 12B's multi-step
+   *planning* depth: it reaches the treasures but cannot close the take-then-deposit
+   plan, and — a chicken-and-egg — it cannot *learn* the plan it never *executes*. A
+   self-improvement-loop audit isolated the failure as one of **binding**, not
+   learning: every planner promotion comes from a *structured* signal, so a correct
+   prose reflection ("you never deposited a valuable") was never converted into an
+   action and the weak model ignored it. We added a brain-mediated **lesson-binding**
+   step that parses a reflection into a structured directive and *promotes* the
+   recommended / exploratory action in the planner (escalated when the agent loops),
+   proven by sub-second unit tests and a live-planner integration smoke (the lesson
+   reaches the top of the action gate) — though it does not by itself defeat the
+   deep-plan ceiling. The path forward adapts **SGS** [37] gradient-free to a frozen
+   actor as a brain-side **Conjecturer–Guide curriculum**: from the failure
+   reflection the brain conjectures a *simpler, target-relevant* sub-goal, a frozen
+   Guide scores it for relevance + naturalness (SGS's exact rubric), and the vetted
+   sub-goal binds into the planner — decomposing the unreachable deposit target into
+   an achievable sequence the weak model can climb. All learning stays in the brain
+   (no weight updates), preserving the frozen-harness / AGI-pure discipline.
 
 ---
 
@@ -1052,6 +1084,7 @@ path to a stronger result (§8).
 34. Maharana, Lee, Tulyakov, Bansal, Barbieri, Fung. *Evaluating Very Long-Term Conversational Memory of LLM Agents (LoCoMo).* ACL 2024. arXiv:2402.17753.
 35. Wu et al. *LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory.* ICLR 2025. arXiv:2410.10813.
 36. TerranSoul systems & token-economy benches: `docs/benchmarking.md` (million-memory HNSW / 1M-CRUD / capacity-prune harness; HybridWeights A/B ablation) and `docs/mcp-token-usage-benchmark.md` (session-anchored token-reduction methodology and caveats).
+37. Bailey, Wen, Dong, Hashimoto, Ma. *Scaling Self-Play with Self-Guidance (SGS).* 2026. arXiv:2604.20209. (Self-play with a frozen Guide scoring self-generated sub-problems for relevance + naturalness; we adapt the gradient-free Guide/Conjecturer curriculum to a frozen actor — §2.4, §8.)
 
 ---
 
