@@ -233,15 +233,29 @@ across episodes; Voyager [7] shows an LLM accumulating a *skill library* in
 Minecraft. The 2025–2026 self-evolution wave extends this: **AutoSkill** [27]
 performs *"experience-driven lifelong learning via skill self-evolution,"* and RL
 frameworks now fold a validated skill library into training [28]. **Self-Guided
-Self-Play (SGS)** [37] is the most relevant recent point: the model takes three
-roles — Solver, Conjecturer, and a *frozen Guide* that scores the Conjecturer's
-self-generated sub-problems for *relevance to the unsolved target* and
-*naturalness* (`R_guide = max(0, relevance + (2−complexity) + (1−redundancy))`),
-preventing the curriculum from collapsing into degenerate, reward-hacked problems.
-SGS trains the Solver and Conjecturer with RL; we cannot adopt that under our
-frozen-harness/AGI-pure discipline, but the Guide is gradient-free, and that role —
-a frozen brain decomposing an unsolved target into a relevant, achievable sub-goal
-and vetting it without ever training the actor — transplants directly (§8).
+Self-Play (SGS)** [37], evaluated by its authors on *Lean4 formal theorem proving*,
+is the most relevant recent point: the model takes three roles — Solver, Conjecturer,
+and a *frozen Guide* that scores the Conjecturer's self-generated sub-problems on
+three named criteria — *relevance to the unsolved target* (0–5), *conclusion
+complexity* (0–4), and *premise redundancy* (0–1) — combined as
+`R_guide = max(0, relevance + (2−complexity) + (1−redundancy))`, preventing the
+curriculum from collapsing into degenerate, reward-hacked problems. (Because SGS's
+setting is proof synthesis, those criteria are proof-native — premises, conclusions —
+and we re-interpret them for text sub-goals, transferring the role and formula, not
+the setting.) SGS trains the Solver and Conjecturer with RL and selects problems by
+`R_synth = R_solve · R_guide`, where `R_solve = 1 − s(x̃)` is the *complement* of an
+8-rollout empirical solve rate (too-easy and never-solved problems zeroed), favoring
+hard-but-solvable problems; we adopt *neither* the RL training nor `R_solve` under our
+frozen-harness/AGI-pure discipline, so what we take from SGS is narrow and we are
+explicit about it: only the gradient-free **Conjecturer→Guide curriculum idea** and
+the Guide's exact reward (`R_guide`, §E.3) + three-criterion rubric (§E.2). One
+further honest deviation: the paper's Guide is a *finetuned LLM-judge*, but our
+brain exposes no instruction-following judge tool (its summarizer, asked to score,
+returns the same value for a good and a degenerate sub-goal), so we implement the
+Guide as a **deterministic** rubric that applies the paper's formula to
+heuristically-computed criteria. What survives the transfer is the *role* — a frozen
+brain decomposing an unsolved target into a relevant, achievable sub-goal and vetting
+it without ever training the actor — not SGS's learning dynamics (§8).
 Our room-scoped reflections (§4.2) are Reflexion-style feedback given *spatial*
 scope; our "taught skill" (§4.4) is a Voyager-style library entry. We deliberately
 separate *having* the skill from *executing* it — the distinction the
@@ -968,7 +982,7 @@ Remaining work to strengthen external validity:
    now measures R@10 28.5 % at 100 k (§4.6). The remaining step is running the same
    fixed path at the 10 M-document tier (and tuning `nprobe`) for a measured 10 M
    recall.
-5. **Self-guided sub-goal curriculum to break the planning ceiling (in progress).**
+5. **A gradient-free self-improvement stack to break the planning ceiling (implemented; bench pending).**
    §4.3c shows the brain-mediated lift is bounded on Zork I by the 12B's multi-step
    *planning* depth: it reaches the treasures but cannot close the take-then-deposit
    plan, and — a chicken-and-egg — it cannot *learn* the plan it never *executes*. A
@@ -980,13 +994,51 @@ Remaining work to strengthen external validity:
    recommended / exploratory action in the planner (escalated when the agent loops),
    proven by sub-second unit tests and a live-planner integration smoke (the lesson
    reaches the top of the action gate) — though it does not by itself defeat the
-   deep-plan ceiling. The path forward adapts **SGS** [37] gradient-free to a frozen
-   actor as a brain-side **Conjecturer–Guide curriculum**: from the failure
-   reflection the brain conjectures a *simpler, target-relevant* sub-goal, a frozen
-   Guide scores it for relevance + naturalness (SGS's exact rubric), and the vetted
-   sub-goal binds into the planner — decomposing the unreachable deposit target into
-   an achievable sequence the weak model can climb. All learning stays in the brain
-   (no weight updates), preserving the frozen-harness / AGI-pure discipline.
+   deep-plan ceiling. To climb that ceiling we adapt **SGS** [37] gradient-free to a
+   frozen actor as a brain-side **Conjecturer–Guide curriculum**, now *implemented*:
+   from the failure reflection (the unsolved target) the brain conjectures a
+   *simpler, target-conditioned* sub-goal, a single imperative clause is extracted
+   from the summarizer's prose, and a **deterministic** Guide scores it on SGS's exact
+   rubric (`R_guide = max(0, relevance + (2−complexity) + (1−redundancy))`,
+   `complexity ≥ 3 → 0`) — deterministic because a summarizer-class brain cannot emit
+   the rubric's score lines, so an LLM Guide silently defaults and rejects everything.
+   A vetted sub-goal (`R_guide ≥ 4`) is ingested as a curriculum lesson that
+   lesson-binding then promotes the next episode, decomposing the unreachable deposit
+   target into an achievable rung. We are explicit (§2.4) that this borrows only SGS's
+   gradient-free Conjecturer→Guide *idea* and its `R_guide` formula — **not** SGS's RL
+   training of the actor nor its `R_solve` rollout signal, neither of which is
+   admissible on a frozen, AGI-pure harness; calling this "SGS" would overstate it.
+   The first 12B validation bench (3 episodes × 100 turns, gemma4:12b-it-qat) is
+   instructive precisely because it scored **5 → 10 → 0** and observability showed the
+   curriculum had been *inert*: under heavy concurrent load the trajectory summarizer
+   returned empty (gating off the conjecturer), and the structured frontier/utility
+   ledgers were written but not retrieved (an embedding-search miss). Both were
+   root-caused and fixed (shorter-tail + retry + a deterministic fallback target;
+   lead-token + larger-limit retrieval), each fix proven against the live brain; a
+   re-validation of the now-operational curriculum is in progress. All learning stays
+   in the brain (no weight updates), preserving the frozen-harness / AGI-pure
+   discipline — which also means the Zork I ceiling, bounded by the *frozen* model's
+   navigation and multi-step planning, is not something a curriculum alone is expected
+   to break.
+
+   The curriculum is one stage of a wider gradient-free, brain-mediated loop assembled
+   from the agentic self-improvement literature, every stage proven by sub-second unit
+   tests and every weight frozen: a Reflexion-style failure-mode reflection that asks
+   the *missing-step* question [6]; an ExpeL/SiriuS-style contrastive heuristic pairing
+   the run's best segment against its most-stalled one; a TRACE/AgentDebug-style deficit
+   taxonomy that stamps each reflection so the next episode retrieves the lesson
+   matching the *active* failure mode; the lesson-binding + SGS curriculum above;
+   a **MemRL**-style learned lesson-utility under which a bound lesson accrues
+   utility from the episode's own outcome reward (beat the running best → +1, else −1)
+   so retrieval learns to trust the lessons that precede progress; a **multi-aspect
+   reflection** that re-reflects a weak episode through the single generic lens
+   (spatial / acquisition / risk) matching the active deficit, gated by a *deterministic*
+   natural-language critic that stores a generated lesson only if it is actionable,
+   bindable, and not a restatement; and a **failure-frontier curriculum** that anchors
+   the conjecturer to the persistent best-progress ceiling rather than a one-off
+   stumble. Utilities and frontiers live in the brain as compact ledger memories (the
+   MCP single source of truth), never a private client cache; the reward is the
+   environment's own score, so nothing is seeded.
 
 ---
 
@@ -1084,7 +1136,7 @@ path to a stronger result (§8).
 34. Maharana, Lee, Tulyakov, Bansal, Barbieri, Fung. *Evaluating Very Long-Term Conversational Memory of LLM Agents (LoCoMo).* ACL 2024. arXiv:2402.17753.
 35. Wu et al. *LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory.* ICLR 2025. arXiv:2410.10813.
 36. TerranSoul systems & token-economy benches: `docs/benchmarking.md` (million-memory HNSW / 1M-CRUD / capacity-prune harness; HybridWeights A/B ablation) and `docs/mcp-token-usage-benchmark.md` (session-anchored token-reduction methodology and caveats).
-37. Bailey, Wen, Dong, Hashimoto, Ma. *Scaling Self-Play with Self-Guidance (SGS).* 2026. arXiv:2604.20209. (Self-play with a frozen Guide scoring self-generated sub-problems for relevance + naturalness; we adapt the gradient-free Guide/Conjecturer curriculum to a frozen actor — §2.4, §8.)
+37. Bailey, Wen, Dong, Hashimoto, Ma. *Scaling Self-Play with Self-Guidance (SGS).* 2026. arXiv:2604.20209. (RL self-play on Lean4 theorem proving; a frozen finetuned Guide scores self-generated sub-problems on relevance, conclusion-complexity, and redundancy. We adapt only the gradient-free Guide/Conjecturer curriculum idea + the `R_guide` formula to a frozen actor — not the RL training or `R_solve` — §2.4, §8.)
 
 ---
 

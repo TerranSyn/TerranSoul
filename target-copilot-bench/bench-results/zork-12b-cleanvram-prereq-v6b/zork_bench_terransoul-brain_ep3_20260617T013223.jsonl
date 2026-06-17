@@ -1,0 +1,1375 @@
+{"type": "episode_end", "arm": "terransoul-brain", "episode_id": "bench-terransoul-brain-20260617T013223-ep3", "final_score": 5, "turns": 100, "elapsed_sec": 2690.7, "memory_calls_total": 1374, "memory_calls_with_errors": 2, "reflections_ingested": 1, "room_reflections_ingested": 3, "reflections_retrievable": 5, "room_event_counts": {"78": 3, "75": 3, "88": 94}, "kb_writes": 103, "kb_write_skips": 86, "obj_llm_fallback_calls": 0, "acquire_recipes_ingested": 1, "room_scoped_search_hits": 0, "harness_sanitise": 0, "harness_verb_reject": 0, "harness_loop_break": 0}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 2}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "west", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "west", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 13}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest", "act": "west", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 3}
+{"type": "memory_call", "tool": "map_edge", "from": "Forest", "via": "east", "to": "Forest Path"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 140}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 132, "dst": 140, "rel": "exits_via_east"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest Path", "act": "east", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 7, "ms": 12}
+{"type": "memory_call", "tool": "map_edge", "from": "Forest Path", "via": "up", "to": "Up a Tree"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 140}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Up a Tree", "memory_id": 256}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 140, "dst": 256, "rel": "exits_via_up"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "progress"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 10, "ms": 5}
+{"type": "memory_call", "tool": "acquire_recipe", "obj": "egg", "loc": "Up a Tree", "confirmed": "taken"}
+{"type": "memory_call", "tool": "valued_item", "obj": "egg", "delta": 5}
+{"type": "memory_call", "tool": "brain_observe_outcome", "outcome": "success"}
+{"type": "memory_call", "tool": "solution_move", "room": "Up a Tree", "act": "take egg", "delta": 5}
+{"type": "memory_call", "tool": "route_replay", "moves": 3}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "take egg", "outcome": "success"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 11}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "take egg", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 12}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "take egg", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "take egg", "repeats": 3}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 3}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "take egg", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 3}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loopcap_ban", "act": "take egg", "consec": 1, "cumulative": 4}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "take egg", "repeats": 4}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 17}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "take egg", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 18}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 9}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 22}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "west", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "north", "repeats": 3}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 2}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 3}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 11}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "north", "repeats": 4}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 5}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 3}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 10}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 4}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "north", "repeats": 5}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 13}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 4}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 7}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "north", "repeats": 6}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 11}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "north", "repeats": 7}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 3}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "north", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 5}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 41}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 5}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 6}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 12}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 6}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 7}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 7}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 7}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 44}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 8}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 5}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 9}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 14}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 8}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 11}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 10}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 11}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 11}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 3}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 9}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 2}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 12}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 19}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 13}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 10}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 18}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 14}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 15}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 5}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 11}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 16}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 12}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 17}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 13}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 12}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 14}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 18}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 19}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 13}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 14}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 20}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 20}
+{"type": "memory_call", "tool": "tried_action", "error": "<urlopen error timed out>"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 21}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 3}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 14}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 14}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 22}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 23}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 5}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 15}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 11}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 24}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 22}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 16}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 18}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 17}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 11}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 13}
+{"type": "memory_call", "tool": "map_edge", "from": "Up a Tree", "via": "down", "to": "Forest Path"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Up a Tree", "memory_id": 256}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 140}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 256, "dst": 140, "rel": "exits_via_down"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest Path", "act": "down", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 18}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 11}
+{"type": "memory_call", "tool": "map_edge", "from": "Forest Path", "via": "up", "to": "Up a Tree"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 140}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Up a Tree", "memory_id": 256}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 140, "dst": 256, "rel": "exits_via_up"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 25}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 26}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 15}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 19}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 5}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 27}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 16}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 28}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 20}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 21}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 3}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 12}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "examine bird", "outcome": "neutral"}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 13}
+{"type": "memory_call", "tool": "map_edge", "from": "Up a Tree", "via": "down", "to": "Forest Path"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Up a Tree", "memory_id": 256}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 140}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 256, "dst": 140, "rel": "exits_via_down"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Forest Path", "act": "down", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 22}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 3, "ms": 16}
+{"type": "memory_call", "tool": "map_edge", "from": "Forest Path", "via": "up", "to": "Up a Tree"}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Forest Path", "memory_id": 140}
+{"type": "memory_call", "tool": "loc_marker", "loc": "Up a Tree", "memory_id": 256}
+{"type": "memory_call", "tool": "brain_add_edge", "src": 140, "dst": 256, "rel": "exits_via_up"}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 29}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 3}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 30}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 17}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 23}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 17}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 31}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 32}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 15}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 24}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 17}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 33}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 14}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 34}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 25}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 35}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 12}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 36}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 15}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 26}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 37}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 5}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 38}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 12}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 27}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 6}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 39}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 5}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 40}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 28}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 20}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 41}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 42}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 3}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 29}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 43}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 89}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 44}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 30}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 45}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 14}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 46}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 19}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "up", "repeats": 31}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 4}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "up", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 47}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 3}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "loop_break", "room": "88", "act": "south", "repeats": 48}
+{"type": "memory_call", "tool": "brain_observe_outcome", "verdict": "continue"}
+{"type": "memory_call", "tool": "brain_ingest_lesson", "kind": "episodic", "imp": 4, "ms": 12}
+{"type": "memory_call", "tool": "tried_action", "loc": "Up a Tree", "act": "south", "outcome": "neutral"}
+{"type": "memory_call", "tool": "load_prior_reflections", "loaded": 2}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "kb_write", "bytes": 2657, "turn": 0, "forced": true, "snapshot_lessons": 2, "snapshot_map_edges": 14, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "goal_ingest", "ok": true}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "_unknown", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "_unknown", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "_unknown", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "_unknown", "hits": 4, "ms": 536}
+{"type": "memory_call", "tool": "brain_search", "kind": "planner_bonuses", "hits": 3, "ms": 123}
+{"type": "memory_call", "tool": "brain_list_recent", "kind": "affordances", "hits": 5, "ms": 6}
+{"type": "memory_call", "tool": "lesson_bind", "room": "_unknown", "promoted": ["west"], "looping": false, "bound_keys": ["d:up|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 4411, "turn": 0, "forced": true, "snapshot_lessons": 2, "snapshot_map_edges": 14, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 0, "last": 0, "delta": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 0, "last": 0, "delta": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 3}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Forest", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Forest", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 3, "ms": 436}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Forest", "promoted": ["east"], "looping": false, "bound_keys": ["d:east|i:", "d:up|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 5324, "turn": 0, "forced": true, "snapshot_lessons": 2, "snapshot_map_edges": 14, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 1, "last": 0, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 3}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Forest", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Forest", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 3, "ms": 419}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Forest", "promoted": ["east"], "looping": false, "bound_keys": ["d:east|i:", "d:up|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 5563, "turn": 1, "forced": true, "snapshot_lessons": 2, "snapshot_map_edges": 14, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest", "edges": 3}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Forest", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Forest", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest", "hits": 3, "ms": 324}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Forest", "promoted": ["east"], "looping": false, "bound_keys": ["d:east|i:", "d:up|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 5563, "turn": 2, "forced": true, "snapshot_lessons": 2, "snapshot_map_edges": 14, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 3, "last": 2, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest Path", "edges": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Forest Path", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Forest Path", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest Path", "hits": 4, "ms": 544}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Forest Path", "promoted": ["east", "north", "south", "west"], "looping": false, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest Path", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 5644, "turn": 3, "forced": true, "snapshot_lessons": 2, "snapshot_map_edges": 14, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 3}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 4, "last": 3, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 626}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": false, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 5566, "turn": 4, "forced": true, "snapshot_lessons": 2, "snapshot_map_edges": 14, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 5, "last": 4, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 310}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": false, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 5565, "turn": 5, "forced": true, "snapshot_lessons": 2, "snapshot_map_edges": 14, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 6, "last": 5, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 414}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": false, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6613, "turn": 6, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 6}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 7, "last": 6, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 516}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": false, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6550, "turn": 7, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 8, "last": 7, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 314}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": false, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6550, "turn": 8, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 9, "last": 8, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 360}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6664, "turn": 9, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 9}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 85}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 10, "last": 9, "delta": 1}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 10, "last": 9, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 304}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6664, "turn": 10, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 11, "last": 10, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 503}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 11, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 12, "last": 11, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 451}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 12, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 12}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 315}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 13, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 550}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 14, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 332}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 15, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 15}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 16, "last": 15, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 330}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 16, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 17, "last": 16, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 426}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 17, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 18, "last": 17, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 549}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 18, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 18}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 19, "last": 18, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 317}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 19, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 162}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 20, "last": 19, "delta": 1}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 20, "last": 19, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 442}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 20, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 21, "last": 20, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 524}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 21, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 21}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 22, "last": 21, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 554}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 22, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 23, "last": 22, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 328}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 23, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 24, "last": 23, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 4, "ms": 327}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6743, "turn": 24, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 24}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 544}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 25, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 318}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 26, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 27, "last": 26, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 439}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 27, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 27}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 351}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 28, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 29, "last": 28, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 587}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 29, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 90}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 30, "last": 29, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 447}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 30, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 30}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 31, "last": 30, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 341}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 31, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 32, "last": 31, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 478}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 32, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 455}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 33, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 33}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 34, "last": 33, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 384}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 34, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 35, "last": 34, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 318}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 35, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 36, "last": 35, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 675}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 36, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 36}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 37, "last": 36, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 444}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 37, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 38, "last": 37, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 330}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 38, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 587}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 39, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 39}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 186}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 40, "last": 39, "delta": 1}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 40, "last": 39, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 330}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 40, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 41, "last": 40, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 496}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 41, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 518}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 42, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 42}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 43, "last": 42, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 323}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 43, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 44, "last": 43, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "error": "<urlopen error timed out>"}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 20248}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 44, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 541}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 45, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 45}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 46, "last": 45, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 317}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 46, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 47, "last": 46, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 306}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 47, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 568}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 48, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 48}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 49, "last": 48, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 332}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 49, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 168}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 50, "last": 49, "delta": 1}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 50, "last": 49, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 617}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 50, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 321}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 51, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 51}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 52, "last": 51, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 425}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 52, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 53, "last": 52, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 599}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 53, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 54, "last": 53, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 517}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 54, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 54}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 55, "last": 54, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 340}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 55, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 56, "last": 55, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 6, "ms": 583}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6885, "turn": 56, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 57, "last": 56, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 6, "ms": 323}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6885, "turn": 57, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 57}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 6, "ms": 326}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6885, "turn": 58, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 59, "last": 58, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest Path", "edges": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Forest Path", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Forest Path", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest Path", "hits": 4, "ms": 553}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Forest Path", "promoted": ["east", "north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest Path", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6785, "turn": 59, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 257}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 60, "last": 59, "delta": 1}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 60, "last": 59, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 553}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 60, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 60}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 61, "last": 60, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 380}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 61, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 504}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 62, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 63, "last": 62, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 591}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 63, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 63}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 64, "last": 63, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 320}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 64, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 6, "ms": 589}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6885, "turn": 65, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 66, "last": 65, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 6, "ms": 317}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6885, "turn": 66, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 66}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 67, "last": 66, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 6, "ms": 350}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6885, "turn": 67, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 68, "last": 67, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 655}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6739, "turn": 68, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 69, "last": 68, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Forest Path", "edges": 2}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Forest Path", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Forest Path", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Forest Path", "hits": 4, "ms": 457}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Forest Path", "promoted": ["east", "north", "south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Forest Path", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6785, "turn": 69, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 69}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 183}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 70, "last": 69, "delta": 1}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 70, "last": 69, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 407}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 70, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 71, "last": 70, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 565}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 71, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 307}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 72, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 72}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 73, "last": 72, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 319}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 73, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 74, "last": 73, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 529}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 74, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 299}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 75, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 75}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 76, "last": 75, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 299}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 76, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 77, "last": 76, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 662}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 77, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 485}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 78, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 78}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 79, "last": 78, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 314}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 79, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 95}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 80, "last": 79, "delta": 1}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 80, "last": 79, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 497}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 80, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 308}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 81, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 81}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 82, "last": 81, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 308}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 82, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 83, "last": 82, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 514}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 83, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 84, "last": 83, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 332}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 84, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 84}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 85, "last": 84, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 538}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 85, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 86, "last": 85, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 322}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 86, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 602}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 87, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 87}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 88, "last": 87, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 361}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 88, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 89, "last": 88, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 648}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 89, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 86}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 90, "last": 89, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 319}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 90, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 90}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 91, "last": 90, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 325}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 91, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 92, "last": 91, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 647}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 92, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 321}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 93, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 93}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 94, "last": 93, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 298}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 94, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 95, "last": 94, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 590}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 95, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 341}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 96, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 96}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 97, "last": 96, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 640}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 97, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 98, "last": 97, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 306}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 98, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 99, "last": 98, "delta": 1}
+{"type": "memory_call", "tool": "get_skill", "loaded": 1309}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 339}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6814, "turn": 99, "forced": true, "snapshot_lessons": 4, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}
+{"type": "memory_call", "tool": "agent_reload", "turn": 99}
+{"type": "memory_call", "tool": "brain_search", "kind": "judgment", "hits": 0, "ms": 200}
+{"type": "memory_call", "tool": "kb_write_skip", "turn": 100, "last": 99, "delta": 1}
+{"type": "memory_call", "tool": "reflect", "scope": "trajectory", "ep": 3, "final_score": 5, "turns": 100, "summary_len": 697, "ms": 9042}
+{"type": "memory_call", "tool": "aspect_reflection", "ep": 3, "aspect": "spatial", "kept": true}
+{"type": "memory_call", "tool": "frontier", "ep": 3, "best": 5, "deficit": "looped-no-progress"}
+{"type": "memory_call", "tool": "conjecture_subgoal", "ep": 3, "guide": 7.0}
+{"type": "memory_call", "tool": "lesson_utility", "ep": 3, "bound": ["d:down,north,south,up|i:explore", "d:down,up|i:explore", "d:east|i:", "d:east|i:explore", "d:north|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore", "d:west|i:explore", "d:|i:acquire,deposit,explore"], "delta": -1, "progress": false}
+{"type": "memory_call", "tool": "optimize_skill", "ep": 3, "score": 5, "updated": 1, "note": "accepted (score 5.0 >= best 5.0)"}
+{"type": "memory_call", "tool": "contrastive_heuristic", "skipped": "need_success_and_stall"}
+{"type": "memory_call", "tool": "room_reflection", "ep": 3, "room": "88", "events": 94, "summary_len": 105, "ms": 5034}
+{"type": "memory_call", "tool": "room_reflection", "ep": 3, "room": "78", "events": 3, "summary_len": 105, "ms": 5137}
+{"type": "memory_call", "tool": "room_reflection", "ep": 3, "room": "75", "events": 3, "summary_len": 123, "ms": 5177}
+{"type": "memory_call", "tool": "reflection_probe", "ep": 3, "hits": 5}
+{"type": "memory_call", "tool": "get_skill", "loaded": 2812}
+{"type": "memory_call", "tool": "brain_search", "kind": "known_exits", "room": "Up a Tree", "edges": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "death", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "open_hint", "room": "Up a Tree", "hits": 0}
+{"type": "memory_call", "tool": "brain_search", "kind": "tried", "room": "Up a Tree", "hits": 5, "ms": 584}
+{"type": "memory_call", "tool": "lesson_bind", "room": "Up a Tree", "promoted": ["south", "up", "west"], "looping": true, "bound_keys": ["d:down,north,south,up|i:explore", "d:up|i:", "d:up|i:acquire", "d:up|i:deposit,explore", "d:up|i:explore"]}
+{"type": "memory_call", "tool": "brain_shortlist_write", "room": "Up a Tree", "n": 12}
+{"type": "memory_call", "tool": "kb_write", "bytes": 6885, "turn": 100, "forced": true, "snapshot_lessons": 5, "snapshot_map_edges": 13, "snapshot_objects_locs": 1, "snapshot_events": 0}

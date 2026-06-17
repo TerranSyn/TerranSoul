@@ -211,6 +211,545 @@ def _deposit_containers(observation: str) -> list[str]:
     return out
 
 
+def _build_failure_mode_reflection_prompt(
+    final_score: int, turns: int, progress_facts: str, tail: str
+) -> str:
+    """Reflexion / hermes-agent SKILL_REVIEW style episode post-mortem prompt.
+
+    Converts an OBSERVABLE OUTCOME into a verbal self-criticism: not just "which
+    verbs worked" but "did the run complete its objective, and what was the
+    single missing step?". ``progress_facts`` is a short string of facts derived
+    at runtime from the agent's OWN counters (storage-container-seen,
+    valuable-acquired, stalled-N-turns) — never seeded. The vocabulary is
+    deliberately generic (objective, storage container, valuable, store/deposit
+    action, parser phrasing, unexplored exit) so the prompt encodes NO game verbs,
+    room names, or walkthrough — it applies to any long-horizon task. Module-level
+    + pure so the reproduce-first regression test can assert its shape directly.
+    """
+    return (
+        f"Below is the tail of a transcript from a text-adventure episode that "
+        f"ended with score {final_score} after {turns} turns.\n"
+        f"Observed progress this episode: {progress_facts}\n\n"
+        f"Act as a self-critical post-mortem (Reflexion-style). Answer concisely, "
+        f"grounded ONLY in the transcript — do not invent facts:\n"
+        f"1. Did the episode reach its primary objective (a higher score), or did it stall?\n"
+        f"2. If the score plateaued, name the SINGLE most important MISSING STEP that "
+        f"would have scored more. Consider: reaching a storage container while carrying "
+        f"a valuable but ending before the store/deposit action completed; acquiring no "
+        f"valuable to store; re-issuing a phrasing the parser rejected instead of "
+        f"rephrasing; or looping between known rooms without taking an unexplored exit.\n"
+        f"3. State, in imperative voice, the 1-3 concrete things the NEXT episode MUST do "
+        f"differently to score higher.\n"
+        f"Format strictly as markdown bullets.\n\n"
+        f"TRANSCRIPT:\n{tail}\n"
+    )
+
+
+def _build_progress_facts(
+    containers_seen: bool, valued_seen: bool, turns_since_progress: int
+) -> str:
+    """Generic runtime-derived progress facts fed into the failure-mode
+    reflection. Computed purely from the agent's OWN per-episode counters
+    (storage-container-seen, valuable-acquired, turns-since-progress) — no seed,
+    no game verbs/rooms. Module-level + pure for the reproduce-first test."""
+    parts: list[str] = []
+    parts.append("a storage container was encountered" if containers_seen
+                 else "no storage container was encountered")
+    parts.append("at least one item scored on pickup (a valuable was acquired)" if valued_seen
+                 else "no item scored on pickup (no valuable was acquired)")
+    if containers_seen and valued_seen:
+        parts.append(
+            "a storage container AND a valuable were both available — verify the "
+            "store/deposit action actually completed before the run ended"
+        )
+    if turns_since_progress >= 5:
+        parts.append(
+            f"the run stalled for {turns_since_progress} turns with no progress "
+            f"before it ended"
+        )
+    return "; ".join(parts) + "."
+
+
+def _build_contrastive_heuristic_prompt(
+    success_blob: str, failure_blob: str, final_score: int, turns: int
+) -> str:
+    """ExpeL / SiriuS contrastive distillation prompt.
+
+    Pairs a segment that MADE PROGRESS (scored / reached a new state) with one
+    that STALLED (looped / wasted turns), and asks for ONE transferable
+    imperative rule explaining what the progress segment did that the stalled
+    one didn't — phrased generically so it transfers across rooms/games where a
+    verbatim replay cannot. Both segments are the agent's OWN observed events;
+    the distilled rule is learned, never seeded. Module-level + pure so the
+    reproduce-first test can assert its shape."""
+    return (
+        f"You are distilling ONE reusable rule from a text-adventure episode "
+        f"(final score {final_score}, {turns} turns).\n\n"
+        f"SEGMENT THAT MADE PROGRESS (scored or reached a new state):\n{success_blob}\n\n"
+        f"SEGMENT THAT STALLED (looped between known rooms / wasted turns / no progress):\n{failure_blob}\n\n"
+        f"Contrast the two. In ONE imperative sentence, state the single GENERAL "
+        f"rule that the progress segment followed and the stalled segment violated. "
+        f"Phrase it generically — use category words like 'storage container', "
+        f"'valuable', 'unexplored exit', 'store/deposit action', 'light source' and "
+        f"NOT specific proper names — so it transfers to other situations. Optionally "
+        f"add a 2nd sentence naming the situation signature in which to apply it. "
+        f"Ground it ONLY in the two segments above; do not invent facts."
+    )
+
+
+def _classify_failure_deficit(
+    containers_seen: bool, valued_seen: bool, turns_since_progress: int, final_score: int
+) -> str:
+    """TRACE / AgentDebug-style failure-deficit taxonomy from the agent's OWN
+    per-episode counters — domain-agnostic, no game content. Lets a reflection be
+    stamped with the dominant deficit so the next episode can retrieve the lesson
+    matching the ACTIVE failure mode (attacks the Self-Refine self-diagnosis
+    ceiling: the model gets the RIGHT lesson, not a generic recency hit)."""
+    if not valued_seen:
+        return "acquired-no-valuable"
+    if containers_seen and valued_seen:
+        # had both a valuable AND a storage container but the score never moved to
+        # reflect a completed deposit -> the deposit/store plan never closed.
+        return "reached-container-never-deposited"
+    if turns_since_progress >= 8:
+        return "looped-no-progress"
+    return "general-stall"
+
+
+def _lesson_directives(lesson_text: str) -> dict:
+    """BIND step — parse a brain-authored reflection/heuristic lesson into
+    STRUCTURED planner directives so it can promote an action instead of being
+    prose the weak model may ignore. This closes the gap the chain audit found:
+    every other planner promotion comes from a structured signal; the reflection
+    lessons never did. Directives are generic (universal cardinal directions +
+    intent verbs); the CONTENT is the brain's own lesson, learned from the agent's
+    own play — no seed. Returns {'directions': set[str], 'intents': set[str]}."""
+    import re as _re_ld  # local alias (module-level _re is defined far below)
+    t = (lesson_text or "").lower()
+    directions = {
+        m.group(1).lower()
+        for m in _re_ld.finditer(
+            r"\b(north|south|east|west|up|down|northeast|northwest|southeast|southwest)\b", t)
+    }
+    intents: set[str] = set()
+    if _re_ld.search(r"\b(deposit|store|stash|place|insert|put\b.*\bin\b|drop\b.*\bin\b)", t):
+        intents.add("deposit")
+    if _re_ld.search(r"\b(take|acquire|pick up|grab|collect)\b", t):
+        intents.add("acquire")
+    if _re_ld.search(r"\b(open|unlock)\b", t):
+        intents.add("open")
+    if _re_ld.search(
+        r"\b(explore|unexplored|new (?:room|area|exit)|forest path|stall|stalled|"
+        r"loop|looped|looping|no progress|repetitive|different (?:exit|direction|path))\b", t):
+        intents.add("explore")
+    return {"directions": directions, "intents": intents}
+
+
+# ---- iter-4 MemRL: learned per-lesson utility (gradient-free, brain-stored) ----
+# Memory-as-RL (MemRL): a bound lesson accrues UTILITY from the episode's own
+# outcome reward, and retrieval (LESSON-BIND) weights the promotion boost by that
+# utility so the planner learns to trust the lessons that actually preceded
+# progress and damp the ones that didn't. The utility lives in the brain as a
+# compact ledger lesson (MCP single source of truth — never a private bridge
+# cache); the reward is the environment's OWN score, so nothing here is a seed.
+
+def _lesson_key(directives: dict) -> str:
+    """Stable utility key for a lesson, derived from its actionable DIRECTIVES (not
+    the verbose prose) so utility accrues to what actually steers the planner and
+    generalises across paraphrases. Empty when the lesson carries no directive."""
+    dirs = sorted(directives.get("directions", ()) or ())
+    ints = sorted(directives.get("intents", ()) or ())
+    if not dirs and not ints:
+        return ""
+    return "d:" + ",".join(dirs) + "|i:" + ",".join(ints)
+
+
+def _utility_boost(util) -> int:
+    """Translate a lesson's learned utility into a bounded planner-boost delta. A
+    lesson that repeatedly preceded progress is pushed harder (up to +3); one that
+    repeatedly didn't is damped — but never below -2, so a positive base promotion
+    keeps its sign (damp, don't invert)."""
+    try:
+        u = float(util)
+    except (TypeError, ValueError):
+        return 0
+    return int(min(3.0, u)) if u >= 0 else int(max(-2.0, u))
+
+
+def _credit_from_outcome(made_progress: bool) -> int:
+    """Reward for the lessons bound this episode: +1 if the episode beat its running
+    best, else -1. Gradient-free credit assignment off the environment's score."""
+    return 1 if made_progress else -1
+
+
+def _apply_credit(util_map: dict, keys, delta: int, lo: float = -3.0, hi: float = 5.0) -> dict:
+    """Fold a reward delta into the utility of every lesson key bound this episode,
+    clamped to [lo, hi] so a single streak can't dominate retrieval forever."""
+    out = dict(util_map or {})
+    for k in (keys or ()):
+        if not k:
+            continue
+        out[k] = max(lo, min(hi, float(out.get(k, 0.0)) + float(delta)))
+    return out
+
+
+def _parse_utility_ledger(content: str) -> dict:
+    """Read the brain-stored utility ledger back into {key: util, '__best__': best,
+    '__ep__': ep}. Parsed from the brain's OWN authored text, not seeded."""
+    import re as _re_ul
+    out: dict = {}
+    mb = _re_ul.search(r"best=([+-]?\d+(?:\.\d+)?)", content or "")
+    out["__best__"] = float(mb.group(1)) if mb else 0.0
+    me = _re_ul.search(r"\bep(\d+)\b", content or "")
+    out["__ep__"] = int(me.group(1)) if me else -1
+    for km, vm in _re_ul.findall(r"(d:[^|=;]*\|i:[^=;]*)=([+-]?\d+(?:\.\d+)?)", content or ""):
+        out[km.strip()] = float(vm)
+    return out
+
+
+def _format_utility_ledger(ep: int, best: float, util_map: dict) -> str:
+    """Serialise the utility ledger for one compact brain lesson (one write per
+    episode, recency-newest wins). Round-trips with _parse_utility_ledger."""
+    parts = [
+        f"{k}={float(util_map[k]):+.1f}"
+        for k in sorted(util_map or {})
+        if k and not k.startswith("__")
+    ]
+    return f"LESSON-UTILITY LEDGER ep{int(ep)} best={float(best):.0f}: " + "; ".join(parts)
+
+
+def _newest_utility_ledger(contents) -> dict:
+    """Pick the most-recent ledger (highest ep) from the brain_search hits —
+    brain_search orders by relevance, not recency, so select explicitly."""
+    best_d, best_ep = {"__best__": 0.0, "__ep__": -1}, -1
+    for c in (contents or ()):
+        d = _parse_utility_ledger(c)
+        if d.get("__ep__", -1) >= best_ep:
+            best_ep, best_d = d.get("__ep__", -1), d
+    return best_d
+
+
+def _lesson_promotions(
+    directives: dict, available_exits, tried_map: dict, frontier_bonus: int,
+    looping: bool = False, utility_map: dict = None,
+) -> list:
+    """BIND — convert parsed lesson directives into planner promotions so the
+    brain's own lesson actually STEERS the planner (instead of being ignored
+    prose). Promotes a brain-recommended cardinal direction that is an available,
+    unresolved exit. When the agent is LOOPING, escalate the score (binding-
+    escalation: an ignored advisory becomes an enforced push). Generic — the
+    direction is the brain's own learned recommendation; no game content.
+    Returns a list of (action, score, reason) tuples to extend `scored`."""
+    out: list = []
+    # K76 (iter-2, 2026-06-17): include "neutral" so the direction-binding branch
+    # matches the explore branch (gates on `is None`). A brain-recommended
+    # direction the agent already tried HERE with no result is a wall; re-
+    # escalating it while looping just reshuffles stuck actions instead of
+    # escaping to a truly-untried exit. Generic; no game content.
+    resolved = ("success", "fatal", "loop", "consumed", "neutral")
+    exits = {str(e).lower() for e in (available_exits or [])}
+    boost = 3 if looping else 2
+    # MemRL — learned utility of THIS lesson lifts/damps every promotion it makes.
+    _ub = _utility_boost((utility_map or {}).get(_lesson_key(directives), 0.0))
+    _un = f" [util{_ub:+d}]" if _ub else ""
+    for d in sorted(directives.get("directions", ()) or ()):
+        if d in exits and tried_map.get(d) not in resolved:
+            out.append((
+                d, frontier_bonus + boost + _ub,
+                f"[LESSON-BIND] brain lesson recommends '{d}'"
+                + (" (escalated — agent looping)" if looping else "") + _un,
+            ))
+    # Intent 'explore' (the dominant signal in a stalled/looped reflection):
+    # promote EVERY available untried exit so the agent breaks the loop and
+    # reaches new areas instead of re-traversing known rooms. Fires even when the
+    # lesson names no specific direction — the robust path the direction-only
+    # binding missed. Generic; exits come from the live observation.
+    _promoted = {p[0] for p in out}
+    if "explore" in (directives.get("intents") or set()):
+        for e in sorted(exits):
+            # explore = go somewhere NEW: only truly untried exits (a 'neutral'
+            # exit was already tried with no result — don't re-walk it).
+            if e not in _promoted and tried_map.get(e) is None:
+                out.append((
+                    e, frontier_bonus + max(1, boost - 1) + _ub,
+                    f"[LESSON-BIND] lesson urges exploration — untried exit '{e}'"
+                    + (" (escalated — looping)" if looping else "") + _un,
+                ))
+                _promoted.add(e)
+    return out
+
+
+# ---- iter-5 MAR: multi-aspect reflection + frontier curriculum + NL critic ----
+# Multi-aspect reflection (MAR): one episode is reflected through the LENS that
+# matches the active failure deficit, so the extra lesson attacks the dimension
+# that actually failed. A deterministic NL critic gates what gets stored (multi-
+# persona generation's known failure mode is false-positive lessons). The failure-
+# frontier curriculum anchors the SGS conjecturer to the PERSISTENT ceiling (the
+# best run's blocking deficit) instead of a one-off stumble. All generic; no seed.
+
+_REFLECTION_ASPECTS = {
+    "spatial": ("exploration and navigation — did the agent reach NEW states or "
+                "re-traverse known ones, and which untried direction would have "
+                "opened progress?"),
+    "acquisition": ("securing and USING resources toward the reward signal — did "
+                    "the agent obtain the needed objects and convert them into "
+                    "score, or carry them uselessly?"),
+    "risk": ("avoiding irreversible or fatal states — did the agent step into a "
+             "state it could not recover from, and what safe alternative existed?"),
+}
+
+
+def _aspect_for_deficit(deficit: str) -> str:
+    """MAR — pick the reflection LENS matching the active failure deficit so the
+    extra reflection attacks the dimension that actually failed. Domain-agnostic."""
+    if deficit in ("acquired-no-valuable", "reached-container-never-deposited"):
+        return "acquisition"
+    return "spatial"
+
+
+def _build_aspect_reflection_prompt(aspect, final_score, turns, progress_facts, tail) -> str:
+    """MAR — a single-lens reflection prompt. Grounded only in the transcript;
+    generic vocabulary; no seed."""
+    lens = _REFLECTION_ASPECTS.get(aspect, _REFLECTION_ASPECTS["spatial"])
+    return (
+        f"Reflect on this episode through ONE lens only: {lens}\n\n"
+        f"Outcome: score {final_score} in {turns} turns.\n"
+        f"Observed progress facts: {progress_facts}\n\n"
+        f"Recent transcript:\n{tail}\n\n"
+        "In ONE imperative sentence, state the single highest-value change for next "
+        "time within this lens. Ground it only in what the transcript shows; do not "
+        "assume any objective the run does not evidence."
+    )
+
+
+def _build_nl_critic_prompt(candidate_lesson, progress_facts) -> str:
+    """NL critic prompt (kept for an instruction-following brain; the wired gate is
+    the deterministic _critic_accepts). Asks whether a candidate lesson is
+    actionable, supported by the run's facts, and free of a hallucinated objective."""
+    return (
+        "You are a strict critic. Decide if the candidate lesson is worth keeping.\n"
+        f"Candidate: {candidate_lesson}\n"
+        f"Run facts: {progress_facts}\n\n"
+        "Reject it if it is vague, not directly actionable, contradicts the facts, or "
+        "assumes an objective the facts do not support; otherwise accept it.\n"
+        "Answer on the first line with exactly ACCEPT or REJECT, then one short reason."
+    )
+
+
+def _parse_critic_verdict(text: str) -> bool:
+    """Parse an instruction-following critic's verdict (fail-closed: only an explicit
+    ACCEPT keeps the lesson)."""
+    t = (text or "").strip().lower()
+    if not t:
+        return False
+    head = t.splitlines()[0]
+    if "reject" in head:
+        return False
+    return "accept" in head
+
+
+def _critic_accepts(candidate_lesson: str, progress_facts: str = "") -> bool:
+    """Deterministic NL-critic gate (robust to a summarizer-class brain that cannot
+    emit ACCEPT/REJECT — same reason the SGS Guide is deterministic). Keep a
+    candidate only if it is non-trivial, carries a BINDABLE directive (so it can
+    actually steer the planner), and is not a bare restatement of the run facts."""
+    t = (candidate_lesson or "").strip()
+    if len(t) < 12:
+        return False
+    d = _lesson_directives(t)
+    if not (d.get("directions") or d.get("intents")):
+        return False
+    pf = (progress_facts or "").strip().lower()
+    if pf and t.lower() in pf:
+        return False
+    return True
+
+
+def _format_frontier(ep, best, deficit) -> str:
+    """Failure-frontier — serialise the persistent best-progress record to one
+    compact brain lesson (recency-newest wins). Round-trips with _parse_frontier."""
+    return f"FRONTIER ep{int(ep)} best={float(best):.0f} deficit={deficit or 'general-stall'}"
+
+
+def _parse_frontier(content: str) -> dict:
+    """Read the brain-stored frontier record back into {__ep__, best, deficit}."""
+    import re as _re_fr
+    out = {"__ep__": -1, "best": 0.0, "deficit": "general-stall"}
+    m = _re_fr.search(r"\bep(\d+)\b", content or "")
+    out["__ep__"] = int(m.group(1)) if m else -1
+    mb = _re_fr.search(r"best=([+-]?\d+(?:\.\d+)?)", content or "")
+    out["best"] = float(mb.group(1)) if mb else 0.0
+    md = _re_fr.search(r"deficit=([\w-]+)", content or "")
+    out["deficit"] = md.group(1) if md else "general-stall"
+    return out
+
+
+def _newest_frontier(contents) -> dict:
+    """Pick the most-recent frontier (highest ep) from relevance-ordered hits."""
+    best, bep = {"__ep__": -1, "best": 0.0, "deficit": "general-stall"}, -1
+    for c in (contents or ()):
+        d = _parse_frontier(c)
+        if d.get("__ep__", -1) >= bep:
+            bep, best = d.get("__ep__", -1), d
+    return best
+
+
+def _frontier_target_prefix(frontier: dict, final_score) -> str:
+    """Failure-frontier curriculum — anchor the next conjectured sub-goal to the
+    PERSISTENT ceiling (the best run's blocking deficit) rather than a one-off
+    stumble, so the curriculum keeps pushing past where the agent actually
+    plateaus. Empty until a positive frontier is known."""
+    if not frontier or frontier.get("__ep__", -1) < 0:
+        return ""
+    best = float(frontier.get("best", 0.0))
+    if best <= 0:
+        return ""
+    deficit = frontier.get("deficit", "general-stall")
+    return (f"Across runs the best progress was score {best:.0f}, repeatedly blocked at: "
+            f"{deficit}. This run scored {float(final_score):.0f}. ")
+
+
+def _sgs_fallback_target(deficit: str, final_score, progress_facts: str) -> str:
+    """K-DECOUPLE FIX (bench 2026-06-16): when the trajectory summary is empty — the
+    summarizer returned nothing under heavy concurrent bench load — build a
+    DETERMINISTIC conjecturer target from the agent's OWN deficit class + runtime
+    progress facts, so the SGS curriculum still fires instead of going inert. Both
+    inputs are the agent's own runtime signal; no seed."""
+    return (f"The episode ended with deficit '{deficit or 'general-stall'}' at score "
+            f"{final_score}: {progress_facts}. The objective was not completed.")
+
+
+def _build_conjecturer_prompt(target: str, transcript_tail: str) -> str:
+    """SGS Conjecturer (gradient-free, adapted from arXiv:2604.20209). From the
+    UNSOLVED target the failure reflection identified, generate ONE simpler,
+    target-RELEVANT sub-goal that is a necessary intermediate step. SGS's ablation
+    shows target-conditioning is essential (without it the conjectured problems are
+    solvable but useless), so the target is passed in. Grounded only in the agent's
+    own transcript; generic vocabulary; no seed."""
+    return (
+        f"The agent did NOT achieve this objective this episode:\n  TARGET: {target}\n\n"
+        f"Propose ONE simpler SUB-GOAL that is a necessary intermediate step toward the "
+        f"target — something the agent could plausibly achieve in a few turns from what it "
+        f"already observed. It MUST be simpler than the full target and a direct prerequisite "
+        f"for it. Phrase it as a single imperative sentence in GENERIC vocabulary (e.g. "
+        f"'acquire a valuable item', 'explore the unexplored exit to the <direction>', 'open "
+        f"the closed container') — no proper names. Ground it ONLY in the transcript below.\n\n"
+        f"TRANSCRIPT:\n{transcript_tail}\n\nSUB-GOAL:"
+    )
+
+
+def _build_guide_prompt(target: str, subgoal: str) -> str:
+    """SGS Guide rubric, transcribed from arXiv:2604.20209 §E.2 (the three criteria
+    and their integer levels) and domain-transferred from Lean4 lemmas to
+    text-environment sub-goals. NOTE: in the paper the Guide is a *finetuned
+    LLM-as-judge* (a DeepSeek-Prover-V2-7B copy) that emits these three scores; our
+    brain exposes only `brain_summarize`, a SUMMARIZER that provably cannot follow
+    this rubric (tested 2026-06-16: it summarises the prompt and returns the same
+    3.0 for a good and a degenerate sub-goal). So this prompt is RETAINED for a
+    future instruction-following judge; the WIRED Guide is the deterministic
+    _guide_score_subgoal, which applies the paper's exact formula to heuristic
+    scores. Parsed by _parse_guide_score into R_guide (§E.3)."""
+    return (
+        "Score this candidate SUB-GOAL for guiding an agent toward a TARGET objective.\n"
+        f"TARGET: {target}\nSUB-GOAL: {subgoal}\n\n"
+        "Rate THREE criteria, each on its OWN line as 'name: integer':\n"
+        "- relevance: 0-5  (0 not related or restates the target; 1 not related; "
+        "2 related area but not directly useful; 3 related, may be useful; 4 directly "
+        "useful prerequisite; 5 very useful — dramatically reduces the difficulty)\n"
+        "- complexity: 0-4  (0 one atomic action; 1 low, 2-3 chained steps; 2 moderate; "
+        "3 high, 2-3 unrelated parts; 4 very high, 3+ unrelated clauses)\n"
+        "- redundancy: 0 or 1  (1 if it contains unnecessary steps or restates something "
+        "already achieved)\n"
+        "Output ONLY the three lines."
+    )
+
+
+def _parse_guide_score(guide_text: str):
+    """Apply SGS's R_guide = max(0, relevance + (2 - complexity) + (1 - redundancy))
+    (arXiv:2604.20209 §E.3), with the rule that complexity >= 3 auto-zeroes a
+    degenerate sub-goal, to scores an instruction-following Guide emitted as
+    'name: N' lines. Returns None when the text contains NO explicit score line for
+    ANY criterion — that signals the caller (an LLM-judge path) to fall back to the
+    deterministic Guide, instead of silently scoring a non-answer as 3.0 (the bug
+    that made brain_summarize accept everything). Pure parse, no LLM."""
+    import re as _re_g
+    found = {}
+    for name in ("relevance", "complexity", "redundancy"):
+        m = _re_g.search(rf"\b{name}\b\s*[:=]\s*([0-9]+(?:\.[0-9]+)?)",
+                         guide_text or "", _re_g.IGNORECASE)
+        if m:
+            found[name] = float(m.group(1))
+    if not found:
+        return None  # not a real judgment — let the caller fall back
+    relevance = found.get("relevance", 0.0)
+    complexity = found.get("complexity", 0.0)
+    redundancy = found.get("redundancy", 0.0)
+    if complexity >= 3:
+        return 0.0
+    return max(0.0, relevance + (2.0 - complexity) + (1.0 - redundancy))
+
+
+def _guide_score_subgoal(target: str, subgoal: str) -> float:
+    """The WIRED SGS Guide: a DETERMINISTIC implementation of arXiv:2604.20209's
+    three-criterion rubric (§E.2) + reward (§E.3), used because our brain exposes no
+    instruction-following judge tool (the paper's Guide is a finetuned LLM-judge; our
+    only generative tool, brain_summarize, provably cannot emit the rubric — see
+    _build_guide_prompt). We COMPUTE the paper's three integer criteria from the
+    sub-goal text + target rather than asking an LLM, then apply the paper's formula
+    UNCHANGED. Domain-transferred from Lean4 lemmas to text sub-goals:
+      relevance  (0-5, §E.2): bindable + on-topic with the target objective —
+                  0 unrelated; +3 if it names a bindable directive/intent (a
+                  directly-useful prerequisite, level 3-4); +up-to-2 for target
+                  word-overlap (level 5 = very useful);
+      complexity (0-4, §E.2): count of conjunction/disjunction joiners (and/or/then/
+                  ';'/','/'.') = number of chained sub-clauses — 0 atomic … 4 for
+                  3+ unrelated clauses; the paper's degenerate-compound signal;
+      redundancy (0-1, §E.2): 1 if the sub-goal merely restates the target / needs
+                  no new action.
+    R_guide = max(0, relevance + (2 - complexity) + (1 - redundancy)); complexity >= 3
+    auto-zeroes (the paper's exact rule). Generic; no game content; unit-testable."""
+    import re as _re_gs
+    sg = (subgoal or "").strip().lower()
+    if not sg:
+        return 0.0
+    tg = (target or "").strip().lower()
+    _dirs = _lesson_directives(sg)
+    bindable = bool(_dirs.get("directions") or _dirs.get("intents"))
+    _stop = {"the", "a", "an", "to", "and", "or", "of", "in", "on", "at", "it", "is",
+             "was", "that", "this", "for", "with", "you", "your", "not", "but", "its",
+             "into", "item", "action", "before", "after", "next", "then", "from"}
+    sg_w = {w for w in _re_gs.findall(r"[a-z]+", sg) if len(w) > 3 and w not in _stop}
+    tg_w = {w for w in _re_gs.findall(r"[a-z]+", tg) if len(w) > 3 and w not in _stop}
+    overlap = len(sg_w & tg_w)
+    relevance = (3 if bindable else 0) + min(2, overlap)          # 0-5 (§E.2)
+    # complexity = number of chained sub-clauses (conjunction/disjunction joiners),
+    # mapping the paper's level bands (0 atomic, 1 two-three steps, ... 4 three-plus
+    # unrelated clauses) to our text sub-goals.
+    joiners = len(_re_gs.findall(r"[.;,]|\band\b|\bor\b|\bthen\b", sg))
+    complexity = min(4, joiners)                                   # 0-4 (§E.2)
+    redundancy = 1 if (sg_w and len(sg_w & tg_w) >= max(2, int(len(sg_w) * 0.7))) else 0
+    if complexity >= 3:                                            # paper's auto-zero
+        return 0.0
+    return max(0.0, relevance + (2.0 - complexity) + (1.0 - redundancy))
+
+
+def _extract_subgoal(text: str) -> str:
+    """A summarizer brain wraps the conjectured sub-goal in explanatory prose; pull
+    out the single imperative sub-goal so the Guide scores ONE clean clause (not a
+    multi-sentence paragraph that trips the complexity gate). Take the last
+    sentence and strip a leading framing clause ('a simpler step is to …')."""
+    import re as _re_xg
+    t = (text or "").strip()
+    if not t:
+        return ""
+    sents = [s.strip() for s in _re_xg.split(r"(?<=[.!?])\s+", t) if s.strip()]
+    sg = sents[-1] if sents else t
+    m = _re_xg.search(r"\b(?:is|step|goal|move|action|should)\b[^.]*?\bto\b\s+(.+)$", sg, _re_xg.IGNORECASE)
+    if m:
+        sg = m.group(1)
+    return sg.strip().rstrip(".").strip()
+
+
 # Universal closable/openable STATE cues. A noun the environment describes
 # with one of these (in the same sentence) is a CONFIRMED openable — opening
 # it is a high-information blocker-resolution, not speculative scenery. These
@@ -489,6 +1028,64 @@ def _load_token(repo_root: Path) -> str | None:
     return os.environ.get("TERRANSOUL_MCP_TOKEN")
 
 
+def _route_nav_moves(prior_traj, k: int = 10):
+    """ROUTE-REPLAY (iter-1 fix): from the agent's OWN prior per-turn trajectory
+    — a list of ``(issuing_room, action, location_changed)`` — return the last
+    ``k`` NAVIGATION moves (the ones that changed location) as ``(room, action)``
+    pairs, in order. This is the path that led to a score, so a later episode can
+    replay the proven route instead of re-discovering it by luck. Generic: the
+    agent's own discovered route, no game content/seed."""
+    nav = [(r, a) for (r, a, lc) in prior_traj if lc and r and a]
+    return nav[-k:] if (k and k > 0) else nav
+
+
+def _format_route_move(room: str, act: str) -> str:
+    """SOLUTION_MOVE content for one route step, in the EXACT shape the planner's
+    per-room SOLUTION-REPLAY already parses (``SOLUTION_MOVE at '<room>': do
+    '<act>'``). Tagged ``route`` so it is distinguishable from a true scoring
+    move, but surfaces through the same per-room replay query."""
+    return f"SOLUTION_MOVE at '{room}': do '{act}' (route to score)."
+
+
+def _recent_inplace_prereq(prior_traj, room, k: int = 1):
+    """ROUTE-REPLAY chain bootstrap (iter, 2026-06-17): from the agent's OWN prior
+    per-turn trajectory — ``(issuing_room, action, location_changed)`` — return up
+    to ``k`` most-recent IN-PLACE actions (``location_changed`` is False) issued in
+    ``room``, oldest-first as ``(room, action)`` pairs.
+
+    Why: a multi-step scoring subgoal often has a 0-scoring PREREQUISITE in the
+    scoring room (e.g. an ``open``/``unlock`` immediately before a ``put``). The
+    nav-only route recorder (`_route_nav_moves`) captures only location-CHANGING
+    moves, so the precondition was never persisted — a later episode replayed the
+    final scoring move WITHOUT its precondition and failed (the bootstrap deadlock
+    that pinned the floor: the chain can only replay if it already completed once
+    AND its precondition happened to be re-discovered). Recording the in-place
+    precondition as a per-room SOLUTION_MOVE lets the existing per-room replay
+    reconstruct the subgoal. Generic: the agent's OWN discovered action, no seed."""
+    seen = []
+    for (r, a, lc) in reversed(list(prior_traj or ())):
+        if r and a and (not lc) and r == room:
+            seen.append((r, a))
+            if k and len(seen) >= k:
+                break
+    return list(reversed(seen))
+
+
+# Reflect-time brain_summarize runs a real 12B-LLM summarization over a
+# multi-thousand-char trajectory tail; it routinely needs ~10-50s (the one
+# historical success measured 11.8s) and far exceeds the 20s default that the
+# lightweight brain_search / brain_ingest_lesson calls use. These calls run at
+# EPISODE END (off the per-turn loop), so a long ceiling is free. Sharing the
+# 20s wall is what zeroed reflections_ingested across EVERY 2026-06-16 bench
+# episode: the summarize timed out -> empty text -> the ingest block (and its
+# top_reflection_ingested=1 counter) was skipped, so the whole iter-1..iter-6
+# generative self-improvement stack was inert. A connection-refused / down brain
+# still fails fast (urlopen raises immediately), so this only waits when the
+# brain is genuinely slow — which is exactly the case we want to wait out.
+# Generic transport constant; encodes no game content (AGI-pure).
+REFLECT_SUMMARIZE_TIMEOUT = 180.0
+
+
 class McpClient:
     """Minimal JSON-RPC 2.0 client over MCP HTTP /mcp.
 
@@ -506,7 +1103,7 @@ class McpClient:
         self.token = _load_token(repo_root)
         self._id = 0
 
-    def call(self, method: str, params: dict[str, Any]) -> Any:
+    def call(self, method: str, params: dict[str, Any], timeout: float | None = None) -> Any:
         self._id += 1
         body = json.dumps(
             {"jsonrpc": "2.0", "id": self._id, "method": method, "params": params}
@@ -520,7 +1117,7 @@ class McpClient:
         if self.token:
             req.add_header("Authorization", f"Bearer {self.token}")
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+            with urllib.request.urlopen(req, timeout=(self.timeout if timeout is None else timeout)) as resp:
                 raw = resp.read().decode("utf-8")
         except urllib.error.HTTPError as e:
             raise RuntimeError(f"MCP HTTP {e.code}: {e.read().decode('utf-8', 'replace')}") from e
@@ -529,7 +1126,7 @@ class McpClient:
             raise RuntimeError(f"MCP error: {payload['error']}")
         return payload.get("result")
 
-    def tool(self, name: str, args: dict[str, Any]) -> Any:
+    def tool(self, name: str, args: dict[str, Any], timeout: float | None = None) -> Any:
         """Invoke an MCP tool by name with arguments.
 
         Raises ``RuntimeError`` if the server returns ``isError: true`` in
@@ -543,7 +1140,7 @@ class McpClient:
         supplied the required ``category`` arg, yet the bridge counted
         every call as a success.
         """
-        result = self.call("tools/call", {"name": name, "arguments": args})
+        result = self.call("tools/call", {"name": name, "arguments": args}, timeout=timeout)
         if isinstance(result, dict) and result.get("isError"):
             msg = ""
             blocks = result.get("content")
@@ -1473,6 +2070,20 @@ class BrainMemoryManager:
                 self.calls.append({"tool": "valued_item", "obj": _vt.split()[-1].lower(),
                                    "delta": score_delta})
 
+        # ---- ROUTE-REPLAY trajectory tracking (iter-1 fix, 2026-06-16) ----
+        # Track the agent's OWN per-turn (issuing-room -> action) trajectory so
+        # that when a move SCORES, the NAVIGATION path that led there is also
+        # persisted as replayable SOLUTION_MOVEs (below) — not just the scoring
+        # move. The v3 bench showed the proven scoring path was ingested but the
+        # ROUTE rooms had no solution_move, so ep3 diverged at move 3 and never
+        # re-reached the scoring room ("write-only memory"). Generic; no seed.
+        if not hasattr(self, "_traj"):
+            self._traj = []
+        _prev_room = getattr(self, "_prev_loc_name", None)
+        _issuing_room = _prev_room if (location_changed and _prev_room) else loc_name
+        if _issuing_room and act:
+            self._traj.append((_issuing_room.strip(), act, bool(location_changed)))
+
         # ---- D2: positive outcome reinforcement on score gain ----
         if score_delta > 0:
             try:
@@ -1517,6 +2128,62 @@ class BrainMemoryManager:
                     self.calls.append({"tool": "solution_move", "room": _sr_room, "act": act, "delta": score_delta})
                 except Exception as e:
                     self.calls.append({"tool": "solution_move", "error": str(e)})
+
+            # ---- ROUTE-REPLAY: persist the NAVIGATION path that led to this
+            # score (iter-1 fix). Record the last few location-changing moves in
+            # the agent's OWN trajectory as SOLUTION_MOVEs keyed by the room they
+            # were issued FROM, so the EXISTING per-room SOLUTION-REPLAY steers a
+            # later episode down the proven route instead of re-discovering it by
+            # luck (the v3 ep3 5->0 regression). The brain dedups identical
+            # content, so re-recording across scores is harmless. Generic.
+            _route_nav = _route_nav_moves(getattr(self, "_traj", [])[:-1], 10)
+            for _r_room, _r_act in _route_nav:
+                try:
+                    self.mcp.tool(
+                        "brain_ingest_lesson",
+                        {
+                            "content": _format_route_move(_r_room, _r_act),
+                            "tags": _tags_str([
+                                "zork", "solution_move", "judgment", "route",
+                                f"loc_{_r_room.replace(' ', '_')}",
+                            ]),
+                            "category": "zork-bench",
+                            "importance": 9,
+                        },
+                    )
+                except Exception:
+                    pass
+            if _route_nav:
+                self.calls.append({"tool": "route_replay", "moves": len(_route_nav)})
+
+            # ---- ROUTE-REPLAY chain bootstrap (iter, 2026-06-17): also persist
+            # the in-place PREREQUISITE (e.g. an open/unlock) that preceded this
+            # score in the scoring room, so per-room replay can reconstruct a
+            # multi-step subgoal — not just the final scoring move. Closes the
+            # documented bootstrap deadlock where a 0-scoring precondition was
+            # never recorded (audit BUG#1). Bounded to the single most-recent in-place
+            # action and de-duped against the scoring move itself, so it adds the
+            # genuine precondition without replaying junk. Generic; no game content.
+            for _p_room, _p_act in _recent_inplace_prereq(
+                getattr(self, "_traj", [])[:-1], _sr_room, 1):
+                if _p_act and _p_act.strip().lower() == (act or "").strip().lower():
+                    continue
+                try:
+                    self.mcp.tool(
+                        "brain_ingest_lesson",
+                        {
+                            "content": _format_route_move(_p_room, _p_act),
+                            "tags": _tags_str([
+                                "zork", "solution_move", "judgment", "route",
+                                f"loc_{_p_room.replace(' ', '_')}",
+                            ]),
+                            "category": "zork-bench",
+                            "importance": 9,
+                        },
+                    )
+                    self.calls.append({"tool": "route_prereq", "room": _p_room, "act": _p_act})
+                except Exception:
+                    pass
 
         # ---- Spec 014: tried-actions memory ----
         # Generic shape: `TRIED at <room> action='<act>' outcome=<class>`.
@@ -2245,9 +2912,15 @@ class BrainKnowledgeManager:
             "acquired": [],
         }
         # 1. Cross-episode reflections (judgment-kind, reflection tag).
+        # Reflexion bounded-buffer recency bias: up-weight the MOST RECENT
+        # episode's failure-mode reflection so the freshest "what to do
+        # differently" lesson outranks stale generic ones (FTS5 lexical tokens;
+        # tags are advisory). Recency token derived from the episode counter,
+        # not from any domain value.
+        _ep_prev = max(0, getattr(self, "_episode_count", 1) - 1)
         try:
             r = self.mcp.tool("brain_search", {
-                "query": "zork reflection lessons strategy",
+                "query": f"zork reflection lessons strategy failure_mode ep{_ep_prev}",
                 "tags": ["zork", "reflection"],
                 "cognitive_kind": "judgment",
                 "limit": 8,
@@ -2835,6 +3508,10 @@ class BrainKnowledgeManager:
         # step-by-step and the 4B replays it under critic enforcement. This
         # demonstrates that with the right CONTEXT a weak local model becomes
         # capable. Zork-specific knowledge is allowed in THIS demo only.
+        # ROUTE-REPLAY (iter-1 fix): per-episode trajectory resets; the persisted
+        # SOLUTION_MOVEs (incl. route moves) live in the brain cross-episode, so
+        # the next episode replays the proven path from its own prior play.
+        self._traj = []
         self._taught_seq = []
         self._taught_ptr = 0
         import os as _os_ts
@@ -2931,35 +3608,62 @@ class BrainKnowledgeManager:
         if mm is not None and hasattr(mm, "_room_event_counts"):
             out["room_event_counts"] = dict(mm._room_event_counts)
 
-        # ---- (1) trajectory reflection over the whole transcript tail ----
+        # ---- (1) Reflexion failure-mode reflection over the transcript tail ----
+        # hermes-agent / Reflexion: turn this episode's OUTCOME into a verbal
+        # self-criticism — "did the run complete its objective, and what was the
+        # single missing step?" — not just generic verb lessons. The completion
+        # signal is computed at runtime from the agent's OWN counters (no seed):
+        # storage-container-seen, valuable-acquired, stalled-N-turns.
         tail = transcript[-12000:] if len(transcript) > 12000 else transcript
-        prompt = (
-            f"Below is a transcript from a Zork I episode that ended with "
-            f"score {final_score} after {turns} turns. Extract up to 5 short, "
-            f"concrete lessons (one sentence each, imperative voice) about "
-            f"Zork strategy that would help a future episode score higher. "
-            f"Focus on: which verbs worked at which locations, which actions "
-            f"wasted turns, which paths led to dead-ends. Do NOT invent facts "
-            f"not shown in the transcript. Format strictly as markdown bullets.\n\n"
-            f"TRANSCRIPT:\n{tail}\n"
-        )
-        t0 = time.monotonic()
+        _containers_seen = bool(getattr(self, "_room_deposit_container", None))
+        _valued_seen = bool(getattr(mm, "_valued_items", None)) if mm is not None else False
+        _tsp = int(getattr(mm, "_turns_since_progress", 0) or 0) if mm is not None else 0
+        progress_facts = _build_progress_facts(_containers_seen, _valued_seen, _tsp)
+        _deficit = _classify_failure_deficit(_containers_seen, _valued_seen, _tsp, final_score)
+        # iter-5 failure-frontier — load the persistent ceiling so the SGS
+        # curriculum and the MAR lens target where the agent actually plateaus,
+        # not a one-off stumble. Newest record wins (selected by ep). Fail-open.
+        # K-RETRIEVAL FIX (bench 2026-06-16): brain_search is embedding-ranked, so a
+        # multi-word query ("FRONTIER best deficit") diluted the short structured
+        # ledger below the limit-5 cutoff and returned 0 hits even though the rows
+        # exist — the curriculum read an empty frontier every episode. Query the
+        # DISTINCTIVE LEAD TOKEN only + a higher limit; _newest_frontier then parses.
+        _frontier = {"__ep__": -1, "best": 0.0, "deficit": "general-stall"}
         try:
-            traj_result = self.mcp.tool("brain_summarize", {"text": prompt})
-            summary_text = _extract_summary_text(traj_result)
-        except Exception as e:
-            self.calls.append({"tool": "reflect", "error": str(e)})
-            summary_text = ""
+            _fr = self.mcp.tool("brain_search", {
+                "query": "FRONTIER",
+                "tags": ["frontier"], "limit": 80, "rerank": False})
+            _frontier = _newest_frontier([h.get("content") or "" for h in _extract_hits(_fr)])
+        except Exception:
+            _frontier = {"__ep__": -1, "best": 0.0, "deficit": "general-stall"}
+        # K-EMPTY-SUMMARY FIX (bench 2026-06-16): under heavy concurrent bench load
+        # the trajectory brain_summarize returned empty (idle it returns 765 chars),
+        # which skipped iter-1 AND gated off the iter-6 conjecturer. Mitigate: a
+        # shorter tail (less ctx/timeout pressure) + ONE retry on a transient empty.
+        prompt = _build_failure_mode_reflection_prompt(
+            final_score, turns, progress_facts, tail[-6000:])
+        t0 = time.monotonic()
+        summary_text = ""
+        for _r_attempt in range(2):
+            try:
+                traj_result = self.mcp.tool("brain_summarize", {"text": prompt},
+                                            timeout=REFLECT_SUMMARIZE_TIMEOUT)
+                summary_text = _extract_summary_text(traj_result)
+            except Exception as e:
+                self.calls.append({"tool": "reflect", "error": str(e)})
+                summary_text = ""
+            if summary_text.strip():
+                break
         if summary_text.strip():
             # Reflections are learned rules-to-follow → judgment.
-            tags = ["zork", "judgment", "strategy", "reflection", f"ep{ep}"]
+            tags = ["zork", "judgment", "strategy", "reflection", "failure_mode", f"deficit_{_deficit}", f"ep{ep}"]
             try:
                 self.mcp.tool(
                     "brain_ingest_lesson",
                     {
                         "content": (
                             f"Zork reflection from episode {ep} "
-                            f"(score={final_score}, turns={turns}, trajectory):\n{summary_text.strip()}"
+                            f"(score={final_score}, turns={turns}, deficit={_deficit}):\n{summary_text.strip()}"
                         ),
                         "tags": _tags_str(tags),
                         "category": "zork-bench",
@@ -2982,6 +3686,135 @@ class BrainKnowledgeManager:
         else:
             self.calls.append({"tool": "reflect", "skipped": "empty_summary"})
 
+        # ---- (1f) MAR multi-aspect reflection (critic-gated) ----------------
+        # On a weak/stalled episode, reflect ONCE more through the lens matching
+        # the active deficit (or the persistent frontier's deficit when we did not
+        # beat it), and store the lesson ONLY if the deterministic NL critic accepts
+        # it (non-trivial + bindable directive + not a restatement). One extra
+        # summarize, gated to the episodes that need it. Generic lenses; no seed.
+        try:
+            _weak = (final_score <= 0) or (_tsp >= 6) or \
+                _deficit in ("looped-no-progress", "general-stall")
+            if _weak:
+                _aspect = _aspect_for_deficit(
+                    _frontier.get("deficit")
+                    if float(_frontier.get("best", 0.0)) >= float(final_score)
+                    else _deficit)
+                _ar = self.mcp.tool("brain_summarize", {
+                    "text": _build_aspect_reflection_prompt(
+                        _aspect, final_score, turns, progress_facts, tail)},
+                    timeout=REFLECT_SUMMARIZE_TIMEOUT)
+                _aspect_lesson = _extract_summary_text(_ar).strip()
+                if _aspect_lesson and _critic_accepts(_aspect_lesson, progress_facts):
+                    self.mcp.tool("brain_ingest_lesson", {
+                        "content": f"Aspect reflection ({_aspect}, ep{ep}): {_aspect_lesson}",
+                        "tags": _tags_str(["zork", "judgment", "strategy", "reflection",
+                                           "heuristic", f"aspect_{_aspect}",
+                                           f"deficit_{_deficit}", f"ep{ep}"]),
+                        "category": "zork-bench", "importance": 8})
+                    out["aspect_reflection_ingested"] = 1
+                    self.calls.append({"tool": "aspect_reflection", "ep": ep,
+                                       "aspect": _aspect, "kept": True})
+                else:
+                    self.calls.append({"tool": "aspect_reflection", "ep": ep,
+                                       "aspect": _aspect, "kept": False,
+                                       "reason": "critic_rejected_or_empty"})
+        except Exception as _ar_e:
+            self.calls.append({"tool": "aspect_reflection", "error": str(_ar_e)})
+
+        # iter-5 failure-frontier — advance the persistent ceiling when this run
+        # matched or beat it, stamping the deficit that blocked the best run so the
+        # curriculum keeps attacking the real wall (not a noisy per-episode failure).
+        try:
+            if float(final_score) >= float(_frontier.get("best", 0.0)):
+                self.mcp.tool("brain_ingest_lesson", {
+                    "content": _format_frontier(ep, final_score, _deficit),
+                    "tags": _tags_str(["zork", "frontier", f"ep{ep}"]),
+                    "category": "zork-bench", "importance": 7})
+                out["frontier_updated"] = 1
+                self.calls.append({"tool": "frontier", "ep": ep,
+                                   "best": final_score, "deficit": _deficit})
+        except Exception as _fw_e:
+            self.calls.append({"tool": "frontier", "error": str(_fw_e)})
+
+        # ---- (1d) SGS Conjecturer–Guide curriculum (arXiv:2604.20209, adapted) ----
+        # From the unsolved target (this episode's failure diagnosis), the brain
+        # CONJECTURES a simpler, target-relevant sub-goal; a frozen GUIDE scores it
+        # (SGS rubric); a vetted sub-goal is ingested as a curriculum lesson the
+        # LESSON-BIND step promotes next episode — decomposing an unreachable
+        # multi-step target into an achievable rung. Gradient-free + AGI-pure: the
+        # target is the agent's OWN reflection, the sub-goal is conjectured from the
+        # agent's OWN transcript, no seed and no weight update.
+        # K-DECOUPLE FIX (bench 2026-06-16): the conjecturer was gated on the
+        # trajectory summary, so the load-induced empty summary made iter-6 emit ZERO
+        # sub-goals all 3 episodes. Decouple: when the summary is empty, synthesise a
+        # DETERMINISTIC target from the deficit + progress facts (both always
+        # available, both the agent's OWN runtime signal — no seed) so the curriculum
+        # still fires. The frontier prefix anchors it to the persistent ceiling.
+        _sgs_target = summary_text.strip() or _sgs_fallback_target(
+            _deficit, final_score, progress_facts)
+        if _sgs_target:
+            try:
+                _cj = self.mcp.tool("brain_summarize", {
+                    "text": _build_conjecturer_prompt(
+                        (_frontier_target_prefix(_frontier, final_score)
+                         + _sgs_target)[:600],
+                        tail[-6000:])},
+                    timeout=REFLECT_SUMMARIZE_TIMEOUT)
+                _subgoal = _extract_subgoal(_extract_summary_text(_cj))
+                if _subgoal:
+                    # Deterministic SGS Guide (robust; a summarizer brain cannot
+                    # reliably emit the rubric lines). _build_guide_prompt /
+                    # _parse_guide_score remain available for an instruction-
+                    # following brain that can.
+                    _rg = _guide_score_subgoal(_sgs_target, _subgoal)
+                    if _rg >= 4.0:
+                        self.mcp.tool("brain_ingest_lesson", {
+                            "content": f"Sub-goal (curriculum, ep{ep}, guide={_rg:.1f}): {_subgoal}",
+                            "tags": _tags_str(["zork", "judgment", "strategy", "reflection",
+                                               "subgoal", "curriculum", f"ep{ep}"]),
+                            "category": "zork-bench", "importance": 8})
+                        out["subgoal_ingested"] = 1
+                        self.calls.append({"tool": "conjecture_subgoal", "ep": ep, "guide": round(_rg, 1)})
+                    else:
+                        self.calls.append({"tool": "conjecture_subgoal", "ep": ep,
+                                           "guide": round(_rg, 1), "rejected": True})
+            except Exception as _cj_e:
+                self.calls.append({"tool": "conjecture_subgoal", "error": str(_cj_e)})
+
+        # ---- (1e) MemRL learned lesson-utility — credit assignment --------
+        # Reward the lessons LESSON-BIND actually promoted this episode by the
+        # episode's OWN outcome: beat the running best -> +1, else -1. The credit
+        # folds into a compact utility ledger stored in the brain (MCP single
+        # source of truth — _bound_keys_pending is ephemeral per-episode runtime,
+        # never a persisted cache), and next episode's retrieval weights each
+        # promotion by that learned utility. Gradient-free; the reward is the
+        # game's score, not a seed.
+        try:
+            _bound = set(getattr(self, "_bound_keys_pending", set()) or set())
+            if _bound:
+                _ulr = self.mcp.tool("brain_search", {
+                    "query": "LEDGER",  # K-RETRIEVAL FIX: specific tag + lead token + limit 50
+                    "tags": ["lesson_utility"], "limit": 100, "rerank": False})
+                _cur = _newest_utility_ledger(
+                    [h.get("content") or "" for h in _extract_hits(_ulr)])
+                _best = float(_cur.get("__best__", 0.0))
+                _progress = float(final_score) > _best
+                _delta = _credit_from_outcome(_progress)
+                _new = _apply_credit(_cur, _bound, _delta)
+                self.mcp.tool("brain_ingest_lesson", {
+                    "content": _format_utility_ledger(
+                        ep, max(_best, float(final_score)), _new),
+                    "tags": _tags_str(["zork", "lesson_utility", "ledger", f"ep{ep}"]),
+                    "category": "zork-bench", "importance": 7})
+                out["lesson_utility_updated"] = 1
+                self.calls.append({"tool": "lesson_utility", "ep": ep,
+                                   "bound": sorted(_bound), "delta": _delta,
+                                   "progress": _progress})
+            self._bound_keys_pending = set()
+        except Exception as _ml_e:
+            self.calls.append({"tool": "lesson_utility", "error": str(_ml_e)})
+
         # ---- (1b) ODY-10 SkillOpt — text-space strategy skill (gated) ----
         # Distil THIS episode into the reusable `zork-strategy` skill doc. The
         # brain's microsoft/SkillOpt validation GATE only commits the rewrite
@@ -2999,14 +3832,14 @@ class BrainKnowledgeManager:
             _skill_traj = (
                 f"Episode {ep}: final score {final_score} in {turns} turns.\n"
                 f"Distilled lessons from this episode:\n{(summary_text or '').strip()}\n\n"
-                f"Transcript tail:\n{tail[-4000:]}"
+                f"Transcript tail:\n{tail[-6000:]}"
             )
             _opt_raw = self.mcp.tool(
                 "brain_optimize_skill",
                 {
                     "skill_name": "zork-strategy",
                     "trajectory": _skill_traj,
-                    "task": "Play Zork I: maximise score — collect treasures, deposit them in the trophy case, keep a lit light source for dark areas, and explore the underground.",
+                    "task": "Maximise the game's score. Learn from the transcript and the score feedback which actions and which action-sequences produce points, and which waste turns or end the run; do not assume any objective not evidenced by the run itself.",
                     "score": float(final_score),
                 },
             )
@@ -3035,6 +3868,56 @@ class BrainKnowledgeManager:
               self.calls.append({"tool": "optimize_skill", "error": str(e)})
         else:
             self.calls.append({"tool": "optimize_skill", "skipped": "zero_score", "ep": ep})
+
+        # ---- (1c) ExpeL/SiriuS contrastive heuristic ----------------------
+        # Pair the agent's OWN best scoring segment (its SOLUTION_MOVE memories)
+        # with its most-stalled segment (the most over-visited room's event
+        # trace) and distil ONE transferable imperative rule. Unlike the verbatim
+        # per-room SOLUTION-REPLAY, the rule generalises across rooms/games. Pure
+        # brain I/O (read SOLUTION_MOVE via brain_search, distil via
+        # brain_summarize, write via brain_ingest_lesson); learned only from the
+        # agent's own trajectory; needs both a success AND a stall to fire.
+        try:
+            if mm is not None and getattr(mm, "_room_event_counts", None):
+                _stall_room = max(mm._room_event_counts.items(), key=lambda rc: rc[1])[0]
+                _stall_trace = (getattr(mm, "_room_event_trace", None) or {}).get(_stall_room, [])
+                failure_blob = "\n".join(_stall_trace[-15:]) if _stall_trace else ""
+                success_blob = ""
+                try:
+                    _sm = self.mcp.tool("brain_search", {
+                        "query": "SOLUTION_MOVE scored do progress",
+                        "tags": ["zork"], "limit": 5, "rerank": False,
+                    })
+                    success_blob = "\n".join(
+                        (h.get("content") or "").strip()[:220] for h in _extract_hits(_sm)
+                        if "SOLUTION_MOVE" in (h.get("content") or "")
+                    )
+                except Exception:
+                    success_blob = ""
+                if failure_blob.strip() and success_blob.strip():
+                    _ch = self.mcp.tool("brain_summarize", {
+                        "text": _build_contrastive_heuristic_prompt(
+                            success_blob, failure_blob, final_score, turns)
+                    }, timeout=REFLECT_SUMMARIZE_TIMEOUT)
+                    _heur = _extract_summary_text(_ch).strip()
+                    if _heur:
+                        self.mcp.tool("brain_ingest_lesson", {
+                            "content": f"Contrastive heuristic (ep{ep}): {_heur}",
+                            "tags": _tags_str([
+                                "zork", "judgment", "strategy", "reflection",
+                                "heuristic", "contrastive", f"ep{ep}",
+                            ]),
+                            "category": "zork-bench",
+                            "importance": 8,
+                        })
+                        out["contrastive_heuristic_ingested"] = 1
+                        self.calls.append({"tool": "contrastive_heuristic", "ep": ep, "len": len(_heur)})
+                    else:
+                        self.calls.append({"tool": "contrastive_heuristic", "skipped": "empty"})
+                else:
+                    self.calls.append({"tool": "contrastive_heuristic", "skipped": "need_success_and_stall"})
+        except Exception as e:
+            self.calls.append({"tool": "contrastive_heuristic", "error": str(e)})
 
         # ---- (2) T1 room-scoped reflections: top-3 rooms with >=3 events ----
         if mm is not None and hasattr(mm, "_room_event_counts"):
@@ -3065,6 +3948,7 @@ class BrainKnowledgeManager:
                     room_result = self.mcp.tool(
                         "brain_summarize",
                         {"text": room_prompt},
+                        timeout=REFLECT_SUMMARIZE_TIMEOUT,
                     )
                     room_text = _extract_summary_text(room_result)
                 except Exception as e:
@@ -3175,7 +4059,7 @@ class BrainKnowledgeManager:
                 "kind": "judgment",
                 "params": {
                     "query": (
-                        (f"strategy reflection at {room} ({room_kw}) zork: " if room else "zork strategy reflection: ")
+                        (f"strategy reflection failure_mode at {room} ({room_kw}) zork: " if room else "zork strategy reflection failure_mode: ")
                         + obs_snippet
                     ),
                     "tags": [t for t in ("zork", "reflection", room_tag) if t],
@@ -4351,6 +5235,114 @@ class BrainKnowledgeManager:
             if _retreat and tried_map.get(_retreat) not in ("fatal",):
                 scored.append((_retreat, FRONTIER_BONUS + 10,
                                f"[DARK-RETREAT] no light — retreat '{_retreat}' to the lit room (avoid grue)"))
+
+        # LESSON-BIND — make the brain's OWN reflection/heuristic lessons STEER
+        # the planner. The self-improvement chain audit (2026-06-14) found that
+        # every planner promotion comes from a structured signal and NONE read the
+        # reflection lessons, so a perfect lesson ("explore the forest path east")
+        # was ignored prose the weak model never acted on (iter-1 went 10->10).
+        # Fix: pull the recent failure_mode/heuristic lessons, parse their
+        # directives, and promote a recommended cardinal direction that is an
+        # available, unresolved exit — escalated when the agent is looping
+        # (binding-escalation). Brain-mediated (read via brain_search) + generic
+        # (directions are universal; the CONTENT is the brain's own learned
+        # lesson). Unit-proven in _repro_failure_mode_reflection.py.
+        try:
+            _lb = self.mcp.tool("brain_search", {
+                "query": f"failure_mode heuristic strategy reflection at {room_safe}",
+                "tags": ["zork", "reflection"], "limit": 8, "rerank": False,
+            })
+            # iter-4 MemRL — load the brain's learned lesson-utility ledger so the
+            # planner trusts the lessons that have preceded progress and damps the
+            # ones that haven't. Newest ledger wins (brain_search is relevance-
+            # ordered, so select by ep). Fail-open to neutral utility.
+            _util_map: dict = {}
+            try:
+                _ul = self.mcp.tool("brain_search", {
+                    "query": "LEDGER",  # K-RETRIEVAL FIX: specific tag + lead token + limit 50
+                    "tags": ["lesson_utility"], "limit": 100, "rerank": False,
+                })
+                _util_map = _newest_utility_ledger(
+                    [h.get("content") or "" for h in _extract_hits(_ul)])
+            except Exception:
+                _util_map = {}
+            _lb_tsp = int(getattr(mm, "_turns_since_progress", 0) or 0)
+            _lb_loop = _lb_tsp >= 4
+            # SEVERE-LOOP BACKOFF (iter, 2026-06-17): when the agent has been stuck
+            # for many turns, LESSON-BIND escalation is demonstrably TRAPPING it —
+            # the v6b clean bench showed a generic cross-room direction lesson
+            # (e.g. 'south'/'up') escalated to a force-pin score and OVERRODE the
+            # actor's own correct escape/backtrack ('down') 184x at one room, so the
+            # agent never left. Above a high no-progress threshold the lessons have
+            # had their chance (the 4-turn escalation tier already fired and
+            # failed); stop promoting them so the base frontier/explore/actor choice
+            # can execute. Generic structural threshold (no game data); strictly
+            # REDUCES forcing — it can never add a bad override.
+            _lb_severe = _lb_tsp >= 8
+            _lb_done: set = set()
+            _pending = getattr(self, "_bound_keys_pending", None)
+            if _pending is None:
+                _pending = set()
+                self._bound_keys_pending = _pending
+            for _lb_h in ([] if _lb_severe else _extract_hits(_lb)):
+                _lb_dirs = _lesson_directives(_lb_h.get("content") or "")
+                _lb_promos = _lesson_promotions(
+                    _lb_dirs, exits, tried_map, FRONTIER_BONUS,
+                    looping=_lb_loop, utility_map=_util_map)
+                for _lb_p in _lb_promos:
+                    if _lb_p[0] not in _lb_done:
+                        scored.append(_lb_p)
+                        _lb_done.add(_lb_p[0])
+                if _lb_promos:
+                    _lk = _lesson_key(_lb_dirs)
+                    if _lk:
+                        _pending.add(_lk)  # MemRL — credit this lesson at episode end
+            if _lb_done:
+                self.calls.append({"tool": "lesson_bind", "room": room_safe,
+                                   "promoted": sorted(_lb_done), "looping": _lb_loop,
+                                   "bound_keys": sorted(_pending)})
+            elif _lb_severe:
+                self.calls.append({"tool": "lesson_bind", "room": room_safe,
+                                   "severe_backoff": True, "turns_since_progress": _lb_tsp})
+
+            # ---- SGS curriculum readback (iter, 2026-06-17) ------------------
+            # The iter-6 conjectured sub-goal is ingested with a 'curriculum'/
+            # 'subgoal' tag but only LEAKS into the planner via the shared
+            # reflection slate above (limit 8, relevance-ordered), where it is
+            # usually crowded out — so the curriculum the agent paid an LLM to
+            # conjecture rarely steers the next episode (documented write-mostly
+            # loop). Retrieve the NEWEST sub-goal directly (lead token + specific
+            # tag + high limit — the proven retrieval recipe) and bind its
+            # directives through the SAME _lesson_promotions machinery. Skipped
+            # under severe-loop backoff (the actor's own choice wins then).
+            # Generic: the sub-goal is the brain's own conjecture, no game seed.
+            if not _lb_severe:
+                try:
+                    import re as _re_sg
+                    _sg = self.mcp.tool("brain_search", {
+                        "query": "Sub-goal",
+                        "tags": ["curriculum"], "limit": 50, "rerank": False,
+                    })
+                    _sg_best, _sg_ep = None, -1
+                    for _h in _extract_hits(_sg):
+                        _m = _re_sg.search(r"\bep(\d+)\b", _h.get("content") or "")
+                        _e = int(_m.group(1)) if _m else -1
+                        if _e >= _sg_ep:
+                            _sg_ep, _sg_best = _e, _h
+                    if _sg_best:
+                        _sg_dirs = _lesson_directives(_sg_best.get("content") or "")
+                        for _sg_p in _lesson_promotions(
+                                _sg_dirs, exits, tried_map, FRONTIER_BONUS,
+                                looping=_lb_loop, utility_map=_util_map):
+                            if _sg_p[0] not in _lb_done:
+                                scored.append(_sg_p)
+                                _lb_done.add(_sg_p[0])
+                                self.calls.append({"tool": "sgs_curriculum_bind",
+                                                   "room": room_safe, "act": _sg_p[0]})
+                except Exception as _sg_e:
+                    self.calls.append({"tool": "sgs_curriculum_bind", "error": str(_sg_e)})
+        except Exception as _lb_e:
+            self.calls.append({"tool": "lesson_bind", "error": str(_lb_e)})
 
         # ZK-LOOPCAP — hard-exclude actions the consecutive-repeat detector
         # banned (see record_action_outcome). Overrides EVERY bonus rule so a

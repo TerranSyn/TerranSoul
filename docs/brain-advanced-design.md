@@ -5932,6 +5932,51 @@ load-bearing (AGI-purity Principle 3).)*
 - **Reversible curation.** Curator mutations are snapshot-before-mutate and
   archive-never-delete (reusing §11.1), with **Pin** as an absolute exemption.
 
+### 34.10 Gradient-free Conjecturer–Guide curriculum (SGS-adapted)
+
+The self-improvement loop above *mints* and *refines* skills, but a frozen actor
+can still stall against a **deep-plan ceiling** — a target that needs a multi-step
+plan the model cannot reach in one episode. The brain attacks this with a
+**gradient-free Conjecturer→Guide curriculum** adapted from **Self-Guided
+Self-Play (SGS)** [Bailey et al., arXiv:2604.20209], whose home setting is RL
+self-play on Lean4 theorem proving:
+
+- **Conjecturer.** From the agent's *own* failure reflection on an unsolved
+  target, the brain conjectures a **simpler, target-conditioned sub-goal**
+  (SGS §E.1's role, re-interpreted for text sub-goals rather than proof lemmas).
+- **Guide.** The sub-goal is scored on SGS's exact three-criterion reward —
+  *relevance* (0–5), *conclusion complexity* (0–4), *redundancy* (0–1) —
+  combined as `R_guide = max(0, relevance + (2 − complexity) + (1 − redundancy))`
+  with the paper's hard rule that **complexity ≥ 3 auto-zeroes** the score
+  (§E.3, verbatim). A sub-goal that clears `R_guide ≥ 4` is ingested as a
+  curriculum lesson the lesson-binding layer promotes next episode, decomposing
+  an unreachable target into an achievable rung.
+
+**What we deliberately do NOT take from SGS (honest framing — mirror of the
+research paper §2.4 / §8).** SGS's *gains come from gradient-based RL training* of
+the Solver and Conjecturer, and it selects problems by `R_synth = R_solve · R_guide`
+where `R_solve = 1 − s(x̃)` is the complement of an 8-rollout empirical solve rate
+(too-easy and never-solved problems zeroed). Under the **frozen-harness / AGI-pure**
+discipline we adopt **neither the RL training nor `R_solve`** — only the
+gradient-free *Conjecturer→Guide curriculum idea* and the `R_guide` formula. One
+further honest deviation: SGS's Guide is a *finetuned LLM-judge*, but a
+summariser-class brain asked to score returns the same value for a good and a
+degenerate sub-goal, so our Guide is a **deterministic** rubric applying the
+paper's formula to heuristically-computed criteria. What survives the transfer is
+the **role** — a frozen brain decomposing an unsolved target into a relevant,
+achievable sub-goal and vetting it *without ever training the actor* — not SGS's
+learning dynamics. The curriculum is exercised end-to-end in the Zork
+self-improvement bench (`benchmark/scripts/zork-bench/terransoul_brain_bridge.py`,
+`reflect_on_episode`).
+
+> **Reference.** Bailey, Wen, Dong, Hashimoto, Ma. *Scaling Self-Play with
+> Self-Guidance (SGS).* 2026. arXiv:2604.20209. (RL self-play on Lean4 theorem
+> proving; a frozen finetuned Guide scores self-generated sub-problems on
+> relevance, conclusion-complexity, and redundancy. We adapt only the
+> gradient-free Guide/Conjecturer curriculum idea + the `R_guide` formula to a
+> frozen actor — **not** the RL training or `R_solve`. Cross-referenced in the
+> research paper §2.4, §8, ref [37].)
+
 ---
 
 ## Connector Scheduler

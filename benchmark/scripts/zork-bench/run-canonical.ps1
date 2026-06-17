@@ -17,6 +17,13 @@ param(
     [int]$MaxTurns    = 300,
     [string[]]$Arms   = @('none', 'zorkgpt-default', 'terransoul-brain'),
     [int]$WatcherMinutes = 5,
+    # Terminal discipline: the background progress watcher is a persistent
+    # Start-Job (an extra powershell.exe worker that also ORPHANS if the run is
+    # killed midway). It only updates progress.md + does a stall docker-kill —
+    # neither is needed for the result. OFF by default so a bench spawns the
+    # minimum processes (orchestrator + container + brain). Pass -Watcher to
+    # re-enable live progress.md + the stall-watchdog.
+    [switch]$Watcher,
     # Self-healing: kill container if no new turn appears within this many minutes.
     # 0 disables. Default = 4x watcher cadence so a single slow cold-load doesn't trigger.
     [int]$StallMinutes = 20,
@@ -87,52 +94,87 @@ if ($LASTEXITCODE -ne 0) { throw "Docker build failed for model=$Model" }
 if ($PreflightOllama) {
     Write-Host "[canonical] Pre-flight: checking $Model at $OllamaUrl ..."
 
-    # (a) Skip if already loaded — fastest path, zero HTTP risk.
-    $alreadyLoaded = $false
-    try {
-        $psOut = docker exec ollama ollama ps 2>&1 | Out-String
-        if ($psOut -match [regex]::Escape($Model)) {
-            $alreadyLoaded = $true
-            Write-Host "[canonical] Pre-flight SKIP: $Model already loaded in VRAM (per 'ollama ps')."
-        }
-    } catch {
-        Write-Host "[canonical] Pre-flight: 'ollama ps' check failed ($($_.Exception.Message)); proceeding with HTTP warmup."
+    # --- VRAM preflight via the ollama HTTP API (NO console spawns) -------------
+    # "TOO MANY TERMINALS" ROOT CAUSE: the old preflight ran ~15 `docker exec
+    # ollama ollama ps/stop` calls per run (eviction loop + wait poll x8 + gate +
+    # self-heal). On Windows EACH docker-exec pops a conhost console window — a
+    # burst of terminals every launch. Fix: do ALL checks over ollama's HTTP API
+    # (/api/ps) in-process via Invoke-RestMethod (zero consoles), and collapse the
+    # only CLI step (model UNLOAD has no HTTP equivalent) into ONE docker exec.
+    #
+    # WHY evict at all: on a 12GB GPU the ~8.5GB actor + the dev-tray's ~6.3GB
+    # gemma4:e4b cannot co-reside; the actor spills to CPU -> 120s timeouts ->
+    # contaminated scores. Evicting frees VRAM; the :7423 dev listener is untouched
+    # and its model reloads lazily after the bench. Generic infra hygiene, no game
+    # content. (`size_vram == size` => fully on GPU; `< size` => spilled to CPU.)
+    function Get-OllamaLoaded {
+        try { return @((Invoke-RestMethod -Uri "$OllamaUrl/api/ps" -Method GET -TimeoutSec 8).models) }
+        catch { return @() }
+    }
+    function Test-FullGpu($m) {
+        if (-not $m) { return $false }
+        return ([double]$m.size_vram -ge [double]$m.size * 0.98)
     }
 
-    if (-not $alreadyLoaded) {
-        Write-Host "[canonical] Pre-flight: warming up $Model (wall-clock limit ${PreflightTimeoutSec}s) ..."
-        $body = @{ model = $Model; prompt = 'hi'; stream = $false; options = @{ num_predict = 1 } } | ConvertTo-Json
-        # (b) Wall-clock guard via background job — survives socket hangs.
-        $warmJob = Start-Job -ScriptBlock {
-            param($url, $body, $httpTimeout)
-            try {
-                $r = Invoke-RestMethod -Uri "$url/api/generate" -Method POST -Body $body -ContentType 'application/json' -TimeoutSec $httpTimeout
-                return @{ ok = $true; eval_count = $r.eval_count }
-            } catch {
-                return @{ ok = $false; error = $_.Exception.Message }
-            }
-        } -ArgumentList $OllamaUrl, $body, $PreflightTimeoutSec
-        $completed = Wait-Job -Job $warmJob -Timeout $PreflightTimeoutSec
-        if (-not $completed) {
-            # (c) Hung — kill job, warn, continue. Stall-watchdog handles the bench.
-            Write-Host "[canonical] Pre-flight WARN: warmup did not return within ${PreflightTimeoutSec}s. Killing warmup, continuing — bench stall-watchdog (StallMinutes=$StallMinutes) will catch any wedged container."
-            Stop-Job $warmJob -ErrorAction SilentlyContinue
-            Remove-Job $warmJob -Force -ErrorAction SilentlyContinue
-        } else {
-            $result = Receive-Job -Job $warmJob -ErrorAction SilentlyContinue
-            Remove-Job $warmJob -Force -ErrorAction SilentlyContinue
-            if ($result -and $result.ok) {
-                Write-Host "[canonical] Pre-flight OK: model loaded, eval_count=$($result.eval_count)"
-            } else {
-                $msg = if ($result) { $result.error } else { '(no result)' }
-                # Only HARD-abort on confirmed OOM/500 — those are non-recoverable.
-                if ($msg -match '500' -or $msg -match 'out of memory' -or $msg -match 'OOM') {
-                    throw "ABORTED: Ollama cannot load model=$Model (likely > GPU VRAM). Pick a smaller model or run on bigger hardware. Original error: $msg"
-                }
-                # Otherwise soft-fail — could be transient. Let the bench try.
-                Write-Host "[canonical] Pre-flight WARN: warmup failed ($msg). Continuing — bench stall-watchdog will catch a wedged container."
+    try {
+        $loaded = Get-OllamaLoaded
+        $toEvict = @()
+        foreach ($m in $loaded) {
+            $nm = "$($m.name)"
+            if ($nm -match 'embed') { continue }            # CPU-only embedder, leave it
+            if ($nm -ne $Model) { $toEvict += $nm }          # another model (e.g. dev e4b)
+            elseif (-not (Test-FullGpu $m)) { $toEvict += $nm }  # actor spilled to CPU -> reload
+        }
+        $toEvict = @($toEvict | Select-Object -Unique)
+        if ($toEvict.Count -gt 0) {
+            Write-Host "[canonical] VRAM: evicting $($toEvict -join ', ') to free GPU for $Model"
+            $stops = ($toEvict | ForEach-Object { "ollama stop '$_'" }) -join '; '
+            docker exec ollama sh -c $stops 2>&1 | Out-Null   # the ONE CLI call
+            for ($w = 0; $w -lt 8; $w++) {                    # wait via HTTP (no console)
+                $cur = Get-OllamaLoaded
+                $bad = $cur | Where-Object { ($_.name -notmatch 'embed' -and $_.name -ne $Model) -or ($_.name -eq $Model -and -not (Test-FullGpu $_)) }
+                if (-not $bad) { break }
+                Start-Sleep -Seconds 2
             }
         }
+    } catch {
+        Write-Host "[canonical] VRAM: eviction skipped ($($_.Exception.Message)). If your ollama container is not named 'ollama', free VRAM manually."
+    }
+
+    # Warm up the actor unless it is already loaded AND fully on GPU (HTTP only).
+    $cur = Get-OllamaLoaded | Where-Object { $_.name -eq $Model } | Select-Object -First 1
+    if ($cur -and (Test-FullGpu $cur)) {
+        Write-Host "[canonical] Pre-flight SKIP: $Model already 100% GPU."
+    } else {
+        Write-Host "[canonical] Pre-flight: warming up $Model (timeout ${PreflightTimeoutSec}s) ..."
+        $body = @{ model = $Model; prompt = 'hi'; stream = $false; options = @{ num_predict = 1 } } | ConvertTo-Json
+        try {
+            $r = Invoke-RestMethod -Uri "$OllamaUrl/api/generate" -Method POST -Body $body -ContentType 'application/json' -TimeoutSec $PreflightTimeoutSec
+            Write-Host "[canonical] Pre-flight OK: model loaded, eval_count=$($r.eval_count)"
+        } catch {
+            $msg = $_.Exception.Message
+            if ($msg -match '500' -or $msg -match 'out of memory' -or $msg -match 'OOM') {
+                throw "ABORTED: Ollama cannot load model=$Model (likely > GPU VRAM). Pick a smaller model or run on bigger hardware. Original error: $msg"
+            }
+            Write-Host "[canonical] Pre-flight WARN: warmup failed ($msg). Continuing."
+        }
+    }
+
+    # GPU-placement gate (HTTP): refuse to bench a CPU-spilled actor.
+    $final = Get-OllamaLoaded | Where-Object { $_.name -eq $Model } | Select-Object -First 1
+    if ($final) {
+        $vramPct = if ([double]$final.size -gt 0) { [int](100.0 * [double]$final.size_vram / [double]$final.size) } else { 0 }
+        Write-Host "[canonical] GPU-placement: $Model is ${vramPct}% in VRAM"
+        # Tiered: only a SEVERE spill (the 64%-CPU catastrophe class that caused
+        # 8h episodes + timeouts) is worth aborting. A MILD spill (e.g. 83% GPU
+        # under transient VRAM pressure) just runs a bit slower — warn, proceed.
+        if ($vramPct -lt 70) {
+            throw "ABORTED: $Model is only ${vramPct}% on GPU (severe CPU spill). Free ~2GB of GPU VRAM (close GPU apps) or use bigger hardware before benching."
+        } elseif ($vramPct -lt 98) {
+            Write-Host "[canonical] GPU-placement WARN: ${vramPct}% on GPU (mild CPU spill) — run will be a bit slower but proceeds."
+        }
+    } else {
+        Write-Host "[canonical] GPU-placement WARN: '$Model' not loaded after warmup; proceeding."
     }
 }
 
@@ -298,10 +340,15 @@ $($armsBlock -join "`n")
     }
 }
 
-Write-Host "Launching watcher background job (every $WatcherMinutes min, stall-watchdog=$StallMinutes min)..."
 $totalEps = $Episodes * $Arms.Count
 $containerName = 'zork-bench-active'
-$watcherJob = Start-Job -ScriptBlock $watcherScript -ArgumentList $statusFile, $progressMd, $watcherLog, $WatcherMinutes, $totalEps, $StallMinutes, $containerName
+$watcherJob = $null
+if ($Watcher) {
+    Write-Host "Launching watcher background job (every $WatcherMinutes min, stall-watchdog=$StallMinutes min)..."
+    $watcherJob = Start-Job -ScriptBlock $watcherScript -ArgumentList $statusFile, $progressMd, $watcherLog, $WatcherMinutes, $totalEps, $StallMinutes, $containerName
+} else {
+    Write-Host "[canonical] Watcher DISABLED (no -Watcher) — no background Start-Job spawned; progress.md + stall-watchdog off to keep process count minimal."
+}
 
 # --- Initialize status ---------------------------------------------------
 $initArms = @{}
@@ -412,7 +459,11 @@ Write-Status @{
     last_event = 'all arms finished; collect summaries + transcripts next'
 }
 
-Write-Host "All arms finished. Stopping watcher..."
-Stop-Job $watcherJob -ErrorAction SilentlyContinue
-Remove-Job $watcherJob -ErrorAction SilentlyContinue
+if ($watcherJob) {
+    Write-Host "All arms finished. Stopping watcher..."
+    Stop-Job $watcherJob -ErrorAction SilentlyContinue
+    Remove-Job $watcherJob -ErrorAction SilentlyContinue
+} else {
+    Write-Host "All arms finished. (No watcher job to stop.)"
+}
 Write-Host "Done. See $outDir for artifacts."
