@@ -15,7 +15,8 @@
 | **ZorkGPT ep120** | deepseek-v3.2 + 27B | full, **critic off** | **115** | 99 | best of 122 public episodes |
 | ZorkGPT (typical) | deepseek-v3.2 + 27B | full (4 LLM roles) | **88–102** | ~100 | public SOTA-ish (~25–29%) |
 | **Claude Opus 4.8 — no recall** | frontier | cold reactive, genuine in-context reasoning | **50** | 24 | from-scratch reasoning floor: house→Cellar→troll→`echo`→bar. **Below** deepseek's scaffolded 94 — Opus's *reasoning* (vs recall) does not lead the ZorkGPT scaffold; a like-for-like Opus-in-scaffold run isn't runnable here (no Opus API). |
-| **TerranSoul brain (12B, r4)** | gemma4:12b-it-qat · 12B | brain + harness (AGI-pure, isolated bench MCP) | **10 → 20** | 2 × 100 | ep1=10, ep2=20; ep2 visited new rooms ep1 never reached; 2355 MCP calls, **0 errors** (2026-06-12, frontier-bonus=4 after band-separation fix) |
+| **TerranSoul brain (12B, self-improve stack)** | gemma4:12b-it-qat · 12B | brain + harness (AGI-pure) | **10 → 45** (persistent brain) · **~15** (fresh per-run) | 9 × (3 × 300) | **Modal-10 ceiling broken — via across-run accumulation** (2026-06-18→21): on a **persistent** brain, peak episode **45** (full underground-descent chain closed AND survived), floor lifted to 35, best mean 36.7. Cap-breaking prerequisite (move rug → reveal trap door) discovered at runtime, replayed by the brain (state-change-replay). **De-confounding:** re-running on a **fresh task-naïve brain per run** gives the clean cross-episode result **10/10/15 then 10/20/15** (mean 11.7 → 15.0, peak 20 over six episodes) — the agent reaches the interior but never re-discovers the full rug→trap-door→lamp→cellar chain from a clean start, so peak-45 **required** across-run accumulation of a one-time lucky discovery. The pure cross-episode result (~15) is consistent with the modal-10 / actor-bound thesis: the frozen 12B's discovery is the bottleneck, not the memory layer (sharpens, not overturns). Frontier reached the Troll Room. Residual bound = frozen model's planning, not memory. See paper §4.3d. Supersedes the earlier r4 10→20 (a single lucky episode) |
+| **TerranSoul brain (cross-model)** | qwen2.5:7b · 7B | brain + harness (AGI-pure) | **0 → 5** | 3 × 300 | Memory-lift generalises across architectures: unaided 0/0/0, with brain 5/5/5. Bounded by the reading actor's planning (qwen reaches 5 vs the 12B's 45 from the identical store). Paper §4.3d (2026-06-20) |
 | **TerranSoul brain** | gemma4:e4b · 4B | brain + harness (AGI-pure) | **10–20** | ~200 | reads the SAME 2800-char strategy skill but can't *execute* it |
 | `zorkgpt-default` | gemma4:e4b · 4B | ZorkGPT's own managers | **0** | 200 | never enters the house |
 | `none` | gemma4:e4b · 4B | raw LLM, no memory | **0** | 200 | surface loop |
@@ -273,14 +274,51 @@ no-regression control. Repro: `benchmark/scripts/zork-bench/_repro_aversive_memo
 † Transient timeouts (Ollama read-timeouts; Detective ep1 = one skill-call timeout), retry-handled — not data / contract errors.
 
 **Reading (n=1).** The brain-mediated lift reproduces where the bottleneck is **memory** —
-Detective's clean death-aversion win (avoid a learned-fatal move → 3× score, 4.5× rooms) —
+Detective's death-aversion win (avoid a learned-fatal move → 3× score, 4.5× rooms) —
 and is **bounded** where the bottleneck is the 12B's planning/parsing: on Zork I the
 open-first lesson reached the treasures but the model never closed the take-then-deposit plan
 (modal 10→10; the r4 10→20 was a single lucky episode), and on 9:05 open-first and gate-invalidation
 **did** fire (open-first promoted `open door` on ~25 ep2 read-backs; gate-invalidation cleared a
 stale cardinal) but could not beat the parser disambiguation ("front door or bedroom door?") the 12B
 never resolved — so it bottlenecks upstream of the memory layer, and the game awards essentially no
-exploration score anyway. All cross-game claims are scoped **n=1**.
+exploration score anyway.
+
+**Update — repeated trials (n=2, 2026-06-21).** A second series of each game (under the
+current Zork-tuned harness, shared brain) tempers the Detective headline: Detective returned a
+flat **20/20/20** — the memory-lift *to* 20 is consistent, but the deeper death-aversion
+**climb to 60 did not reproduce** (all three episodes hit the same restaurant game-over and the
+death-aversion did not fire). The 20→60 was therefore a **single favorable episode**, the same
+high-variance regime as Zork's 10→20 — planning-bound, not memory-bound. **9:05 reproduced its
+null (0/0/0)** — a robust parser/planner-bound result. So the *reproducible* cross-game claim is
+the **lift to 20** where the bottleneck is memory; the deeper **climb is high-variance**. See
+paper §4.3c. (These are honest re-runs, not clean isolated replications — a fresh-brain per-game
+replication would tighten the variance estimate.)
+
+### De-confounding the 10→45 Zork I campaign (fresh task-naïve brain per run, 2026-06-25)
+
+The "10 → 45/50, floor 35" headline above was measured on a **persistent** brain across 9
+sequential runs, so it conflated *within-run* cross-episode learning (ep1 → ep3 of a single
+3-episode run) with *across-run* accumulation (the brain carrying a lucky one-time runtime
+discovery — the v15-discovered rug-move prerequisite — into every subsequent run). A
+de-confounding experiment re-ran the identical configuration on a **fresh, task-naïve brain per
+run** (the canonical base seed, zero accumulated Zork rows).
+
+| Brain provenance | Cross-episode scores | Mean | Peak | Reach |
+|---|---|---:|---:|---|
+| Persistent (9 runs, accumulated) | up to 35–45 | best 36.7 | **45** | full rug→trap-door→lamp→cellar chain (descended) |
+| **Fresh task-naïve (per run)** | 10/10/15 then 10/20/15 | **11.7 → 15.0** | **20** | reaches the interior reliably; never re-discovers the descent chain |
+
+The agent reliably reaches the interior on a clean store — the saturated-brain scenic-dead-end
+navigation trap vanishes — but across six task-naïve episodes it never re-discovers the full
+rug → trap-door → lamp → cellar chain, so it never descends. **Conclusion:** the peak-45
+**required across-run accumulation** of a lucky one-time discovery; the pure cross-episode result
+(~15) is consistent with the modal-10 / actor-bound thesis — the frozen 12B's discovery is the
+bottleneck, **not** the memory layer. This **sharpens, not overturns**: externalised memory is
+still a genuine performance axis (across-run accumulation is itself memory working, and removing
+the accumulated traps measurably improves navigation). Methodological note: the persistent dev
+brain had accumulated to ~98% Zork episodic rows over many runs; the AGI-pure measurement is the
+isolated-brain one, and the across-run numbers should be read as an upper-variance envelope, not a
+repeatable per-run capability. See paper §4.3d.
 
 ## Adopting ZorkGPT's techniques (2026-06-02 audits)
 
@@ -436,7 +474,7 @@ TerranSoul already passes 4 retrieval-quality benches on static corpora:
 
 | # | Bench | Best result | What it proves |
 |---|---|---|---|
-| 1 | [AgentMemory Quality](../agentmemory-quality/README.md) | R@10 64.1 %, NDCG@10 94.7 %, MRR 95.8 % — **leadership** | Brain retrieves the right memory from a known corpus |
+| 1 | [AgentMemory Quality](../agentmemory-quality/README.md) | keyword `search` R@10 67.1 %, NDCG@10 98.2 %, MRR 100.0 %; `hybrid_search_rrf` no-vec R@10 66.8 %, NDCG@10 95.0 % (restored 2026-06-25, post RRF-fix) — **leadership** | Brain retrieves the right memory from a known corpus |
 | 2 | [LongMemEval-S](../longmemeval-s/README.md) | R@5 99.2 %, R@10 99.6 %, R@20 100 % — **leadership** | Brain finds needles in a 200+ session haystack |
 | 3 | [LoCoMo MTEB](../locomo-mteb/README.md) | rrf_rerank R@10 **68.3 %** on 1976 queries — **canonical** | Brain handles multi-hop, temporal, adversarial queries |
 | 4 | [LoCoMo At-Scale](../locomo-at-scale/README.md) | 100 k corpus R@10 64.0 %, p50 1.21 s — **promoted** | Brain scales to 100 k+ memories with sub-2 s latency |
@@ -1239,6 +1277,6 @@ The iter12 result is **publishable** with the following honest framing:
 4. The MCP memory system is **reliable** (≤2.9% error rate) and **fast**
    (500-700 ms per call after the latency fix).
 
-A longer sweep (300 turns × 3 episodes) on gemma4:e4b is in progress
-and will provide data on how far the agent can progress independently
-beyond the waypoint cap.
+A longer sweep was subsequently superseded by the 12B self-improvement campaign
+(10 → 45 peak across 9 × 3-episode × 300-turn runs; see the research paper §4.3d),
+which provides the fuller picture of how far the agent progresses independently.

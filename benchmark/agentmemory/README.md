@@ -8,11 +8,13 @@
 
 ## Concept-tagged corpus (240 obs / 20 queries) — agentmemory's own bench
 
-| Metric | agentmemory v0.6 | TerranSoul (BENCH-AM-3) | TerranSoul (BENCH-AM-7 no-vec RRF) |
+| Metric | agentmemory v0.6 | TerranSoul keyword `search` | TerranSoul no-vec RRF (restored) |
 |---|---|---|---|
-| R@10 | 58.6 % | 64.1 % | **67.1 %** |
-| NDCG@10 | 84.7 % | 94.7 % | **98.2 %** |
-| MRR | 95.4 % (BM25-only ≈ 95.5 %) | 95.8 % | **100.0 %** |
+| R@10 | 58.6 % | **67.1 %** | **66.8 %** |
+| NDCG@10 | 84.7 % | **98.2 %** | **95.0 %** |
+| MRR | 95.4 % (BM25-only ≈ 95.5 %) | **100.0 %** | **95.0 %** |
+
+> Regenerated 2026-06-25 (post RRF-fix, commit `c560514e`). The 67.1 / 98.2 / 100.0 column is keyword-only `search` (the raw-quality leader); the no-vec RRF production default was restored from a regressed R@10 22.9 % to **66.8 % / NDCG@10 95.0 % / MRR 95.0 %** after the P6 echo-collapse penalty was bounded to a ~2.5 % tiebreaker.
 
 See [../terransoul/agentmemory-quality/README.md](../terransoul/agentmemory-quality/README.md) for the TerranSoul side and the round-by-round table.
 

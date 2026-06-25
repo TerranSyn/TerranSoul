@@ -179,17 +179,22 @@ _LOOPCAP_EXEMPT_PREFIXES: tuple[str, ...] = (
 
 # Deposit-container cues (ODY-8c DELIVER). A container the environment names
 # as a repository for valuables — putting carried items into it is the
-# universal "store/score" action (treasure -> trophy case; file -> folder;
+# universal "store/score" action (treasure -> display case; file -> folder;
 # item -> chest). Generic state-language, no single domain object.
+# AGI-purity (rules/bench-agi-purity.md Rule 1, audit CF-2): the canonical
+# Zork-1 goal-repository phrase was DROPPED from this runtime list — the
+# generic 'case' / 'display case' still match it once the environment names
+# the container (word-boundary), so the deposit move is unchanged without
+# shipping a domain-specific object token in the bridge.
 _DEPOSIT_CONTAINER_CUES: tuple[str, ...] = (
-    "trophy case", "case", "chest", "safe", "vault", "cabinet",
-    "trunk", "strongbox", "coffer", "repository", "display case",
+    "display case", "case", "chest", "safe", "vault", "cabinet",
+    "trunk", "strongbox", "coffer", "repository",
 )
 
 
 def _deposit_containers(observation: str) -> list[str]:
     """Return deposit-target container phrases named in the observation
-    (longest/most-specific first, e.g. 'trophy case' before 'case'). Used by
+    (longest/most-specific first, e.g. 'display case' before 'case'). Used by
     the planner to offer `put <carried valuable> in <container>` — the
     universal store/deposit move that scores when the container is a goal
     repository. Domain-agnostic: keyed on container state-words, not a
@@ -202,7 +207,7 @@ def _deposit_containers(observation: str) -> list[str]:
     # 'staircase'/'bookcase' (K38: matched 'staircase' -> false 'open case').
     found = [c for c in _DEPOSIT_CONTAINER_CUES
              if _re_dc.search(r"\b" + _re_dc.escape(c) + r"\b", text)]
-    # Prefer the most specific phrase: if 'trophy case' matched, drop bare 'case'.
+    # Prefer the most specific phrase: if 'display case' matched, drop bare 'case'.
     found.sort(key=lambda c: -len(c))
     out: list[str] = []
     for c in found:
@@ -298,13 +303,24 @@ def _build_contrastive_heuristic_prompt(
 
 
 def _classify_failure_deficit(
-    containers_seen: bool, valued_seen: bool, turns_since_progress: int, final_score: int
+    containers_seen: bool, valued_seen: bool, turns_since_progress: int,
+    final_score: int, fatal_events: int = 0
 ) -> str:
     """TRACE / AgentDebug-style failure-deficit taxonomy from the agent's OWN
     per-episode counters — domain-agnostic, no game content. Lets a reflection be
     stamped with the dominant deficit so the next episode can retrieve the lesson
     matching the ACTIVE failure mode (attacks the Self-Refine self-diagnosis
     ceiling: the model gets the RIGHT lesson, not a generic recency hit)."""
+    # Repeated entry into irreversible / no-visibility (potentially fatal) states
+    # is the highest-cost, most-learnable failure: the agent keeps stepping into a
+    # state it cannot perceive or recover from instead of satisfying the
+    # precondition that would make it safe. Classify it FIRST so the matching
+    # reflection LENS (risk) is actually selected — otherwise these runs fall
+    # through to spatial/acquisition and the agent never reflects on the fatal
+    # pattern at all (the risk lens was defined but unreachable). Generic: keyed
+    # on the agent's OWN count of no-visibility outcomes, never a domain token.
+    if fatal_events >= 2:
+        return "repeated-fatal-state"
     if not valued_seen:
         return "acquired-no-valuable"
     if containers_seen and valued_seen:
@@ -326,11 +342,32 @@ def _lesson_directives(lesson_text: str) -> dict:
     own play — no seed. Returns {'directions': set[str], 'intents': set[str]}."""
     import re as _re_ld  # local alias (module-level _re is defined far below)
     t = (lesson_text or "").lower()
-    directions = {
-        m.group(1).lower()
-        for m in _re_ld.finditer(
-            r"\b(north|south|east|west|up|down|northeast|northwest|southeast|southwest)\b", t)
-    }
+    # P4 de-noise (iter, 2026-06-17): a NARRATION sentence merely *mentions* many
+    # cardinal tokens ("to the north is a forest, to the south a clearing ...").
+    # The old finditer promoted ALL of them -> a zero-signal tie -> arbitrary
+    # tie-break oscillation between stuck exits. Extract ONLY a direction that is
+    # the grammatical OBJECT of a recommendation / imperative cue, cap at 1-2, and
+    # if >=3 distinct dirs are recommended treat the whole thing as narration
+    # (return none). Domain-generic: the cue verbs are universal text-adventure
+    # navigation intents; no game content / room names / walkthrough.
+    _DIR = (r"(north|south|east|west|up|down|"
+            r"northeast|northwest|southeast|southwest)")
+    # cue VERB immediately governing a direction: "go north", "head to the east",
+    # "try moving north", "explore the northwest"; plus the standing-frontier
+    # phrasing "unexplored exit to the <dir>".
+    _cue = _re_ld.compile(
+        r"\b(?:go|going|goes|head|heading|move|moving|take|try|trying|explore|"
+        r"exploring|proceed|travel|walk)\b"
+        r"(?:\s+\w+){0,3}?\s+(?:to\s+the\s+|towards?\s+|the\s+)?" + _DIR + r"\b")
+    _frontier = _re_ld.compile(
+        r"\bunexplored\b[^.]*?\b(?:exit|passage|path|way)\b[^.]*?"
+        r"\bto\s+the\s+" + _DIR + r"\b")
+    directions = {m.group(1).lower() for m in _cue.finditer(t)}
+    directions |= {m.group(1).lower() for m in _frontier.finditer(t)}
+    # >=3 distinct recommended dirs is indistinguishable from narration / a dump
+    # of every exit -> zero net signal; drop them all rather than oscillate.
+    if len(directions) >= 3:
+        directions = set()
     intents: set[str] = set()
     if _re_ld.search(r"\b(deposit|store|stash|place|insert|put\b.*\bin\b|drop\b.*\bin\b)", t):
         intents.add("deposit")
@@ -502,6 +539,13 @@ _REFLECTION_ASPECTS = {
 def _aspect_for_deficit(deficit: str) -> str:
     """MAR — pick the reflection LENS matching the active failure deficit so the
     extra reflection attacks the dimension that actually failed. Domain-agnostic."""
+    if deficit == "repeated-fatal-state":
+        # Route repeated fatal/irreversible states to the risk lens, which asks
+        # 'what safe alternative / precondition existed?' — the only lens that
+        # surfaces a causal-precondition insight (e.g. satisfy a safety
+        # precondition before entering a state you can't perceive). Was previously
+        # unreachable, so this class of failure never got its matching reflection.
+        return "risk"
     if deficit in ("acquired-no-valuable", "reached-container-never-deposited"):
         return "acquisition"
     return "spatial"
@@ -556,13 +600,33 @@ def _critic_accepts(candidate_lesson: str, progress_facts: str = "") -> bool:
     t = (candidate_lesson or "").strip()
     if len(t) < 12:
         return False
-    d = _lesson_directives(t)
-    if not (d.get("directions") or d.get("intents")):
-        return False
     pf = (progress_facts or "").strip().lower()
     if pf and t.lower() in pf:
         return False
-    return True
+    d = _lesson_directives(t)
+    if d.get("directions") or d.get("intents"):
+        # Carries a bindable directive — keep it (it can steer the planner
+        # directly via LESSON-BIND).
+        return True
+    # No bindable directive. The old gate DISCARDED these outright — which
+    # silently deleted the highest-value strategy lessons from memory: an
+    # insight like "secure a light source before entering the dark" or "that
+    # region is a dead end" never reduces to "go <dir>", so it has no cardinal
+    # to bind, yet it is exactly the causal-precondition / risk-aversion
+    # knowledge the run keeps failing on. Keep it ONLY if it reads as ACTIONABLE
+    # guidance (an imperative or a precondition/temporal insight) rather than a
+    # vague outcome description ("things went poorly this run") — length alone
+    # can't tell those apart. An actionable insight, even unbindable, still
+    # reaches the next episode as retrieved PROMPT CONTEXT and can shift the
+    # actor's own choice. Separate "worth keeping" from "can steer the planner
+    # deterministically" (bridge audit). Generic cue set — universal guidance
+    # verbs + precondition/temporal connectives; no game tokens, no seed.
+    import re as _re_ca
+    _ACTIONABLE = _re_ca.compile(
+        r"\b(secure|ensure|activate|enable|light|carry|equip|prepare|use|avoid|"
+        r"prevent|retreat|return|wait|check|first|before|after|until|unless|"
+        r"instead|always|never|don't|do not|must|should)\b")
+    return bool(_ACTIONABLE.search(t.lower()))
 
 
 def _format_frontier(ep, best, deficit) -> str:
@@ -1512,6 +1576,33 @@ class BrainMemoryManager:
                     self._last_lit_room.strip().lower(), set()).add(_mv)
             elif not _obs_dark and loc_name and loc_name != "_unknown":
                 self._last_lit_room = loc_name
+            # Fix R (2026-06-24) — record the DESCENT VERB that led into
+            # no-visibility, keyed by the room descended FROM. The _dark_exits
+            # writer above only captures CARDINAL movements (_normalize_direction
+            # ('climb')==''), so a 'climb'/'descend' into the dark cellar was never
+            # learned — the agent re-descended UNLIT repeatedly (v26 ep2: climbed
+            # into pitch-black twice before finally taking the lamp). Generic
+            # cross-attempt learning ("descending from here led to the dark —
+            # secure light first"); universal descent verbs only, no game token.
+            if _obs_dark and self._last_lit_room:
+                _dverb = ((act or "").strip().split() or [""])[0].lower()
+                if _dverb in ("down", "d", "climb", "descend"):
+                    if not hasattr(self, "_dark_descents"):
+                        self._dark_descents = {}
+                    self._dark_descents.setdefault(
+                        self._last_lit_room.strip().lower(), set()).add(_dverb)
+            # Fix J+ (2026-06-20) — remember rooms where a LIGHT SOURCE was seen,
+            # independent of the per-turn object extraction. The descent-gate must
+            # know "a light is available HERE" even when a later action-response
+            # observation (e.g. 'the trap door opens') drops the room description
+            # that named the lamp (v19 ep3: lamp seen at the trophy room, then
+            # descended UNLIT two turns later — the open-cover response no longer
+            # mentioned it, so the obs-only gate missed it → grue). Generic; uses
+            # the universal light detector, keyed on the agent's own observation.
+            if not hasattr(self, "_room_light_seen"):
+                self._room_light_seen = set()
+            if _light_sources(resp) and loc_name and loc_name != "_unknown":
+                self._room_light_seen.add(loc_name.strip().lower())
         except Exception:
             # Best-effort auxiliary memory update: never break the main control loop.
             pass
@@ -2083,6 +2174,43 @@ class BrainMemoryManager:
         _issuing_room = _prev_room if (location_changed and _prev_room) else loc_name
         if _issuing_room and act:
             self._traj.append((_issuing_room.strip(), act, bool(location_changed)))
+
+        # ---- STATE-CHANGE-REPLAY (2026-06-19) ------------------------------
+        # A non-scoring PREREQUISITE move that REVEALS new state — e.g. moving
+        # furniture uncovers a hidden passage / a closed trap door — is the
+        # bootstrap deadlock the score-gated SOLUTION_MOVE writer below could
+        # never break: it scores 0, so the precondition was never persisted, so
+        # a later episode replayed the DEPENDENT scoring move ('down') without
+        # its precondition, it produced no movement, and the agent could never
+        # descend (observed v13/v14: 344 trophy-room visits, rug never moved,
+        # cellar never reached — the bulk of the score). Record an in-place
+        # manipulation whose response explicitly REVEALS new state as a per-room
+        # SOLUTION_MOVE (the exact shape the planner's SOLUTION-REPLAY already
+        # parses) so the next episode re-does the uncovering move. Fix F then
+        # stops it re-pinning once done (the repeat reads neutral), so it fires
+        # once per episode and the chain proceeds: reveal -> open -> descend ->
+        # (dark) -> activate carried light (Fix E) -> explore the lit region.
+        # Generic: keyed on the universal "reveal"/"uncover" result language +
+        # an in-place manipulation verb; no game token, no room/object name.
+        try:
+            _sc_resp_l = (resp or "").lower()
+            _sc_act_tok = act.lower().split()[0] if act.split() else ""
+            _REVEAL_CUES = ("reveal", "moved to one side", "moved aside",
+                            "uncover", "expos", "aside", "beneath", "underneath")
+            _MANIP_VERBS = ("move", "push", "pull", "lift", "shift", "slide",
+                            "raise", "pry", "roll")
+            if (not location_changed and score_delta <= 0 and _issuing_room and act
+                    and _sc_act_tok in _MANIP_VERBS
+                    and any(c in _sc_resp_l for c in _REVEAL_CUES)):
+                _sc_room = loc_name.strip()  # in-place => issued in current room
+                self.mcp.tool("brain_ingest_lesson", {
+                    "content": f"SOLUTION_MOVE at '{_sc_room}': do '{act}' (revealed new state).",
+                    "tags": _tags_str(["zork", "solution_move", "state_change",
+                                       "judgment", f"loc_{_sc_room.replace(' ', '_')}"]),
+                    "category": "zork-bench", "importance": 9})
+                self.calls.append({"tool": "state_change_move", "room": _sc_room, "act": act})
+        except Exception as _sc_e:
+            self.calls.append({"tool": "state_change_move", "error": str(_sc_e)})
 
         # ---- D2: positive outcome reinforcement on score gain ----
         if score_delta > 0:
@@ -3619,7 +3747,16 @@ class BrainKnowledgeManager:
         _valued_seen = bool(getattr(mm, "_valued_items", None)) if mm is not None else False
         _tsp = int(getattr(mm, "_turns_since_progress", 0) or 0) if mm is not None else 0
         progress_facts = _build_progress_facts(_containers_seen, _valued_seen, _tsp)
-        _deficit = _classify_failure_deficit(_containers_seen, _valued_seen, _tsp, final_score)
+        # Count the agent's OWN no-visibility (potentially fatal) outcomes over the
+        # whole episode so a run that repeatedly steps into states it cannot
+        # perceive is classified as a risk failure, not a generic stall. Use the
+        # most-frequent precise darkness marker's occurrence count (avoids
+        # double-counting overlapping markers on the same line). Generic; keyed on
+        # the universal no-visibility predicate, never a domain monster/room token.
+        _tlow = transcript.lower()
+        _fatal_events = max((_tlow.count(_m) for _m in _NO_VISIBILITY_MARKERS), default=0)
+        _deficit = _classify_failure_deficit(
+            _containers_seen, _valued_seen, _tsp, final_score, _fatal_events)
         # iter-5 failure-frontier — load the persistent ceiling so the SGS
         # curriculum and the MAR lens target where the agent actually plateaus,
         # not a one-off stumble. Newest record wins (selected by ep). Fail-open.
@@ -3693,8 +3830,14 @@ class BrainKnowledgeManager:
         # it (non-trivial + bindable directive + not a restatement). One extra
         # summarize, gated to the episodes that need it. Generic lenses; no seed.
         try:
+            # A repeated-fatal-state run needs its risk reflection even when the
+            # score is positive and the agent is not strictly "stalled" — the
+            # whole point is that it banked some points but keeps dying instead of
+            # learning the safety precondition that unlocks the rest. Include it
+            # explicitly so the risk lens fires for exactly the cap-breaking case.
             _weak = (final_score <= 0) or (_tsp >= 6) or \
-                _deficit in ("looped-no-progress", "general-stall")
+                _deficit in ("looped-no-progress", "general-stall",
+                             "repeated-fatal-state")
             if _weak:
                 _aspect = _aspect_for_deficit(
                     _frontier.get("deficit")
@@ -4367,6 +4510,31 @@ class BrainKnowledgeManager:
         # Fall back to the name when no id is supplied (back-compat).
         room_id_key = str(location_id) if location_id else room_safe.strip().lower()
 
+        # Fix P (2026-06-23) — populate _room_light_seen on the EVERY-TURN
+        # planner path, not only inside record_action_outcome (which the
+        # upstream orchestrator fires on only ~20-60% of turns due to its
+        # rejection sampling). Root cause (audit, grounded in v23+v24 canonical
+        # logs): the descent light-gates Fix J/N/O all read mm._room_light_seen
+        # keyed by room_safe EVERY planner turn, but its ONLY writer lived behind
+        # the partial record_action_outcome hook — so at the trap-door descent
+        # turn the room was absent from the set, the gate never fired
+        # ('avoid unlit descent' = 0 grep hits across BOTH benches), and
+        # SOLUTION-REPLAY's +12 climb/down drove the agent into the dark cellar
+        # past the untaken lamp -> grue (v24 ep2/ep3 both capped at 30). Mirror
+        # the proven K30/K61 sticky-cache pattern: record light-seen from the
+        # planner's own observation, keyed IDENTICALLY to the readers
+        # (room_safe.strip().lower()). Generic — universal light detector, no
+        # game token; the record_action_outcome writer stays a secondary source.
+        try:
+            if mm is not None:
+                if not hasattr(mm, "_room_light_seen"):
+                    mm._room_light_seen = set()
+                if _light_sources(observation) and room_safe and room_safe != "_unknown":
+                    mm._room_light_seen.add(room_safe.strip().lower())
+        except Exception:
+            # Best-effort auxiliary memory: never break the planner control flow.
+            pass
+
         obs_exits = _extract_exits_from_obs(observation)
         objects = _extract_objects_from_obs(observation)
 
@@ -4799,13 +4967,36 @@ class BrainKnowledgeManager:
                 base = -100
                 reason = f"exit-pruned (bumped wall {_ef_n}x) — banned"
             # K49 — demote a known dark exit when no light is carried.
-            if not _carries_light and d_l in _dark_here and base > 1:
+            # Fix N (2026-06-22) — also demote a DESCENT exit ('down'/'d') when a
+            # light source was SEEN in THIS room but is NOT carried, even before
+            # that exit is in _dark_here (the FIRST descent isn't known-dark yet).
+            # Root-caused v22 (consistent 30/30/30): the agent moved the rug,
+            # opened the trap door, and rushed 'down' into the dark underground
+            # PAST the lamp it never took (ep1/ep2 take_lantern=0) — capping the
+            # score at the surface. Demoting the unlit descent lets the +4
+            # ACQUIRE-LIGHT 'take <light>' surface so the lamp is secured first;
+            # once carried, the descent scores normally and Fix E lights it below.
+            # Generic: descent verb + the agent's own light-seen-here memory; no
+            # game token. The dark-exit branch (known-dark) is preserved.
+            _n_light_here = (room_safe.strip().lower()
+                             in (getattr(mm, "_room_light_seen", set()) or set())) if mm is not None else False
+            if not _carries_light and base > 1 and (
+                    d_l in _dark_here
+                    or (d_l in ("down", "d") and _n_light_here)):
                 base = 1
                 reason = f"avoid dark exit, no light ({reason})"
             # ZADOPT-3 — revisit penalty: demote an exit whose KNOWN
             # destination is a recently-visited room (anti-oscillation,
             # ZorkGPT Phase 1B). Only nudges ordinary exits (0<base<8); never
             # touches a banned exit (-100) or a high-value pin (>=8).
+            # Fix L (REVERTED 2026-06-22): suspending the penalty when stalled
+            # (tsp>=8) to allow a backtrack-escape NET-REGRESSED the bench (mean
+            # 20.0 → 15.0; one episode logged 194 scenic-room visits). The
+            # hypothesis was wrong: the penalty was mildly DISCOURAGING re-entry
+            # into the over-visited cluster, so removing it let the agent re-enter
+            # the dead-end freely — worse, not better. Escaping an over-visited
+            # region is a navigation problem at the frozen 12B's planning ceiling,
+            # not a penalty-band tweak. Kept unconditional (known-good).
             _zd_dest = (getattr(mm, "_adjacency", {}) or {}).get(room_id_key, {}).get(d_l) if mm is not None else None
             if _zd_dest and _zd_dest in (getattr(mm, "_recent_loc_ids", []) if mm is not None else []) and 0 < base < 8:
                 base -= 2
@@ -4959,22 +5150,29 @@ class BrainKnowledgeManager:
                     elif (verb.strip().lower() in _ody8_blocker_verbs
                           and noun_l in _ody8_openable):
                         # ODY-8 — confirmed openable (observation state cue).
-                        # Treat as frontier-equivalent: resolving a closable
-                        # blocker reveals new area/contents just like an
-                        # unvisited exit. Not capped by K34 because the
-                        # observation CONFIRMS the noun is closable (not a
-                        # speculative NLP scenery noun). Generic.
-                        # FRONTIER_BONUS + 3: a CONFIRMED openable (window
-                        # 'ajar', door 'closed') is the gateway into a new
-                        # region and must outrank BOTH exploration of untried
-                        # cardinals (frontier 6) AND the frontier-router's
-                        # routed step (frontier+2 = 8). K29 trace: the agent
-                        # reached Behind House 22x but the router kept pinning
-                        # an untried cardinal (8) over `open window` (6), so it
-                        # never entered the house. Opening a confirmed blocker
-                        # is strictly higher-value than guessing a cardinal.
-                        effective_bonus = FRONTIER_BONUS + 3
-                        reason = f"{hint} [confirmed openable — blocker-resolution] ({reason})"
+                        # The observation CONFIRMS the noun is closable (window
+                        # 'ajar', door 'closed'), so it is NOT a speculative NLP
+                        # scenery noun and escapes the K34 unstable cap — it is
+                        # scored as a genuine, stable noun-affordance.
+                        #
+                        # P5 inversion fix (iter, 2026-06-17): the old branch
+                        # PINNED a fixed `FRONTIER_BONUS + 3` on every confirmed
+                        # `open <noun>`. That hardcoded a verb PREFERENCE
+                        # (open > take) with no feedback path: on a noun that is
+                        # both openable AND acquirable (the jeweled-egg case),
+                        # `open egg` outranked `take egg` forever even after the
+                        # outcome showed taking was the progress move. That
+                        # violates "bias by score/context, never override the
+                        # LLM, and let brain-resident outcome utility decide".
+                        # Now the openable cue is a CONTEXT signal only (it
+                        # lifts the noun out of the speculative cap and labels
+                        # the reason); the numeric score stays at the brain-
+                        # given affordance `bonus`, IDENTICAL to `take` on the
+                        # same fresh noun. Whichever verb the brain's learned
+                        # outcome utility (LESSON-BIND / MemRL) favours wins —
+                        # not a source-code constant. Generic.
+                        effective_bonus = bonus
+                        reason = f"{hint} [confirmed openable — context cue] ({reason})"
                     elif not is_stable:
                         # K34 — unstable nouns (seen <2 turns, often
                         # NLP false positives) get a strict demotion so
@@ -5161,7 +5359,20 @@ class BrainKnowledgeManager:
             _al_inv_heads = {str(x).split()[-1].lower() for x in (inventory_items or []) if str(x).strip()}
             for _al in _al_sources:
                 if _al not in _al_inv_heads:
-                    # not carried yet → take it (high: light enables the dungeon)
+                    # Not carried yet → take it (light enables the dungeon).
+                    # Fix I (REVERTED 2026-06-20): lifting this above SOLUTION-
+                    # REPLAY (+8 → +9) so the agent grabs the lamp before the
+                    # replayed descent NET-REGRESSED the bench (v16 35/35/35 →
+                    # v17 20/35/25): the +9 reordered the tightly-tuned promotion
+                    # bands and, while v17 ep1 did survive (took+lit the lamp), it
+                    # then oscillated move-rug/down against the auto-barred trap
+                    # door and stalled at 20. Band-tuning here trades one failure
+                    # mode for another (the P3 "~6 interacting subsystems" wall).
+                    # Kept at +4 — the known-good v16 config. Surviving the cellar
+                    # to score PAST 35 needs a more robust descent-execution
+                    # mechanism (open-before-descend on an auto-closing blocker),
+                    # not a band bump — that hits the 12B planning ceiling and is
+                    # the documented next design, not a quick patch.
                     if tried_map.get(f"take {_al}") not in ("loop", "fatal", "consumed", "success"):
                         scored.append((f"take {_al}", FRONTIER_BONUS + 4,
                                        f"[ACQUIRE-LIGHT] take the {_al} (light enables dark areas)"))
@@ -5179,6 +5390,25 @@ class BrainKnowledgeManager:
                                            f"[ACQUIRE-LIGHT] activate the {_al} for dark areas"))
                             break
 
+        # P3 (DEFERRED — promotion-offset banding): the magic promotion offsets
+        # below and downstream — SOLUTION-REPLAY (+8), DARK-RETREAT (+10),
+        # ENTER-AFTER-OPEN (+3), LESSON-BIND (+1..+3 via _lesson_promotions),
+        # FRONTIER-ROUTE (+2) — push an action above the downstream force/pin
+        # line, overriding the frozen actor's own choice. The doctrine prefers
+        # offsets that only RE-RANK context and never cross the force line, with
+        # the sole exception of death-avoidance (DARK-RETREAT, which legitimately
+        # must hard-override to avoid a grue death). Converting the rest to a
+        # band-limited re-rank touches ~6 interacting subsystems (SOLUTION-REPLAY,
+        # ENTER-AFTER-OPEN, frontier-router, BLOCKER-EXPAND, K50 escalation,
+        # ANTI-FIXATION rotation) that are tuned against each other's exact score
+        # bands; a minimal single-file edit cannot safely re-band all of them
+        # while the full bench is down and only offline mirrors are available.
+        # DEFERRED to a dedicated banding pass (needs a live bench to re-validate
+        # every interaction). The already-shipped SEVERE-LOOP backoff (≥8 turns
+        # → stop LESSON-BIND escalation, see below) is the safe partial: it stops
+        # the most-damaging force-override (a generic cross-room direction lesson
+        # pinned 184× over the actor's correct escape) WITHOUT re-banding.
+        #
         # CROSS-EPISODE SOLUTION-REPLAY — if the brain recorded a scoring move
         # for THIS room in a prior episode, replay it at top priority (below
         # only death-avoidance). This is the variance fix: instead of
@@ -5188,16 +5418,62 @@ class BrainKnowledgeManager:
         # one-shot reward isn't re-pinned after collection. Generic.
         try:
             import re as _re_sr
+            # RESIDENT richer-recall (Fable-5 RESIDENT-LOCAL lineage, commit
+            # 9b9055c0 → a93e4234): the resident mind deserves a richer recall
+            # budget — for a local model tokens are nearly free, bounded only by
+            # the context window. A room's move set now includes BOTH scoring
+            # moves and non-scoring PREREQUISITE/state-change moves (Fix G), and
+            # the old frugal limit-5 + "scored"-biased query could crowd the
+            # prerequisite out (e.g. retrieve 'down' but drop the 'move rug' that
+            # unlocks it → the chain never replays). Broaden the query to match
+            # revealed-prerequisite moves too and lift the recall budget so the
+            # WHOLE per-room move set is recalled. Generic; no game seed.
             _sr_hits = self.mcp.tool(
                 "brain_search",
                 {
-                    "query": f"SOLUTION_MOVE at '{room_safe}' do scored",
+                    "query": f"SOLUTION_MOVE at '{room_safe}' do scored revealed prerequisite",
                     "tags": ["solution_move", f"loc_{room_safe.replace(' ', '_')}"],
-                    "limit": 5,
+                    "limit": 12,
                     "rerank": False,
                 },
             )
             _sr_seen: set[str] = set()
+            # Fix J (2026-06-20) — secure an available light BEFORE a replayed
+            # descent. The strong cross-episode replay can rush a 'down' descent
+            # into the (dark) underground past a light source sitting visible-but-
+            # untaken in THIS room, then die in the dark (observed v16/v18 ep2:
+            # lamp never taken → descended → grue, capped at 35). Defer ONLY a
+            # descent-type replay while a light is visible here and not carried,
+            # so the ACQUIRE-LIGHT 'take <light>' sequences first; once the light
+            # is in hand the descent replays normally and Fix E lights it on
+            # entering the dark. Surgical (one move class, narrow condition) —
+            # avoids the global take-light band bump that net-regressed (reverted
+            # Fix I). Generic: universal light detection + descent verb, no seed.
+            # Light is "available here" if the CURRENT obs names one OR the agent
+            # has seen a light source in THIS room earlier this episode (Fix J+):
+            # the post-open observation that precedes the descent drops the room
+            # description, so the obs-only check missed the lamp (v19 ep3 → grue).
+            _sr_light_visible = bool(_light_sources(observation)) or (
+                room_safe.strip().lower()
+                in (getattr(mm, "_room_light_seen", set()) or set()))
+            _sr_carries_light = any(
+                _light_sources(str(x)) for x in (inventory_items or []))
+            # Fix K (2026-06-21) — SOLUTION-REPLAY saturation guard. ROUTE-REPLAY
+            # records EVERY location-changing move on a path that eventually
+            # scored, so a room the agent wandered in many directions across many
+            # accumulated runs ends up with EVERY exit recorded as a "scoring
+            # move" (root-caused in PSP-3: 'Forest' had north/east/south/west ALL
+            # pinned at +8 → a 4-way tie → the agent oscillated and never escaped
+            # the forest to the house; the brain-arm mean collapsed 36.7 → 13.3 as
+            # runs accumulated and ep2/ep3 never reached the Living Room). Two or
+            # more conflicting movement directions carry NO net signal — the agent
+            # cannot follow two "scoring directions" at once. Collect first; if
+            # >= 2 DISTINCT movement directions are replayed for this room,
+            # SUPPRESS the movement replays (let the frontier/explore logic
+            # navigate) and keep only the non-movement solution moves (take/open/
+            # put — these don't conflict). Mirrors the P4 lesson de-noise
+            # (>= 3 dirs = narration = no signal). Generic; no game seed.
+            _sr_moves: list = []   # (act, key, is_movement_direction)
             for _sr_h in _extract_hits(_sr_hits):
                 _sr_c = _sr_h.get("content", "") or ""
                 if "SOLUTION_MOVE" in _sr_c and f"at '{room_safe}'" in _sr_c:
@@ -5206,16 +5482,93 @@ class BrainKnowledgeManager:
                         continue
                     _sr_act = _sr_m.group(1).strip()
                     _sr_key = _sr_act.lower()
-                    # Skip only if dead-ended or ALREADY collected this episode
-                    # (consumed). A "success" in tried_map is exactly what we
-                    # WANT to replay-pin strongly, so do not skip it.
-                    if _sr_key in _sr_seen or tried_map.get(_sr_key) in ("loop", "fatal", "consumed"):
+                    # Skip if dead-ended, ALREADY collected this episode
+                    # (consumed), or PRECONDITION-UNMET here right now (neutral ==
+                    # tried with no movement; re-pins once it actually works). A
+                    # "success" is exactly what we WANT to replay.
+                    if _sr_key in _sr_seen or tried_map.get(_sr_key) in (
+                            "loop", "fatal", "consumed", "neutral"):
+                        continue
+                    # Fix J — defer a descent while a visible light is untaken.
+                    if (_sr_key in ("down", "d")
+                            and _sr_light_visible and not _sr_carries_light):
                         continue
                     _sr_seen.add(_sr_key)
-                    scored.append((_sr_act, FRONTIER_BONUS + 8,
-                                   f"[SOLUTION-REPLAY] known scoring move at '{room_safe}'"))
+                    _sr_moves.append((_sr_act, _sr_key, _sr_key in _REVERSE_DIR))
+            _sr_move_dirs = {_k for (_a, _k, _m) in _sr_moves if _m}
+            _sr_saturated = len(_sr_move_dirs) >= 2
+            # Fix M (2026-06-22) — DEAD-CYCLE locomotion suppression. A LOCOMOTION
+            # move (cardinal, or climb/enter/go/...) can be recorded as a
+            # SOLUTION_MOVE because it sat on a path that eventually scored, yet in
+            # an OVER-VISITED dead-end region it just re-cycles the agent there
+            # (root-caused v21 ep3: a single locomotion verb + an 'up' were pinned
+            # +8 at two adjacent scenic rooms, agent logged 194 visits there, never
+            # escaped — and these are SINGLE moves so Fix K's >=2-direction guard
+            # missed them).
+            # When the current room is over-visited (>=4) AND the agent is severely
+            # stalled (tsp>=8), the replay is demonstrably NOT scoring, so suppress
+            # its LOCOMOTION replays (let the loop-breaker / frontier-route drive
+            # the escape) while KEEPING manipulation replays (take/open/put/move —
+            # the Living-Room chain must survive). Generic: keyed on the agent's
+            # own visit count + stall, plus universal locomotion verbs; no game seed.
+            _sr_visits = int((getattr(mm, "_room_event_counts", {}) or {}).get(
+                room_id_key, 0)) if mm is not None else 0
+            _sr_tsp = int(getattr(mm, "_turns_since_progress", 0) or 0) if mm is not None else 0
+            _sr_dead_cycle = _sr_visits >= 4 and _sr_tsp >= 8
+            _LOCO = ("climb", "enter", "go", "exit", "descend", "ascend", "walk", "run")
+            for (_sr_act, _sr_key, _sr_is_move) in _sr_moves:
+                if _sr_saturated and _sr_is_move:
+                    continue   # conflicting movement directions → no net signal
+                if _sr_dead_cycle and (_sr_is_move or (_sr_key.split() or [""])[0] in _LOCO):
+                    continue   # stuck cycling an over-visited dead-end → drop locomotion replays
+                scored.append((_sr_act, FRONTIER_BONUS + 8,
+                               f"[SOLUTION-REPLAY] known scoring move at '{room_safe}'"))
+            if _sr_dead_cycle:
+                self.calls.append({"tool": "solution_replay_dead_cycle",
+                                   "room": room_safe, "visits": _sr_visits, "tsp": _sr_tsp})
+            if _sr_saturated:
+                self.calls.append({"tool": "solution_replay_saturated",
+                                   "room": room_safe, "dirs": sorted(_sr_move_dirs)})
         except Exception as _sr_e:
             self.calls.append({"tool": "solution_replay", "error": str(_sr_e)})
+
+        # ACTIVATE-CARRIED-LIGHT — once a portable light is CARRIED, the agent
+        # must turn it ON before/while entering a no-visibility region, otherwise
+        # it keeps descending unlit and dies to a grue (observed v12 ep2: light
+        # source taken, never activated, then a move into the dark underground →
+        # death; score capped at the surface). The existing ACQUIRE-LIGHT activate
+        # branch only fires when a light source is VISIBLE in the room obs — but a
+        # CARRIED light is in inventory, not in the room description, so the
+        # activation was never offered at the descent point. Read the CARRIED
+        # inventory instead. When already in the dark, this must out-rank
+        # DARK-RETREAT (+10) so the agent LIGHTS the lamp instead of fleeing the
+        # one region that holds the bulk of the score; when merely facing a known
+        # dark exit, a strong proactive promotion lights it before descending.
+        # One-shot per light (tried-at-all gate, same as ACQUIRE-LIGHT) so a lit
+        # lamp's "already on" reply can't re-pin. Generic: keyed on the universal
+        # _light_sources detector + _has_no_visibility / known-dark-exit; no game
+        # token. Mirrors DARK-RETREAT (death-avoidance) but PROCEEDS instead of
+        # retreating because a light is in hand.
+        _carried_light_heads: list = []
+        for _it in (inventory_items or []):
+            for _ls in _light_sources(str(_it)):
+                _h = str(_ls).split()[-1].lower()
+                if _h and _h not in _carried_light_heads:
+                    _carried_light_heads.append(_h)
+        _obs_dark_now = _has_no_visibility((observation or "").lower())
+        if _carried_light_heads and (_obs_dark_now or _dark_here):
+            for _clh in _carried_light_heads:
+                _emitted = False
+                for _on in (f"turn on {_clh}", f"light {_clh}"):
+                    if tried_map.get(_on) is None:
+                        _band = (FRONTIER_BONUS + 11) if _obs_dark_now else (FRONTIER_BONUS + 5)
+                        scored.append((_on, _band,
+                                       f"[ACTIVATE-CARRIED-LIGHT] turn on the carried "
+                                       f"'{_clh}' before entering the dark (survive the dark, keep light)"))
+                        _emitted = True
+                        break
+                if _emitted:
+                    break
 
         # DARK-RETREAT death-avoidance — a no-visibility observation means the
         # agent has NO active light here, so moving DEEPER risks a grue death
@@ -5224,7 +5577,11 @@ class BrainKnowledgeManager:
         # move) back to the lit room, then seek a light source. Promote the
         # retreat to the absolute top (>= the K33 high-confidence-pin threshold)
         # so it is force-emitted. Generic: dark + no light => go back.
-        if _has_no_visibility((observation or "").lower()) and mm is not None:
+        # NB: when a light is CARRIED but unlit, ACTIVATE-CARRIED-LIGHT above
+        # promotes 'turn on <light>' at +11 (beats this +10) so the agent lights
+        # up and PROCEEDS; retreat only wins when there is no carried light to
+        # activate (or it was already tried), preserving the original behaviour.
+        if _obs_dark_now and mm is not None:
             _last_move = ""
             for _loc_a, _act_a in reversed(getattr(mm, "_last_actions", []) or []):
                 _d = mm._normalize_direction(_act_a) if hasattr(mm, "_normalize_direction") else ""
@@ -5234,7 +5591,7 @@ class BrainKnowledgeManager:
             _retreat = _reverse_dir(_last_move)
             if _retreat and tried_map.get(_retreat) not in ("fatal",):
                 scored.append((_retreat, FRONTIER_BONUS + 10,
-                               f"[DARK-RETREAT] no light — retreat '{_retreat}' to the lit room (avoid grue)"))
+                               f"[DARK-RETREAT] no light — retreat '{_retreat}' to the lit room (avoid the dark)"))
 
         # LESSON-BIND — make the brain's OWN reflection/heuristic lessons STEER
         # the planner. The self-improvement chain audit (2026-06-14) found that
@@ -5357,6 +5714,42 @@ class BrainKnowledgeManager:
                 for a, s, r in scored
             ]
 
+        # Fix O (2026-06-23) — GENERAL descent-locomotion light-gate. Fix N gates
+        # only the 'down'/'d' EXIT, but the agent can also descend by CLIMBING the
+        # revealed staircase ('climb') — observed v24 ep2: opened the trap door,
+        # typed 'climb' into the dark cellar PAST the untaken lamp (take_lantern=0,
+        # capped at 30). One final pass: demote ANY descent-locomotion move
+        # (down/d/climb/descend) when a light source was SEEN in this room but is
+        # NOT carried, so the +4 take-light affordance can surface first; once the
+        # lamp is in hand the descent is no longer gated and Fix E lights it below.
+        # Generic: universal descent-locomotion verbs + the agent's own
+        # light-seen-here memory; no game token.
+        _o_light_here = (room_safe.strip().lower()
+                         in (getattr(mm, "_room_light_seen", set()) or set())) if mm is not None else False
+        # Fix R (2026-06-24) — ALSO gate a descent the agent has ALREADY learned
+        # leads into no-visibility (its OWN prior dark descent from this room),
+        # even when no light was ever surfaced here. The InfoExtractor often drops
+        # the lamp from the planner observation so _o_light_here stays False while
+        # the agent re-descends unlit (v26 ep2: climbed into pitch-black twice).
+        # _dark_descents (recorded by descent VERB in record_action_outcome,
+        # unlike the cardinal-only _dark_exits) lets the agent stop re-descending
+        # after the first grue so the +4 take-light affordance surfaces. Generic;
+        # no game token. Only the SPECIFIC known-dark verb is gated (unless a
+        # light was seen here, which gates all descents as before).
+        _o_known_dark = ((getattr(mm, "_dark_descents", {}) or {}).get(
+            room_safe.strip().lower(), set())) if mm is not None else set()
+        if not _carries_light and (_o_light_here or _o_known_dark):
+            _O_DESCEND = ("down", "d", "climb", "descend")
+
+            def _r_gated_descent(a: str) -> bool:
+                v = ((a or "").split() or [""])[0].lower()
+                return v in _O_DESCEND and (_o_light_here or v in _o_known_dark)
+            scored = [
+                (a, 1, f"avoid unlit descent, no light ({r})")
+                if (_r_gated_descent(a) and s > 1)
+                else (a, s, r)
+                for a, s, r in scored
+            ]
         # Filter out hard-negative scores, then pick top 5 distinct.
         scored = [s for s in scored if s[1] > -50]
         scored.sort(key=lambda t: -t[1])
@@ -6817,8 +7210,20 @@ class ZorkHarness:
                 current_room = getattr(mm, "_prev_loc_name", "") or ""
                 exits = mm._known_exits.get(current_room) or {}
                 if exits:
-                    # Deterministic choice: first direction alphabetically.
-                    direction = sorted(exits.keys())[0]
+                    # Prefer an exit the agent has NOT just been bouncing on. The
+                    # old alphabetical-first choice frequently re-entered the very
+                    # room it just left (e.g. picking the reverse of the cycle),
+                    # converting a 2-cycle into a slower 3+-cycle and burning the
+                    # back half of the run in a dead-end oscillation between two
+                    # adjacent rooms. Pick
+                    # deterministically from the cached exits NOT present in the
+                    # recent action window; fall back to alphabetical only if every
+                    # known exit was just tried. Mechanism, not policy — no "best
+                    # room" judgement, just "go somewhere you weren't oscillating
+                    # on". Generic; the exits come from the brain's own map.
+                    recent_actions = {a for (_rk, a) in self._action_history}
+                    fresh = sorted(d for d in exits.keys() if d not in recent_actions)
+                    direction = (fresh or sorted(exits.keys()))[0]
                     substituted = direction
                     self._consecutive_looks = 0
                     self._emit_note(
@@ -6826,6 +7231,7 @@ class ZorkHarness:
                         room_key=room_key,
                         substituted=direction,
                         pattern="forced_exit_after_3_looks",
+                        fresh_exit=bool(fresh),
                     )
 
         # ── Layer 5 (spec 011): END-OF-GATE consecutive-examine cap.

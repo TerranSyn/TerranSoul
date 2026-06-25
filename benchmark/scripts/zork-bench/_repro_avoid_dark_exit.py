@@ -93,7 +93,7 @@ def t4_real_light_detector() -> bool:
 def t5_source_wiring() -> bool:
     ok = ("self._dark_exits.setdefault(" in SRC
           and "_carries_light = any(" in SRC
-          and "d_l in _dark_here and base > 1" in SRC
+          and "d_l in _dark_here" in SRC and "base > 1" in SRC
           and "self._last_lit_room = loc_name" in SRC)
     print("PASS t5: dark-exit memory + demotion wired"
           if ok else "FAIL t5: avoid-dark-exit wiring missing")

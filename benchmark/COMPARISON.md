@@ -31,7 +31,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 | Benchmark | Latest run | TerranSoul headline | Date | Section |
 |---|---|---|---|---|
 | **LongMemEval-S** retrieval-only (500 questions, all types) | BENCH-AM-6/6.1 | `search`: **R@5 99.2 % / R@10 99.6 % / R@20 100.0 % / NDCG@10 91.3 % / MRR 92.6 %** — verified top-1 vs agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5) | 2026-05-11 | [§ LongMemEval-S](#longmemeval-s-verified-top-1-bench-am-66-1) |
-| **agentmemory bench:quality** (concept-tagged, 240 obs / 20 queries) | BENCH-AM-7 | `hybrid_search_rrf` no-vector: **R@10 67.1 % / NDCG@10 98.2 % / MRR 100.0 %** — quality leader | 2026-05-11 | [§ Feature matrix](#feature-matrix-vs-agentmemory) |
+| **agentmemory bench:quality** (concept-tagged, 240 obs / 20 queries) | regenerated 2026-06-25 | keyword-only `search`: **R@10 67.1 % / NDCG@10 98.2 % / MRR 100.0 %** (quality leader); `hybrid_search_rrf` no-vector: **R@10 66.8 % / NDCG@10 95.0 % / MRR 95.0 %** (production default, restored after the RRF regression fix `c560514e`) | 2026-06-25 | [§ Feature matrix](#feature-matrix-vs-agentmemory) |
 | **MTEB LoCoMo retrieval** (250-query slice across 5 tasks) | BENCH-LCM-1 | `rrf`: **R@10 51.6 % / R@100 65.9 % / NDCG@10 41.5 % / MRR 41.4 %** — temporal-reasoning strong; multi-hop and open-domain are documented gaps requiring iterative retrieval | 2026-05-13 | [§ MTEB LoCoMo](#mteb-locomo-retrieval-adapter-bench-lcm-1) |
 | **ZorkGPT long-horizon** (`gemma4:e4b` 4B) | BENCH-ZORK (spec 002–014 + K-series → reliability fork) | **AGI-pure:** the brain lifts the same 4B from **0** (both controls) to **10–20** and stops its fixation loops; cross-episode behavioural change verified (new room *Up a Tree* via reflection hydration); **0/1682 MCP errors**. **Reliability demonstration (taught solution):** serving the brain's move on *every* turn via an exception-safe orchestrator fork drives the 4B to a deterministic **350/350** (396/396 moves, 0 errors), vs a non-deterministic 73/177 under intermittent serving — isolating *delivery reliability* from model size | 2026-06-03 | [§ ZorkGPT bench](#zorkgpt--terransoul--long-horizon-task-bench-bench-zork-15-2026-05-28--pass) |
 
@@ -135,17 +135,20 @@ Baseline context cost on the pinned fixture:
 | Full-context paste | 32,660 | 596.05M |
 | 200-line MEMORY.md | 7,960 | 145.27M |
 
+> **2026-06-25 regenerated** from `target-copilot-bench/bench-results/memory_quality.md` (the committed source of truth) after the RRF regression fix (commit `c560514e`). The P6 echo-collapse penalty (a 0.5× / 50% attenuation) had been dominating the ~2% RRF rank gaps and had collapsed `hybrid_search_rrf` no-vector to R@10 22.9% / NDCG 53.1%; bounding it to a ~2.5% tiebreaker (`EchoCollapseConfig.tiebreaker_compression`) restored it to R@10 66.8% / NDCG 95.0%. `AppStateGateway::search` (rrf) recovered 22.3% → 63.9% in the same fix. Keyword-only `search` is unchanged at 67.1%. Yearly-savings columns are derived from the per-row saved-percentage; values may drift ±0.2M from internal unrounded fractions.
+
 | System | R@10 | NDCG@10 | MRR | Avg retrieved tokens/query | Saved vs full paste | Saved vs 200-line | Full-paste yearly savings | 200-line yearly savings |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Built-in (CLAUDE.md / grep) | 55.8 % | 80.3 % | 82.5 % | 2,653 | 91.9 % | 66.7 % | 547.62M | 96.84M |
-| Built-in (200-line MEMORY.md) | 37.8 % | 56.4 % | 65.5 % | 2,078 | 93.6 % | 73.9 % | 558.12M | 107.35M |
-| **TerranSoul `search` (quality leader)** | **64.1 %** | **94.7 %** | **95.8 %** | 6,276 | 80.8 % | 21.1 % | 481.51M | 30.73M |
-| TerranSoul `hybrid_search` no-vector | 56.3 % | 87.0 % | 91.3 % | 2,773 | 91.5 % | 65.2 % | 545.44M | 94.66M |
-| TerranSoul `hybrid_search` deterministic | 61.1 % | 90.0 % | 90.8 % | 2,861 | 91.2 % | 64.1 % | 543.83M | 93.06M |
-| **TerranSoul `hybrid_search_rrf` no-vector (balanced)** | **63.6 %** | **94.3 %** | **95.8 %** | 2,798 | 91.4 % | 64.8 % | 544.98M | 94.21M |
-| TerranSoul `hybrid_search_rrf` deterministic | 61.8 % | 90.5 % | 92.0 % | 2,808 | 91.4 % | 64.7 % | 544.80M | 94.02M |
+| Built-in (CLAUDE.md / grep) | 55.8 % | 80.3 % | 82.5 % | 2,653 | 91.9 % | 66.7 % | 547.77M | 96.90M |
+| Built-in (200-line MEMORY.md) | 37.8 % | 56.4 % | 65.5 % | 2,078 | 93.6 % | 73.9 % | 557.90M | 107.35M |
+| **TerranSoul keyword-only `search` (quality leader)** | **67.1 %** | **98.2 %** | **100.0 %** | 8,245 | 74.8 % | -3.6 % | 445.85M | -5.23M |
+| TerranSoul `hybrid_search` no-vector | 60.6 % | 90.2 % | 95.8 % | 2,770 | 91.5 % | 65.2 % | 545.39M | 94.72M |
+| TerranSoul `hybrid_search` deterministic | 62.3 % | 91.5 % | 95.8 % | 2,841 | 91.3 % | 64.3 % | 544.19M | 93.41M |
+| **TerranSoul `hybrid_search_rrf` no-vector (balanced)** | **66.8 %** | **95.0 %** | **95.0 %** | 2,748 | 91.6 % | 65.5 % | 545.98M | 95.15M |
+| TerranSoul `hybrid_search_rrf` deterministic | 61.5 % | 91.3 % | 100.0 % | 2,834 | 91.3 % | 64.4 % | 544.19M | 93.55M |
+| TerranSoul `AppStateGateway::search` (rrf, no vectors) | 63.9 % | 90.0 % | 90.0 % | 2,747 | 91.6 % | 65.5 % | 545.98M | 95.15M |
 
-**Verdict:** TerranSoul has a standalone token-savings CLI and a per-query token report, closing the agentmemory comparison gap. The quality-max path (`search`) wins the exact pinned quality table, while no-vector RRF is the better default trade-off for production-like retrieval: within 0.5 pp Recall@10 and 0.4 pp NDCG@10 of the quality leader, ties MRR, and cuts retrieved context from 6,276 to 2,798 tokens/query.
+**Verdict:** TerranSoul has a standalone token-savings CLI and a per-query token report, closing the agentmemory comparison gap. After the 2026-06-25 RRF regression fix, no-vector RRF is the production default: it lands at R@10 66.8% / NDCG@10 95.0% — within 0.3 pp Recall@10 of the keyword-only quality leader (67.1%) — while cutting retrieved context from 8,245 to 2,748 tokens/query (vs the keyword path's full-token cost). The gateway path (`AppStateGateway::search` rrf) recovered to 63.9% in the same fix.
 
 ## LongMemEval-S verified top-1 (BENCH-AM-6/6.1)
 
@@ -189,8 +192,8 @@ Per-task signal: temporal reasoning is already strong (R@10 90.0 %, NDCG@10 78.4
 |---|---|---|---|---|---|---|
 | **TerranSoul `search`** | LongMemEval-S retrieval-only | **R@5 99.2 % / R@10 99.6 % / R@20 100.0 %** | **91.3 %** | **92.6 %** | this repo, BENCH-AM-6/6.1 | ✅ this repo |
 | TerranSoul `rrf` | LongMemEval-S retrieval-only | R@5 99.0 % / R@10 99.6 % / R@20 100.0 % | 91.0 % | 92.0 % | this repo, BENCH-AM-6/6.1 | ✅ this repo |
-| **TerranSoul `hybrid_search_rrf` no-vector (Round 7)** | agentmemory bench:quality | **R@10 67.1 %** | **98.2 %** | **100.0 %** | this doc | ✅ this repo |
-| **TerranSoul `search` (Round 7)** | agentmemory bench:quality | **R@10 66.4 %** | **96.5 %** | **100.0 %** | this doc | ✅ this repo |
+| **TerranSoul keyword-only `search` (regenerated 2026-06-25)** | agentmemory bench:quality | **R@10 67.1 %** | **98.2 %** | **100.0 %** | this doc | ✅ this repo |
+| **TerranSoul `hybrid_search_rrf` no-vector (regenerated 2026-06-25, post RRF-fix)** | agentmemory bench:quality | **R@10 66.8 %** | **95.0 %** | **95.0 %** | this doc | ✅ this repo |
 | TerranSoul `rrf` | MTEB LoCoMo retrieval-only, 250-query slice | R@10 51.6 % / R@100 65.9 % | 41.5 % | 41.4 % | [docs/locomo-mteb-adapter.md](locomo-mteb-adapter.md) | ✅ this repo |
 | TerranSoul `search` | MTEB LoCoMo retrieval-only, 250-query slice | R@10 51.3 % / R@100 65.9 % | 40.9 % | 40.5 % | [docs/locomo-mteb-adapter.md](locomo-mteb-adapter.md) | ✅ this repo |
 | **TerranSoul brain (ZorkGPT bridge)** | ZorkGPT long-horizon, `gemma4:e4b`, 2-ep × 100-turn | **SC4 PASS** — cross-episode behavioural change (new room *Up a Tree* reached in ep2 via reflection hydration); 0/1682 MCP errors | n/a (long-horizon, not IR) | n/a | this repo, BENCH-ZORK-1.5 (spec series 002–006) | ✅ this repo |
@@ -261,6 +264,10 @@ Two 2-ep × 100-turn canonical runs (spec 005 + spec 006) on `gemma4:e4b` (q4_k_
 | total / aggregate | — | — | 400 | **1682** | **0 (0.0 %)** | — | — | — |
 
 **Verdict: SC4 PASS — cross-episode self-improve produced a behavioural change.** spec 006 ep2 reached the canopy room *Up a Tree* (9 events there in ep2 vs 0 in ep1) via `go up` at Forest Path after the bridge's `_load_prior_reflections` hook hydrated ep1's room-scoped reflection into ep2's `knowledgebase.md` at episode start. The egg (a 5-point treasure) was visible in the room description; the agent did not commit to `take egg → walk back to Living Room → put egg in trophy case`. The brain delivered new strategy; the model didn't follow through. Score=0 across all four episodes is the **`gemma4:e4b` reasoning ceiling** (a multi-step planning problem on a 4B model with 2048-token context), not a memory ceiling — the next experimental knob is a 13B / 30B reasoning model.
+
+> **Update (2026-06-21):** the 13B knob was run. On `gemma4:12b-it-qat` the self-improvement-stack campaign **broke the modal-10 ceiling → peak 45** (full underground-descent chain closed and survived; floor lifted to 35, best mean 36.7), AGI-pure — the cap-breaking prerequisite discovered at runtime and replayed by the brain. Cross-model `qwen2.5:7b` lifts 0→5 (memory-lift generalises across architectures, bounded by actor planning). Cross-game at n=2: Detective's lift-to-20 is reproducible but its 20→60 climb is not; 9:05's null is robust. Full results + honest variance in the research paper §4.3c/§4.3d (`docs/LLM-Brain-Design-Research-Paper.md`).
+>
+> **De-confounding (2026-06-25):** the peak-45 above was measured on a **persistent** brain across 9 sequential runs, conflating within-run cross-episode learning with across-run accumulation of one lucky runtime discovery (the rug-move prerequisite). Re-running on a **fresh task-naïve brain per run** gives the honest cross-episode result **10/10/15 then 10/20/15** (mean 11.7 → 15.0, peak 20 over six episodes): the agent reliably reaches the interior but never re-discovers the full rug→trap-door→lamp→cellar chain from a clean start. So peak-45 **required** across-run accumulation; the pure cross-episode result (~15) is consistent with the modal-10 / actor-bound thesis — the frozen 12B's discovery is the bottleneck, not the memory layer. This sharpens, not overturns (externalised memory is still a genuine performance axis). See §4.3d.
 
 Why the brain layer is the right place to fix this class of bug, and how each fix surfaced:
 
@@ -340,7 +347,7 @@ A short, honest narrative summarising where the system leads, where it ties, and
 ### Where TerranSoul leads
 
 - **LongMemEval-S retrieval-only** — TerranSoul `search` is **top-1 in this table** (R@5 99.2 %, R@10 99.6 %, R@20 100.0 %, NDCG@10 91.3 %, MRR 92.6 %), ahead of agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5). The win comes from corpus-aware lexical weighting in `MemoryStore::search` + per-cognitive-kind decay + the 6-signal hybrid scorer. BENCH-AM-6/6.1 verified the full 500-question table; BENCH-AM-7 confirmed no quality regression after the low-signal cap landed.
-- **agentmemory bench:quality** — TerranSoul `hybrid_search_rrf` no-vector is the quality leader (R@10 67.1 %, NDCG@10 98.2 %, MRR 100.0 %) on the upstream's own pinned fixture, while staying within 0.5 pp R@10 of the quality-max `search` mode at less than half the retrieved-token budget.
+- **agentmemory bench:quality** — on the upstream's own pinned fixture, TerranSoul keyword-only `search` leads on raw quality (R@10 67.1 %, NDCG@10 98.2 %, MRR 100.0 %), while the production-default `hybrid_search_rrf` no-vector lands within 0.3 pp R@10 (66.8 %, NDCG@10 95.0 %, MRR 95.0 %) at roughly a third of the retrieved-token budget. RRF was regressed (R@10 22.9 %) by the P6 echo-collapse penalty dominating the ~2 % rank gaps and was restored in the 2026-06-25 fix (`c560514e`) that bounds the penalty to a ~2.5 % tiebreaker; for context, agentmemory v0.6 dual-stream reference is R@10 58.6 %.
 - **Architectural affordances not in the peer set** — HyDE retrieval, LLM-as-judge cross-encoder rerank, Contextual Retrieval (Anthropic 2024), CRDT device sync, the typed-KG write tool (`brain_add_edge`, spec 003), and the live LLM-provider self-healing probe (`brain_health.llm_provider_state` + watchdog, spec 005). Each one is verified to ship and tested — see the feature matrix above and `rules/completion-log.md` entries.
 - **ZorkGPT long-horizon, real local LLM** — BENCH-ZORK exposes its full call log (**0 MCP errors across 1682 brain calls**, 5 reflections retrievable per episode, ep2 reached a new room via cross-episode reflection hydration), and adds two results we have not seen published elsewhere on Zork I: with no task seeds the brain lifts the same 4B from **0 → 10–20** while both controls stay at 0; and a controlled **delivery-reliability demonstration** shows that serving the brain's move every turn drives the 4B to a deterministic **350/350**, where intermittent serving stalls at a non-deterministic 73/177 — isolating *delivery reliability* from model size. Research write-up: [`docs/LLM-Brain-Design-Research-Paper.md`](../docs/LLM-Brain-Design-Research-Paper.md).
 

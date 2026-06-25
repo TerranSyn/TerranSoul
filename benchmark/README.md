@@ -34,10 +34,10 @@ benchmark/
 | Benchmark | Best round | Headline | Index |
 |---|---|---|---|
 | LongMemEval-S retrieval | BENCH-AM-6/6.1 (2026-05-11) | R@5 **99.2 %**, R@10 **99.6 %**, R@20 **100.0 %**, NDCG@10 **91.3 %**, MRR **92.6 %** | [terransoul/longmemeval-s/](terransoul/longmemeval-s/README.md) |
-| agentmemory quality bench | BENCH-AM-3 / AM-7 (2026-05-12 / -11) | R@10 **64.1 → 66.4 %**, NDCG@10 **94.7 → 96.5 %**, MRR **95.8 → 100.0 %** | [terransoul/agentmemory-quality/](terransoul/agentmemory-quality/README.md) |
+| agentmemory quality bench | regenerated 2026-06-25 (RRF-fix `c560514e`) | keyword `search` R@10 **67.1 %** / NDCG@10 **98.2 %** / MRR **100.0 %**; `hybrid_search_rrf` no-vec R@10 **66.8 %** / NDCG@10 **95.0 %** (restored from a regressed 22.9 %) | [terransoul/agentmemory-quality/](terransoul/agentmemory-quality/README.md) |
 | LoCoMo MTEB retrieval | BENCH-LCM-8 (2026-05-12, canonical) | R@10 **68.3 %** (rrf_rerank, full 1976-q) | [terransoul/locomo-mteb/](terransoul/locomo-mteb/README.md) |
 | LoCoMo-at-scale | BENCH-SCALE-1b (2026-05-13) | 100k corpus, R@10 **64.0 %**, NDCG@10 **46.7 %** | [terransoul/locomo-at-scale/](terransoul/locomo-at-scale/README.md) |
-| Token efficiency | BENCH-AM-4 (2026-05-12) | **91.4 %** savings vs full-context paste at R@10 63.6 % | [COMPARISON.md](COMPARISON.md) |
+| Token efficiency | regenerated 2026-06-25 | **91.6 %** savings vs full-context paste at R@10 66.8 % (no-vec RRF, post RRF-fix) | [COMPARISON.md](COMPARISON.md) |
 
 ## How to reproduce in one command
 
