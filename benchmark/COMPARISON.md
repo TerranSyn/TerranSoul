@@ -36,7 +36,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 | *— Memory systems —* | | | | | | | | | | | |
 | agentmemory | Memory | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | — | — | — | — | LongMemEval-S |
 | MemPalace | Memory | ~96.6 % | — | — | — | — | — | — | — | — | LongMemEval-S |
-| Mem0 | Memory | — | — | — | — | — | — | — | — | — | LoCoMo QA 68.5 %¹ |
+| Mem0 | Memory | 0.41 | 0.61 | 0.74 | 0.88 | 0.92 | — | — | — | — | agentmemory² · LoCoMo QA 68.5 %¹ |
 | Letta (MemGPT) | Memory | — | — | — | — | — | — | — | — | — | LoCoMo QA¹ |
 | Zep | Memory | — | — | — | — | — | — | — | — | — | LoCoMo QA¹ |
 | Cognee | Memory | — | — | — | — | — | — | — | — | — | LoCoMo QA¹ |
@@ -55,7 +55,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 | Claude Code + GENesis-AGI | Agent (frontier) | — | — | — | — | — | 8.24 | 21/22 | 17.5 s | $5.94 | parity³ᵇ |
 | Hermes-Agent (Nous Research) | Agent | — | — | — | — | — | 6.90 | 21/22 | 10.9 s | $0 | parity³ |
 
-¹ LoCoMo **QA** (J-score) — end-to-end answer accuracy, *not* retrieval R@k; shown for context only, not comparable to the R@k columns. ² our measured RAG-retrieval R@k on the **agentmemory corpus** (0–1, a harder corpus — **not** the LongMemEval-S % of the memory rows). Same nomic-embed-text embedder, so the frameworks cluster: the embedder, not the framework, sets recall. ²ᵃ GraphRAG local search returns ≤5 entity-focused sources by design — a metric mismatch, not a retrieval failure. ³ parity-personal-ai head-to-head — same 22 prompts + injected context, judged 0–10 by gemma4:12b-it-qat; latency p50 (TerranSoul/OpenJarvis inference-only, others wall-clock incl. cold-start). ³ᵇ different **cloud** model (claude-haiku-4-5) — a frontier reference, not like-for-like with the local rows.
+¹ LoCoMo **QA** (J-score) — end-to-end answer accuracy, *not* retrieval R@k; shown for context only, not comparable to the R@k columns. ² our measured RAG-retrieval R@k on the **agentmemory corpus** (0–1, a harder corpus — **not** the LongMemEval-S % of the memory rows). Same nomic-embed-text embedder, so the frameworks **and Mem0** (memory system, benched verbatim with `infer=False`, 2026-06-28) cluster at 0.41 / 0.61 / 0.74: the embedder, not the framework or memory system, sets recall. ²ᵃ GraphRAG local search returns ≤5 entity-focused sources by design — a metric mismatch, not a retrieval failure. ³ parity-personal-ai head-to-head — same 22 prompts + injected context, judged 0–10 by gemma4:12b-it-qat; latency p50 (TerranSoul/OpenJarvis inference-only, others wall-clock incl. cold-start). ³ᵇ different **cloud** model (claude-haiku-4-5) — a frontier reference, not like-for-like with the local rows.
 
 
 ## Latest canonical per benchmark
