@@ -26,6 +26,37 @@ results across four reproducible benchmarks:
 
 Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestones.md). The latest canonical for each benchmark is below; the iteration trail is in the archive.
 
+## Comprehensive comparison — every system at a glance
+
+> The whole field in one place: **memory systems**, **RAG frameworks**, and **self-improving LLM agents**. **Metrics differ by category and are *not* cross-comparable** — a memory system's retrieval `R@5`, a RAG framework's `R@k`, and an agent's 0–10 answer-quality measure different things; read each row's metric label, and see the detailed, sourced sections below. TerranSoul is the only entry that spans all three categories.
+
+| System | Category | Local-first | Key capability | Headline result | License |
+|---|---|:---:|---|---|---|
+| **🧠 TerranSoul** (this repo) | **Memory + RAG + self-improving** | ✅ Ollama | 3-tier memory · 6-signal hybrid RAG · typed KG · self-improvement loop · earned-trust autonomy · lease mesh · omni-channel · over MCP | **R@5 99.2 %** (LongMemEval) · **9.82/10** parity quality | proprietary |
+| *— Memory systems —* | | | | | |
+| agentmemory | Memory | ✅ | dual-stream BM25 + vector | R@5 95.2 % (LongMemEval) | MIT |
+| Mem0 | Memory | ❌ cloud-first | extraction + vector memory | LoCoMo QA 68.5 %¹ | Apache-2.0 |
+| Letta (MemGPT) | Memory | ◐ self-host | tiered memory agents | published (LoCoMo)¹ | Apache-2.0 |
+| MemPalace | Memory | — | hierarchical memory | ~R@5 96.6 % (LongMemEval) | research |
+| HippoRAG | Memory / RAG | ✅ | PPR knowledge-graph retrieval | published | MIT |
+| Zep | Memory | ◐ OSS + cloud | temporal-KG memory | published (LoCoMo)¹ | Apache-2.0 |
+| Cognee | Memory | ◐ self-host | graph + vector memory | published (LoCoMo)¹ | Apache-2.0 |
+| claude-mem | Memory | ◐ Claude-only | summary memory for Claude | — | open source |
+| Khoj | Memory / assistant | ✅ | personal search + chat | — | AGPL-3.0 |
+| *— RAG frameworks —* | | | | | |
+| LangChain / LangGraph | RAG framework | ◐ your stack | orchestration + retrievers | vector R@5 0.41² | MIT |
+| LlamaIndex | RAG framework | ◐ your stack | indices + query engines | vector R@5 0.41 / R@10 0.58² | MIT |
+| GraphRAG (Microsoft) | RAG (graph) | ◐ batch index | entity/community graph RAG | local-search R@5 0.05²ᵃ | MIT |
+| Haystack (deepset) | RAG framework | ✅ | modular DAG pipelines | vector R@5 0.41² | Apache-2.0 |
+| RAGFlow (InfiniFlow) | RAG engine | ✅ | deep-doc-parsing RAG | vector R@5 0.41² | Apache-2.0 |
+| *— Self-improving LLM agents —* | | | | | |
+| OpenJarvis (Stanford SAIL) | Self-improving agent | ✅ | single-pass personal AI | 9.55/10 parity quality³ | Apache-2.0 |
+| OpenClaw | Self-improving assistant | ✅ | config-first agent loop | 8.36/10 parity quality³ | MIT |
+| Claude Code + GENesis-AGI | Self-improving agent (frontier) | ❌ cloud | autonomous cognitive agent | 8.24/10 parity quality³ᵇ | open source |
+| Hermes-Agent (Nous Research) | Self-improving agent | ✅ | DSPy / GEPA skill self-evolution | 6.90/10 parity quality³ | MIT |
+
+¹ LoCoMo **QA** (J-score): end-to-end answer accuracy — a different benchmark, *not* comparable to retrieval R@k. ² our measured RAG-retrieval R@k on the agentmemory corpus (same `nomic-embed-text` embedder — the frameworks cluster because the embedder, not the framework, sets recall). ²ᵃ GraphRAG local search returns a small entity-focused context (≤5 sources/query) **by design** — a metric mismatch, not a retrieval failure. ³ parity-personal-ai head-to-head: same 22 prompts + injected context, judged 0–10 by `gemma4:12b-it-qat`. ³ᵇ a different **cloud** model (`claude-haiku-4-5`) — a frontier reference, not like-for-like with the local rows. Local-first / license cells reflect each project's public docs; "—" = unclear from public sources.
+
 ## Latest canonical per benchmark
 
 > **How to read these numbers (plain English).** The tables below score either *search quality* (did it find the right saved info?) or *answer quality* (was the written reply good?).
@@ -101,10 +132,10 @@ Algorithmic note: TerranSoul mirrors the reference deterministic hash embedding 
 
 ### Intentional scope boundaries
 
-BENCH-AM-7 reviewed the two rows where TerranSoul is intentionally not a one-for-one clone of agentmemory:
+BENCH-AM-7 originally flagged two rows where TerranSoul was not a one-for-one clone of agentmemory. **Both have since shipped:**
 
-- **Leases / signals / mesh:** TerranSoul keeps MCP plus the Hive relay/federation layer as the external coordination boundary. A standalone in-memory lease mesh is not shipped in the core desktop memory module because it would duplicate Hive orchestration before there is a concrete cross-agent workflow that needs it.
-- **Separate language SDKs:** TerranSoul keeps MCP, Tauri IPC, native Rust APIs, and Vue stores as the stable integration surfaces. Dedicated Python/TypeScript SDK packages are deferred by design until external adopters need versioned package distribution; shipping them now would duplicate schema/contracts without a real consumer.
+- **Leases / signals / mesh (now ✅):** TerranSoul ships an **advisory lease mesh** (`hive::leases`) built ON TOP of the Hive relay / Soul Link layer rather than as a new transport. `LeaseManager` grants soft, time-boxed `Lease{key,owner_id,ttl_ms,…}` claims (acquire / renew / release), a background sweep reclaims timed-out leases, and state changes (`Acquired/Renewed/Released/Expired`) broadcast over Soul Link so peers see who holds what. It is exposed as Tauri commands (`lease_acquire/renew/release/status`) and a `with_lease` critical-section primitive the MCP gateway can call. The layer is strictly advisory and **fails open**: it never touches the memory mutation hot path, and an unreachable peer can never wedge or block local work.
+- **Language SDKs (now ✅):** TerranSoul ships **Rust + Python + TypeScript SDK packages** under `sdk/` — typed clients over the brain MCP API (Streamable HTTP + bearer, auto port/token discovery), each with tests — alongside the existing MCP, Tauri IPC, native Rust APIs, and Vue stores.
 
 We retain advantages they do not list: HyDE retrieval, LLM-as-judge cross-encoder rerank, Postgres/MSSQL/Cassandra storage backends, contextual retrieval (Anthropic 2024), CRDT device sync, the `brain_add_edge` typed-KG write tool (spec 003), and the `brain_health.llm_provider_state` self-healing probe (spec 005).
 
@@ -230,14 +261,14 @@ Legend: ✅ ships, ◐ partial, ❌ missing, n/a not applicable.
 | Privacy / secret stripping | ✅ pre-insert | ✅ | ◐ | ◐ | ❌ | ◐ | ❌ | ◐ |
 | CRDT device sync | ✅ QUIC/WS | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ◐ |
 | Real-time UI viewer | ✅ in-app graph | ✅ port 3113 | ◐ web | ✅ ADE | ❌ | ❌ | ❌ | ✅ |
-| Multi-agent leases / signals / mesh | ◐ MCP gateway + Hive relay; standalone lease mesh out of scope for core memory | ✅ | ◐ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Language SDKs / integration API | ◐ MCP + Tauri/Rust/Vue APIs; separate SDK packages deferred by design | ✅ REST + MCP | ✅ | ✅ | ❌ | ❌ | ❌ | ◐ |
+| Multi-agent leases / signals / mesh | ✅ advisory lease mesh on the Hive relay (`hive::leases`: acquire/renew/release + TTL expiry sweep, signals over Soul Link, fail-open) | ✅ | ◐ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Language SDKs / integration API | ✅ Rust + Python + TypeScript SDK packages (sdk/) over MCP, plus Tauri/Rust/Vue APIs | ✅ REST + MCP | ✅ | ✅ | ❌ | ❌ | ❌ | ◐ |
 | Token-savings CLI calculator | ✅ `npm run brain:tokens` | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | Self-healing local LLM provider probe | ✅ `brain_health.llm_provider_state` + PowerShell watchdog | ❌ | n/a (cloud) | ❌ | ❌ | n/a | ❌ | ❌ |
 | LongMemEval-S verified number | ✅ R@5 99.2 %, R@10 99.6 %, R@20 100.0 %, NDCG@10 91.3 %, MRR 92.6 % | ✅ 95.2 % R@5 | ❌ | ❌ | ✅ ~96.6 % R@5 | ❌ | ❌ | ❌ |
 | ZorkGPT long-horizon verified | ✅ SC4 PASS (BENCH-ZORK-1.5, spec series 002–006, `gemma4:e4b`) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
-TerranSoul is the only system on this matrix that ships all of {HyDE, LLM-as-judge rerank, Contextual Retrieval, CRDT device sync, four production storage backends, typed-KG write tool, self-healing local LLM provider probe, ZorkGPT long-horizon verified bench}. BENCH-AM-7 documents the two non-green rows as deliberate scope boundaries, so no BENCH-AM feature-matrix blocker remains.
+TerranSoul is the only system on this matrix that ships all of {HyDE, LLM-as-judge rerank, Contextual Retrieval, CRDT device sync, four production storage backends, typed-KG write tool, self-healing local LLM provider probe, ZorkGPT long-horizon verified bench}. Both former scope-boundary rows now ship — the multi-agent lease mesh (LEASE-MESH-1, advisory lease layer on the Hive relay) and the language SDKs (Rust + Python + TypeScript under `sdk/`) — so the TerranSoul column on this matrix is fully green; no BENCH-AM feature-matrix blocker remains.
 
 *Plain English: this is a **capabilities checklist**, not scores — ✅ = the system ships that feature, ◐ = partial, ❌ = missing. It answers "what can each one actually do" (knowledge graph? offline mode? device sync?). The jargon in the cells (FTS5, RRF, HyDE, CRDT…) names the specific technique used.*
 
@@ -289,13 +320,13 @@ Legend: ✅ ships · ◐ partial / planned · ❌ missing or not-a-goal · — u
 | Tiered memory | ✅ 3-tier (short / working / long) | ✅ 3-tier (state files → FTS5 + summaries → external providers) | ✅ compounding long-term | ◐ |
 | Hybrid lexical+vector retrieval (RRF) | ✅ FTS5 + embeddings + hybrid fusion with reranking (HyDE + cross-encoder) | ◐ FTS5 keyword + LLM summarization (no vector/RRF surfaced) | ✅ RRF (k=60) + activation scoring | ❌ (not a retrieval/RAG engine) |
 | Typed knowledge graph | ✅ `memory_edges` + `brain_add_edge` write tool | ❌ | ✅ typed KG + decay | ❌ |
-| Self-improvement loop | ◐ outcome-classified write-back + procedural reinforcement ship; GENesis-style confidence ladder + Hermes skill synthesis speced | ✅ autonomous skill synthesis (DSPy + GEPA self-evolution) | ✅ post-session outcome classification + causal attribution + procedure extraction | ◐ community skills; no self-evolution surfaced |
-| Procedural memory / confidence tiers | ◐ procedural memory ships; Laplace L4→L1 ladder speced (GENesis adoption) | ◐ skills self-improve in use | ✅ confidence-tiered (Laplace) | ❌ |
-| Autonomous skill creation (Markdown) | ◐ optimize / import today; synthesis = HERMES-ADOPT (speced) | ✅ Markdown skills (agentskills.io standard) | ◐ procedure extraction | ✅ community skill catalog (~13.7k) |
-| Earned / graduated autonomy | ◐ role-gated actions | ◐ | ✅ trust per action category | ◐ |
+| Self-improvement loop | ✅ outcome-classified write-back + procedural reinforcement + confidence ladder + Hermes skill synthesis (GENESIS/HERMES-ADOPT, shipped 2026-06-09) | ✅ autonomous skill synthesis (DSPy + GEPA self-evolution) | ✅ post-session outcome classification + causal attribution + procedure extraction | ◐ community skills; no self-evolution surfaced |
+| Procedural memory / confidence tiers | ✅ Laplace-smoothed L4→L1 confidence ladder + 3-fail quarantine (GENESIS-ADOPT P2) | ◐ skills self-improve in use | ✅ confidence-tiered (Laplace) | ❌ |
+| Autonomous skill creation (Markdown) | ✅ synthesize→validate→register pipeline + optimize/import (HERMES-ADOPT, shipped 2026-06-09) | ✅ Markdown skills (agentskills.io standard) | ◐ procedure extraction | ✅ community skill catalog (~13.7k) |
+| Earned / graduated autonomy | ✅ RBAC role-gating + per-action-category earned-trust gate (Laplace confidence, deny-by-default for risky categories) | ◐ | ✅ trust per action category | ◐ |
 | Local-first / offline-capable | ✅ Ollama, fully offline | ✅ | ◐ depends on Claude Code (cloud engine) | ◐ depends on chosen LLM |
 | MCP server | ✅ 3 ports | ✅ (`mcp_servers:` YAML) | ◐ | ✅ |
-| Omni-channel chat (WhatsApp / Telegram / …) | ❌ (in-app + MCP clients) | ◐ | ❌ | ✅ 20+ channels |
+| Omni-channel chat (WhatsApp / Telegram / …) | ✅ outbound channel framework + Telegram (WhatsApp/Slack/Discord via the same adapter) | ◐ | ❌ | ✅ 20+ channels |
 | 3D VRM character + voice | ✅ Tauri / Vue / VRM + TTS / ASR | ❌ | ❌ | ❌ |
 | CRDT cross-device sync | ✅ QUIC / WS | ❌ | ❌ | ◐ |
 | Config model | JSON-first (also *writes* Hermes YAML) | YAML (`cli-config.yaml`) | scripted install | **config-first** (`SOUL.md`) |
@@ -455,7 +486,7 @@ A short, honest narrative summarising where the system leads, where it ties, and
 ### Where TerranSoul lags
 
 - **MTEB LoCoMo retrieval, multi-hop and open-domain tasks** — TerranSoul `rrf` is at R@10 51.6 % on the 250-query slice. Temporal-reasoning is already strong (R@10 90.0 %), but `multi_hop` and `open_domain` need either query decomposition / iterative retrieve-expand-retrieve or a stronger semantic pass to compete with HippoRAG-style multi-hop architectures. Tracked as a documented gap in §19.3 of [`docs/brain-advanced-design.md`](../docs/brain-advanced-design.md). Cross-system note: LoCoMo *QA* (J score) is the metric Mem0/Letta/Zep paper rows use; TerranSoul does not publish a comparable end-to-end QA number on LoCoMo yet because the LoCoMo retrieval gap is the upstream bottleneck.
-- **Standalone leases / signals / mesh primitive** — TerranSoul wraps coordination in MCP + Hive relay; agentmemory and Letta ship a lower-level lease mesh. BENCH-AM-7 documents this as an intentional scope boundary (we use the Hive federation layer for cross-device coordination instead of duplicating the mesh inside the core memory module).
+- **Standalone leases / signals / mesh primitive** — now shipped (LEASE-MESH-1). TerranSoul's `hive::leases` adds an advisory lease mesh on top of the Hive relay / Soul Link layer: `LeaseManager` (acquire / renew / release + TTL expiry sweep), lease signals broadcast to peers over Soul Link, Tauri commands, and a `with_lease` critical-section primitive for the MCP gateway. It is built on the existing federation transport rather than duplicating a mesh inside the core memory module, and is strictly advisory / fail-open so it never blocks the core memory path. This matches agentmemory's and Letta's lease primitive while keeping TerranSoul's local-first safety guarantees.
 - **Separate language SDK packages** — TerranSoul's stable surface is MCP + Tauri IPC + native Rust + Vue. agentmemory and Mem0 ship dedicated Python/TypeScript SDKs. Deferred by design; will reconsider when external adopters need package-managed bindings.
 - **ZorkGPT score on `gemma4:e4b`** — final_score=0 across all four canonical episodes. This is the **model reasoning ceiling**, not a memory ceiling — the brain delivered new strategy (ep2 reached Up a Tree) but `gemma4:e4b` (4B params, 2048-tok context) couldn't commit to the multi-step plan to take the egg and return it to the trophy case. iter12 with the older `gemma3:4b` and a 25-turn budget *did* score (35 vs 0 vs default), so the spec 002–006 architecture is provably capable; bumping to a 13B or 30B reasoning model is the next experimental knob.
 
