@@ -64,6 +64,11 @@
         <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="opacity:0.85"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         Read the architecture design doc →
       </a>
+      <br/>
+      <a href="https://github.com/TerranSyn/TerranSoul/blob/main/benchmark/COMPARISON.md" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;margin-top:9px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.04em;color:#9fe9f5;text-decoration:none;border:1px solid #1f3a52;border-radius:7px;padding:6px 12px;background:rgba(34,211,238,0.06);transition:border-color .2s,color .2s" style-hover="border-color:#22d3ee;color:#dffaff">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="opacity:0.85"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Read the benchmark comparison →
+      </a>
     </div>
     <div style="display:flex;gap:7px">
       <button type="button" data-filter="all" style="{{ btnAll }}" onClick="{{ onFilter }}">WHOLE BRAIN</button>
@@ -144,11 +149,11 @@
 
           <!-- CORE — the mind: marker + soft pulsing glow behind the brain's face -->
           <g data-id="core" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="opacity:{{ coreOp }};cursor:pointer;transition:opacity .25s">
-            <circle cx="299" cy="198" r="52" fill="url(#coreHalo)" opacity="0.7" style="animation:ts-pulse 3.4s ease-in-out infinite"/>
-            <circle cx="299" cy="232" r="13" fill="none" stroke="#22d3ee" stroke-width="8" opacity="{{ coreActiveOp }}" style="transition:opacity .25s"/>
+            <circle cx="299" cy="198" r="52" fill="url(#coreHalo)" opacity="0.7" pointer-events="none" style="animation:ts-pulse 3.4s ease-in-out infinite"/>
+            <circle cx="299" cy="232" r="13" fill="none" stroke="#22d3ee" stroke-width="8" opacity="{{ coreActiveOp }}" pointer-events="none" style="transition:opacity .25s"/>
             <circle cx="299" cy="232" r="6.5" fill="#0a1322" stroke="#22d3ee" stroke-width="1.8"/>
             <circle cx="299" cy="232" r="2.6" fill="#22d3ee"/>
-            <circle cx="299" cy="198" r="48" fill="transparent"/>
+            <circle cx="299" cy="232" r="18" fill="transparent"/>
           </g>
         </g>
 
@@ -338,21 +343,46 @@
         </sc-if>
 
         <sc-if value="{{ isMcp }}" hint-placeholder-val="{{ false }}">
-          <svg viewBox="0 0 320 156" style="width:100%;height:auto">
-            <g font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#9fc7dd">
-              <rect x="14" y="24" width="78" height="20" rx="5" fill="#0c1a27" stroke="#27506c"/><text x="22" y="38">Desktop</text>
-              <rect x="14" y="54" width="78" height="20" rx="5" fill="#0c1a27" stroke="#27506c"/><text x="22" y="68">Coding</text>
-              <rect x="14" y="84" width="78" height="20" rx="5" fill="#0c1a27" stroke="#27506c"/><text x="22" y="98">Bench</text>
+          <svg viewBox="0 0 380 190" style="width:100%;height:auto">
+            <defs>
+              <marker id="mcpAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7de4ff"/></marker>
+              <marker id="srcAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#fbbf24"/></marker>
+            </defs>
+            <text x="45" y="9" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" letter-spacing="0.1em" fill="#5f8aa3">QUERIED BY</text>
+            <text x="339" y="9" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" letter-spacing="0.1em" fill="#7a6a3f">PULLS FROM</text>
+            <g font-family="'JetBrains Mono',monospace" font-size="8" fill="#9fc7dd">
+              <rect x="6" y="15" width="78" height="17" rx="4" fill="#0c1a27" stroke="#27506c"/><text x="13" y="27">Claude Code</text>
+              <rect x="6" y="36" width="78" height="17" rx="4" fill="#0c1a27" stroke="#27506c"/><text x="13" y="48">Codex</text>
+              <rect x="6" y="57" width="78" height="17" rx="4" fill="#0c1a27" stroke="#34d399"/><text x="13" y="69" fill="#aef0cf">OpenClaw</text>
+              <rect x="6" y="78" width="78" height="17" rx="4" fill="#0c1a27" stroke="#34d399"/><text x="13" y="90" fill="#aef0cf">Hermes Agent</text>
+              <rect x="6" y="99" width="78" height="17" rx="4" fill="#0c1a27" stroke="#22d3ee"/><text x="13" y="111" fill="#bff0ff">+ any app</text>
             </g>
-            <g stroke="#7de4ff" stroke-width="1.3" fill="none" opacity="0.7">
-              <path d="M 92 34 C 140 34 150 70 178 74"/><path d="M 92 64 L 178 74"/><path d="M 92 94 C 140 94 150 78 178 74"/>
+            <g stroke="#7de4ff" stroke-width="1.2" fill="none" opacity="0.7">
+              <path d="M 84 23.5 C 100 23.5 110 80 124 86"/>
+              <path d="M 84 44.5 C 100 44.5 112 84 124 87"/>
+              <path d="M 84 65.5 C 100 65.5 116 86 124 88"/>
+              <path d="M 84 86.5 C 100 86.5 116 88 124 88"/>
+              <path d="M 84 107.5 C 100 107.5 112 92 124 90"/>
             </g>
-            <rect x="178" y="60" width="48" height="28" rx="7" fill="#06121c" stroke="#7de4ff" stroke-width="1.6"/>
-            <text x="202" y="78" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#bfe6f5">MCP</text>
-            <line x1="226" y1="74" x2="276" y2="74" stroke="#7de4ff" stroke-width="1.4" marker-end="url(#sAr)"/>
-            <defs><marker id="sAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7de4ff"/></marker></defs>
-            <text x="292" y="78" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#bfe6f5">brain</text>
-            <text x="160" y="138" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#7de4ff">one protocol · every client · one memory</text>
+            <rect x="124" y="74" width="38" height="26" rx="7" fill="#06121c" stroke="#7de4ff" stroke-width="1.6"/>
+            <text x="143" y="91" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#bfe6f5">MCP</text>
+            <line x1="162" y1="87" x2="190" y2="87" stroke="#7de4ff" stroke-width="1.4" marker-end="url(#mcpAr)"/>
+            <rect x="192" y="63" width="58" height="48" rx="12" fill="#06121c" stroke="#22d3ee" stroke-width="2"/>
+            <text x="221" y="89" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#dffaff">brain</text>
+            <text x="221" y="101" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6.5" fill="#6f93a8">TerranSoul</text>
+            <g font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#ffd58a">
+              <rect x="300" y="16" width="78" height="20" rx="4" fill="#0c1a27" stroke="#fbbf24"/><text x="307" y="29">Connectors</text>
+              <rect x="300" y="74" width="78" height="20" rx="4" fill="#0c1a27" stroke="#fbbf24"/><text x="307" y="87">repo brains</text>
+              <rect x="300" y="132" width="78" height="20" rx="4" fill="#0c1a27" stroke="#fbbf24"/><text x="307" y="145">peer TerranSoul</text>
+            </g>
+            <text x="339" y="47" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6" fill="#6f93a8">RSS · GitHub · IMAP · FS</text>
+            <text x="339" y="163" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6" fill="#6f93a8">over MCP / LAN</text>
+            <g stroke="#fbbf24" stroke-width="1.2" fill="none" opacity="0.75">
+              <path d="M 300 26 C 280 26 274 70 252 78" marker-end="url(#srcAr)"/>
+              <path d="M 300 84 L 252 87" marker-end="url(#srcAr)"/>
+              <path d="M 300 142 C 280 142 274 102 252 98" marker-end="url(#srcAr)"/>
+            </g>
+            <text x="190" y="184" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#7de4ff">one brain — consumed by any client, fed by its own sources</text>
           </svg>
         </sc-if>
 
@@ -385,7 +415,7 @@ class Component extends DCLogic {
   LOBES = [
     { id:'prefrontal', mx:299, my:130, lx:138, ly:120, lex:152, ley:124, anchor:'end',    color:'#818cf8', title:'Focus',  region:'frontal lobe',  system:'cortex' },
     { id:'kg',         mx:344, my:176, lx:460, ly:152, lex:452, ley:154, anchor:'start',  color:'#34d399', title:'Graph',  region:'parietal lobe', system:'cortex' },
-    { id:'rag',        mx:232, my:300, lx:138, ly:332, lex:218, ley:308, anchor:'end',    color:'#22d3ee', title:'Recall', region:'occipital lobe',system:'cortex' },
+    { id:'rag',        mx:232, my:300, lx:138, ly:332, lex:152, ley:326, anchor:'end',    color:'#22d3ee', title:'Recall', region:'occipital lobe',system:'cortex' },
     { id:'memory',     mx:256, my:218, lx:122, ly:206, lex:134, ley:210, anchor:'end',    color:'#a78bfa', title:'Memory', region:'hippocampus',   system:'deep' },
     { id:'amygdala',   mx:342, my:222, lx:486, ly:236, lex:478, ley:232, anchor:'start',  color:'#f472b6', title:'Affect', region:'amygdala',      system:'deep' },
     { id:'procedural', mx:300, my:304, lx:452, ly:330, lex:444, ley:326, anchor:'start',  color:'#fbbf24', title:'Skills', region:'cerebellum',    system:'deep' },
@@ -460,8 +490,8 @@ class Component extends DCLogic {
       tech:'Procedural ledger with Laplace-smoothed confidence; promote L4→L1, demote, or quarantine after 3 consecutive failures.',tags:['Laplace','promote','quarantine']},
     mcp:{kicker:'BRAINSTEM · PROTOCOL',dot:'#7de4ff',title:'MCP Brain Server',
       part:'Brainstem — the trunk every signal passes through on its way into the brain.',
-      plain:'A single protocol every app speaks to reach the brain — one nerve, many senses.',
-      tech:'brain_search / brain_suggest_context / brain_ingest_lesson — all CRUD funnelled through the Rust AppStateGateway, the single source of truth.',tags:['MCP','gateway']},
+      plain:'One protocol any client speaks to reach the brain — coding & self-learning agents (Claude Code, Codex, OpenClaw, Hermes, even another TerranSoul) and apps on desktop or mobile alike, all sharing one memory. The flow runs both ways: the brain also keeps that memory current by pulling from its own sources — RSS/GitHub/IMAP/file connectors, per-repo brains, and peer TerranSoul instances over MCP.',
+      tech:'brain_search / brain_suggest_context / brain_ingest_lesson — all CRUD funnelled through the Rust AppStateGateway, the single source of truth. Inbound: scheduled ConnectorSource ingest (RSS/GitHub/IMAP/LocalFS, AES-256-GCM vault), multi-source repo RAG (memory_sources self + repo), and remote-brain search over MCP (lan_share).',tags:['MCP','gateway','connectors']},
     'ch-desktop':{kicker:'SENSE · CLIENT',dot:'#7de4ff',title:'Desktop Chat',plain:'A VRM companion on Tauri — voice, avatar, and live citation chips, all over the same brain.',tech:'Vue 3 · Tauri · VRM avatar.',tags:['Vue 3','Tauri']},
     'ch-coding':{kicker:'SENSE · CLIENT',dot:'#7de4ff',title:'Coding Agents',plain:'Claude Code, Copilot, Codex and Cursor read and write one shared memory.',tech:'Same brain over MCP — knowledge one agent writes is legible to the next.',tags:['MCP']},
     'ch-bench':{kicker:'SENSE · CLIENT',dot:'#7de4ff',title:'Bench Runners',plain:'Test harnesses that measure how well the brain remembers and acts over long tasks.',tech:'Zork I long-horizon play + LongMemEval retrieval quality.',tags:['Zork','LongMemEval']},

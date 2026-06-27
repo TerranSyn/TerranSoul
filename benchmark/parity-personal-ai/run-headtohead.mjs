@@ -30,6 +30,7 @@ import * as terransoul from './runners/terransoul-gen.mjs';
 import * as openjarvis from './runners/openjarvis.mjs';
 import * as openclaw from './runners/openclaw.mjs';
 import * as hermes from './runners/hermes.mjs';
+import * as claudecode from './runners/claudecode.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = resolve(__dirname, 'fixtures');
@@ -40,7 +41,7 @@ const ARCHETYPES = [
   'scheduled-monitor', 'chat-simple', 'voice-companion', 'vrm-overlay',
 ];
 
-const SYSTEMS = { terransoul, openjarvis, openclaw, hermes };
+const SYSTEMS = { terransoul, openjarvis, openclaw, hermes, claudecode };
 
 function parseArgs() {
   const o = { judgeModel: 'gemma4:12b-it-qat', noJudge: false, only: null };

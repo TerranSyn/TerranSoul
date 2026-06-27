@@ -1,0 +1,48 @@
+{
+  "bench": "rag-framework-retrieval-rk",
+  "corpus": "agentmemory bench:quality (src-tauri/benches/memory_quality_fixture.json)",
+  "observations": 240,
+  "queries": 20,
+  "embedder": "nomic-embed-text (Ollama, http://127.0.0.1:11434)",
+  "recall_formula": "recall@k = |relevant ∩ top-k| / |relevant|, averaged over the 20 queries (matches src-tauri/benches/memory_quality.rs)",
+  "note": "Each framework was run for real through its OWN retriever on the same corpus + the same embedder. Numbers cluster tightly because the embedder, not the framework, sets vector recall — plain vector RAG is plumbing around the same embeddings. TerranSoul's vectors in memory_quality.json are the bench's deterministic stand-in, so this compares retrieval STRATEGY (plain vector vs TerranSoul's hybrid+RRF), not embedders. GraphRAG is tracked separately (graph/community retrieval returns synthesized context, not a document ranking).",
+  "systems": [
+    {
+      "framework": "LangChain",
+      "via": "langchain-ollama OllamaEmbeddings(nomic-embed-text) + langchain_core InMemoryVectorStore.as_retriever(k=20)",
+      "recall_at_5": 0.40630952380952384,
+      "recall_at_10": 0.608452380952381,
+      "recall_at_20": 0.7422619047619048
+    },
+    {
+      "framework": "Haystack",
+      "via": "haystack-ai 2.30.2 + ollama-haystack OllamaDocumentEmbedder/OllamaTextEmbedder + InMemoryEmbeddingRetriever(top_k=20, cosine)",
+      "recall_at_5": 0.40630952380952384,
+      "recall_at_10": 0.608452380952381,
+      "recall_at_20": 0.7422619047619048
+    },
+    {
+      "framework": "RAGFlow",
+      "via": "ragflow-sdk 0.22.1 -> RAGFlow.retrieve() (self-hosted Docker: ragflow-cpu + elasticsearch + mysql + redis + minio; ES vector retriever, nomic-embed-text 768-dim)",
+      "recall_at_5": 0.40630952380952384,
+      "recall_at_10": 0.608452380952381,
+      "recall_at_20": 0.7439285714285714
+    },
+    {
+      "framework": "LlamaIndex",
+      "via": "llama-index-core VectorStoreIndex + OllamaEmbedding(nomic-embed-text), as_retriever(similarity_top_k=20), MockLLM (retrieval only)",
+      "recall_at_5": 0.40630952380952384,
+      "recall_at_10": 0.5784523809523809,
+      "recall_at_20": 0.7229285714285715
+    },
+    {
+      "framework": "GraphRAG (Microsoft)",
+      "runnable": false,
+      "via": "graphrag 3.1.0; Ollama OpenAI-compat endpoint (gemma4:e4b-it-qat extraction + nomic-embed-text 768-dim) verified live; 240 obs written as input docs; local_search exposes a ranked, non-shuffled 'sources' text-unit table mappable 1:1 to obs ids (recall script ready)",
+      "recall_at_5": null,
+      "recall_at_10": null,
+      "recall_at_20": null,
+      "blocker": "Indexing infeasible in the bench time budget on this CPU/local-Ollama setup: extract_graph LLM entity/relationship extraction over 240 docs ran ~16.7 s/doc (~67 min projected for that workflow alone, before community/report/embedding passes). Only 34/240 docs were extracted at the 20-min cap, so no graph (entities/communities) was built and local-search retrieval never ran. The blocker is indexing wall-clock, NOT a missing ranked retrieval list. Would run on a GPU or a faster extraction LLM."
+    }
+  ]
+}

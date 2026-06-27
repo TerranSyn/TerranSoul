@@ -28,12 +28,24 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 
 ## Latest canonical per benchmark
 
+> **How to read these numbers (plain English).** The tables below score either *search quality* (did it find the right saved info?) or *answer quality* (was the written reply good?).
+> - **R@5 / R@10 / R@20** — "recall at k": when you ask something, the share of the *truly-relevant* saved items that appear in the top 5 / 10 / 20 results. Higher is better; **100 % (or 1.0) = found them all**. R@1 / R@100 are the same idea at the top 1 / top 100.
+> - **NDCG@10** — ranking quality of the top 10: rewards putting the *most* relevant items highest, not just somewhere in the list (0–100 %, higher better).
+> - **MRR** — "mean reciprocal rank": how high the *first* correct result lands on average. **100 % = the right answer was #1 every time.** (MRR@100 = same, scanning the top 100.)
+> - **MAP@10** — average precision over the top 10: rewards both finding relevant items *and* ranking them well.
+> - **Quality (0–10)** — an independent AI grader's score for each written answer (10 = best).
+> - **Success** — how many of the test questions the system answered at all (e.g. 22/22).
+> - **Latency p50 / mean** — seconds per answer: p50 is the *typical* (median), mean is the average. Lower = faster.
+> - **Cost** — money spent: local models run on your own machine for **$0**; cloud models charge per call.
+
 | Benchmark | Latest run | TerranSoul headline | Date | Section |
 |---|---|---|---|---|
 | **LongMemEval-S** retrieval-only (500 questions, all types) | BENCH-AM-6/6.1 | `search`: **R@5 99.2 % / R@10 99.6 % / R@20 100.0 % / NDCG@10 91.3 % / MRR 92.6 %** — verified top-1 vs agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5) | 2026-05-11 | [§ LongMemEval-S](#longmemeval-s-verified-top-1-bench-am-66-1) |
 | **agentmemory bench:quality** (concept-tagged, 240 obs / 20 queries) | regenerated 2026-06-25 | keyword-only `search`: **R@10 67.1 % / NDCG@10 98.2 % / MRR 100.0 %** (quality leader); `hybrid_search_rrf` no-vector: **R@10 66.8 % / NDCG@10 95.0 % / MRR 95.0 %** (production default, restored after the RRF regression fix `c560514e`) | 2026-06-25 | [§ Feature matrix](#feature-matrix-vs-agentmemory) |
 | **MTEB LoCoMo retrieval** (250-query slice across 5 tasks) | BENCH-LCM-1 | `rrf`: **R@10 51.6 % / R@100 65.9 % / NDCG@10 41.5 % / MRR 41.4 %** — temporal-reasoning strong; multi-hop and open-domain are documented gaps requiring iterative retrieval | 2026-05-13 | [§ MTEB LoCoMo](#mteb-locomo-retrieval-adapter-bench-lcm-1) |
 | **ZorkGPT long-horizon** (`gemma4:e4b` 4B) | BENCH-ZORK (spec 002–014 + K-series → reliability fork) | **AGI-pure:** the brain lifts the same 4B from **0** (both controls) to **10–20** and stops its fixation loops; cross-episode behavioural change verified (new room *Up a Tree* via reflection hydration); **0/1682 MCP errors**. **Reliability demonstration (taught solution):** serving the brain's move on *every* turn via an exception-safe orchestrator fork drives the 4B to a deterministic **350/350** (396/396 moves, 0 errors), vs a non-deterministic 73/177 under intermittent serving — isolating *delivery reliability* from model size | 2026-06-03 | [§ ZorkGPT bench](#zorkgpt--terransoul--long-horizon-task-bench-bench-zork-15-2026-05-28--pass) |
+
+*Plain English: the single best result for each of our four benchmarks (see the glossary above for R@5 / NDCG@10 / MRR). Two test search quality (LongMemEval-S, agentmemory), one tests harder multi-document search (LoCoMo), and ZorkGPT tests whether the memory helps a small 4B model finish a long text-adventure game.*
 
 The research write-up — silent ingest, room-scoped reflection, prompt-as-snapshot, grammar-vs-strategy seed, and the **delivery-reliability** result (reliable serving lets a 4B finish where intermittent serving stalls) — is in [`docs/LLM-Brain-Design-Research-Paper.md`](../docs/LLM-Brain-Design-Research-Paper.md), published at the [project site](https://terransyn.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/). Per-turn result pages: [TaughtLocalLLM 350](https://terransyn.github.io/TerranSoul/zorkgpt/taughtLocalLLM/) and [Opus 4.8 (recall 350 / reasoning 50)](https://terransyn.github.io/TerranSoul/zorkgpt/claude-opus-4.8/).
 
@@ -148,6 +160,8 @@ Baseline context cost on the pinned fixture:
 | TerranSoul `hybrid_search_rrf` deterministic | 61.5 % | 91.3 % | 100.0 % | 2,834 | 91.3 % | 64.4 % | 544.19M | 93.55M |
 | TerranSoul `AppStateGateway::search` (rrf, no vectors) | 63.9 % | 90.0 % | 90.0 % | 2,747 | 91.6 % | 65.5 % | 545.98M | 95.15M |
 
+*Plain English: besides search quality (R@10 / NDCG@10 / MRR), this shows how many words ("tokens") each approach feeds the model per question and the resulting cost saved vs pasting everything in. Fewer tokens = cheaper; TerranSoul's RRF default keeps near-top quality while sending ~3× fewer tokens than the keyword path.*
+
 **Verdict:** TerranSoul has a standalone token-savings CLI and a per-query token report, closing the agentmemory comparison gap. After the 2026-06-25 RRF regression fix, no-vector RRF is the production default: it lands at R@10 66.8% / NDCG@10 95.0% — within 0.3 pp Recall@10 of the keyword-only quality leader (67.1%) — while cutting retrieved context from 8,245 to 2,748 tokens/query (vs the keyword path's full-token cost). The gateway path (`AppStateGateway::search` rrf) recovered to 63.9% in the same fix.
 
 ## LongMemEval-S verified top-1 (BENCH-AM-6/6.1)
@@ -162,6 +176,8 @@ This is the same retrieval-only shape used by agentmemory's LongMemEval-S script
 | TerranSoul `rrf` | 99.0 % | 99.6 % | 100.0 % | 91.0 % | 92.0 % | same run |
 | agentmemory LongMemEval-S | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | upstream published row |
 | MemPalace LongMemEval-S | ~96.6 % | — | — | — | — | MemPalace paper |
+
+*Plain English: a 500-question search test. TerranSoul finds the right saved info in its top 5 results 99.2 % of the time — ahead of agentmemory (95.2 %) and MemPalace (~96.6 %).*
 
 Per-type `search` R@5: single-session-user 100.0 %, multi-session 98.5 %, single-session-preference 100.0 %, temporal-reasoning 99.2 %, knowledge-update 98.7 %, single-session-assistant 100.0 %.
 
@@ -179,6 +195,8 @@ The first broad verified slice covers 250 queries total (`50` per task):
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | TerranSoul `search` | 250 | 28.9 % | 46.6 % | 51.3 % | 57.5 % | 65.9 % | 40.9 % | 36.3 % | 40.5 % |
 | TerranSoul `rrf` | 250 | 29.4 % | 46.8 % | 51.6 % | 57.3 % | 65.9 % | 41.5 % | 36.9 % | 41.4 % |
+
+*Plain English: a harder, multi-document search test (250 questions) — numbers are lower for everyone here. TerranSoul is strong on time-based questions but weaker on ones that need chaining several documents together (multi-hop), a documented gap.*
 
 Per-task signal: temporal reasoning is already strong (R@10 90.0 %, NDCG@10 78.4 % for both modes), while `multi_hop` and `open_domain` are the clear gaps. Those tasks likely need query decomposition and/or a stronger semantic retrieval pass before TerranSoul can claim a leading LoCoMo retrieval score. This MTEB table is **not** comparable to Mem0/Letta/MemPalace LoCoMo QA accuracy; those remain separate published-context rows below.
 
@@ -212,6 +230,8 @@ Per-task signal: temporal reasoning is already strong (R@10 90.0 %, NDCG@10 78.4
 | Khoj | n/a published IR numbers | personal-AI features, no IR bench | — | — | <https://github.com/khoj-ai/khoj> | no IR numbers published |
 
 Caveats:
+
+*Plain English: this gathers each system's published score, but on **different tests** (the "Benchmark" column says which) — so a number in one row is not directly comparable to a number in another row on a different benchmark. The one fair overlap is LongMemEval-S retrieval, where TerranSoul, agentmemory and MemPalace are all measured the same way. "Directly run?" = whether we ran it here (✅) vs cited the authors' published number.*
 
 - **Cross-benchmark numbers are not directly comparable.** LongMemEval-S, MTEB LoCoMo retrieval, LoCoMo QA, MuSiQue, and the ZorkGPT long-horizon harness have completely different corpora, ground-truth shapes, and judge models. They are listed here so a reader who knows those benchmarks can place each system on a familiar yardstick.
 - TerranSoul cannot self-run Mem0 / Letta / MemPalace / HippoRAG / Zep without their codebases. BENCH-AM-6/6.1 provides a verified TerranSoul number on the same LongMemEval-S retrieval-only table used by agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5).
@@ -247,9 +267,44 @@ Legend: ✅ ships, ◐ partial, ❌ missing, n/a not applicable.
 
 TerranSoul is the only system on this matrix that ships all of {HyDE, LLM-as-judge rerank, Contextual Retrieval, CRDT device sync, four production storage backends, typed-KG write tool, self-healing local LLM provider probe, ZorkGPT long-horizon verified bench}. BENCH-AM-7 documents the two non-green rows as deliberate scope boundaries, so no BENCH-AM feature-matrix blocker remains.
 
+*Plain English: this is a **capabilities checklist**, not scores — ✅ = the system ships that feature, ◐ = partial, ❌ = missing. It answers "what can each one actually do" (knowledge graph? offline mode? device sync?). The jargon in the cells (FTS5, RRF, HyDE, CRDT…) names the specific technique used.*
+
+### RAG frameworks & pipelines (LangChain · LlamaIndex · GraphRAG · Haystack · RAGFlow)
+
+These are **toolkits to *build* RAG**, not integrated memory systems you drop in — so this is a *category* comparison. TerranSoul ships an opinionated, local-first memory **brain** (3-tier store + 6-signal hybrid RAG + typed KG + a write→manage→read self-improvement loop, reached over MCP); the systems below are libraries/engines you assemble a pipeline from.
+
+| System | What it is | Retrieval approach | Local LLM | License |
+|---|---|---|---|---|
+| **TerranSoul** (this repo) | integrated memory **brain** over MCP | FTS5 + vector + graph + freshness + activation → RRF + HyDE + cross-encoder | ✅ Ollama | proprietary |
+| **LangChain** / LangGraph | orchestration-first app **framework** | retriever abstractions + your vector store; you tune chunking / rerank / memory | ◐ your stack | MIT |
+| **LlamaIndex** | retrieval-first data **framework** | indices + query engines; hierarchical chunking, auto-merge, sub-question decomposition | ◐ your stack | MIT |
+| **GraphRAG** (Microsoft) | graph-RAG **indexing pipeline** | entity/community extraction → KG + community summaries → global/local search (LazyGraphRAG ≈ vector+graph at vector cost) | ◐ batch index | MIT |
+| **Haystack** (deepset) | pipeline (DAG) **framework** | modular hybrid retrieval + self-correction loops | ✅ Ollama/vLLM | Apache-2.0 |
+| **RAGFlow** (InfiniFlow) | self-hosted RAG **engine** | deep document parsing (PDF/tables) + chunking + KB + built-in agents | ✅ Ollama | Apache-2.0 |
+
+**The distinction:** with the frameworks you *build and tune* the pipeline (chunking, embeddings, store, rerank, memory) yourself; TerranSoul is the assembled, self-improving system — the typed KG + 6-signal RRF + write→manage→read loop come integrated and run locally over MCP, so any agent or app gets the same memory without wiring a pipeline. (GraphRAG's graph+community idea parallels TerranSoul's typed `memory_edges` KG; LangChain/LlamaIndex parallel the retrieval layer.)
+
+**Measured — retrieval R@k** on the agentmemory bench corpus (240 observations / 20 queries; same `recall@k = |relevant ∩ top-k| / |relevant|` formula as `src-tauri/benches/memory_quality.rs`):
+
+| Retrieval strategy | R@5 | R@10 | R@20 |
+|---|---:|---:|---:|
+| **TerranSoul** — keyword / FTS | **0.45** | **0.67** | **0.80** |
+| **TerranSoul** — hybrid + RRF (FTS + vectors) | 0.42 | 0.61 | 0.77 |
+| LangChain — default vector RAG (`nomic-embed-text`) | 0.41 | 0.61 | 0.74 |
+| Haystack — default vector RAG (`nomic-embed-text`) | 0.41 | 0.61 | 0.74 |
+| RAGFlow — ES vector retriever (`nomic-embed-text`) | 0.41 | 0.61 | 0.74 |
+| LlamaIndex — default vector RAG (`nomic-embed-text`) | 0.41 | 0.58 | 0.72 |
+| GraphRAG (Microsoft) — *graph index did not finish (see below)* | — | — | — |
+| Built-in (CLAUDE.md / grep) | 0.37 | 0.56 | 0.71 |
+
+*Plain English: this measures **search quality** — when you ask a question, how much of the genuinely-relevant saved info the system pulls back (R@5/10/20 = found in the top 5/10/20; higher is better). "Vector RAG" finds text by meaning only (the default these frameworks ship); TerranSoul's "hybrid" blends keyword + meaning + smart ranking, and "keyword" is exact-word search. TerranSoul's blended search beats plain vector RAG at every cutoff.*
+
+All four frameworks were **run for real** through their *own* retrievers on the same corpus and the same `nomic-embed-text` embedder (RAGFlow even stood up its full Docker stack — `ragflow-cpu` + Elasticsearch + MySQL + Redis + MinIO). They cluster tightly — **LangChain = Haystack = RAGFlow** at R@5 0.41 / R@10 0.61 / R@20 0.74, with **LlamaIndex** a touch lower (R@10 0.58 / R@20 0.72, from its default chunking) — which confirms the key point: **the embedder, not the framework, sets recall.** Plain vector RAG is plumbing around the same embeddings, and all four land **below TerranSoul's hybrid/keyword** at every cutoff (gap widening at R@20), because TerranSoul blends keyword + vector + RRF + rerank rather than vectors alone. Same corpus + same recall formula; TerranSoul's vectors here are the bench's deterministic stand-in vs the frameworks' real `nomic-embed-text`, so this compares retrieval *strategy* (plain vector vs hybrid), not embedders. **GraphRAG** (Microsoft) was genuinely attempted (graphrag 3.1.0, same `nomic-embed-text` embedder + a fast `gemma4:e4b-it-qat` for extraction) but could **not** be scored: GraphRAG builds its graph by running LLM entity/relationship extraction over *every* document (~16.7 s/doc on this CPU/local-Ollama setup → ~67 min projected for the 240-doc corpus, before its community + embedding passes), so indexing didn't finish in the time budget (34/240 docs at the 20-minute cap) and no R@k could be measured. The blocker is GraphRAG's LLM-heavy *indexing* wall-clock — **not** the metric: its local-search retrieval does expose a ranked, mappable source list, so it would run on a GPU or a faster extraction model. Raw: `target-copilot-bench/bench-results/rag_vector_baseline.json` + `rag_framework_bench.json` · reproduce: `python benchmark/parity-personal-ai/rag_vector_baseline.py` (LangChain + Ollama `nomic-embed-text`); LlamaIndex / Haystack / RAGFlow via their isolated venvs.
+Sources: [microsoft/graphrag](https://github.com/microsoft/graphrag) · [langchain-ai/langchain](https://github.com/langchain-ai/langchain) · [run-llama/llama_index](https://github.com/run-llama/llama_index) · [deepset-ai/haystack](https://github.com/deepset-ai/haystack) · [infiniflow/ragflow](https://github.com/infiniflow/ragflow)
+
 ### Architectural comparison vs adopted reference architectures (Hermes-Agent · GENesis-AGI · OpenClaw)
 
-These three are *reference architectures TerranSoul studied and adopted patterns from* — see [CREDITS.md](https://github.com/TerranSyn/TerranSoulApp/blob/main/CREDITS.md) and `docs/{hermes-agent-adoption,genesis-agi-brain-adoption,hermes-vs-openclaw-analysis}.md` — **not** memory engines we can self-run. As with the Mem0 / Letta / MemPalace rows above, this matrix is a **capability comparison** sourced from each project's public docs + our adoption studies; **measured head-to-head judge scores for OpenClaw and Hermes-Agent are in the table below** (GENesis-AGI cannot be scored on a same-model bench — see the footnotes). We publish **no invented scores**. TerranSoul cells mark shipped capabilities ✅; adoption deltas that are *speced but not yet shipped* are marked ◐ and detailed in the adoption docs.
+These three are *reference architectures TerranSoul studied and adopted patterns from* — see [CREDITS.md](https://github.com/TerranSyn/TerranSoulApp/blob/main/CREDITS.md) and `docs/{hermes-agent-adoption,genesis-agi-brain-adoption,hermes-vs-openclaw-analysis}.md` — **not** memory engines we can self-run. As with the Mem0 / Letta / MemPalace rows above, this matrix is a **capability comparison** sourced from each project's public docs + our adoption studies; **measured head-to-head scores are in the table below** — OpenClaw and Hermes-Agent on the local model, and Claude Code + GENesis-AGI as a different-model *frontier reference*. We publish **no invented scores**. TerranSoul cells mark shipped capabilities ✅; adoption deltas that are *speced but not yet shipped* are marked ◐ and detailed in the adoption docs.
 
 Legend: ✅ ships · ◐ partial / planned · ❌ missing or not-a-goal · — unclear from public docs.
 
@@ -282,19 +337,36 @@ Legend: ✅ ships · ◐ partial / planned · ❌ missing or not-a-goal · — u
 
 #### Measured head-to-head (parity-personal-ai)
 
-Each system's **real CLI** answers the **same 22 prompts** (7 archetypes) on the **same local model `gemma4:12b-it-qat`**, with the **same injected context** and the **same LLM judge** (`gemma4:12b-it-qat`, 0–10), via [`run-headtohead.mjs`](parity-personal-ai/run-headtohead.mjs) — isolating the assistant pipeline, not the model.
+Every system's **real CLI** answers the **same 22 prompts** (7 archetypes) with the **same injected context** and the **same 0–10 LLM judge** (`gemma4:12b-it-qat`), via [`run-headtohead.mjs`](parity-personal-ai/run-headtohead.mjs). The **Model** column is the key: the four `gemma4:12b-it-qat` rows are a like-for-like *pipeline* comparison; **Claude Code + GENesis-AGI** runs a different (cloud) model and is a **frontier reference — not directly comparable** (see ⁴).
 
-| System | Quality (judge 0–10) | Success | Latency p50 | Measured |
-|---|---:|---:|---:|---|
-| **TerranSoul** (brain → Ollama) | **9.82** | 22/22 | 1.0 s¹ | 2026-06-07 |
-| OpenJarvis (Stanford SAIL) | 9.55 | 22/22 | 3.2 s¹ | 2026-06-07 |
-| **OpenClaw** (`agent --local`) | **8.36** | 22/22 | 38.1 s² | 2026-06-27 |
-| **Hermes-Agent** (`-z` one-shot) | **6.90** | 21/22³ | 10.9 s² | 2026-06-27 |
-| GENesis-AGI | **n/a**⁴ | — | — | — |
+| System | Quality (0–10) | Success | Latency p50 | Latency mean | Cost | Model |
+|---|---:|---:|---:|---:|---:|---|
+| **TerranSoul** (brain → Ollama) | **9.82** | 22/22 | 1.0 s¹ | 1.0 s¹ | $0 | `gemma4:12b-it-qat` |
+| OpenJarvis (Stanford SAIL) | 9.55 | 22/22 | 3.2 s¹ | 4.2 s¹ | $0 | `gemma4:12b-it-qat` |
+| **OpenClaw** (`agent --local`) | **8.36** | 22/22 | 38.1 s² | 50.2 s² | $0 | `gemma4:12b-it-qat` |
+| **Hermes-Agent** (`-z` one-shot) | **6.90** | 21/22³ | 10.9 s² | 19.2 s² | $0 | `gemma4:12b-it-qat` |
+| **Claude Code + GENesis-AGI** | 8.24⁴ | 21/22 | 17.5 s² | 29.1 s² | $5.94 | `claude-haiku-4-5` *(cloud)* |
 
-¹ TerranSoul/OpenJarvis latency is **inference-only** (excludes CLI cold-start). ² OpenClaw/Hermes latency is **wall-clock including the per-call CLI cold-start** (Node/Python process spawn) — *not* comparable to ¹; **quality is the apples-to-apples metric**. OpenClaw additionally runs its full agent loop each turn (hence the high p50). ³ Hermes: 1/22 prompts (`vrm-overlay/vo-3`) hit the 240 s timeout and is excluded from its mean. ⁴ **GENesis-AGI's reasoning engine is Claude Code (cloud)** and it requires an Incus container — it cannot run on the local `gemma4:12b-it-qat`, so a same-model head-to-head is architecturally impossible; we report **n/a** rather than a model-confounded or fabricated number.
+*Plain English: all five answered the same 22 everyday-assistant questions; an independent AI grader scored each reply 0–10 (higher = better), and we logged speed (seconds per answer) and cost. TerranSoul scores highest (9.82) **and** is fastest (~1 s), for $0. The bottom row is a paid cloud model shown only as a frontier reference (footnote ⁴) — notably it does not beat the free local systems.*
 
-**Method note.** TerranSoul + OpenJarvis rows are the **2026-06-07** canonical run (recovered from git `08676f10` into the cited JSON, which now holds all four systems with a `measured_date` per row); OpenClaw + Hermes were measured **2026-06-27** — identical harness, model, judge, and prompts, so directly comparable modulo run-to-run judge variance. Each system runs its *real* pipeline at equal injected context (TerranSoul retrieves via its brain; OpenClaw runs its agent; Hermes/OpenJarvis single-pass). Runners under [`parity-personal-ai/runners/`](parity-personal-ai/runners/); raw per-prompt output for all four in `target-copilot-bench/bench-results/parity_headtohead_4way.json` (the 2-system `parity_headtohead.json` remains the canonical TerranSoul-vs-OpenJarvis run that feeds the public leaderboard). Reproduce OpenClaw/Hermes: `node benchmark/parity-personal-ai/run-headtohead.mjs --system=openclaw,hermes` (OpenClaw via its Ollama-configured `bench` profile; Hermes via `HERMES_BENCH_HOME` → an Ollama-configured home); TerranSoul/OpenJarvis via `--system=terransoul,openjarvis` (needs the MCP brain server + OpenJarvis CLI).
+**Quality by task archetype** (judge 0–10) — the per-task head-to-head:
+
+| Archetype | TerranSoul | OpenJarvis | OpenClaw | Hermes | Claude Code + GENesis⁴ |
+|---|---:|---:|---:|---:|---:|
+| daily-digest | 10.0 | 10.0 | 8.3 | 7.3 | 7.3 |
+| deep-research | 10.0 | 10.0 | 9.7 | 6.7 | 10.0 |
+| code-assistant | 10.0 | 10.0 | 10.0 | 3.3 | 10.0 |
+| scheduled-monitor | 9.0 | 9.3 | 6.7 | 3.0 | 8.0 |
+| chat-simple | 9.8 | 10.0 | 10.0 | 10.0 | 10.0 |
+| voice-companion | 10.0 | 10.0 | 10.0 | 10.0 | 8.0 |
+| vrm-overlay | 10.0 | 7.3 | 3.3 | 7.0 | 4.3 |
+| **Overall** | **9.82** | **9.55** | **8.36** | **6.90** | **8.24** |
+
+*Plain English: the same 0–10 quality score split by task type — writing a daily digest, deep research, coding help, scheduled monitoring, plain chat, voice replies, and the on-screen avatar (vrm-overlay). The bottom row is each system's overall average. It shows **where** each one is strong or weak (e.g. Hermes struggles on coding and monitoring; OpenClaw drops on the avatar task).*
+
+¹ Inference-only latency (excludes CLI cold-start). ² Wall-clock **including** the per-call CLI cold-start (process spawn) — *not* comparable to ¹; **quality is the apples-to-apples metric** (OpenClaw also runs a full agent loop each turn). ³ Hermes: 1/22 (`vrm-overlay/vo-3`) hit the 240 s timeout, excluded from its means. ⁴ **Claude Code + GENesis-AGI = a different (cloud) model — a frontier reference, *not* like-for-like with the gemma-12B rows.** Claude Code (`claude -p`, Haiku 4.5) **is** GENesis-AGI's reasoning engine; the full GENesis-AGI stack (Linux Incus container + Qdrant + months of accumulated memory + autonomous ego loop) isn't reproducible in a single-session bench, so this is the engine GENesis-AGI runs on (its memory layer would only add). It cost **$5.94 cloud** vs $0-local for the others and — tellingly — does **not** beat the local TerranSoul/OpenJarvis: this bench rewards targeted, context-grounded answers, not raw model scale.
+
+**Provenance & reproduce.** TerranSoul + OpenJarvis are the **2026-06-07** canonical run (git `08676f10`); OpenClaw, Hermes, and Claude Code were measured **2026-06-27** — identical harness, judge, and prompts. Each runs its *real* pipeline at equal injected context (TerranSoul retrieves via its brain; OpenClaw runs its agent; the rest single-pass). Raw per-prompt data: the four gemma rows in `parity_headtohead_4way.json`, the Claude Code row in `parity_headtohead_frontier.json` (the canonical 2-system `parity_headtohead.json` feeds the public leaderboard). Reproduce: `node benchmark/parity-personal-ai/run-headtohead.mjs --system=openclaw,hermes,claudecode` (OpenClaw → Ollama `bench` profile; Hermes → `HERMES_BENCH_HOME`; Claude Code → local `claude` CLI + cost); TerranSoul/OpenJarvis need the MCP brain server + OpenJarvis CLI.
 
 Sources: [openclaw/openclaw](https://github.com/openclaw/openclaw) (MIT) · [NousResearch/hermes-agent](https://github.com/nousresearch/hermes-agent) (MIT) · [WingedGuardian/GENesis-AGI](https://github.com/WingedGuardian/GENesis-AGI) · plus the in-repo adoption studies cited above.
 
