@@ -13,7 +13,7 @@
 #
 # Waits for any active zork-bench-active container to finish, then runs
 # each (model, archive-tag) pair sequentially. Records per-iter logs and
-# archives results into target-copilot-bench/bench-results/<tag>/.
+# archives results into benchmark/results/<tag>/.
 #
 # Usage:
 #   pwsh -NoProfile -File benchmark/scripts/zork-bench/queue-bakeoff.ps1

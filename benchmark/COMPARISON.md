@@ -51,42 +51,14 @@ The research write-up — silent ingest, room-scoped reflection, prompt-as-snaps
 
 ## How to reproduce
 
-```pwsh
-# 1. Build the reference concept-tagged fixture (240 obs / 20 queries) into JSON.
-node scripts/build-memory-quality-fixture.mjs
+Each benchmark below was measured with our internal benchmark harness on the same public corpus, the same model, and the same judge — no estimated numbers. The four benchmarks and their datasets:
 
-# 2. Run the bench (Rust, in-memory MemoryStore, deterministic embeddings).
-Set-Location src-tauri
-cargo bench --bench memory_quality --target-dir ../target-copilot-bench
-Set-Location ..
+- **Concept-tagged corpus** — the reference 240-observation / 20-query fixture, run in-memory with deterministic embeddings (no Ollama dependency; cheapest spot-check). Plus a standalone yearly token-savings calculator.
+- **LongMemEval-S** — the full 500-question retrieval evaluation against the cleaned dataset (wall-clock-expensive; owner-triggered).
+- **MTEB LoCoMo** — the pinned `mteb/LoCoMo` retrieval slice.
+- **ZorkGPT long-horizon** — the 2-episode × 100-turn canonical against Zork 1.
 
-# Reports land at:
-#   target-copilot-bench/bench-results/memory_quality.json
-#   target-copilot-bench/bench-results/memory_quality.md
-
-# 3. Print the yearly token-savings calculator (default: 50 queries/day).
-npm run brain:tokens
-
-# 4. Smoke the LongMemEval-S adapter on a tiny built-in fixture.
-npm run brain:longmem:sample
-
-# 5. Prepare and run the full LongMemEval-S retrieval evaluation.
-# The dataset is about 264 MB and the full run is intentionally owner-triggered.
-npm run brain:longmem:prepare
-npm run brain:longmem:run
-
-# 6. ZorkGPT long-horizon bench (Docker required for jericho; ~2 h per canonical).
-# Self-improve smoke (no Z-machine, ~30 s):
-python benchmark/scripts/zork-bench/smoke_self_improve.py
-# Canonical 2-ep × 100-turn:
-docker build -t zork-bench -f benchmark/scripts/zork-bench/Dockerfile .
-docker run --rm -v "<repo>/target-copilot-bench/bench-results/zork-bench-canonical:/out" \
-  -v "<repo>/mcp-data:/mcp-data:ro" --add-host=host.docker.internal:host-gateway \
-  zork-bench --arm terransoul-brain --episodes 2 --max-turns 100 \
-  --mcp-host host.docker.internal --mcp-port 7423
-```
-
-The concept-tagged fixture is the canonical `dataset.ts` corpus, transpiled with esbuild and serialised as JSON. Re-running the fetcher against the same pinned commit always produces a byte-identical fixture (timestamps are anchored to `2026-01-01T00:00:00Z`). Attribution for the datasets lives in [CREDITS.md](../CREDITS.md).
+The concept-tagged fixture is the canonical reference corpus, deterministically serialised so re-running the fetcher against the same pinned commit always produces a byte-identical fixture (timestamps are anchored to `2026-01-01T00:00:00Z`). Results are committed alongside the harness. Attribution for the datasets lives in [CREDITS.md](../CREDITS.md).
 
 ## Methodology parity (concept-tagged corpus)
 
@@ -95,12 +67,12 @@ The concept-tagged fixture is the canonical `dataset.ts` corpus, transpiled with
 | Corpus | 240 observations / 30 sessions | identical (same JSON) |
 | Queries | 20 concept-tagged labels | identical |
 | Ground truth | `relevantObsIds` from concept-filter | identical |
-| BM25 backend | hand-rolled `SearchIndex` | SQLite FTS5 + 6-signal hybrid scorer |
+| BM25 backend | hand-rolled `SearchIndex` | SQLite FTS5 + hybrid scorer |
 | Vector backend | deterministic 384-d hash | deterministic 384-d hash (same algo) |
 | Vector backend (real) | `all-MiniLM-L6-v2` 384-d | `nomic-embed-text` 768-d (Ollama) |
 | Metrics | Recall@5/10/20, P@5/10, NDCG@10, MRR | identical |
 
-Algorithmic note: TerranSoul mirrors the reference deterministic hash embedding **exactly** (same modulo arithmetic, same `dims=384`, same `[title, narrative, ...concepts, ...facts].join(" ")` shape) so the dual-stream comparison is apples-to-apples and not biased by a different fake-embedding distribution.
+Algorithmic note: TerranSoul mirrors the reference deterministic hash embedding **exactly** (same dimensionality and the same field-concatenation shape) so the dual-stream comparison is apples-to-apples and not biased by a different fake-embedding distribution.
 
 ## Feature matrix vs agentmemory
 
@@ -109,20 +81,20 @@ Algorithmic note: TerranSoul mirrors the reference deterministic hash embedding 
 
 | Capability | agentmemory | TerranSoul | Notes |
 |---|---|---|---|
-| Auto-capture | ✅ 12 lifecycle hooks | ✅ Per-message brain pipeline + Tauri command interceptors | TerranSoul captures every chat turn through `brain_memory.rs` and the conversation store. |
-| Search strategy | BM25 + Vector + Graph | FTS5 + 1024-d Ollama embeds (`mxbai-embed-large`, default since BENCH-LCM-5; `nomic-embed-text` 768-d fallback) + RRF + LLM rerank + KG hop | TerranSoul adds HyDE and LLM-as-judge cross-encoder rerank. |
+| Auto-capture | ✅ 12 lifecycle hooks | ✅ Per-message brain pipeline + Tauri command interceptors | TerranSoul captures every chat turn through the brain pipeline and the conversation store. |
+| Search strategy | BM25 + Vector + Graph | FTS5 + 1024-d Ollama embeds (`mxbai-embed-large`, default since BENCH-LCM-5; `nomic-embed-text` 768-d fallback) + hybrid lexical/vector/graph fusion with reranking + KG hop | TerranSoul adds HyDE and LLM-as-judge cross-encoder rerank. |
 | Multi-agent coordination | ✅ Leases + signals + mesh | Partial — MCP gateway + `AppStateGateway`, no leases/signals primitive yet | Tracked in `rules/backlog.md`. |
 | Framework lock-in | None | None | Tauri shell, library is plain Rust + Vue. |
 | External deps | None | None (SQLite + optional Ollama) | Postgres/Cassandra/MSSQL backends optional. |
 | Knowledge graph | ✅ Entity extraction + BFS | ✅ `memory_edges` + KG audit + edge versioning + typed-write `brain_add_edge` MCP tool (spec 003, 2026-05-28) | Includes contradiction resolution. |
-| Memory decay | ✅ Ebbinghaus + tiered | ✅ Per-cognitive-kind half-lives + confidence decay | See `confidence_decay.rs`. |
+| Memory decay | ✅ Ebbinghaus + tiered | ✅ Per-cognitive-kind half-lives + confidence decay | Confidence decay per cognitive kind. |
 | 4-tier consolidation | ✅ Working → episodic → semantic → procedural | ✅ Short / Working / Long with cognitive-kind shards (semantic, procedural, principle, episodic, analytical) | TerranSoul also has consolidation synthesis. |
 | Version / supersession | ✅ Jaccard-based | ✅ V8 non-destructive edit history + `valid_to` soft-close | Audit trail per mutation. |
 | Real-time viewer | ✅ Port 3113 | ✅ In-app `MemoryGraph.vue` (canvas + sigma WebGL) | Different deployment (in-app vs separate web port). |
-| Privacy filtering | ✅ Strips secrets pre-store | ✅ `privacy::strip_secrets` pre-insert | Both fail-closed at the storage boundary. |
-| Obsidian export | ✅ Built-in | ✅ One-way vault export (`obsidian_export.rs`) | TerranSoul also imports back. |
+| Privacy filtering | ✅ Strips secrets pre-store | ✅ Secret-stripping pre-insert | Both fail-closed at the storage boundary. |
+| Obsidian export | ✅ Built-in | ✅ One-way vault export | TerranSoul also imports back. |
 | Cross-agent | ✅ MCP + REST | ✅ MCP on three ports (`7421`/`7422`/`7423`) + AI gateway | Same shape. |
-| Audit trail | ✅ All mutations logged | ✅ `audit.rs` per-mutation log | Same. |
+| Audit trail | ✅ All mutations logged | ✅ Per-mutation audit log | Same. |
 | Language SDKs | Any (REST + MCP) | Any (MCP) + native Rust + Vue store APIs | TerranSoul does not ship a separate Python/TS SDK yet. |
 | Token-efficiency calculator | ✅ `npx … status` | ✅ `npm run brain:tokens` + per-query bench report | Shipped in BENCH-AM-4. |
 | **Self-healing local LLM provider probe** | ❌ | ✅ `brain_health.llm_provider_state` (live `/api/tags` Ollama probe, 2s timeout, healthy/degraded/unreachable) + PowerShell watchdog auto-restarts tray + `docker restart ollama` on outage (spec 005, 2026-05-28) | Tray watchdog covers the OS-level recovery path. |
@@ -138,7 +110,7 @@ We retain advantages they do not list: HyDE retrieval, LLM-as-judge cross-encode
 
 ## Token efficiency
 
-> Full per-query token report at `target-copilot-bench/bench-results/memory_quality.md`. Standalone calculator: `npm run brain:tokens`.
+> Full per-query token report in our committed result files. Standalone calculator: `npm run brain:tokens`.
 
 Baseline context cost on the pinned fixture:
 
@@ -147,7 +119,7 @@ Baseline context cost on the pinned fixture:
 | Full-context paste | 32,660 | 596.05M |
 | 200-line MEMORY.md | 7,960 | 145.27M |
 
-> **2026-06-25 regenerated** from `target-copilot-bench/bench-results/memory_quality.md` (the committed source of truth) after the RRF regression fix (commit `c560514e`). The P6 echo-collapse penalty (a 0.5× / 50% attenuation) had been dominating the ~2% RRF rank gaps and had collapsed `hybrid_search_rrf` no-vector to R@10 22.9% / NDCG 53.1%; bounding it to a ~2.5% tiebreaker (`EchoCollapseConfig.tiebreaker_compression`) restored it to R@10 66.8% / NDCG 95.0%. `AppStateGateway::search` (rrf) recovered 22.3% → 63.9% in the same fix. Keyword-only `search` is unchanged at 67.1%. Yearly-savings columns are derived from the per-row saved-percentage; values may drift ±0.2M from internal unrounded fractions.
+> **2026-06-25 regenerated** from our committed result files (the source of truth) after the RRF regression fix (commit `c560514e`). A ranking penalty had been dominating the small RRF rank gaps and had collapsed `hybrid_search_rrf` no-vector to R@10 22.9% / NDCG 53.1%; bounding that penalty to a light tiebreaker restored it to R@10 66.8% / NDCG 95.0%. The gateway path (rrf) recovered 22.3% → 63.9% in the same fix. Keyword-only `search` is unchanged at 67.1%. Yearly-savings columns are derived from the per-row saved-percentage; values may drift ±0.2M from internal unrounded fractions.
 
 | System | R@10 | NDCG@10 | MRR | Avg retrieved tokens/query | Saved vs full paste | Saved vs 200-line | Full-paste yearly savings | 200-line yearly savings |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -166,13 +138,13 @@ Baseline context cost on the pinned fixture:
 
 ## LongMemEval-S verified top-1 (BENCH-AM-6/6.1)
 
-BENCH-AM-6 ran the full 500-question LongMemEval-S cleaned set and BENCH-AM-6.1 closed the remaining rank-order gaps. The final improvement came from corpus-aware lexical weighting in `MemoryStore::search`: the reranker computes term rarity across the candidate pool so rare anchors (names, objects, domain terms) rank above generic filler words, with light query variants for common natural-language forms.
+BENCH-AM-6 ran the full 500-question LongMemEval-S cleaned set and BENCH-AM-6.1 closed the remaining rank-order gaps. The final improvement came from corpus-aware lexical weighting so that rare anchors (names, objects, domain terms) rank above generic filler words.
 
 This is the same retrieval-only shape used by agentmemory's LongMemEval-S script: each question builds a fresh in-memory index from its haystack sessions, searches with the raw question, and checks `answer_session_ids`. It is not official end-to-end LongMemEval QA accuracy.
 
 | System | R@5 | R@10 | R@20 | NDCG@10 | MRR | Source |
 |---|---:|---:|---:|---:|---:|---|
-| **TerranSoul `search`** | **99.2 %** | **99.6 %** | **100.0 %** | **91.3 %** | **92.6 %** | `target-copilot-bench/bench-results/longmemeval_s_terransoul.md` |
+| **TerranSoul `search`** | **99.2 %** | **99.6 %** | **100.0 %** | **91.3 %** | **92.6 %** | committed result files |
 | TerranSoul `rrf` | 99.0 % | 99.6 % | 100.0 % | 91.0 % | 92.0 % | same run |
 | agentmemory LongMemEval-S | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | upstream published row |
 | MemPalace LongMemEval-S | ~96.6 % | — | — | — | — | MemPalace paper |
@@ -185,7 +157,7 @@ Adapter runbook: [docs/longmemeval-s-adapter.md](longmemeval-s-adapter.md).
 
 ## MTEB LoCoMo retrieval adapter (BENCH-LCM-1)
 
-BENCH-LCM-1 adds a direct MTEB LoCoMo retrieval runner so TerranSoul has an apples-to-apples qrel table instead of only citing mixed LoCoMo QA numbers from other systems. The adapter reads the pinned `mteb/LoCoMo` parquet configs (`single_hop`, `multi_hop`, `temporal_reasoning`, `open_domain`, `adversarial`), inserts each task corpus into a fresh in-memory `MemoryStore` through the existing JSONL IPC shim, and computes retrieval-only IR metrics over `*-qrels`.
+BENCH-LCM-1 adds a direct MTEB LoCoMo retrieval runner so TerranSoul has an apples-to-apples qrel table instead of only citing mixed LoCoMo QA numbers from other systems. The adapter reads the pinned `mteb/LoCoMo` parquet configs (`single_hop`, `multi_hop`, `temporal_reasoning`, `open_domain`, `adversarial`), inserts each task corpus into a fresh in-memory store, and computes retrieval-only IR metrics over `*-qrels`.
 
 Runbook: [docs/locomo-mteb-adapter.md](locomo-mteb-adapter.md).
 
@@ -271,20 +243,20 @@ TerranSoul is the only system on this matrix that ships all of {HyDE, LLM-as-jud
 
 ### RAG frameworks & pipelines (LangChain · LlamaIndex · GraphRAG · Haystack · RAGFlow)
 
-These are **toolkits to *build* RAG**, not integrated memory systems you drop in — so this is a *category* comparison. TerranSoul ships an opinionated, local-first memory **brain** (3-tier store + 6-signal hybrid RAG + typed KG + a write→manage→read self-improvement loop, reached over MCP); the systems below are libraries/engines you assemble a pipeline from.
+These are **toolkits to *build* RAG**, not integrated memory systems you drop in — so this is a *category* comparison. TerranSoul ships an opinionated, local-first memory **brain** (3-tier store + hybrid lexical/vector/graph RAG with reranking + typed KG + a write→manage→read self-improvement loop, reached over MCP); the systems below are libraries/engines you assemble a pipeline from.
 
 | System | What it is | Retrieval approach | Local LLM | License |
 |---|---|---|---|---|
-| **TerranSoul** (this repo) | integrated memory **brain** over MCP | FTS5 + vector + graph + freshness + activation → RRF + HyDE + cross-encoder | ✅ Ollama | proprietary |
+| **TerranSoul** (this repo) | integrated memory **brain** over MCP | hybrid lexical + vector + graph signals with reranking | ✅ Ollama | proprietary |
 | **LangChain** / LangGraph | orchestration-first app **framework** | retriever abstractions + your vector store; you tune chunking / rerank / memory | ◐ your stack | MIT |
 | **LlamaIndex** | retrieval-first data **framework** | indices + query engines; hierarchical chunking, auto-merge, sub-question decomposition | ◐ your stack | MIT |
 | **GraphRAG** (Microsoft) | graph-RAG **indexing pipeline** | entity/community extraction → KG + community summaries → global/local search (LazyGraphRAG ≈ vector+graph at vector cost) | ◐ batch index | MIT |
 | **Haystack** (deepset) | pipeline (DAG) **framework** | modular hybrid retrieval + self-correction loops | ✅ Ollama/vLLM | Apache-2.0 |
 | **RAGFlow** (InfiniFlow) | self-hosted RAG **engine** | deep document parsing (PDF/tables) + chunking + KB + built-in agents | ✅ Ollama | Apache-2.0 |
 
-**The distinction:** with the frameworks you *build and tune* the pipeline (chunking, embeddings, store, rerank, memory) yourself; TerranSoul is the assembled, self-improving system — the typed KG + 6-signal RRF + write→manage→read loop come integrated and run locally over MCP, so any agent or app gets the same memory without wiring a pipeline. (GraphRAG's graph+community idea parallels TerranSoul's typed `memory_edges` KG; LangChain/LlamaIndex parallel the retrieval layer.)
+**The distinction:** with the frameworks you *build and tune* the pipeline (chunking, embeddings, store, rerank, memory) yourself; TerranSoul is the assembled, self-improving system — the typed KG + hybrid retrieval with reranking + write→manage→read loop come integrated and run locally over MCP, so any agent or app gets the same memory without wiring a pipeline. (GraphRAG's graph+community idea parallels TerranSoul's typed `memory_edges` KG; LangChain/LlamaIndex parallel the retrieval layer.)
 
-**Measured — retrieval R@k** on the agentmemory bench corpus (240 observations / 20 queries; same `recall@k = |relevant ∩ top-k| / |relevant|` formula as `src-tauri/benches/memory_quality.rs`):
+**Measured — retrieval R@k** on the agentmemory bench corpus (240 observations / 20 queries; standard `recall@k = |relevant ∩ top-k| / |relevant|`):
 
 | Retrieval strategy | R@5 | R@10 | R@20 |
 |---|---:|---:|---:|
@@ -299,7 +271,7 @@ These are **toolkits to *build* RAG**, not integrated memory systems you drop in
 
 *Plain English: this measures **search quality** — when you ask a question, how much of the genuinely-relevant saved info the system pulls back (R@5/10/20 = found in the top 5/10/20; higher is better). "Vector RAG" finds text by meaning only (the default these frameworks ship); TerranSoul's "hybrid" blends keyword + meaning + smart ranking, and "keyword" is exact-word search. TerranSoul's blended search beats plain vector RAG at every cutoff.*
 
-All four frameworks were **run for real** through their *own* retrievers on the same corpus and the same `nomic-embed-text` embedder (RAGFlow even stood up its full Docker stack — `ragflow-cpu` + Elasticsearch + MySQL + Redis + MinIO). They cluster tightly — **LangChain = Haystack = RAGFlow** at R@5 0.41 / R@10 0.61 / R@20 0.74, with **LlamaIndex** a touch lower (R@10 0.58 / R@20 0.72, from its default chunking) — which confirms the key point: **the embedder, not the framework, sets recall.** Plain vector RAG is plumbing around the same embeddings, and all four land **below TerranSoul's hybrid/keyword** at every cutoff (gap widening at R@20), because TerranSoul blends keyword + vector + RRF + rerank rather than vectors alone. Same corpus + same recall formula; TerranSoul's vectors here are the bench's deterministic stand-in vs the frameworks' real `nomic-embed-text`, so this compares retrieval *strategy* (plain vector vs hybrid), not embedders. **GraphRAG** (Microsoft) is now measured too. The LLM-extraction indexing that first blocked it (~16.7 s/doc → ~67 min projected) was unblocked with GraphRAG's **fast indexing** (`--method fast` — NLP entity extraction, no per-doc LLM), which finished the whole pipeline in **~2m15s** (240 docs → 428 entities, 1,977 relationships, 10 communities). Local search then scored **R@5 = R@10 = R@20 = 0.05**. **⁺ That low, *flat* score is a metric mismatch, not a retrieval failure:** GraphRAG local search is designed to return a *small, entity-focused context* (≤5 source text-units per query here — for answer *synthesis*, not a broad top-20 ranking), so it never surfaces 20 documents and recall@k-over-documents simply doesn't fit its paradigm (verified real, not a truncation bug: raising `top_k_mapped_entities` 10→60 grew the source set only to ~9, and the 12k-token budget wasn't the limiter). GraphRAG is built for graph/thematic *synthesis*, which is the wrong shape for this flat-recall bench — so read its row as "different tool", not "8× worse". Raw: `target-copilot-bench/bench-results/{rag_vector_baseline,rag_framework_bench,rag_graphrag_bench}.json` · reproduce: `python benchmark/parity-personal-ai/rag_vector_baseline.py` (LangChain + Ollama `nomic-embed-text`); LlamaIndex / Haystack / RAGFlow via their isolated venvs; GraphRAG via `graphrag index --method fast` + local search.
+All four frameworks were **run for real** through their *own* retrievers on the same corpus and the same `nomic-embed-text` embedder (RAGFlow even stood up its full Docker stack — `ragflow-cpu` + Elasticsearch + MySQL + Redis + MinIO). They cluster tightly — **LangChain = Haystack = RAGFlow** at R@5 0.41 / R@10 0.61 / R@20 0.74, with **LlamaIndex** a touch lower (R@10 0.58 / R@20 0.72, from its default chunking) — which confirms the key point: **the embedder, not the framework, sets recall.** Plain vector RAG is plumbing around the same embeddings, and all four land **below TerranSoul's hybrid/keyword** at every cutoff (gap widening at R@20), because TerranSoul blends lexical + vector + graph signals with reranking rather than vectors alone. Same corpus + same recall formula; TerranSoul's vectors here are the bench's deterministic stand-in vs the frameworks' real `nomic-embed-text`, so this compares retrieval *strategy* (plain vector vs hybrid), not embedders. **GraphRAG** (Microsoft) is now measured too. The LLM-extraction indexing that first blocked it (~16.7 s/doc → ~67 min projected) was unblocked with GraphRAG's **fast indexing** (`--method fast` — NLP entity extraction, no per-doc LLM), which finished the whole pipeline in **~2m15s** (240 docs → 428 entities, 1,977 relationships, 10 communities). Local search then scored **R@5 = R@10 = R@20 = 0.05**. **⁺ That low, *flat* score is a metric mismatch, not a retrieval failure:** GraphRAG local search is designed to return a *small, entity-focused context* (≤5 source text-units per query here — for answer *synthesis*, not a broad top-20 ranking), so it never surfaces 20 documents and recall@k-over-documents simply doesn't fit its paradigm (verified real, not a truncation bug: raising `top_k_mapped_entities` 10→60 grew the source set only to ~9, and the 12k-token budget wasn't the limiter). GraphRAG is built for graph/thematic *synthesis*, which is the wrong shape for this flat-recall bench — so read its row as "different tool", not "8× worse". Raw results are committed alongside our internal harness; each framework was measured through its own retriever on the same corpus and the same `nomic-embed-text` embedder (GraphRAG via its fast NLP-based indexing + local search).
 Sources: [microsoft/graphrag](https://github.com/microsoft/graphrag) · [langchain-ai/langchain](https://github.com/langchain-ai/langchain) · [run-llama/llama_index](https://github.com/run-llama/llama_index) · [deepset-ai/haystack](https://github.com/deepset-ai/haystack) · [infiniflow/ragflow](https://github.com/infiniflow/ragflow)
 
 ### Architectural comparison vs adopted reference architectures (Hermes-Agent · GENesis-AGI · OpenClaw)
@@ -315,10 +287,10 @@ Legend: ✅ ships · ◐ partial / planned · ❌ missing or not-a-goal · — u
 | Reasoning engine | local Ollama (`gemma4:12b-it-qat`) + cloud fallback | any LLM (local/cloud) | Claude Code (cloud) | any LLM (Claude / GPT / Gemini / DeepSeek) |
 | Memory store | SQLite (+PG/MSSQL/Cassandra), single source of truth | Markdown state files (USER/MEMORY.md) + SQLite FTS5 | SQLite + Markdown | per-agent config + memory (`SOUL.md`) |
 | Tiered memory | ✅ 3-tier (short / working / long) | ✅ 3-tier (state files → FTS5 + summaries → external providers) | ✅ compounding long-term | ◐ |
-| Hybrid lexical+vector retrieval (RRF) | ✅ FTS5 + embeddings + RRF + HyDE + cross-encoder | ◐ FTS5 keyword + LLM summarization (no vector/RRF surfaced) | ✅ RRF (k=60) + activation scoring | ❌ (not a retrieval/RAG engine) |
+| Hybrid lexical+vector retrieval (RRF) | ✅ FTS5 + embeddings + hybrid fusion with reranking (HyDE + cross-encoder) | ◐ FTS5 keyword + LLM summarization (no vector/RRF surfaced) | ✅ RRF (k=60) + activation scoring | ❌ (not a retrieval/RAG engine) |
 | Typed knowledge graph | ✅ `memory_edges` + `brain_add_edge` write tool | ❌ | ✅ typed KG + decay | ❌ |
 | Self-improvement loop | ◐ outcome-classified write-back + procedural reinforcement ship; GENesis-style confidence ladder + Hermes skill synthesis speced | ✅ autonomous skill synthesis (DSPy + GEPA self-evolution) | ✅ post-session outcome classification + causal attribution + procedure extraction | ◐ community skills; no self-evolution surfaced |
-| Procedural memory / confidence tiers | ◐ `procedural.rs` ships; Laplace L4→L1 ladder speced (GENesis adoption) | ◐ skills self-improve in use | ✅ confidence-tiered (Laplace) | ❌ |
+| Procedural memory / confidence tiers | ◐ procedural memory ships; Laplace L4→L1 ladder speced (GENesis adoption) | ◐ skills self-improve in use | ✅ confidence-tiered (Laplace) | ❌ |
 | Autonomous skill creation (Markdown) | ◐ optimize / import today; synthesis = HERMES-ADOPT (speced) | ✅ Markdown skills (agentskills.io standard) | ◐ procedure extraction | ✅ community skill catalog (~13.7k) |
 | Earned / graduated autonomy | ◐ role-gated actions | ◐ | ✅ trust per action category | ◐ |
 | Local-first / offline-capable | ✅ Ollama, fully offline | ✅ | ◐ depends on Claude Code (cloud engine) | ◐ depends on chosen LLM |
@@ -331,13 +303,13 @@ Legend: ✅ ships · ◐ partial / planned · ❌ missing or not-a-goal · — u
 | Verified long-horizon bench (ZorkGPT) | ✅ SC4 PASS | — | — | — |
 
 **What TerranSoul adopted from each** (generic Rust reimplementations — no source, prompts, schema, or branded identity copied):
-- **Hermes-Agent** → autonomous skill synthesis from observed successful trajectories (the closed `TRIGGER → AUTHOR → VALIDATE → REGISTER → REUSE → REFINE` loop; proposed `brain/skill_synthesizer.rs`, milestones HERMES-ADOPT-1..6) + first-class MCP YAML auto-setup. Spec: [`docs/hermes-agent-adoption.md`](../docs/hermes-agent-adoption.md).
+- **Hermes-Agent** → autonomous skill synthesis from observed successful trajectories (the closed `TRIGGER → AUTHOR → VALIDATE → REGISTER → REUSE → REFINE` loop; milestones HERMES-ADOPT-1..6) + first-class MCP YAML auto-setup. Spec: [`docs/hermes-agent-adoption.md`](../docs/hermes-agent-adoption.md).
 - **GENesis-AGI** → outcome-classified self-learning loop + confidence-tiered procedural memory (Laplace, L4→L1 promotion/demotion/quarantine) + unified activation ranking + consolidation safety gates. Spec: [`docs/genesis-agi-brain-adoption.md`](../docs/genesis-agi-brain-adoption.md).
 - **OpenClaw** → config-first agent UX + slash-command / session-design inspiration (studied alongside Claude Code). Analysis: [`docs/hermes-vs-openclaw-analysis.md`](../docs/hermes-vs-openclaw-analysis.md).
 
 #### Measured head-to-head (parity-personal-ai)
 
-Every system's **real CLI** answers the **same 22 prompts** (7 archetypes) with the **same injected context** and the **same 0–10 LLM judge** (`gemma4:12b-it-qat`), via [`run-headtohead.mjs`](parity-personal-ai/run-headtohead.mjs). The **Model** column is the key: the four `gemma4:12b-it-qat` rows are a like-for-like *pipeline* comparison; **Claude Code + GENesis-AGI** runs a different (cloud) model and is a **frontier reference — not directly comparable** (see ⁴).
+Every system's **real CLI** answers the **same 22 prompts** (7 archetypes) with the **same injected context** and the **same 0–10 LLM judge** (`gemma4:12b-it-qat`), measured with our internal benchmark harness. The **Model** column is the key: the four `gemma4:12b-it-qat` rows are a like-for-like *pipeline* comparison; **Claude Code + GENesis-AGI** runs a different (cloud) model and is a **frontier reference — not directly comparable** (see ⁴).
 
 | System | Quality (0–10) | Success | Latency p50 | Latency mean | Cost | Model |
 |---|---:|---:|---:|---:|---:|---|
@@ -366,7 +338,7 @@ Every system's **real CLI** answers the **same 22 prompts** (7 archetypes) with 
 
 ¹ Inference-only latency (excludes CLI cold-start). ² Wall-clock **including** the per-call CLI cold-start (process spawn) — *not* comparable to ¹; **quality is the apples-to-apples metric** (OpenClaw also runs a full agent loop each turn). ³ Hermes: 1/22 (`vrm-overlay/vo-3`) hit the 240 s timeout, excluded from its means. ⁴ **Claude Code + GENesis-AGI = a different (cloud) model — a frontier reference, *not* like-for-like with the gemma-12B rows.** Claude Code (`claude -p`, Haiku 4.5) **is** GENesis-AGI's reasoning engine; the full GENesis-AGI stack (Linux Incus container + Qdrant + months of accumulated memory + autonomous ego loop) isn't reproducible in a single-session bench, so this is the engine GENesis-AGI runs on (its memory layer would only add). It cost **$5.94 cloud** vs $0-local for the others and — tellingly — does **not** beat the local TerranSoul/OpenJarvis: this bench rewards targeted, context-grounded answers, not raw model scale.
 
-**Provenance & reproduce.** TerranSoul + OpenJarvis are the **2026-06-07** canonical run (git `08676f10`); OpenClaw, Hermes, and Claude Code were measured **2026-06-27** — identical harness, judge, and prompts. Each runs its *real* pipeline at equal injected context (TerranSoul retrieves via its brain; OpenClaw runs its agent; the rest single-pass). Raw per-prompt data: the four gemma rows in `parity_headtohead_4way.json`, the Claude Code row in `parity_headtohead_frontier.json` (the canonical 2-system `parity_headtohead.json` feeds the public leaderboard). Reproduce: `node benchmark/parity-personal-ai/run-headtohead.mjs --system=openclaw,hermes,claudecode` (OpenClaw → Ollama `bench` profile; Hermes → `HERMES_BENCH_HOME`; Claude Code → local `claude` CLI + cost); TerranSoul/OpenJarvis need the MCP brain server + OpenJarvis CLI.
+**Provenance.** TerranSoul + OpenJarvis are the **2026-06-07** canonical run (git `08676f10`); OpenClaw, Hermes, and Claude Code were measured **2026-06-27** — identical harness, judge, and prompts. Each runs its *real* pipeline at equal injected context (TerranSoul retrieves via its brain; OpenClaw runs its agent; the rest single-pass). Raw per-prompt data is committed alongside our internal harness (the four gemma rows and the Claude Code frontier row, with the canonical 2-system set feeding the public leaderboard). Measured with our internal benchmark harness on the same prompts, model, and judge; reproducible from the committed result files.
 
 Sources: [openclaw/openclaw](https://github.com/openclaw/openclaw) (MIT) · [NousResearch/hermes-agent](https://github.com/nousresearch/hermes-agent) (MIT) · [WingedGuardian/GENesis-AGI](https://github.com/WingedGuardian/GENesis-AGI) · plus the in-repo adoption studies cited above.
 
@@ -400,9 +372,9 @@ Why the brain layer is the right place to fix this class of bug, and how each fi
 - **Prior-reflection hydration** — bridge re-instantiated per episode and started ep2 with empty `_learned_lessons` until spec 006 added `_load_prior_reflections` in `__post_init__`.
 - **Local LLM self-healing** — `brain_health.llm_provider_state` Ollama probe + PowerShell watchdog auto-restarts the tray + `docker restart ollama` on outage (spec 005, after the spec-004 canonical wedged on an Ollama CLOSE_WAIT pileup).
 
-All five lessons seeded into `mcp-data/shared/memory-seed.sql` and documented in [`rules/completion-log.md`](../rules/completion-log.md) under SPEC-002 through SPEC-006.
+All five lessons seeded into the shared memory seed and documented in [`rules/completion-log.md`](../rules/completion-log.md) under SPEC-002 through SPEC-006.
 
-Receipts: `target-copilot-bench/bench-results/zork-bench-canonical-spec005/` and `…/zork-bench-canonical-spec006/`.
+Receipts: committed result files for the spec 005 and spec 006 canonical runs.
 
 ### BENCH-ZORK-1.6 (2026-05-29, K7 deepfix) — generic brain contract gap closed, score floor confirmed
 
@@ -437,7 +409,7 @@ Seven-iteration sweep (K8 → K14) implementing spec-014's eight gaps: a brain-d
 
 **Next leverage point** (deferred): critic-prompt injection — force-rank planner shortlist into the rejection-sampling critic so the model can't pick a low-ranked verb when a high-priority alternative is available. Highest expected ROI without changing model size. Sonnet 4.7 reference row is not yet a fair comparator — needs re-run with `gemma4:e4b` for true model-parity.
 
-Artifacts: `target-copilot-bench/bench-results/zork-bench/{K8…K14}-archive/`. Memory id 8934 (consolidated lesson, persisted to seed).
+Artifacts: committed result files for the K8…K14 archive. Memory id 8934 (consolidated lesson, persisted to seed).
 
 ### Earlier canonical (BENCH-ZORK-iter12, 2026-05-25) — gemma3:4b reference baseline
 
@@ -469,14 +441,14 @@ A short, honest narrative summarising where the system leads, where it ties, and
 
 ### Where TerranSoul leads
 
-- **LongMemEval-S retrieval-only** — TerranSoul `search` is **top-1 in this table** (R@5 99.2 %, R@10 99.6 %, R@20 100.0 %, NDCG@10 91.3 %, MRR 92.6 %), ahead of agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5). The win comes from corpus-aware lexical weighting in `MemoryStore::search` + per-cognitive-kind decay + the 6-signal hybrid scorer. BENCH-AM-6/6.1 verified the full 500-question table; BENCH-AM-7 confirmed no quality regression after the low-signal cap landed.
-- **agentmemory bench:quality** — on the upstream's own pinned fixture, TerranSoul keyword-only `search` leads on raw quality (R@10 67.1 %, NDCG@10 98.2 %, MRR 100.0 %), while the production-default `hybrid_search_rrf` no-vector lands within 0.3 pp R@10 (66.8 %, NDCG@10 95.0 %, MRR 95.0 %) at roughly a third of the retrieved-token budget. RRF was regressed (R@10 22.9 %) by the P6 echo-collapse penalty dominating the ~2 % rank gaps and was restored in the 2026-06-25 fix (`c560514e`) that bounds the penalty to a ~2.5 % tiebreaker; for context, agentmemory v0.6 dual-stream reference is R@10 58.6 %.
+- **LongMemEval-S retrieval-only** — TerranSoul `search` is **top-1 in this table** (R@5 99.2 %, R@10 99.6 %, R@20 100.0 %, NDCG@10 91.3 %, MRR 92.6 %), ahead of agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5). The win comes from corpus-aware lexical weighting + per-cognitive-kind decay + the hybrid lexical/vector/graph scorer with reranking. BENCH-AM-6/6.1 verified the full 500-question table; BENCH-AM-7 confirmed no quality regression after the low-signal cap landed.
+- **agentmemory bench:quality** — on the upstream's own pinned fixture, TerranSoul keyword-only `search` leads on raw quality (R@10 67.1 %, NDCG@10 98.2 %, MRR 100.0 %), while the production-default `hybrid_search_rrf` no-vector lands within 0.3 pp R@10 (66.8 %, NDCG@10 95.0 %, MRR 95.0 %) at roughly a third of the retrieved-token budget. RRF was regressed (R@10 22.9 %) by a ranking penalty dominating the small rank gaps and was restored in the 2026-06-25 fix (`c560514e`) that bounds that penalty to a light tiebreaker; for context, agentmemory v0.6 dual-stream reference is R@10 58.6 %.
 - **Architectural affordances not in the peer set** — HyDE retrieval, LLM-as-judge cross-encoder rerank, Contextual Retrieval (Anthropic 2024), CRDT device sync, the typed-KG write tool (`brain_add_edge`, spec 003), and the live LLM-provider self-healing probe (`brain_health.llm_provider_state` + watchdog, spec 005). Each one is verified to ship and tested — see the feature matrix above and `rules/completion-log.md` entries.
 - **ZorkGPT long-horizon, real local LLM** — BENCH-ZORK exposes its full call log (**0 MCP errors across 1682 brain calls**, 5 reflections retrievable per episode, ep2 reached a new room via cross-episode reflection hydration), and adds two results we have not seen published elsewhere on Zork I: with no task seeds the brain lifts the same 4B from **0 → 10–20** while both controls stay at 0; and a controlled **delivery-reliability demonstration** shows that serving the brain's move every turn drives the 4B to a deterministic **350/350**, where intermittent serving stalls at a non-deterministic 73/177 — isolating *delivery reliability* from model size. Research write-up: [`docs/LLM-Brain-Design-Research-Paper.md`](../docs/LLM-Brain-Design-Research-Paper.md).
 
 ### Where TerranSoul ties
 
-- **Auto-capture, MCP cross-agent exposure, audit trail, privacy filtering, Obsidian export, real-time graph viewer** — checkmarks in both columns of the agentmemory feature matrix, with different deployment shapes (in-app graph vs standalone port; per-mutation `audit.rs` vs upstream log) but equivalent capability.
+- **Auto-capture, MCP cross-agent exposure, audit trail, privacy filtering, Obsidian export, real-time graph viewer** — checkmarks in both columns of the agentmemory feature matrix, with different deployment shapes (in-app graph vs standalone port; per-mutation audit log vs upstream log) but equivalent capability.
 - **Local-first / offline-capable** — TerranSoul, agentmemory, Hippo, and Khoj all support local-only operation. Mem0 is cloud-first; Letta is partial; MemPalace is research-only.
 - **Knowledge-graph hop** — TerranSoul, agentmemory, Letta, MemPalace, and Hippo all ship a typed-graph read path; TerranSoul adds the `brain_add_edge` MCP write tool (spec 003) which lets external clients promote co-tag co-existence into first-class edges.
 

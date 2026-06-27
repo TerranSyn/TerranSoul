@@ -66,8 +66,8 @@ Latency: 0.98 s → 4.2 s per query (cross-encoder hop adds ~3 s for `gemma3:4b`
 
 ## Artefacts
 
-- Canonical (LCM-8 full 1976-q): [locomo_mteb_terransoul.json](../../../target-copilot-bench/bench-results/locomo_mteb_terransoul.json), [.md](../../../target-copilot-bench/bench-results/locomo_mteb_terransoul.md)
-- Gateway parity validation (BENCH-MCP-PARITY-4): [baseline 100q](../../../target-copilot-bench/bench-results/locomo_mteb_terransoul_100q_baseline.json), [gateway 1976q](../../../target-copilot-bench/bench-results/locomo_mteb_terransoul.json)
+- Canonical (LCM-8 full 1976-q): [locomo_mteb_terransoul.json](../../../benchmark/results/locomo_mteb_terransoul.json), [.md](../../../benchmark/results/locomo_mteb_terransoul.md)
+- Gateway parity validation (BENCH-MCP-PARITY-4): [baseline 100q](../../../benchmark/results/locomo_mteb_terransoul_100q_baseline.json), [gateway 1976q](../../../benchmark/results/locomo_mteb_terransoul.json)
 - Slice variants: 5q / 10q / 50q / 100q / 200q / 250q / 389q / 489q / 1089q
 
 ## How to reproduce

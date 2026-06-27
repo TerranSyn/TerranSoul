@@ -7,13 +7,13 @@
 
 | Bench task | Runner | Output | Notes |
 |---|---|---|---|
-| LongMemEval-S retrieval | [`scripts/longmemeval-s.mjs`](../../scripts/longmemeval-s.mjs) (via `npm run brain:longmem:*`) | `target-copilot-bench/bench-results/longmemeval_s_terransoul.{json,md}` | `prepare` downloads, `run` executes, `sample` runs 2-q smoke |
-| agentmemory concept-tagged quality | [`scripts/build-memory-quality-fixture.mjs`](../../scripts/build-memory-quality-fixture.mjs) + `cargo bench memory_quality` | `target-copilot-bench/bench-results/memory_quality.{json,md}` | Pinned commit `ae8f061c` |
-| LoCoMo MTEB | [`scripts/locomo-mteb.mjs`](../../scripts/locomo-mteb.mjs) | `target-copilot-bench/bench-results/locomo_mteb_terransoul_<Nq>.{json,md}` | Flags: `--systems=`, `--query-count=`, `--task=` |
-| LoCoMo at scale | [`scripts/locomo-at-scale.mjs`](../../scripts/locomo-at-scale.mjs) | `target-copilot-bench/bench-results/locomo_scale_<N>_<task>_<Q>q_<mode>.{json,md}` | Flags: `--scale=`, `--query-count=`, `--task=`, `--systems=`, `--shard-mode=` |
+| LongMemEval-S retrieval | [`scripts/longmemeval-s.mjs`](../../scripts/longmemeval-s.mjs) (via `npm run brain:longmem:*`) | `benchmark/results/longmemeval_s_terransoul.{json,md}` | `prepare` downloads, `run` executes, `sample` runs 2-q smoke |
+| agentmemory concept-tagged quality | [`scripts/build-memory-quality-fixture.mjs`](../../scripts/build-memory-quality-fixture.mjs) + `cargo bench memory_quality` | `benchmark/results/memory_quality.{json,md}` | Pinned commit `ae8f061c` |
+| LoCoMo MTEB | [`scripts/locomo-mteb.mjs`](../../scripts/locomo-mteb.mjs) | `benchmark/results/locomo_mteb_terransoul_<Nq>.{json,md}` | Flags: `--systems=`, `--query-count=`, `--task=` |
+| LoCoMo at scale | [`scripts/locomo-at-scale.mjs`](../../scripts/locomo-at-scale.mjs) | `benchmark/results/locomo_scale_<N>_<task>_<Q>q_<mode>.{json,md}` | Flags: `--scale=`, `--query-count=`, `--task=`, `--systems=`, `--shard-mode=` |
 | Million-memory latency | `cargo bench million_memory --features bench-million` | criterion output under `target-copilot-bench/criterion/` | HNSW p50/p95/p99 + CRUD throughput |
 | Yearly token savings | [`scripts/brain-token-calculator.mjs`](../../scripts/brain-token-calculator.mjs) (via `npm run brain:tokens`) | stdout | Configurable queries/day |
-| Parity personal-AI | [`benchmark/parity-personal-ai/run.mjs`](../parity-personal-ai/run.mjs) | `target-copilot-bench/bench-results/parity_personal_ai.{json,md}` | 7 archetypes, 22 prompts, MCP-based, LLM-judge |
+| Parity personal-AI | [`benchmark/parity-personal-ai/run.mjs`](../parity-personal-ai/run.mjs) | `benchmark/results/parity_personal_ai.{json,md}` | 7 archetypes, 22 prompts, MCP-based, LLM-judge |
 
 ## Common flags (locomo-mteb.mjs, locomo-at-scale.mjs)
 

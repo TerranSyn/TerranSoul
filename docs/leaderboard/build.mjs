@@ -2,7 +2,7 @@
 /**
  * docs/leaderboard/build.mjs
  *
- * Reads bench-results JSON files from target-copilot-bench/bench-results/
+ * Reads bench-results JSON files from benchmark/results/
  * and produces docs/leaderboard/data.json for the static leaderboard page.
  *
  * Usage: node docs/leaderboard/build.mjs
@@ -14,11 +14,18 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '../..');
-const RESULTS_DIR = resolve(ROOT, 'target-copilot-bench/bench-results');
+const RESULTS_DIR = resolve(ROOT, 'benchmark/results');
 
 function readJson(path) {
   if (!existsSync(path)) return null;
   return JSON.parse(readFileSync(path, 'utf-8'));
+}
+
+// Genericize internal code identifiers so the public leaderboard shows
+// human-readable approach names, not raw struct/method symbols.
+function cleanLabel(s) {
+  if (!s) return s;
+  return s.replace(/AppStateGateway::search/g, 'gateway search');
 }
 
 function buildLeaderboard() {
@@ -32,7 +39,7 @@ function buildLeaderboard() {
     for (const sys of systems) {
       rows.push({
         bench: 'agentmemory-quality',
-        system: sys.system,
+        system: cleanLabel(sys.system),
         metrics: {
           'R@5': fmt(sys.avg_recall_at_5),
           'R@10': fmt(sys.avg_recall_at_10),
@@ -55,7 +62,7 @@ function buildLeaderboard() {
     for (const sys of systems) {
       rows.push({
         bench: 'LongMemEval-S',
-        system: sys.system,
+        system: cleanLabel(sys.system),
         metrics: {
           'R@5': fmt(sys.recall_any_at_5),
           'R@10': fmt(sys.recall_any_at_10),
@@ -86,7 +93,7 @@ function buildLeaderboard() {
       for (const sys of systems) {
         rows.push({
           bench: 'LoCoMo-MTEB',
-          system: sys.system,
+          system: cleanLabel(sys.system),
           metrics: {
             'R@5': fmt(sys.recall_at_5),
             'R@10': fmt(sys.recall_at_10),

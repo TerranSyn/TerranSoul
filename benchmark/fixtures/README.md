@@ -37,4 +37,4 @@ node scripts/locomo-mteb.mjs --query-count=10   # downloads + runs smoke
 - LoCoMo MTEB: written under the runner's HF cache.
 - At-scale distractors: regenerated on each run (not cached).
 
-We do not check the raw datasets into git — only the result JSON under `target-copilot-bench/bench-results/`.
+We do not check the raw datasets into git — only the result JSON under `benchmark/results/`.

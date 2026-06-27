@@ -5,7 +5,7 @@
 # (fmemopen, strndup). We use Docker to provide the correct build env.
 #
 # Build:  docker build -t zork-bench -f benchmark/scripts/zork-bench/Dockerfile .
-# Run:    docker run --rm -v ./target-copilot-bench/bench-results:/out zork-bench --arm all --episodes 3
+# Run:    docker run --rm -v ./benchmark/results:/out zork-bench --arm all --episodes 3
 
 FROM python:3.11-slim AS base
 

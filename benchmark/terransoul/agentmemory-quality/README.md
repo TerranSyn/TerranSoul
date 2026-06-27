@@ -45,7 +45,7 @@ Yearly token accounting: `npm run brain:tokens` (default 50 queries/day, configu
 
 ## Artefacts
 
-- [memory_quality.json](../../../target-copilot-bench/bench-results/memory_quality.json), [.md](../../../target-copilot-bench/bench-results/memory_quality.md) — canonical artefact written by `cargo bench --bench memory_quality`. Each run overwrites this file; round-specific snapshots live in `rules/completion-log.md` (see BENCH-AM-1 through BENCH-AM-7 entries).
+- [memory_quality.json](../../../benchmark/results/memory_quality.json), [.md](../../../benchmark/results/memory_quality.md) — canonical artefact written by `cargo bench --bench memory_quality`. Each run overwrites this file; round-specific snapshots live in `rules/completion-log.md` (see BENCH-AM-1 through BENCH-AM-7 entries).
 - Long-form analysis: [docs/agentmemory-comparison.md](../../../docs/agentmemory-comparison.md)
 
 ## How to reproduce

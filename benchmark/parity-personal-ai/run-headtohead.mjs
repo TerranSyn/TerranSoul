@@ -34,7 +34,7 @@ import * as claudecode from './runners/claudecode.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = resolve(__dirname, 'fixtures');
-const RESULTS_DIR = resolve(__dirname, '../../target-copilot-bench/bench-results');
+const RESULTS_DIR = resolve(__dirname, '../../benchmark/results');
 
 const ARCHETYPES = [
   'daily-digest', 'deep-research', 'code-assistant',

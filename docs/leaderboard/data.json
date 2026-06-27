@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-17T10:42:06.448Z",
+  "generated_at": "2026-06-27T10:36:20.788Z",
   "version": 1,
   "notes": {
     "OpenJarvis-Parity": "Both local stacks answer the same 22 prompts (7 archetypes) with the same model (gemma4:12b-it-qat) + same injected context, judged 0–10 by the same model. USD = $0 (fully local). Energy = n/a*: this GPU (RTX 3080 Ti) does not expose power.draw via NVML/nvidia-smi, so it is reported as n/a rather than fabricated. Latency is inference time (excludes the OpenJarvis CLI cold-start)."
@@ -14,7 +14,7 @@
         "R@20": "70.6%",
         "NDCG@10": "80.3%",
         "MRR": "82.5%",
-        "Latency p50 (ms)": "0.08"
+        "Latency p50 (ms)": "0.09"
       },
       "observations": 240,
       "queries": 20,
@@ -44,7 +44,7 @@
         "R@20": "79.7%",
         "NDCG@10": "98.2%",
         "MRR": "100.0%",
-        "Latency p50 (ms)": "9.59"
+        "Latency p50 (ms)": "9.83"
       },
       "observations": 240,
       "queries": 20,
@@ -59,7 +59,22 @@
         "R@20": "74.9%",
         "NDCG@10": "90.2%",
         "MRR": "95.8%",
-        "Latency p50 (ms)": "2.84"
+        "Latency p50 (ms)": "2.85"
+      },
+      "observations": 240,
+      "queries": 20,
+      "date": null
+    },
+    {
+      "bench": "agentmemory-quality",
+      "system": "TerranSoul hybrid_search (deterministic vectors)",
+      "metrics": {
+        "R@5": "43.8%",
+        "R@10": "62.3%",
+        "R@20": "77.6%",
+        "NDCG@10": "91.5%",
+        "MRR": "95.8%",
+        "Latency p50 (ms)": "3.48"
       },
       "observations": 240,
       "queries": 20,
@@ -69,12 +84,12 @@
       "bench": "agentmemory-quality",
       "system": "TerranSoul hybrid_search_rrf (no vectors)",
       "metrics": {
-        "R@5": "44.8%",
-        "R@10": "67.1%",
-        "R@20": "80.7%",
-        "NDCG@10": "98.2%",
-        "MRR": "100.0%",
-        "Latency p50 (ms)": "16.64"
+        "R@5": "38.3%",
+        "R@10": "66.8%",
+        "R@20": "79.9%",
+        "NDCG@10": "95.0%",
+        "MRR": "95.0%",
+        "Latency p50 (ms)": "17.24"
       },
       "observations": 240,
       "queries": 20,
@@ -82,14 +97,44 @@
     },
     {
       "bench": "agentmemory-quality",
-      "system": "TerranSoul AppStateGateway::search (rrf, no vectors)",
+      "system": "TerranSoul hybrid_search_rrf (deterministic vectors)",
       "metrics": {
-        "R@5": "44.8%",
-        "R@10": "67.1%",
-        "R@20": "80.7%",
-        "NDCG@10": "98.2%",
+        "R@5": "42.4%",
+        "R@10": "61.5%",
+        "R@20": "77.1%",
+        "NDCG@10": "91.3%",
         "MRR": "100.0%",
-        "Latency p50 (ms)": "16.78"
+        "Latency p50 (ms)": "18.70"
+      },
+      "observations": 240,
+      "queries": 20,
+      "date": null
+    },
+    {
+      "bench": "agentmemory-quality",
+      "system": "TerranSoul hybrid_search_rrf (no vectors, fresh store)",
+      "metrics": {
+        "R@5": "31.8%",
+        "R@10": "63.9%",
+        "R@20": "79.5%",
+        "NDCG@10": "90.0%",
+        "MRR": "90.0%",
+        "Latency p50 (ms)": "16.98"
+      },
+      "observations": 240,
+      "queries": 20,
+      "date": null
+    },
+    {
+      "bench": "agentmemory-quality",
+      "system": "TerranSoul gateway search (rrf, no vectors, fresh store)",
+      "metrics": {
+        "R@5": "31.8%",
+        "R@10": "63.9%",
+        "R@20": "79.5%",
+        "NDCG@10": "90.0%",
+        "MRR": "90.0%",
+        "Latency p50 (ms)": "16.59"
       },
       "observations": 240,
       "queries": 20,

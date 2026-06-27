@@ -8,8 +8,8 @@
 # Usage (from repo root):
 #   pwsh -File benchmark/scripts/zork-bench/run-canonical.ps1
 #
-# Status file: target-copilot-bench/bench-results/zork-bench/.canonical-status.json
-# Watcher log: target-copilot-bench/bench-results/zork-bench/.watcher.log
+# Status file: benchmark/results/zork-bench/.canonical-status.json
+# Watcher log: benchmark/results/zork-bench/.watcher.log
 
 param(
     [string]$Model    = 'gemma4:e4b',
@@ -47,7 +47,7 @@ param(
     # -Rom /bench/jericho-game-suite/905.z5 runs the unchanged bridge on a
     # different game. Empty = the image default (zork1.z5).
     [string]$Rom = '',
-    # Output subdir under target-copilot-bench/bench-results/. Override to an
+    # Output subdir under benchmark/results/. Override to an
     # empty/fresh dir so `run_bench.py --resume` cannot count a PRIOR run's
     # completed episodes (it globs zork_bench_<arm>_ep*.jsonl in the whole
     # out-dir, regardless of run timestamp) and skip ep1 of a fresh run.

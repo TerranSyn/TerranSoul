@@ -4,7 +4,7 @@
  *
  * Runs all 7 task archetypes through TerranSoul MCP, optionally scores
  * them with an LLM-judge via Ollama, and writes results to
- * target-copilot-bench/bench-results/parity_personal_ai.{json,md}
+ * benchmark/results/parity_personal_ai.{json,md}
  *
  * Usage:
  *   node benchmark/parity-personal-ai/run.mjs [--task=<name>] [--no-judge] [--dry] [--judge-model=<model>]
@@ -17,7 +17,7 @@ import { judgeResponse, checkOllama } from './judge.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = resolve(__dirname, 'fixtures');
-const RESULTS_DIR = resolve(__dirname, '../../target-copilot-bench/bench-results');
+const RESULTS_DIR = resolve(__dirname, '../../benchmark/results');
 
 const ALL_ARCHETYPES = [
   'daily-digest', 'deep-research', 'code-assistant',

@@ -18,13 +18,13 @@ This benchmark runs **7 canonical task archetypes** through TerranSoul
 
 | # | Archetype | TerranSoul MCP Tool |
 |---|---|---|
-| 1 | `daily-digest` | `brain_search` (temporal, top_k=10) |
-| 2 | `deep-research` | `brain_search` (semantic, top_k=20) |
+| 1 | `daily-digest` | `brain_search` |
+| 2 | `deep-research` | `brain_search` |
 | 3 | `code-assistant` | `code_query` |
 | 4 | `scheduled-monitor` | `brain_search` + `brain_ingest_url` |
-| 5 | `chat-simple` | `brain_search` (conversational, top_k=8) |
-| 6 | `voice-companion` | `brain_search` (TTS-optimized, top_k=5) |
-| 7 | `vrm-overlay` | `brain_search` (emotion, top_k=3) |
+| 5 | `chat-simple` | `brain_search` |
+| 6 | `voice-companion` | `brain_search` |
+| 7 | `vrm-overlay` | `brain_search` |
 
 ## Directory Structure
 
@@ -32,12 +32,10 @@ This benchmark runs **7 canonical task archetypes** through TerranSoul
 benchmark/parity-personal-ai/
 ├── README.md              ← this file
 ├── fixtures/              ← 7 prompt fixture JSONs
-├── runners/
-│   └── terransoul.mjs     ← MCP-based runner
-├── run.mjs                ← orchestrator
-├── judge.mjs              ← LLM-judge scoring (Ollama)
-└── results/               ← output
-    └── .gitkeep
+├── runners/               ← per-system runners (internal harness)
+├── orchestrator          ← drives the run across systems
+├── judge                 ← LLM-judge scoring (Ollama)
+└── results/              ← committed output
 ```
 
 ## Prerequisites
@@ -50,33 +48,17 @@ benchmark/parity-personal-ai/
 
 ## Usage
 
-```bash
-# Full run (all 7 archetypes, with LLM-judge scoring)
-node benchmark/parity-personal-ai/run.mjs
-
-# Specific archetype only
-node benchmark/parity-personal-ai/run.mjs --task=daily-digest
-
-# Skip judge scoring (latency-only)
-node benchmark/parity-personal-ai/run.mjs --no-judge
-
-# Dry run (prints tasks without executing)
-node benchmark/parity-personal-ai/run.mjs --dry
-
-# Custom judge model
-node benchmark/parity-personal-ai/run.mjs --judge-model=gemma4:e4b
-```
+The benchmark is measured with our internal harness: it runs all 7 archetypes through the live MCP server and scores each response with the LLM judge (Ollama), on the same prompts, model, and judge. The harness supports running a single archetype, skipping the judge for latency-only, a dry run, and overriding the judge model.
 
 ## Output
 
-Results are written to `target-copilot-bench/bench-results/parity_personal_ai.json`
-and a Markdown summary to `target-copilot-bench/bench-results/parity_personal_ai.md`.
+Results are committed alongside the harness as JSON plus a Markdown summary.
 
 ## Scoring
 
 Quality scoring uses an LLM-as-judge approach via Ollama:
 - Each MCP response is scored 0–10 on relevance, accuracy, and completeness
-- The judge prompt and rubric are in `judge.mjs`
+- A fixed judge prompt and rubric are used for every system
 - Scores are averaged per task archetype
 - The judge is given the prompt's `context_seed` as **memory context**, so facts
   the assistant correctly recalled from memory are scored as legitimate recall,
@@ -85,36 +67,27 @@ Quality scoring uses an LLM-as-judge approach via Ollama:
 
 ## Head-to-Head: TerranSoul vs OpenJarvis
 
-`run-headtohead.mjs` runs a **real apples-to-apples comparison** against
+Our internal harness runs a **real apples-to-apples comparison** against
 [OpenJarvis](https://github.com/open-jarvis/OpenJarvis) (Stanford, Apache-2.0),
-a local personal-AI stack with the same task archetypes.
-
-```bash
-# Both stacks, same 22 prompts, same model + judge
-node benchmark/parity-personal-ai/run-headtohead.mjs --judge-model=gemma4:12b-it-qat
-# One side only
-node benchmark/parity-personal-ai/run-headtohead.mjs --system=openjarvis
-```
+a local personal-AI stack with the same task archetypes. Each side runs its own
+real pipeline; the harness can run both stacks or one side only.
 
 **Protocol (controlled for fairness):**
 - Both answer the **same 22 prompts** with the **same model** (`gemma4:12b-it-qat`)
   on the **same hardware**, each given the fixture's `context_seed` so neither is
   blind. Single generation pass.
-- **TerranSoul** (`runners/terransoul-gen.mjs`): live `brain_search` (hybrid RAG)
-  → Ollama generation (`think:false`).
-- **OpenJarvis** (`runners/openjarvis.mjs`): `jarvis ask` direct-to-engine via
-  `uv run`, parsing its `--json --profile` telemetry.
+- **TerranSoul**: live `brain_search` (hybrid RAG) → Ollama generation.
+- **OpenJarvis**: its own engine answers each prompt directly, parsing its
+  reported telemetry.
 - **Latency** = inference time (excludes the OpenJarvis CLI cold-start, an
-  artifact of per-call `uv` invocation; a deployed OpenJarvis runs as a resident
+  artifact of its per-call invocation; a deployed OpenJarvis runs as a resident
   server).
 - **USD** = $0 — both fully local.
 - **Energy** = `n/a*` — the test GPU (RTX 3080 Ti) does not expose `power.draw`
   via NVML/`nvidia-smi`, so energy is reported as n/a rather than fabricated.
 
-Output: `target-copilot-bench/bench-results/parity_headtohead.json`, surfaced on
+Output is committed alongside the harness and surfaced on
 the [leaderboard](../../docs/leaderboard/) under **OpenJarvis-Parity**.
 
-**Setup:** OpenJarvis installs to `%LOCALAPPDATA%\OpenJarvis` via `git clone` +
-`uv sync --extra server`, pointed at the existing Ollama (`localhost:11434`) — no
-new model download (reuses `gemma4:12b-it-qat`). Override paths with
-`OPENJARVIS_HOME` / `UV_BIN`.
+**Setup:** OpenJarvis is installed from its public repo and pointed at the
+existing local Ollama (reuses `gemma4:12b-it-qat`, no new model download).

@@ -24,10 +24,9 @@ benchmark/
     └── README.md                   — dataset pin list + provenance
 ```
 
-> **Where the raw JSON artefacts live:** in `target-copilot-bench/bench-results/`.
-> That path is **tracked** in git (see `.gitignore` lines 51–52: `/target-copilot-bench/*` ignored except `/target-copilot-bench/bench-results/`). Per-task README files in this tree link to those JSON files directly — we do not duplicate the artefacts because individual files can reach 10+ MB and round counts will keep growing.
+> **Where the raw JSON artefacts live:** committed alongside the benchmark, tracked in git. Per-task README files in this tree link to those result files directly — we do not duplicate the artefacts because individual files can reach 10+ MB and round counts will keep growing.
 >
-> **Artefact policy.** Only a subset of result files is committed in the current snapshot — currently the IVF-PQ scale runs (`locomo_ivfpq_*`, `bench-scale-5-timing_*`) and, where regenerated, `memory_quality.{json,md}`. The expensive retrieval runs (`longmemeval_s_terransoul.*`, `locomo_mteb_terransoul.*`, `locomo_scale_100000_adversarial_100q.*`) are wall-clock-expensive — minutes for the smallest slices, hours for the canonical 500/1976/100k runs — and require a local Ollama with `mxbai-embed-large` and `gemma3:4b`. The headline numbers reproduced in the tables above are sourced from `rules/completion-log.md` entries for BENCH-AM-* / BENCH-LCM-* / BENCH-SCALE-*; to regenerate the JSON locally, follow the **How to reproduce** block below. The deterministic `memory_quality` bench has no Ollama dependency and is the cheapest spot-check.
+> **Artefact policy.** Only a subset of result files is committed in the current snapshot — currently the IVF-PQ scale runs and, where regenerated, the deterministic concept-tagged quality run. The expensive retrieval runs (LongMemEval-S, LoCoMo MTEB, the 100k LoCoMo-at-scale run) are wall-clock-expensive — minutes for the smallest slices, hours for the canonical 500/1976/100k runs — and require a local Ollama with `mxbai-embed-large` and `gemma3:4b`. The headline numbers reproduced in the tables above are sourced from `rules/completion-log.md` entries for BENCH-AM-* / BENCH-LCM-* / BENCH-SCALE-*; to regenerate the result files locally, run our internal benchmark harness on the same corpus, model, and judge. The deterministic concept-tagged quality bench has no Ollama dependency and is the cheapest spot-check.
 
 ## Quick links by metric
 
@@ -39,19 +38,9 @@ benchmark/
 | LoCoMo-at-scale | BENCH-SCALE-1b (2026-05-13) | 100k corpus, R@10 **64.0 %**, NDCG@10 **46.7 %** | [terransoul/locomo-at-scale/](terransoul/locomo-at-scale/README.md) |
 | Token efficiency | regenerated 2026-06-25 | **91.6 %** savings vs full-context paste at R@10 66.8 % (no-vec RRF, post RRF-fix) | [COMPARISON.md](COMPARISON.md) |
 
-## How to reproduce in one command
+## How to reproduce
 
-```pwsh
-# All three retrieval benchmarks (LongMemEval-S, agentmemory quality, LoCoMo MTEB)
-npm run brain:longmem:prepare   # one-time: downloads & cleans LongMemEval-S
-npm run brain:longmem:run       # writes target-copilot-bench/bench-results/longmemeval_s_terransoul.{json,md}
-node scripts/build-memory-quality-fixture.mjs
-cd src-tauri; cargo bench --bench memory_quality --target-dir ../target-copilot-bench; cd ..
-node scripts/locomo-mteb.mjs --systems=rrf_rerank --query-count=1976  # full LoCoMo
-node scripts/locomo-at-scale.mjs --scale=100000 --task=adversarial --query-count=100  # 100k scale
-```
-
-Per-script flags (corpus size, system list, shard mode, etc.) live in [scripts/README.md](scripts/README.md).
+All four retrieval benchmarks (LongMemEval-S, agentmemory quality, LoCoMo MTEB, LoCoMo-at-scale) are measured with our internal benchmark harness on the same public corpora, the same model, and the same judge — no estimated numbers. Results are committed alongside the harness. The deterministic concept-tagged quality bench needs no Ollama; the LongMemEval-S, LoCoMo MTEB, and 100k LoCoMo-at-scale runs require a local Ollama with `mxbai-embed-large` and `gemma3:4b`.
 
 ## MCP Gateway Parity Coverage Matrix
 
@@ -82,5 +71,5 @@ Per-script flags (corpus size, system list, shard mode, etc.) live in [scripts/R
 
 - [docs/agentmemory-comparison.md](../docs/agentmemory-comparison.md) — long-form discussion of the agentmemory bench numbers.
 - [docs/billion-scale-retrieval-design.md](../docs/billion-scale-retrieval-design.md) — Phase 1–5 retrieval architecture; § Phase 2 documents the BENCH-SCALE-2 `ShardMode` toggle.
-- [docs/brain-advanced-design.md](../docs/brain-advanced-design.md) — full RAG pipeline (6-signal hybrid + RRF + HyDE + cross-encoder + KG cascade + temporal).
+- [docs/brain-advanced-design.md](../docs/brain-advanced-design.md) — the RAG pipeline design (hybrid lexical/vector/graph retrieval with reranking and a KG cascade).
 - [rules/milestones.md](../rules/milestones.md) and [rules/completion-log.md](../rules/completion-log.md) — round-by-round narrative.

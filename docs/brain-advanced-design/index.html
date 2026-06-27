@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inside the TerranSoul Brain — how an LLM gets memory, recall and skill</title>
+<meta name="description" content="A plain-language tour of the TerranSoul brain: an LLM core wrapped in brain-region modules — focus, memory, recall, graph, affect, skills — reached over one MCP nerve. Three-tier memory, four cognitive axes, hybrid multi-signal recall, local-or-cloud brain modes, and a self-improvement loop where outcomes shape future recall." />
+<link rel="canonical" href="https://terransyn.github.io/TerranSoul/brain-advanced-design/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#05080f; --bg-card:#0a1322; --bg-card2:#070d18; --bg-inner:#060c16;
+    --ink:#dbe6f5; --ink-soft:#c2d2e8; --ink-faint:#7d92b3; --ink-mute:#6f88a6;
+    --rule:#142033; --rule2:#1f3a52; --rule3:#15293c;
+    --cyan:#22d3ee; --cyan-soft:#9fe9f5; --indigo:#818cf8; --violet:#a78bfa;
+    --green:#34d399; --pink:#f472b6; --amber:#fbbf24; --steel:#3f6f8c;
+    --sans:'Space Grotesk',system-ui,sans-serif;
+    --display:'Orbitron',sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --maxw:1160px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.6}
+  body{background-image:radial-gradient(ellipse at 50% -8%, rgba(34,211,238,0.08) 0%, rgba(5,8,15,0) 55%);background-repeat:no-repeat}
+  ::selection{background:rgba(34,211,238,0.22);color:#e9fbff}
+  a{color:var(--cyan-soft);text-decoration:none}
+  a:hover{color:#dffaff}
+
+  /* ===== shared docs-site nav (kept in sync across every docs page) ===== */
+  .ts-site-nav{position:fixed;top:10px;right:12px;z-index:2147483000;font:13px/1.45 system-ui,"Segoe UI",sans-serif}
+  .ts-site-nav summary{list-style:none;cursor:pointer;user-select:none;background:rgba(17,19,28,.92);color:#e7e9f0;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px)}
+  .ts-site-nav summary::-webkit-details-marker{display:none}
+  .ts-site-nav[open] summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
+  .ts-site-nav nav{position:absolute;right:0;min-width:230px;display:flex;flex-direction:column;background:rgba(17,19,28,.96);border:1px solid rgba(255,255,255,.18);border-radius:10px 0 10px 10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.45)}
+  .ts-site-nav nav a{color:#e7e9f0;text-decoration:none;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .ts-site-nav nav a:last-child{border-bottom:0}
+  .ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
+  .ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+
+  /* ===== top bar ===== */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(5,8,15,0.82);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--rule)}
+  .topbar-in{max-width:var(--maxw);margin:0 auto;padding:12px 32px;display:flex;align-items:center;gap:18px;font-size:13px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:0.02em}
+  .brand-mark{width:16px;height:16px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px rgba(34,211,238,0.6);position:relative}
+  .brand-mark::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg)}
+  .crumbs{color:var(--ink-faint);display:flex;gap:9px;align-items:center;font-family:var(--mono);font-size:11px}
+  .crumbs em{font-style:normal;color:var(--ink-soft)}
+  .topbar .spacer{flex:1}
+  .topbar a.lnk{color:var(--ink-faint);font-family:var(--mono);font-size:11px;letter-spacing:0.04em}
+  .topbar a.lnk:hover{color:var(--cyan-soft)}
+  @media (max-width:820px){.crumbs{display:none}.topbar-in{gap:12px;padding:10px 18px}}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+  @media (max-width:560px){.wrap{padding:0 18px}}
+
+  /* ===== hero ===== */
+  header.hero{padding:64px 0 30px}
+  .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:var(--steel);margin-bottom:16px}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1.07;letter-spacing:0.005em;margin:0 0 18px}
+  h1 .glow{color:var(--cyan);text-shadow:0 0 22px rgba(34,211,238,0.5)}
+  .deck{font-size:clamp(17px,2.2vw,20px);line-height:1.55;color:var(--ink-soft);max-width:760px;margin:0 0 26px}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;letter-spacing:0.03em;border:1px solid var(--rule2);border-radius:8px;padding:9px 15px;background:rgba(34,211,238,0.06);color:var(--cyan-soft);transition:border-color .2s,color .2s,background .2s}
+  .btn:hover{border-color:var(--cyan);color:#dffaff;background:rgba(34,211,238,0.12)}
+  .btn.ghost{background:transparent;border-color:var(--rule2);color:var(--ink-faint)}
+  .btn.ghost:hover{color:var(--cyan-soft);border-color:var(--steel)}
+
+  /* ===== section scaffolding ===== */
+  section{padding:30px 0;border-top:1px solid var(--rule)}
+  .sec-num{font-family:var(--mono);font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--steel);margin-bottom:9px}
+  h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,28px);line-height:1.15;margin:0 0 12px;letter-spacing:0.005em}
+  h2 .accent{color:var(--cyan)}
+  h3{font-family:var(--display);font-weight:600;font-size:16px;margin:0 0 6px;color:#eef6ff;letter-spacing:0.01em}
+  p{font-size:16.5px;line-height:1.68;margin:0 0 16px;color:var(--ink-soft);max-width:760px}
+  p.lede{font-size:18px;color:var(--ink)}
+  strong{color:#eef6ff;font-weight:600}
+  .muted{color:var(--ink-faint)}
+
+  /* ===== cards ===== */
+  .card{background:linear-gradient(180deg,var(--bg-card),var(--bg-card2));border:1px solid var(--rule2);border-radius:14px;padding:20px 22px;box-shadow:0 18px 50px rgba(0,0,0,0.32)}
+  .grid{display:grid;gap:16px}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:repeat(3,1fr)}
+  @media (max-width:840px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+  .region{display:flex;flex-direction:column;gap:7px}
+  .region .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase}
+  .region .name{font-family:var(--display);font-weight:600;font-size:15px;color:#eef6ff}
+  .region p{font-size:14px;margin:0;color:var(--ink-soft)}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:middle;margin-right:8px}
+
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+  .chip{font-family:var(--mono);font-size:10px;letter-spacing:0.03em;padding:3px 9px;border:1px solid var(--rule2);border-radius:6px;color:var(--cyan-soft)}
+
+  figure{margin:22px 0;background:var(--bg-inner);border:1px solid var(--rule3);border-radius:14px;padding:18px;overflow:hidden}
+  figure svg{display:block;width:100%;height:auto}
+  figcaption{font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-align:center;margin-top:12px;letter-spacing:0.02em}
+
+  .callout{background:rgba(34,211,238,0.05);border:1px solid var(--rule2);border-left:3px solid var(--cyan);border-radius:8px;padding:14px 18px;margin:18px 0;font-size:15px;color:var(--ink-soft)}
+  .callout strong{color:var(--cyan-soft)}
+
+  ul.clean{list-style:none;padding:0;margin:0 0 16px;max-width:760px}
+  ul.clean li{position:relative;padding-left:22px;margin-bottom:9px;font-size:16px;color:var(--ink-soft)}
+  ul.clean li::before{content:"";position:absolute;left:2px;top:9px;width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px rgba(34,211,238,0.7)}
+
+  .axes{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media (max-width:840px){.axes{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:480px){.axes{grid-template-columns:1fr}}
+  .axis{border:1px solid var(--rule2);border-radius:12px;padding:15px 16px;background:var(--bg-card)}
+  .axis h4{font-family:var(--display);font-weight:600;font-size:14px;margin:0 0 5px;color:#eef6ff}
+  .axis .k{font-family:var(--mono);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--steel);margin-bottom:8px}
+  .axis p{font-size:13.5px;margin:0;color:var(--ink-faint)}
+
+  /* ===== footer ===== */
+  footer.page-foot{border-top:1px solid var(--rule);margin-top:24px;padding:40px 0 64px}
+  .foot-in{max-width:var(--maxw);margin:0 auto;padding:0 32px;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-end;font-size:13px;color:var(--ink-faint)}
+  .foot-links{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;letter-spacing:0.04em}
+  .endmark{display:flex;align-items:center;gap:14px;color:var(--ink-faint);font-family:var(--mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;margin:34px 0 0}
+  .endmark::before,.endmark::after{content:"";flex:1;height:1px;background:var(--rule)}
+</style>
+</head>
+<body>
+
+<!-- ts-site-nav: shared docs-site dropdown (the SAME block lives on every docs page; keep links in sync). -->
+<details class="ts-site-nav">
+  <summary>&#9776; Site</summary>
+  <nav>
+    <a href="../">Docs home</a>
+    <a href="../brain-architecture/">Brain architecture</a>
+    <a href="../LLM-Brain-Design-Research-Paper/">Research paper</a>
+    <a href="../leaderboard/">Leaderboard</a>
+    <a href="../zorkgpt/">ZorkGPT bench</a>
+    <a href="../zorkgpt/claude-opus-4.8/" class="sub">&mdash; Opus 4.8 run</a>
+    <a href="../zorkgpt/taughtLocalLLM/" class="sub">&mdash; TaughtLocalLLM run</a>
+    <a href="https://github.com/TerranSyn/TerranSoul">GitHub &#8599;</a>
+  </nav>
+</details>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="brand-mark"></span> <a href="../" style="color:#eef6ff">TerranSoul</a></div>
+    <div class="crumbs"><span>Design</span> <span>/</span> <em>Inside the brain</em></div>
+    <div class="spacer"></div>
+    <a class="lnk" href="../brain-architecture/">Brain map →</a>
+    <a class="lnk" href="../LLM-Brain-Design-Research-Paper/">Research paper</a>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">TerranSoul // Brain &amp; Memory · the design story</div>
+    <h1>Inside the brain: how an LLM gets <span class="glow">memory, recall &amp; skill</span></h1>
+    <p class="deck">A language model is brilliant in the moment and forgets everything between turns. TerranSoul wraps that model in the regions of a real brain — focus, memory, recall, association, feeling and skill — so it can remember, learn from outcomes, and grow more useful over time. This is the <em>what</em> and the <em>why</em>, in plain language.</p>
+    <div class="hero-cta">
+      <a class="btn" href="../brain-architecture/">Explore the interactive brain map →</a>
+      <a class="btn ghost" href="../LLM-Brain-Design-Research-Paper/">Read the research paper →</a>
+    </div>
+  </header>
+
+  <!-- ========== THE METAPHOR ========== -->
+  <section id="metaphor">
+    <div class="sec-num">01 · The metaphor</div>
+    <h2>An LLM core, wrapped in <span class="accent">brain regions</span></h2>
+    <p class="lede">Picture the model as the brain's thinking surface — the part that reasons, in the moment, about whatever is in front of it. On its own it has no memory of its own and no past. TerranSoul grafts on the other regions of a brain, each a small module that gives the core something it lacks.</p>
+
+    <figure>
+      <svg viewBox="0 0 720 320" role="img" aria-label="An LLM core surrounded by six brain-region modules, all reaching it through one MCP nerve.">
+        <defs>
+          <radialGradient id="coreHalo" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#22d3ee" stop-opacity="0.55"/><stop offset="60%" stop-color="#22d3ee" stop-opacity="0.10"/><stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/></radialGradient>
+          <linearGradient id="neon" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#818cf8"/><stop offset="50%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#34d399"/></linearGradient>
+        </defs>
+        <!-- spokes -->
+        <g stroke="#27506c" stroke-width="1.2" stroke-dasharray="3 5" opacity="0.7">
+          <line x1="360" y1="150" x2="150" y2="60"/><line x1="360" y1="150" x2="360" y2="44"/><line x1="360" y1="150" x2="570" y2="60"/>
+          <line x1="360" y1="150" x2="150" y2="240"/><line x1="360" y1="150" x2="360" y2="256"/><line x1="360" y1="150" x2="570" y2="240"/>
+        </g>
+        <!-- core -->
+        <circle cx="360" cy="150" r="58" fill="url(#coreHalo)"/>
+        <circle cx="360" cy="150" r="40" fill="#06121c" stroke="url(#neon)" stroke-width="2.4"/>
+        <text x="360" y="146" text-anchor="middle" font-family="'Orbitron',sans-serif" font-weight="600" font-size="14" fill="#eafcff">LLM</text>
+        <text x="360" y="164" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6f93a8">core · reasons now</text>
+        <!-- region nodes -->
+        <g font-family="'JetBrains Mono',monospace" font-size="10">
+          <g><circle cx="150" cy="60" r="9" fill="#0a1322" stroke="#818cf8" stroke-width="2"/><text x="150" y="40" text-anchor="middle" fill="#bcc6ff">Focus</text></g>
+          <g><circle cx="360" cy="44" r="9" fill="#0a1322" stroke="#a78bfa" stroke-width="2"/><text x="360" y="26" text-anchor="middle" fill="#d7c4ff">Memory</text></g>
+          <g><circle cx="570" cy="60" r="9" fill="#0a1322" stroke="#34d399" stroke-width="2"/><text x="570" y="40" text-anchor="middle" fill="#a9eccf">Graph</text></g>
+          <g><circle cx="150" cy="240" r="9" fill="#0a1322" stroke="#22d3ee" stroke-width="2"/><text x="150" y="262" text-anchor="middle" fill="#9fe9f5">Recall</text></g>
+          <g><circle cx="360" cy="256" r="9" fill="#0a1322" stroke="#f472b6" stroke-width="2"/><text x="360" y="278" text-anchor="middle" fill="#ffbfe8">Affect</text></g>
+          <g><circle cx="570" cy="240" r="9" fill="#0a1322" stroke="#fbbf24" stroke-width="2"/><text x="570" y="262" text-anchor="middle" fill="#ffe1a3">Skills</text></g>
+        </g>
+        <!-- nerve -->
+        <line x1="360" y1="190" x2="360" y2="300" stroke="#7de4ff" stroke-width="1.6" stroke-dasharray="4 5"/>
+        <circle cx="360" cy="300" r="11" fill="#06121c" stroke="#7de4ff" stroke-width="1.6"/>
+        <circle cx="360" cy="300" r="3" fill="#7de4ff"/>
+        <text x="384" y="304" font-family="'JetBrains Mono',monospace" font-size="10" fill="#9fe9f5">MCP · the one nerve</text>
+      </svg>
+      <figcaption>One core, six regions, one nerve — everything any client reaches the brain through is the same MCP connection.</figcaption>
+    </figure>
+
+    <div class="grid grid-3" style="margin-top:6px">
+      <div class="card region"><span class="tag" style="color:#818cf8"><span class="dot" style="background:#818cf8"></span>FOCUS · the executive</span><span class="name">Focus</span><p>Not every message deserves deep thought. Focus sizes each turn and routes it — trivial ones skip the heavy machinery, hard ones get the full treatment. It keeps the brain fast and cheap when it can be.</p></div>
+      <div class="card region"><span class="tag" style="color:#a78bfa"><span class="dot" style="background:#a78bfa"></span>MEMORY · the memory-maker</span><span class="name">Memory</span><p>Forms new memories from what happens and files them for later. Memories flow through tiers and fade unless they're used again — much like human reinforcement and forgetting.</p></div>
+      <div class="card region"><span class="tag" style="color:#34d399"><span class="dot" style="background:#34d399"></span>GRAPH · the connector</span><span class="name">Knowledge graph</span><p>Stores facts as a web of links, not a flat list. By chaining links the brain can reach an answer that no single memory ever spelled out — connecting people, places and ideas across many small facts.</p></div>
+      <div class="card region"><span class="tag" style="color:#22d3ee"><span class="dot" style="background:#22d3ee"></span>RECALL · perception</span><span class="name">Hybrid recall</span><p>Surfaces the memories worth seeing for the question at hand. Several different search methods each weigh in, and their verdicts are merged into one trustworthy short list.</p></div>
+      <div class="card region"><span class="tag" style="color:#f472b6"><span class="dot" style="background:#f472b6"></span>AFFECT · feeling</span><span class="name">Affect</span><p>Reads the emotional tone of the brain's own reply, so a companion avatar can show the matching expression. Feeling is part of how it presents, not just what it says.</p></div>
+      <div class="card region"><span class="tag" style="color:#fbbf24"><span class="dot" style="background:#fbbf24"></span>SKILLS · practised know-how</span><span class="name">Skills</span><p>Learned how-to procedures that build confidence as they succeed and get benched when they keep failing — the brain getting better at the things it does often.</p></div>
+    </div>
+  </section>
+
+  <!-- ========== THREE-TIER MEMORY ========== -->
+  <section id="memory">
+    <div class="sec-num">02 · Three-tier memory</div>
+    <h2>How a fleeting moment becomes a <span class="accent">lasting memory</span></h2>
+    <p class="lede">Human memory isn't one bucket — a phone number you hold for ten seconds is different from a skill you keep for life. The brain uses three tiers, and memories graduate upward only when they earn it.</p>
+
+    <figure>
+      <svg viewBox="0 0 720 230" role="img" aria-label="Three memory tiers — short-term, working, and long-term — with memories graduating upward when they're reused and fading when they're ignored.">
+        <defs><marker id="up" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7dffd0"/></marker></defs>
+        <g font-family="'JetBrains Mono',monospace">
+          <rect x="60" y="26" width="520" height="46" rx="9" fill="#0c1a27" stroke="#7de4ff" stroke-width="1.5"/>
+          <text x="80" y="49" font-size="13" fill="#bfe6f5" font-weight="500">SHORT-TERM</text>
+          <text x="80" y="64" font-size="10.5" fill="#7d92b3">the immediate conversation — the last little while, then gone</text>
+
+          <rect x="60" y="90" width="520" height="46" rx="9" fill="#0c1a27" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="80" y="113" font-size="13" fill="#d7c4ff" font-weight="500">WORKING</text>
+          <text x="80" y="128" font-size="10.5" fill="#7d92b3">what matters for this session — the active working set</text>
+
+          <rect x="60" y="154" width="520" height="46" rx="9" fill="#0c1a27" stroke="#34d399" stroke-width="1.5"/>
+          <text x="80" y="177" font-size="13" fill="#a9eccf" font-weight="500">LONG-TERM</text>
+          <text x="80" y="192" font-size="10.5" fill="#7d92b3">durable knowledge that persists — but gently fades if never used</text>
+        </g>
+        <g stroke="#7dffd0" stroke-width="1.5" fill="none" opacity="0.8">
+          <path d="M 600 113 C 632 113 632 60 602 49" marker-end="url(#up)"/>
+          <path d="M 600 177 C 632 177 632 124 602 113" marker-end="url(#up)"/>
+        </g>
+        <text x="648" y="116" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#8fe9c4">used again</text>
+        <text x="648" y="128" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#8fe9c4">= promoted</text>
+      </svg>
+      <figcaption>Memories graduate upward when they prove useful, and fade when they're ignored — so the store stays relevant instead of just growing.</figcaption>
+    </figure>
+
+    <div class="grid grid-3">
+      <div class="card region"><span class="name" style="color:#bfe6f5">Short-term</span><p style="font-size:14px">Holds the immediate flow of conversation. It's there so the brain stays coherent turn to turn, and it's allowed to disappear — most of what's said doesn't need to outlive the chat.</p></div>
+      <div class="card region"><span class="name" style="color:#d7c4ff">Working</span><p style="font-size:14px">The session's active picture — the facts, threads and goals that matter right now. A staging area where things that keep coming up start to look worth keeping.</p></div>
+      <div class="card region"><span class="name" style="color:#a9eccf">Long-term</span><p style="font-size:14px">Durable memory that survives across sessions. Crucially it isn't frozen: unused memories slowly decay, so the brain forgets the trivial and keeps the meaningful — like a person would.</p></div>
+    </div>
+    <div class="callout"><strong>Why it matters:</strong> graduation and decay are what keep the brain's memory <em>useful</em> rather than just <em>large</em>. Important things settle in; noise washes out.</div>
+  </section>
+
+  <!-- ========== COGNITIVE AXES ========== -->
+  <section id="axes">
+    <div class="sec-num">03 · Cognitive memory axes</div>
+    <h2>Four kinds of knowing — because <span class="accent">not all memory is the same</span></h2>
+    <p class="lede">A tier says <em>how long</em> a memory lives. But memories also differ in <em>what kind of knowing</em> they are — and the right one to surface depends on the question. The brain recognises four cognitive axes, drawn straight from how cognitive science describes human memory.</p>
+
+    <div class="axes">
+      <div class="axis"><div class="k" style="color:#22d3ee">Axis · episodic</div><h4>Episodic</h4><p>What happened, and when. The story of past events and conversations — "last time we tried this," "what we decided yesterday."</p></div>
+      <div class="axis"><div class="k" style="color:#818cf8">Axis · semantic</div><h4>Semantic</h4><p>Facts and meanings that hold regardless of when you learned them — definitions, properties, "what is this thing."</p></div>
+      <div class="axis"><div class="k" style="color:#34d399">Axis · procedural</div><h4>Procedural</h4><p>How to do something — the steps of a task. "How do I deploy this," recalled as a procedure rather than a fact.</p></div>
+      <div class="axis"><div class="k" style="color:#fbbf24">Axis · judgment</div><h4>Judgment</h4><p>Durable rules, heuristics and lessons — the hard-won "do it this way" wisdom that should outrank a one-off anecdote.</p></div>
+    </div>
+
+    <p style="margin-top:20px">The reason this matters is recall quality. A "how do I…" question should reach for procedures first; "what did we decide…" wants the episode; "what is…" wants the fact; and a settled rule should win over a passing remark. By understanding which kind of knowing a question is really asking for, the brain surfaces answers that feel right rather than merely related.</p>
+    <div class="callout"><strong>What we're sharing here is the idea, not the machinery.</strong> The value is recognising that memory has kinds and that the right kind should lead — how the brain decides which is which stays under the hood.</div>
+  </section>
+
+  <!-- ========== HYBRID RECALL ========== -->
+  <section id="recall">
+    <div class="sec-num">04 · Hybrid recall</div>
+    <h2>One answer, <span class="accent">many points of view</span></h2>
+    <p class="lede">No single way of searching memory is trustworthy on its own. Keyword search nails exact terms but misses meaning; meaning-based search catches paraphrases but fumbles precise identifiers; following links between facts reaches things neither would find alone. So instead of betting on one, the brain asks several — then fuses their answers.</p>
+
+    <figure>
+      <svg viewBox="0 0 720 280" role="img" aria-label="Five recall signals — lexical, vector, knowledge-graph, freshness and activation — each producing a ranking that is fused and reranked into one final short list.">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b8cff"/></marker></defs>
+        <g font-family="'JetBrains Mono',monospace" font-size="11">
+          <g><rect x="40" y="20" width="150" height="34" rx="8" fill="#0c1a27" stroke="#22d3ee" stroke-width="1.4"/><text x="56" y="41" fill="#9fe9f5">Lexical match</text></g>
+          <g><rect x="40" y="64" width="150" height="34" rx="8" fill="#0c1a27" stroke="#818cf8" stroke-width="1.4"/><text x="56" y="85" fill="#bcc6ff">Meaning / vector</text></g>
+          <g><rect x="40" y="108" width="150" height="34" rx="8" fill="#0c1a27" stroke="#34d399" stroke-width="1.4"/><text x="56" y="129" fill="#a9eccf">Knowledge graph</text></g>
+          <g><rect x="40" y="152" width="150" height="34" rx="8" fill="#0c1a27" stroke="#7de4ff" stroke-width="1.4"/><text x="56" y="173" fill="#bfe6f5">Freshness</text></g>
+          <g><rect x="40" y="196" width="150" height="34" rx="8" fill="#0c1a27" stroke="#fbbf24" stroke-width="1.4"/><text x="56" y="217" fill="#ffe1a3">Activation</text></g>
+        </g>
+        <g stroke="#5b8cff" stroke-width="1.3" fill="none" opacity="0.6">
+          <path d="M 190 37 C 280 37 300 110 360 124" marker-end="url(#ar)"/>
+          <path d="M 190 81 C 280 81 300 116 360 128" marker-end="url(#ar)"/>
+          <path d="M 190 125 L 360 130" marker-end="url(#ar)"/>
+          <path d="M 190 169 C 280 169 300 146 360 134" marker-end="url(#ar)"/>
+          <path d="M 190 213 C 280 213 300 156 360 138" marker-end="url(#ar)"/>
+        </g>
+        <rect x="362" y="106" width="118" height="50" rx="12" fill="#06121c" stroke="#22d3ee" stroke-width="2"/>
+        <text x="421" y="129" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#dffaff">FUSE</text>
+        <text x="421" y="144" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#6f93a8">+ rerank</text>
+        <line x1="480" y1="131" x2="520" y2="131" stroke="#22d3ee" stroke-width="1.6" marker-end="url(#ar)"/>
+        <g font-family="'JetBrains Mono',monospace" font-size="10">
+          <rect x="524" y="92" width="156" height="22" rx="5" fill="#0c1626" stroke="#34d399"/><text x="538" y="107" fill="#aef0cf">most relevant memory</text>
+          <rect x="524" y="120" width="156" height="22" rx="5" fill="#0c1626" stroke="#27506c"/><text x="538" y="135" fill="#9fc7dd">next best</text>
+          <rect x="524" y="148" width="156" height="22" rx="5" fill="#0c1626" stroke="#27506c"/><text x="538" y="163" fill="#9fc7dd">…a clean short list</text>
+        </g>
+        <text x="360" y="266" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#7de4ff">several independent signals → one fused, reranked answer — so no single method can dominate</text>
+      </svg>
+      <figcaption>Hybrid recall fuses several independent rankings, then reranks the result — the breadth of viewpoints is the point.</figcaption>
+    </figure>
+
+    <h3>The signals it fuses</h3>
+    <ul class="clean">
+      <li><strong>Lexical match</strong> — exact words and identifiers, the things meaning-search tends to blur.</li>
+      <li><strong>Meaning (vector) similarity</strong> — paraphrases and "this is about the same thing" matches.</li>
+      <li><strong>Knowledge-graph links</strong> — facts reached by following relationships between memories.</li>
+      <li><strong>Freshness</strong> — how recent and current a memory is.</li>
+      <li><strong>Activation</strong> — how connected and how often-used a memory is, a stand-in for "how alive it is in the brain right now."</li>
+    </ul>
+    <p>Their separate rankings are blended into one, then a final pass reorders the survivors for genuine relevance. The result reads as a single, confident answer — but it's a consensus of several independent opinions, which is exactly why it's hard to fool.</p>
+    <div class="callout"><strong>The value proposition, not the recipe.</strong> The strength is the <em>fusion of multiple signals</em>. We name the signals on purpose and stop there — the exact way they're weighed and combined is deliberately not part of this page.</div>
+  </section>
+
+  <!-- ========== BRAIN MODES ========== -->
+  <section id="modes">
+    <div class="sec-num">05 · Brain modes</div>
+    <h2>Same brain, <span class="accent">your choice of mind</span></h2>
+    <p class="lede">The LLM at the core is pluggable. You can run a private model on your own machine, or reach for a frontier model in the cloud — and everything around it stays the same. Memory, recall, the graph, the skills: identical surface, swappable core.</p>
+
+    <figure>
+      <svg viewBox="0 0 720 200" role="img" aria-label="The same brain surface served by either a local on-device model or a frontier cloud model — pluggable and interchangeable.">
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7de4ff"/></marker></defs>
+        <rect x="270" y="70" width="180" height="60" rx="14" fill="#06121c" stroke="#22d3ee" stroke-width="2"/>
+        <text x="360" y="98" text-anchor="middle" font-family="'Orbitron',sans-serif" font-weight="600" font-size="13" fill="#dffaff">THE BRAIN</text>
+        <text x="360" y="116" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#6f93a8">memory · recall · graph · skills</text>
+        <g font-family="'JetBrains Mono',monospace" font-size="10.5">
+          <rect x="40" y="64" width="170" height="36" rx="9" fill="#0c1a27" stroke="#34d399" stroke-width="1.5"/><text x="56" y="80" fill="#a9eccf">Local model</text><text x="56" y="93" fill="#7d92b3" font-size="9">private · offline · on-device</text>
+          <rect x="40" y="108" width="170" height="36" rx="9" fill="#0c1a27" stroke="#818cf8" stroke-width="1.5"/><text x="56" y="124" fill="#bcc6ff">Cloud frontier model</text><text x="56" y="137" fill="#7d92b3" font-size="9">most capable · via your key</text>
+        </g>
+        <g stroke="#7de4ff" stroke-width="1.4" fill="none" opacity="0.75">
+          <path d="M 210 82 C 245 82 245 96 268 98" marker-end="url(#ar2)"/>
+          <path d="M 210 126 C 245 126 245 104 268 102" marker-end="url(#ar2)"/>
+        </g>
+        <text x="600" y="103" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#9fc7dd">pick one — or fall back</text>
+        <text x="600" y="118" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#9fc7dd">from one to the other</text>
+        <text x="360" y="172" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#7de4ff">same surface, pluggable core</text>
+      </svg>
+      <figcaption>Local for privacy and offline use, cloud for raw capability — the surrounding brain doesn't change, and one can stand in for the other.</figcaption>
+    </figure>
+
+    <div class="grid grid-2">
+      <div class="card region"><span class="name" style="color:#a9eccf">Local mode</span><p>A model running entirely on your own device. Private by default, works offline, nothing leaves the machine — the brain's memory and skills wrapped around a mind that's wholly yours.</p></div>
+      <div class="card region"><span class="name" style="color:#bcc6ff">Cloud mode</span><p>A frontier model reached over the network for maximum capability when you want it. Because the surface is identical, the brain can lean on the cloud and still fall back to local — so it keeps working even if the cloud blinks.</p></div>
+    </div>
+  </section>
+
+  <!-- ========== SELF-IMPROVEMENT LOOP ========== -->
+  <section id="loop">
+    <div class="sec-num">06 · The self-improvement loop</div>
+    <h2>A brain that <span class="accent">learns from its own outcomes</span></h2>
+    <p class="lede">The point of giving a model memory isn't just to look things up — it's to get better. TerranSoul closes the loop: what the brain does, how it turns out, and what it remembers all feed back into what it recalls next time. The cycle is simply <em>write → manage → read</em>.</p>
+
+    <figure>
+      <svg viewBox="0 0 720 240" role="img" aria-label="A closed loop: the brain writes what it learns, manages and consolidates it, reads it back on future turns, and outcomes shape what gets recalled next.">
+        <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#22d3ee"/></marker></defs>
+        <g font-family="'JetBrains Mono',monospace" font-size="12">
+          <g><circle cx="150" cy="80" r="48" fill="#0c1a27" stroke="#34d399" stroke-width="1.8"/><text x="150" y="76" text-anchor="middle" fill="#a9eccf" font-weight="500">WRITE</text><text x="150" y="93" text-anchor="middle" font-size="8.5" fill="#7d92b3">record what</text></g>
+          <g><circle cx="360" cy="80" r="48" fill="#0c1a27" stroke="#a78bfa" stroke-width="1.8"/><text x="360" y="76" text-anchor="middle" fill="#d7c4ff" font-weight="500">MANAGE</text><text x="360" y="93" text-anchor="middle" font-size="8.5" fill="#7d92b3">tidy &amp; link</text></g>
+          <g><circle cx="570" cy="80" r="48" fill="#0c1a27" stroke="#22d3ee" stroke-width="1.8"/><text x="570" y="76" text-anchor="middle" fill="#9fe9f5" font-weight="500">READ</text><text x="570" y="93" text-anchor="middle" font-size="8.5" fill="#7d92b3">recall next time</text></g>
+        </g>
+        <line x1="198" y1="80" x2="306" y2="80" stroke="#22d3ee" stroke-width="1.6" marker-end="url(#ar3)"/>
+        <line x1="408" y1="80" x2="516" y2="80" stroke="#22d3ee" stroke-width="1.6" marker-end="url(#ar3)"/>
+        <path d="M 570 128 C 570 200 150 200 150 128" fill="none" stroke="#7de4ff" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#ar3)"/>
+        <text x="360" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#7de4ff">outcomes shape what gets recalled next — the brain tunes itself</text>
+      </svg>
+      <figcaption>Write what was learned, manage it into something durable and connected, read it back when it's relevant — and let how things turned out steer future recall.</figcaption>
+    </figure>
+
+    <div class="grid grid-3">
+      <div class="card region"><span class="name" style="color:#a9eccf">Write</span><p style="font-size:14px">As the brain works, it records lessons, facts and the results of what it tried — turning experience into memory rather than letting it evaporate.</p></div>
+      <div class="card region"><span class="name" style="color:#d7c4ff">Manage</span><p style="font-size:14px">New memories are tidied, linked to related ones, and consolidated so the store stays coherent. Skills that keep succeeding gain standing; ones that keep failing are set aside.</p></div>
+      <div class="card region"><span class="name" style="color:#9fe9f5">Read</span><p style="font-size:14px">On future turns the brain recalls what's relevant — and because outcomes fed back in, what surfaces is shaped by what actually worked before.</p></div>
+    </div>
+    <div class="callout"><strong>Why it matters:</strong> this is the difference between a tool you re-teach every session and a companion that compounds — one whose recall quietly improves the more you use it.</div>
+  </section>
+
+  <!-- ========== MCP NERVE ========== -->
+  <section id="mcp">
+    <div class="sec-num">07 · The MCP nerve</div>
+    <h2>One brain, reached and fed <span class="accent">through one connection</span></h2>
+    <p class="lede">Every region connects to the world through a single nerve: the Model Context Protocol. That means any client can query the same brain — and the brain, in turn, keeps itself current by pulling from its own sources. Knowledge written by one client is legible to the next.</p>
+
+    <figure>
+      <svg viewBox="0 0 720 250" role="img" aria-label="Many clients query one brain over MCP on one side; the brain pulls from its own connectors, repo brains and peer instances on the other.">
+        <defs>
+          <marker id="qa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7de4ff"/></marker>
+          <marker id="sa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#fbbf24"/></marker>
+        </defs>
+        <text x="120" y="18" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" letter-spacing="0.1em" fill="#5f8aa3">QUERIED BY</text>
+        <text x="600" y="18" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" letter-spacing="0.1em" fill="#7a6a3f">PULLS FROM</text>
+        <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#9fc7dd">
+          <rect x="40" y="30" width="160" height="26" rx="6" fill="#0c1a27" stroke="#27506c"/><text x="54" y="47">Claude Code</text>
+          <rect x="40" y="64" width="160" height="26" rx="6" fill="#0c1a27" stroke="#27506c"/><text x="54" y="81">Codex</text>
+          <rect x="40" y="98" width="160" height="26" rx="6" fill="#0c1a27" stroke="#34d399"/><text x="54" y="115" fill="#aef0cf">apps &amp; companions</text>
+          <rect x="40" y="132" width="160" height="26" rx="6" fill="#0c1a27" stroke="#22d3ee"/><text x="54" y="149" fill="#bff0ff">peer TerranSoul</text>
+          <rect x="40" y="166" width="160" height="26" rx="6" fill="#0c1a27" stroke="#27506c"/><text x="54" y="183">+ any MCP client</text>
+        </g>
+        <g stroke="#7de4ff" stroke-width="1.3" fill="none" opacity="0.7">
+          <path d="M 200 43 C 250 43 290 105 300 116" marker-end="url(#qa)"/>
+          <path d="M 200 77 C 250 77 295 110 300 119" marker-end="url(#qa)"/>
+          <path d="M 200 111 L 300 121" marker-end="url(#qa)"/>
+          <path d="M 200 145 C 250 145 295 130 300 124" marker-end="url(#qa)"/>
+          <path d="M 200 179 C 250 179 290 138 300 127" marker-end="url(#qa)"/>
+        </g>
+        <rect x="302" y="100" width="56" height="44" rx="10" fill="#06121c" stroke="#7de4ff" stroke-width="1.6"/>
+        <text x="330" y="126" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#bfe6f5">MCP</text>
+        <line x1="358" y1="122" x2="392" y2="122" stroke="#7de4ff" stroke-width="1.5" marker-end="url(#qa)"/>
+        <rect x="394" y="96" width="76" height="52" rx="14" fill="#06121c" stroke="#22d3ee" stroke-width="2"/>
+        <text x="432" y="120" text-anchor="middle" font-family="'Orbitron',sans-serif" font-weight="600" font-size="12" fill="#dffaff">brain</text>
+        <text x="432" y="135" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#6f93a8">one shared memory</text>
+        <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#ffe1a3">
+          <rect x="520" y="40" width="160" height="26" rx="6" fill="#0c1a27" stroke="#fbbf24"/><text x="534" y="57">source connectors</text>
+          <rect x="520" y="109" width="160" height="26" rx="6" fill="#0c1a27" stroke="#fbbf24"/><text x="534" y="126">per-repo brains</text>
+          <rect x="520" y="178" width="160" height="26" rx="6" fill="#0c1a27" stroke="#fbbf24"/><text x="534" y="195">peer TerranSoul</text>
+        </g>
+        <g stroke="#fbbf24" stroke-width="1.3" fill="none" opacity="0.75">
+          <path d="M 520 53 C 490 53 480 110 472 118" marker-end="url(#sa)"/>
+          <path d="M 520 122 L 472 122" marker-end="url(#sa)"/>
+          <path d="M 520 191 C 490 191 480 134 472 126" marker-end="url(#sa)"/>
+        </g>
+        <text x="360" y="238" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#7de4ff">one brain — consumed by any client, fed by its own sources</text>
+      </svg>
+      <figcaption>The same brain is queried by coding agents, apps and even peer instances — and it keeps itself current by pulling from connectors, repo brains and peers.</figcaption>
+    </figure>
+
+    <div class="grid grid-2">
+      <div class="card region"><span class="name" style="color:#bfe6f5">Queried by anything</span><p>Coding assistants like Claude Code and Codex, desktop and mobile apps, and even another TerranSoul — all reach the same brain over one protocol. Whatever one client learns, the next can read.</p></div>
+      <div class="card region"><span class="name" style="color:#ffe1a3">Fed by its own sources</span><p>The flow runs both ways. The brain also pulls in fresh material from connectors, from per-project repo brains, and from peer instances — so its memory stays current without you feeding it by hand.</p></div>
+    </div>
+  </section>
+
+  <!-- ========== CLOSING ========== -->
+  <section id="closing">
+    <div class="sec-num">08 · In a sentence</div>
+    <h2>The whole idea</h2>
+    <p class="lede">An LLM at the core, wrapped in the regions of a real brain — focus, memory, recall, association, feeling and skill — all reachable through one nerve, all learning from how things turn out. A model that doesn't just answer, but remembers, connects and grows.</p>
+    <div class="hero-cta" style="margin-top:8px">
+      <a class="btn" href="../brain-architecture/">See it as an interactive map →</a>
+      <a class="btn ghost" href="../LLM-Brain-Design-Research-Paper/">Read the measured results →</a>
+    </div>
+    <div class="endmark">TerranSoul · brain &amp; memory</div>
+  </section>
+
+</main>
+
+<footer class="page-foot">
+  <div class="foot-in">
+    <div>
+      <div class="brand" style="margin-bottom:8px"><span class="brand-mark"></span> <span style="color:#eef6ff">TerranSoul</span></div>
+      <div class="muted">A self-learning AI companion with a persistent brain.</div>
+    </div>
+    <div class="foot-links">
+      <a href="../">Docs home</a>
+      <a href="../brain-architecture/">Brain architecture</a>
+      <a href="../LLM-Brain-Design-Research-Paper/">Research paper</a>
+      <a href="../leaderboard/">Leaderboard</a>
+      <a href="../zorkgpt/">ZorkGPT bench</a>
+      <a href="https://github.com/TerranSyn/TerranSoul">GitHub &#8599;</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

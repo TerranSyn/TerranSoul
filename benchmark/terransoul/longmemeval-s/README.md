@@ -29,16 +29,16 @@ TerranSoul leads agentmemory on all five published metrics and MemPalace on R@5.
 
 ## Artefacts
 
-- [longmemeval_s_terransoul.json](../../../target-copilot-bench/bench-results/longmemeval_s_terransoul.json)
-- [longmemeval_s_terransoul.md](../../../target-copilot-bench/bench-results/longmemeval_s_terransoul.md)
-- Slice variants: 2q / 20q / 50q / 180q — all under `target-copilot-bench/bench-results/longmemeval_s_terransoul_*q.{json,md}`
+- [longmemeval_s_terransoul.json](../../../benchmark/results/longmemeval_s_terransoul.json)
+- [longmemeval_s_terransoul.md](../../../benchmark/results/longmemeval_s_terransoul.md)
+- Slice variants: 2q / 20q / 50q / 180q — all under `benchmark/results/longmemeval_s_terransoul_*q.{json,md}`
 
 ## How to reproduce
 
 ```pwsh
 npm run brain:longmem:prepare   # ~264 MB dataset download (one-time, owner-triggered)
 npm run brain:longmem:run       # full 500-question retrieval run
-# Output: target-copilot-bench/bench-results/longmemeval_s_terransoul.{json,md}
+# Output: benchmark/results/longmemeval_s_terransoul.{json,md}
 ```
 
 For a quick smoke without downloading the full dataset:

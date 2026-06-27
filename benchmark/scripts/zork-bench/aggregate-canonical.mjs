@@ -9,7 +9,7 @@
 //   node benchmark/scripts/zork-bench/aggregate-canonical.mjs
 //   node benchmark/scripts/zork-bench/aggregate-canonical.mjs --out-dir <path>
 //
-// Output: writes target-copilot-bench/bench-results/zork-bench/canonical-summary.json
+// Output: writes benchmark/results/zork-bench/canonical-summary.json
 //         and prints a markdown table to stdout.
 
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';

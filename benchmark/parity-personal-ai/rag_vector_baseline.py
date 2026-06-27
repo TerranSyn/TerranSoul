@@ -16,7 +16,7 @@ if langchain isn't importable.
 import json, sys, math, urllib.request
 
 FIX = "D:/Git/TerranSoulApp/src-tauri/benches/memory_quality_fixture.json"
-OUT = "D:/Git/TerranSoulApp/target-copilot-bench/bench-results/rag_vector_baseline.json"
+OUT = "D:/Git/TerranSoulApp/benchmark/results/rag_vector_baseline.json"
 OLLAMA = "http://127.0.0.1:11434"
 EMB = "nomic-embed-text"
 

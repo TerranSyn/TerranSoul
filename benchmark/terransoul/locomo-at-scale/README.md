@@ -41,10 +41,10 @@ Implementation: new `MemoryStore::set_shard_mode(ShardMode)` API with `RouterRou
 
 ## Artefacts
 
-- [locomo_scale_100000_adversarial_100q.json](../../../target-copilot-bench/bench-results/locomo_scale_100000_adversarial_100q.json) (SCALE-1 / SCALE-1b — SCALE-1b currently overwrites SCALE-1 in this file; the mode suffix from SCALE-2 prevents future overwrites)
-- [locomo_scale_100000_adversarial_100q.md](../../../target-copilot-bench/bench-results/locomo_scale_100000_adversarial_100q.md)
-- [locomo_scale_10000_adversarial_10q.json](../../../target-copilot-bench/bench-results/locomo_scale_10000_adversarial_10q.json) (smoke)
-- [scale-1b-run.log](../../../target-copilot-bench/bench-results/scale-1b-run.log) (full run log)
+- [locomo_scale_100000_adversarial_100q.json](../../../benchmark/results/locomo_scale_100000_adversarial_100q.json) (SCALE-1 / SCALE-1b — SCALE-1b currently overwrites SCALE-1 in this file; the mode suffix from SCALE-2 prevents future overwrites)
+- [locomo_scale_100000_adversarial_100q.md](../../../benchmark/results/locomo_scale_100000_adversarial_100q.md)
+- [locomo_scale_10000_adversarial_10q.json](../../../benchmark/results/locomo_scale_10000_adversarial_10q.json) (smoke)
+- [scale-1b-run.log](../../../benchmark/results/scale-1b-run.log) (full run log)
 
 ## Acceptance bars (from `docs/billion-scale-retrieval-design.md`)
 
