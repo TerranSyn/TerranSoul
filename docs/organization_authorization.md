@@ -3,7 +3,9 @@
 > **Status:** design ready (2026-06-02). Reference audit of
 > [`nduckmink/arkon`](https://github.com/nduckmink/arkon) complete (§4–§5).
 > This doc defines the **principle** TerranSoul adopts and what to copy.
-> Implementation is tracked as milestones phase **ORG-AUTHZ**.
+> The design has since been **implemented** (`src-tauri/src/commands/authz.rs` +
+> `src-tauri/src/authz/schema.rs`); the completed record is archived as phase
+> **ORG-AUTHZ** in [`rules/completion-log.md`](../rules/completion-log.md).
 > **Key finding:** arkon is **single-tenant** (departments, not multi-org) — we
 > copy its RBAC / scope-engine / permission-vocabulary / auth UI verbatim and
 > add a **multi-organization** layer on top (TerranSoul's extension).
@@ -247,8 +249,8 @@ How the principle integrates with what we already have:
 
 ## 7. Implementation plan
 
-Tracked as milestones phase **ORG-AUTHZ** (see `rules/milestones.md`). High
-level, deny-by-default and local-first-preserving:
+Implemented; the completed record is archived as phase **ORG-AUTHZ** in
+`rules/completion-log.md`. High level, deny-by-default and local-first-preserving:
 
 1. Schema + seed (principals/orgs/memberships/roles/permissions; org-of-one for
    solo installs) + the central `authorize()` policy layer in the gateway.

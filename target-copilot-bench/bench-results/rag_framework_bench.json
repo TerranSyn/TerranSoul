@@ -37,12 +37,13 @@
     },
     {
       "framework": "GraphRAG (Microsoft)",
-      "runnable": false,
-      "via": "graphrag 3.1.0; Ollama OpenAI-compat endpoint (gemma4:e4b-it-qat extraction + nomic-embed-text 768-dim) verified live; 240 obs written as input docs; local_search exposes a ranked, non-shuffled 'sources' text-unit table mappable 1:1 to obs ids (recall script ready)",
-      "recall_at_5": null,
-      "recall_at_10": null,
-      "recall_at_20": null,
-      "blocker": "Indexing infeasible in the bench time budget on this CPU/local-Ollama setup: extract_graph LLM entity/relationship extraction over 240 docs ran ~16.7 s/doc (~67 min projected for that workflow alone, before community/report/embedding passes). Only 34/240 docs were extracted at the 20-min cap, so no graph (entities/communities) was built and local-search retrieval never ran. The blocker is indexing wall-clock, NOT a missing ranked retrieval list. Would run on a GPU or a faster extraction LLM."
+      "runnable": true,
+      "method": "fast (NLP extraction)",
+      "via": "graphrag 3.1.0 `index --method fast` (extract_graph_nlp, no per-doc LLM) + local search context builder; nomic-embed-text embeddings; ~2m15s index. Full detail + per-query evidence in rag_graphrag_bench.json.",
+      "recall_at_5": 0.0515952380952381,
+      "recall_at_10": 0.0515952380952381,
+      "recall_at_20": 0.0515952380952381,
+      "note": "Unblocked via the fast indexing method (the earlier ~67-min LLM-extraction blocker is gone). Low + flat R@k is a METRIC MISMATCH, not a failure: GraphRAG local search returns a small entity-focused context (<=5 sources/query) for answer synthesis, not a broad top-20 ranking — so recall@k-over-documents understates it. Read as 'different tool', not '8x worse'."
     }
   ]
 }

@@ -5,9 +5,13 @@
 > [WingedGuardian/GENesis-AGI](https://github.com/WingedGuardian/GENesis-AGI)
 > into TerranSoul's brain.
 >
-> **Status:** design / planning — **no code shipped yet.** This document is the
-> design contract; implementation lands as a separate specced step (suggested
-> Spec-032). Mapped into the design doc at
+> **Status:** **SHIPPED.** GENESIS-ADOPT (Spec-032) P1–P9 shipped 2026-06-08/09
+> (see `rules/completion-log.md`: P1–P4 + schema V30 §"Phase GENESIS-ADOPT
+> (Spec-032) — initial schema + P1–P4 (2026-06-08)", P5 §"UNFINISHED-AUDIT batch
+> + GENESIS-ADOPT-P5 + DOCS (2026-06-08)", P6–P9 §"GENESIS-ADOPT-DOCS-FINISH —
+> P6–P9 reconciled Shipped 2026-06-08", retrieval no-regression verified
+> 2026-06-09; durable lesson `seed:genesis-adopt-p1-p9-shipped-2026-06-08`). This
+> document remains the design contract of record. Mapped into the design doc at
 > [`brain-advanced-design.md`](brain-advanced-design.md) §§ 1.5, 3.5.9, 4, 6,
 > 11.1, 16 (Phase 8), 20.7/20.8, 21.9.
 >

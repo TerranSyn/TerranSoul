@@ -26,17 +26,21 @@ with automatic detection, install, and warm-up via Tauri commands.
 Cloud providers (OpenRouter, NVIDIA, Groq, Pollinations, Cerebras) are available
 as fall-back when Ollama is unreachable or the user explicitly chooses cloud.
 
-## RAM-adaptive model tier
+## VRAM-adaptive model tier
 
-The `ramAwareFallback` function picks the best model for the detected hardware:
+The `vramAwareFallback` function picks the best model for the detected hardware.
+GPU VRAM is the only constraint for Ollama inference — system RAM is **not** used.
+QAT (Quantization-Aware Training) variants are preferred (better quality at the
+same VRAM cost):
 
-| RAM | Recommended Ollama tag | Typical VRAM | Notes |
-|-----|----------------------|-------------|-------|
-| ≥ 48 GB | `gemma4:e4b` | ≥ 24 GB | High-end workstation |
-| ≥ 16 GB | `gemma4:12b` | ≥ 8 GB | **Default recommendation** (multimodal, multilingual) |
-| ≥ 8 GB | `gemma3:4b` | ≥ 4 GB | < 500 ms TTFT sweet spot |
-| ≥ 4 GB | `gemma3:1b` | ≥ 2 GB | Minimum viable |
-| < 4 GB | `tinyllama` | CPU-only | Emergency fallback |
+| VRAM | Recommended Ollama tag | Notes |
+|------|----------------------|-------|
+| ≥ 20 GB | `gemma4:12b-it-qat` | 12B QAT, preferred recommended model |
+| ≥ 9 GB | `gemma4:12b-it-qat` | 12B QAT, ~9.2 GB VRAM |
+| ≥ 8 GB | `gemma4:e4b-it-qat` | E4B QAT, ~8 GB VRAM |
+| ≥ 4 GB | `phi4-mini` | 3.8B, ~4 GB VRAM |
+| ≥ 2 GB | `gemma3:1b` | 1B, ~2 GB VRAM |
+| < 2 GB | `gemma3:1b` | No GPU / very low VRAM — smallest available |
 
 The tier is a starting point. The brain catalogue (`refresh_model_catalogue`)
 fetches live community recommendations and can upgrade the choice.

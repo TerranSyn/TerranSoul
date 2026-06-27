@@ -19,14 +19,17 @@ The previous default for 16–48 GB RAM machines was `gemma3:4b`. In June 2026,
 
 ## Decision
 
-### 1. Update `ramAwareFallback`
+### 1. Update `vramAwareFallback`
+
+GPU VRAM (not system RAM) is the constraint for Ollama inference, so the
+fallback keys off GPU VRAM and prefers QAT (Quantization-Aware Training) variants:
 
 ```typescript
-if (ram >= 49_152) return 'gemma4:e4b';   // ≥ 24 GB VRAM
-if (ram >= 16_384) return 'gemma4:12b';   // ≥ 8 GB VRAM — new default
-if (ram >= 8_192)  return 'gemma3:4b';    // 4 GB VRAM
-if (ram >= 4_096)  return 'gemma3:1b';
-return 'tinyllama';
+if (vram >= 20_480) return 'gemma4:12b-it-qat';  // 12B QAT, preferred recommended model
+if (vram >= 9_216)  return 'gemma4:12b-it-qat';  // 12B QAT, ~9.2 GB VRAM
+if (vram >= 8_192)  return 'gemma4:e4b-it-qat';  // E4B QAT, ~8 GB VRAM
+if (vram >= 4_096)  return 'phi4-mini';          // 3.8B, ~4 GB VRAM
+return 'gemma3:1b';                              // 1B, ~2 GB VRAM
 ```
 
 ### 2. Add image attachment support to chat
@@ -64,12 +67,13 @@ Used to determine whether to show image UI and whether to include images in
 the Ollama payload. Ollama also silently ignores an `images` field for non-vision
 models — so even without strict gating, non-vision models are unaffected.
 
-## Why 16 GB RAM as the threshold
+## Why GPU VRAM (not system RAM) drives the threshold
 
-16 GB RAM is the minimum for a machine that *also* has 8 GB VRAM (GPU VRAM is
-separate). A 16 GB RAM + 8 GB VRAM laptop can run `gemma4:12b` at Q4_K_M
-(≈7.5 GB VRAM) with room for KV cache. Machines with only 8 GB RAM are
-unlikely to have 8 GB VRAM — they fall through to `gemma3:4b` at 4 GB VRAM.
+GPU VRAM — not system RAM — is the binding constraint for Ollama inference, so
+the fallback keys off VRAM directly. A machine with ≥ 9.2 GB VRAM can run
+`gemma4:12b-it-qat` (the preferred recommended model) with room for KV cache;
+8 GB VRAM falls to `gemma4:e4b-it-qat`; ~4 GB VRAM falls to `phi4-mini`; and
+anything lower falls through to `gemma3:1b`.
 
 ## Trade-offs
 
@@ -81,5 +85,5 @@ unlikely to have 8 GB VRAM — they fall through to `gemma3:4b` at 4 GB VRAM.
 
 ## Related ADRs
 
-- [ADR 012](012-ollama-local-first-llm.md) — Ollama model management and `ramAwareFallback`
+- [ADR 012](012-ollama-local-first-llm.md) — Ollama model management and `vramAwareFallback`
 - [ADR 006](006-vrm-avatar-and-motion-pipeline.md) — multimodal opens image → motion generation paths

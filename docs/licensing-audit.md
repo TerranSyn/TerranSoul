@@ -83,6 +83,38 @@ per-note pitch control made it the wrong fit. See
   consent into `<app_data>/pitch/rmvpe.onnx`. Same first-run-consent
   pattern as the Supertonic TTS provider.
 
+### `msedge-tts` — re-introduced as a feature-gated fallback voice (license exception)
+
+> Originally removed 2026-04-24 (see history). **Re-introduced** as an
+> opt-in, feature-gated fallback and recorded here as an explicit
+> license exception per the audit Process below.
+
+- **Crate licence:** MIT (commercial-OK as code).
+- **Standing ToS blocker (unchanged):** the crate calls Microsoft
+  Edge's undocumented `speech.platform.bing.com` *"Read Aloud"*
+  WebSocket endpoint. That endpoint is **not** part of any public
+  Microsoft API; the Microsoft Services Agreement directs commercial
+  users to **paid Azure Cognitive Services — Text to Speech** instead.
+  Programmatic third-party use of the Edge endpoint is not sanctioned
+  by Microsoft and has historically been rate-limited or blocked when
+  abuse is detected. **This is the same blocker that triggered the
+  2026-04-24 removal and it still applies.**
+- **Why it ships now:** `msedge-tts` is gated behind the
+  `tts-supertonic` Cargo feature (`src-tauri/Cargo.toml`) and is used
+  only as a **fallback neural voice for languages Supertonic does not
+  cover** (zh / ja / etc.) — see
+  [`src-tauri/src/voice/edge_tts.rs`](../src-tauri/src/voice/edge_tts.rs)
+  (`supports_language()` skips any language Supertonic already covers)
+  and [`src-tauri/src/commands/voice.rs`](../src-tauri/src/commands/voice.rs)
+  (failover path). Supertonic remains the primary on-device path.
+- **Recorded exception:** clearance is **conditional and bounded** — the
+  Edge endpoint must not be the default voice for any Supertonic-covered
+  language, and a commercial TerranSoul build that wants Microsoft neural
+  voices without ToS risk should route those languages to a paid Azure
+  TTS provider or the user-supplied OpenAI TTS provider. The
+  `web-speech` (browser `SpeechSynthesis`) and OpenAI TTS providers
+  remain the ToS-clean alternatives.
+
 ## � Conditional clearance (use-based / RAIL-family licenses)
 
 Some downloadable assets — primarily on-device ML model weights — ship
@@ -175,28 +207,6 @@ conditions recorded here.
 
 The following integrations were present in earlier builds but removed
 on 2026-04-24 because they fail the strict commercial-use bar:
-
-### `msedge-tts` (Rust crate, was used in `src-tauri/src/voice/edge_tts.rs`)
-
-- **Crate licence:** MIT (commercial-OK as code).
-- **Blocker:** the crate calls Microsoft Edge's undocumented
-  `speech.platform.bing.com` *"Read Aloud"* WebSocket endpoint. That
-  endpoint is **not** part of any public Microsoft API; the Microsoft
-  Services Agreement directs commercial users to **paid Azure
-  Cognitive Services — Text to Speech** instead. Programmatic
-  third-party use of the Edge endpoint is not sanctioned by Microsoft
-  and has historically been rate-limited or blocked when abuse is
-  detected.
-- **Replacement:** new `web-speech` TTS provider (browser
-  `SpeechSynthesis` API). The backend's `synthesize_tts` command
-  returns `Vec::new()` for `web-speech`, and the existing
-  `useTtsPlayback` composable already falls back to
-  `speechSynthesis.speak()` whenever the WAV payload is empty. Browser
-  TTS is built into every Tauri-supported platform, has no API key, no
-  network round-trip, no telemetry, and no third-party ToS to worry
-  about. If higher-quality cloud voices are desired, the
-  user-supplied **OpenAI TTS** provider remains available with an
-  explicit API key.
 
 ### `@vercel/analytics` + `@vercel/speed-insights` (npm, was mounted in `src/App.vue`)
 

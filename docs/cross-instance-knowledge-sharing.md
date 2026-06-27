@@ -1,8 +1,8 @@
 # Cross-Instance Knowledge Sharing
 
-> Design document for chunk **SCALE-INF-1** (Phase INFRA).
-> Until this chunk's acceptance evidence is logged in `rules/completion-log.md`,
-> the README pillar remains "design target".
+> Design document for chunk **SCALE-INF-1** (Phase INFRA) — **shipped 2026-05-14**
+> (see the SCALE-INF-1 entry in `rules/completion-log.md`). The design content
+> below remains accurate.
 
 ---
 

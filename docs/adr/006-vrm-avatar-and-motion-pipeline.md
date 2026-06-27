@@ -55,7 +55,7 @@ Hello! How are you doing?
 <anim>{"emotion":"happy","motion":"wave"}</anim>
 ```
 
-The Rust `StreamTagParser` (`src-tauri/src/brain/stream_tag_parser.rs`) extracts
+The Rust `StreamTagParser` (`src-tauri/src/commands/streaming.rs`) extracts
 these tags in real time from the LLM NDJSON stream **before** the text reaches the
 frontend. The `motion` value is a **motion token**: a short string key that maps to
 a playable VRMA file in the animation library.

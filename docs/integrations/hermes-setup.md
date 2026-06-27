@@ -2,10 +2,10 @@
 
 > **Date:** 2026-05-14
 > **Status:** Doc shipped (INTEGRATE-2). The detect-and-link Tauri commands +
-> chat-side suggest-hook + quest-based guided installer are queued under
-> Phase INTEGRATE in [`rules/milestones.md`](../../rules/milestones.md).
-> Everything in §1–§3 of this doc is real today; §4 ("Guided install via
-> TerranSoul") is the contract the implementation must meet.
+> chat-side suggest-hook + quest-based guided installer (INTEGRATE-5) have
+> shipped — see [`rules/completion-log.md`](../../rules/completion-log.md)
+> (Phase INTEGRATE is no longer tracked in `rules/milestones.md`).
+> Everything in §1–§4 of this doc is real today.
 
 Hermes is the recommended companion for TerranSoul users who need a
 **dedicated coding-agent surface** — multi-day workflows, dozens of
@@ -81,7 +81,7 @@ and [`src-tauri/src/ai_integrations/mcp/auto_setup.rs`](../../src-tauri/src/ai_i
 | `setup_hermes_mcp` | Writes (or upserts) a marker-managed MCP block into Hermes's `cli-config.yaml` so the agent treats your TerranSoul brain as a first-class MCP server over HTTP. |
 | `setup_hermes_mcp_stdio` | Same, but uses a stdio MCP transport (useful when you want a fully local hermes-agent ↔ TerranSoul handshake without binding `:7421`). |
 | `remove_hermes_mcp` | Removes the marker-managed block. Anything you wrote outside the markers is preserved verbatim. |
-| `check_all_clients` | Reports whether the TerranSoul block is present in Hermes's `cli-config.yaml`. |
+| `list_mcp_clients` | Reports whether the TerranSoul block is present in Hermes's `cli-config.yaml`. |
 
 Behind the commands:
 
@@ -110,11 +110,15 @@ from Hermes).
 
 ---
 
-## 4. Guided install via TerranSoul (queued — INTEGRATE-5)
+## 4. Guided install via TerranSoul (shipped — INTEGRATE-5)
 
-> **Status:** This is the **contract** the implementation must meet, per
-> the user-confirmed install policy:
+> **Status:** INTEGRATE-5 (quest-based guided installer) has **shipped**
+> (see the INTEGRATE-5 entry in [`rules/completion-log.md`](../../rules/completion-log.md)).
+> It meets the user-confirmed install policy:
 > *"Guided installer with explicit user click + UAC through our quest system."*
+> The Phase INTEGRATE work-tracking pointer now lives in
+> [`rules/completion-log.md`](../../rules/completion-log.md) (Phase INTEGRATE
+> is no longer listed in `rules/milestones.md`).
 
 When you accept the Hermes Desktop quest:
 
@@ -139,7 +143,7 @@ When you accept the Hermes Desktop quest:
 5. After install, the quest panel waits for Hermes Desktop's own first-
    run wizard to put `hermes-agent` into `~/.hermes`, then offers a one-
    click **Wire TerranSoul brain** action that calls `setup_hermes_mcp`.
-6. The quest closes when `check_all_clients` reports the TerranSoul
+6. The quest closes when `list_mcp_clients` reports the TerranSoul
    block is present in Hermes's `cli-config.yaml`.
 
 > **Auto-update.** Hermes Desktop's `electron-updater` handles auto-
@@ -184,7 +188,7 @@ After install:
    TerranSoul brain (e.g. *"What is TerranSoul's default embedding
    model?"*). The agent should call `brain_search` and return a
    memory-grounded answer.
-4. In TerranSoul, run `check_all_clients` and confirm Hermes shows as
+4. In TerranSoul, run `list_mcp_clients` and confirm Hermes shows as
    **wired**.
 
 ---
@@ -208,8 +212,8 @@ After install:
   — full comparison + adoption rationale.
 - [`docs/AI-coding-integrations.md`](../AI-coding-integrations.md)
   — wider AI-coding-integration matrix.
-- [`rules/milestones.md`](../../rules/milestones.md) Phase INTEGRATE
-  — live status of the queued code-side work.
+- [`rules/completion-log.md`](../../rules/completion-log.md) Phase INTEGRATE
+  — completion status of the code-side work (INTEGRATE-1..5).
 - Upstream:
   [`fathah/hermes-desktop`](https://github.com/fathah/hermes-desktop) ·
   [`NousResearch/hermes-agent`](https://github.com/NousResearch/hermes-agent).

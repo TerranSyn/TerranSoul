@@ -1,7 +1,13 @@
 # Hermes-Agent Adoption — Autonomous Skill Creation from Observed Workflows
 
-> **Status:** design contract (research workflow). No Rust / `src/` / seed / milestones
-> edits are made here — this document specifies the delta to build later.
+> **Status:** **SHIPPED** — HERMES-ADOPT-1..6 shipped 2026-06-09 (Spec-033; see
+> `rules/completion-log.md` §"HERMES-ADOPT-DOCS + Phase HERMES-ADOPT COMPLETE ✅
+> (2026-06-09)"). The delta is real in the brain: `brain/skill_synthesizer.rs`
+> (authoring module) + the `synthesizes_new_skill` predicate
+> (`memory/outcome.rs`, seam in `memory/reflection.rs`) + a `tool_skills` row with
+> `source='synthesized'` and its procedural twin (durable lesson
+> `seed:hermes-adopt-shipped-2026-06-09`). §1–§6 below are retained as the design
+> rationale of record.
 >
 > **Source studied:** [NousResearch/hermes-agent](https://github.com/nousresearch/hermes-agent)
 > (MIT, © 2025 Nous Research), reverse-engineered 2026-06-08 via DeepWiki

@@ -495,7 +495,7 @@ We are **not** defending against:
   module allowed to call `getUserMedia`) and audited by tests in
   `useCameraCapture.test.ts` — see §11.
 - The architecture rule "Persona Documentation Sync" (`rules/architecture-rules.md`
-  rule 12) requires this section to stay in sync with code.
+  rule 13) requires this section to stay in sync with code.
 - The Master-Mirror quest (§10) cannot be marked "active" by skill-tree
   auto-detection from anything except the *current-session* `cameraSession`
   ref, never from a persisted preference.
@@ -1083,8 +1083,9 @@ SQLite involvement in the persona subsystem. This is deliberate:
 
 ### 11.2 Schema versioning
 
-Every JSON file carries `version: number`. A `migratePersona(raw)` pure
-function in `src/utils/persona-migrate.ts` upgrades old payloads to the
+Every JSON file carries `version: number`. A `migratePersonaTraits(raw)` pure
+function in `src/stores/persona-types.ts` (used by `src/stores/persona.ts`)
+upgrades old payloads to the
 current schema, mirroring `skill-tree.ts::migrateTracker`. We do not yet
 have a V2 schema; this is forward-compatibility scaffolding identical to
 how `QuestTrackerData` is handled today.
@@ -1223,7 +1224,7 @@ right now" — never "the camera is on but you can't tell".
   `get_persona`, `save_persona`, `list_*`/`save_*`/`delete_*` for learned
   expressions and motions. **No camera commands** — the surface is built
   ready for the side-chain code drop without the camera itself.
-- **Architecture rule "Persona Documentation Sync"** — added as rule 12
+- **Architecture rule "Persona Documentation Sync"** — added as rule 13
   in `rules/architecture-rules.md`, mirroring rule 11 (Brain Documentation
   Sync). Any change touching the persona surface must update both this
   doc and `README.md` in the same PR.
@@ -1363,7 +1364,7 @@ TerranSoul-internal cross-references are:
   §20 (Brain component selection routing, the model for "active persona
   is one record at a time"), §21 (Daily-conversation write-back loop,
   the model for the Master-Mirror self-learning loop in §3).
-- `rules/architecture-rules.md` — rule 12 "Persona Documentation Sync"
+- `rules/architecture-rules.md` — rule 13 "Persona Documentation Sync"
   requires this doc and `README.md` to stay in sync with code changes
   to the persona subsystem.
 - `rules/milestones.md` Phase 14 — the chunked implementation plan.

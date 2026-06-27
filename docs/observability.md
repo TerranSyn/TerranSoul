@@ -1,7 +1,7 @@
 # TerranSoul — Observability Spec
 
-> **Status:** Spec-driven design, partially implemented (~30 %). Implementation
-> tracked as `Phase OBSERVABILITY` in [`rules/milestones.md`](../rules/milestones.md).
+> **Status:** Spec-driven design, implemented/shipped. Implementation record
+> archived as the `OBSERVABILITY-1..8` chunks in [`rules/completion-log.md`](../rules/completion-log.md).
 >
 > **Methodology:** [GitHub Spec Kit / Spec-Driven Development](https://github.com/github/spec-kit)
 > (MIT). We do not run the `specify` CLI; we apply the SDD seven-step flow
@@ -256,9 +256,9 @@ Required output shape:
 
 ## 5. Tasks — Per-chunk Breakdown
 
-Tracked as **Phase OBSERVABILITY** in
-[`rules/milestones.md`](../rules/milestones.md). Each chunk is sized to
-land in a single PR with tests. Order is mandatory — later chunks depend
+Archived as the **OBSERVABILITY-1..8** chunks in
+[`rules/completion-log.md`](../rules/completion-log.md). Each chunk was sized to
+land in a single PR with tests. Order was mandatory — later chunks depend
 on earlier ones.
 
 | Chunk | Depends on | Goal |
@@ -272,7 +272,7 @@ on earlier ones.
 | OBSERVABILITY-7 | -4 | MCP tools (`obs_query`, `obs_trace`, `obs_logs`, `obs_metrics`, `obs_search`) |
 | OBSERVABILITY-8 | -1..-7 | Privacy redaction + Settings panel + retention controls |
 
-Detailed Goal text for each chunk lives in `rules/milestones.md`.
+Detailed Goal text and the completed record for each chunk live in `rules/completion-log.md`.
 
 ---
 
@@ -399,7 +399,7 @@ precise than searching the source tree for a symptom.
 
 ## See also
 
-- [`rules/milestones.md`](../rules/milestones.md) §`Phase OBSERVABILITY` — per-chunk goals
+- [`rules/completion-log.md`](../rules/completion-log.md) `OBSERVABILITY-1..8` — per-chunk completed record
 - [`docs/brain-advanced-design.md`](brain-advanced-design.md) — brain architecture this observes
 - [`rules/harness-reasoning-engineering.md`](../rules/harness-reasoning-engineering.md) — the build-tools-not-hardcoded-decisions rule
 - [`crates/hive-relay/docs/architecture.md`](../crates/hive-relay/docs/architecture.md) — relay's own tracing config (out of scope here)

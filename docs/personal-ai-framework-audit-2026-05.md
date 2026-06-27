@@ -12,9 +12,8 @@
 >
 > **Companion docs:** parity chunks in
 > [`../rules/milestones.md`](../rules/milestones.md) → Phase
-> PERSONAL-AI-PARITY (PARITY-OJ-1..14). Durable lesson seeded as
-> `seed:lesson-personal-ai-framework-audit-2026-05-26` in
-> [`../mcp-data/shared/memory-seed.sql`](../mcp-data/shared/memory-seed.sql).
+> PERSONAL-AI-PARITY (PARITY-OJ-1..14); the completed PARITY-OJ-1 record is
+> archived in [`../rules/completion-log.md`](../rules/completion-log.md).
 
 ## Verdicts at a glance
 

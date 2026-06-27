@@ -751,10 +751,11 @@ Rust Plugin Host (src-tauri/src/plugins/)
   └── mod.rs — re-exports
       ↕ AppState.plugin_host
 Tauri Commands (src-tauri/src/commands/plugins.rs)
-  └── 13 commands: plugin_install, plugin_activate, plugin_deactivate,
+  └── 15 commands: plugin_install, plugin_activate, plugin_deactivate,
       plugin_uninstall, plugin_list, plugin_get, plugin_list_commands,
       plugin_list_slash_commands, plugin_list_themes, plugin_get_setting,
-      plugin_set_setting, plugin_host_status, plugin_parse_manifest
+      plugin_set_setting, plugin_host_status, plugin_parse_manifest,
+      plugin_invoke_command, plugin_invoke_slash_command
 ```
 
 ### Relationship to Existing Systems

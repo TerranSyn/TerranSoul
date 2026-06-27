@@ -80,5 +80,5 @@ The judge support rate is written as a separate diagnostic field. Do not compare
 
 1. Run `npm run brain:longmem:run` on the full dataset.
 2. Compare `search` and `rrf` against agentmemory's published LongMemEval-S row: R@5 95.2%, R@10 98.6%, R@20 99.4%, NDCG@10 87.9%, MRR 88.2%.
-3. Publish the verified result in [agentmemory-comparison.md](agentmemory-comparison.md).
+3. Publish the verified result in [benchmark/terransoul/longmemeval-s/README.md](../benchmark/terransoul/longmemeval-s/README.md) (cross-referenced from [benchmark/COMPARISON.md](../benchmark/COMPARISON.md)).
 4. Update the README brain section and sync the result into `mcp-data/shared/memory-seed.sql`.

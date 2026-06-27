@@ -22,6 +22,18 @@ and
 public design, write the comparison, and propose neutral native
 adoptions.
 
+> **Measured (2026-06-27).** GraphRAG was since run for real on the agentmemory
+> bench corpus (240 obs / 20 queries) via `graphrag index --method fast` + local
+> search — full numbers in [`benchmark/COMPARISON.md`](../benchmark/COMPARISON.md)
+> (raw: `target-copilot-bench/bench-results/rag_graphrag_bench.json`). Result:
+> **R@5 = R@10 = R@20 = 0.05**. That low, *flat* score is a **metric mismatch, not
+> a retrieval failure**: GraphRAG local search returns a small, entity-focused
+> context (≤5 source text-units per query — for answer *synthesis*, not a broad
+> top-k ranking), so document-recall@k understates it. The architectural mapping
+> below stands; the empirical takeaway is that GraphRAG's strength is graph /
+> thematic synthesis, not flat top-k recall — which is exactly why TerranSoul
+> adopts its *graph + community* ideas (below) rather than its query path.
+
 ## 1. Pipeline at a glance
 
 ### microsoft/graphrag (Python, MIT)
@@ -89,7 +101,7 @@ adoptions.
 | GraphRAG concept | TerranSoul today | Gap |
 |---|---|---|
 | `text_units.parquet` | `memories` rows (chunked) | None — same content unit; SQLite row vs Parquet row. |
-| `entities.parquet` | `memories.cognitive_kind` (`'episodic' | 'semantic' | 'procedural' | 'principle' | 'analytical'`) + chat-time entity extraction → `memory_edges` | TerranSoul does **not** materialise a separate `entities` table. Entities live implicitly as memories tagged `semantic`. |
+| `entities.parquet` | `memories.cognitive_kind` (`'episodic' | 'semantic' | 'procedural' | 'judgment' | 'negative'`) + chat-time entity extraction → `memory_edges` | TerranSoul does **not** materialise a separate `entities` table. Entities live implicitly as memories tagged `semantic`. |
 | `relationships.parquet` | `memory_edges (src_id, dst_id, rel_type, confidence, source, created_at, edge_source, origin_device, hlc_counter)` | Strong parity, including confidence + provenance. |
 | `communities.parquet` | `memory_communities (level, member_ids, summary, embedding, updated_at)` | Single-level today (`level=0` only). Multi-level hierarchy column exists but is unused. |
 | `community_reports.parquet` | `memory_communities.summary` | Auto-generation deferred in Chunk 16.6; summaries today come from manual `brain_summarize` calls or stay null. |
@@ -116,7 +128,7 @@ adoptions.
   temporal decay or CRDT story.
 - **Cognitive-kind retrieval intent (Chunks 16.6a / 16.6b / 16.6c).**
   Every memory is classified at insert time (`episodic` / `semantic` /
-  `procedural` / `principle` / `analytical`), and a query intent
+  `procedural` / `judgment` / `negative`), and a query intent
   classifier boosts matching kinds by ×1.15 before rerank. GraphRAG
   does not have a comparable retrieval-time intent gate.
 - **Per-repo source isolation.** `memory_sources` (BRAIN-REPO-RAG-1a)

@@ -72,8 +72,9 @@ CRDT is a significantly simpler and more reliable choice than OT.
 ## Privacy guarantee
 
 The `private` tier is **never transmitted**, even when a relay is configured.
-The enforcement is in `src-tauri/src/sync/filter.rs`: any memory with
-`privacy_tier = "private"` is stripped before serialisation.
+The enforcement is in `src-tauri/src/hive/privacy.rs`: any memory with
+`share_scope = ShareScope::Private` — or any tag starting with `private:` (the
+SCALE-INF-1 hard block) — is stripped before serialisation.
 
 Only memories the user explicitly promotes to `paired` or `hive` leave the device.
 

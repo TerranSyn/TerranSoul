@@ -1,8 +1,8 @@
 # Per-Memory CAP Profile
 
-> Design document for chunk **CAP-1** (Phase INFRA).
-> Until this chunk's acceptance evidence is logged in `rules/completion-log.md`,
-> the README pillar remains "design target".
+> Design document for chunk **CAP-1** (Phase INFRA) — **shipped 2026-05-14**
+> (see the CAP-1 entry in `rules/completion-log.md`). The technical body below
+> matches the shipped code.
 
 ---
 

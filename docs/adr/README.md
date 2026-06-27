@@ -26,6 +26,14 @@ and why the chosen approach was preferred.
 | [012](012-ollama-local-first-llm.md) | Ollama as the local-first LLM runtime | Accepted | RAM-adaptive model tier; pinned `num_ctx` to prevent KV-cache realloc |
 | [013](013-vtuber-mode.md) | VTuber mode (MediaPipe + Kalidokit) | Accepted | Webcam drives VRM rig; reuses existing `@mediapipe/tasks-vision`; learn-from-owner |
 | [014](014-gemma4-default-and-multimodal.md) | Gemma 4 12B default LLM + multimodal chat | Accepted | Vision + multilingual without embedding model; images flow to Ollama base64 |
+| [015](015-organization-authorization.md) | Organization authorization (RBAC + org-of-one local-first) | Accepted | RBAC + data-layer MCP scope enforcement; works as an org of one, offline |
+| [016](016-turbovec-quantmind-scale.md) | Vector-store scale & QuantMind knowledge-extraction patterns | Accepted | Extends TurboQuant/tiered index for scale; QuantMind extraction patterns |
+| [017](017-turbovec-phase2-quantmind-domains.md) | TurboVec Phase 2: FWHT rotation + filtered search + QuantMind domains | Accepted | FWHT rotation, metadata-filtered ANN, typed QuantMind domains |
+| [018](018-source-attribution-citations.md) | Source attribution citations in chat | Accepted | Every claim links back to the retrieved source memory |
+| [027](027-connector-scheduler.md) | ConnectorSource trait + scheduler | Accepted | Pluggable IMAP/GitHub/RSS/LocalFS connectors on a Tokio scheduler |
+| [028](028-connector-management-tab.md) | Connector management tab (MemorySourcesTab) | Accepted | Onyx-inspired Sources tab to add/manage memory connectors in BrainView |
+
+> ADRs 019–026 are intentionally not present as files (numbering gap).
 
 ---
 
