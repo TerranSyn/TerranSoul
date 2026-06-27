@@ -28,6 +28,8 @@ import { fileURLToPath } from 'node:url';
 import { judgeResponse, checkOllama } from './judge.mjs';
 import * as terransoul from './runners/terransoul-gen.mjs';
 import * as openjarvis from './runners/openjarvis.mjs';
+import * as openclaw from './runners/openclaw.mjs';
+import * as hermes from './runners/hermes.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURES_DIR = resolve(__dirname, 'fixtures');
@@ -38,7 +40,7 @@ const ARCHETYPES = [
   'scheduled-monitor', 'chat-simple', 'voice-companion', 'vrm-overlay',
 ];
 
-const SYSTEMS = { terransoul, openjarvis };
+const SYSTEMS = { terransoul, openjarvis, openclaw, hermes };
 
 function parseArgs() {
   const o = { judgeModel: 'gemma4:12b-it-qat', noJudge: false, only: null };
@@ -117,7 +119,7 @@ async function main() {
   const judgeOn = !opts.noJudge && (await checkOllama());
   if (!opts.noJudge && !judgeOn) console.log('⚠ Ollama unreachable — running latency-only (no judge).');
 
-  const names = opts.only ? [opts.only] : ['terransoul', 'openjarvis'];
+  const names = opts.only ? opts.only.split(',').map((s) => s.trim()).filter(Boolean) : ['terransoul', 'openjarvis'];
   const systems = [];
   const allPrompts = [];
   for (const n of names) {

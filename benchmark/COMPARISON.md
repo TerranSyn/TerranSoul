@@ -247,6 +247,57 @@ Legend: ✅ ships, ◐ partial, ❌ missing, n/a not applicable.
 
 TerranSoul is the only system on this matrix that ships all of {HyDE, LLM-as-judge rerank, Contextual Retrieval, CRDT device sync, four production storage backends, typed-KG write tool, self-healing local LLM provider probe, ZorkGPT long-horizon verified bench}. BENCH-AM-7 documents the two non-green rows as deliberate scope boundaries, so no BENCH-AM feature-matrix blocker remains.
 
+### Architectural comparison vs adopted reference architectures (Hermes-Agent · GENesis-AGI · OpenClaw)
+
+These three are *reference architectures TerranSoul studied and adopted patterns from* — see [CREDITS.md](https://github.com/TerranSyn/TerranSoulApp/blob/main/CREDITS.md) and `docs/{hermes-agent-adoption,genesis-agi-brain-adoption,hermes-vs-openclaw-analysis}.md` — **not** memory engines we can self-run. As with the Mem0 / Letta / MemPalace rows above, this matrix is a **capability comparison** sourced from each project's public docs + our adoption studies; **measured head-to-head judge scores for OpenClaw and Hermes-Agent are in the table below** (GENesis-AGI cannot be scored on a same-model bench — see the footnotes). We publish **no invented scores**. TerranSoul cells mark shipped capabilities ✅; adoption deltas that are *speced but not yet shipped* are marked ◐ and detailed in the adoption docs.
+
+Legend: ✅ ships · ◐ partial / planned · ❌ missing or not-a-goal · — unclear from public docs.
+
+| Capability | TerranSoul (brain) | Hermes-Agent (Nous Research) | GENesis-AGI (WingedGuardian) | OpenClaw |
+|---|---|---|---|---|
+| License | proprietary (this repo) | MIT | open source (verify upstream) | MIT |
+| Primary purpose | local-first self-improving **memory brain** for any agent (over MCP) | self-hosted self-improving **personal agent** | autonomous **cognitive agent** ("personal proto-AGI") | config-first self-hosted **personal assistant** (omni-channel) |
+| Reasoning engine | local Ollama (`gemma4:12b-it-qat`) + cloud fallback | any LLM (local/cloud) | Claude Code (cloud) | any LLM (Claude / GPT / Gemini / DeepSeek) |
+| Memory store | SQLite (+PG/MSSQL/Cassandra), single source of truth | Markdown state files (USER/MEMORY.md) + SQLite FTS5 | SQLite + Markdown | per-agent config + memory (`SOUL.md`) |
+| Tiered memory | ✅ 3-tier (short / working / long) | ✅ 3-tier (state files → FTS5 + summaries → external providers) | ✅ compounding long-term | ◐ |
+| Hybrid lexical+vector retrieval (RRF) | ✅ FTS5 + embeddings + RRF + HyDE + cross-encoder | ◐ FTS5 keyword + LLM summarization (no vector/RRF surfaced) | ✅ RRF (k=60) + activation scoring | ❌ (not a retrieval/RAG engine) |
+| Typed knowledge graph | ✅ `memory_edges` + `brain_add_edge` write tool | ❌ | ✅ typed KG + decay | ❌ |
+| Self-improvement loop | ◐ outcome-classified write-back + procedural reinforcement ship; GENesis-style confidence ladder + Hermes skill synthesis speced | ✅ autonomous skill synthesis (DSPy + GEPA self-evolution) | ✅ post-session outcome classification + causal attribution + procedure extraction | ◐ community skills; no self-evolution surfaced |
+| Procedural memory / confidence tiers | ◐ `procedural.rs` ships; Laplace L4→L1 ladder speced (GENesis adoption) | ◐ skills self-improve in use | ✅ confidence-tiered (Laplace) | ❌ |
+| Autonomous skill creation (Markdown) | ◐ optimize / import today; synthesis = HERMES-ADOPT (speced) | ✅ Markdown skills (agentskills.io standard) | ◐ procedure extraction | ✅ community skill catalog (~13.7k) |
+| Earned / graduated autonomy | ◐ role-gated actions | ◐ | ✅ trust per action category | ◐ |
+| Local-first / offline-capable | ✅ Ollama, fully offline | ✅ | ◐ depends on Claude Code (cloud engine) | ◐ depends on chosen LLM |
+| MCP server | ✅ 3 ports | ✅ (`mcp_servers:` YAML) | ◐ | ✅ |
+| Omni-channel chat (WhatsApp / Telegram / …) | ❌ (in-app + MCP clients) | ◐ | ❌ | ✅ 20+ channels |
+| 3D VRM character + voice | ✅ Tauri / Vue / VRM + TTS / ASR | ❌ | ❌ | ❌ |
+| CRDT cross-device sync | ✅ QUIC / WS | ❌ | ❌ | ◐ |
+| Config model | JSON-first (also *writes* Hermes YAML) | YAML (`cli-config.yaml`) | scripted install | **config-first** (`SOUL.md`) |
+| Verified retrieval bench (LongMemEval-S) | ✅ R@5 99.2 % (this repo) | — not published on this bench | — | — |
+| Verified long-horizon bench (ZorkGPT) | ✅ SC4 PASS | — | — | — |
+
+**What TerranSoul adopted from each** (generic Rust reimplementations — no source, prompts, schema, or branded identity copied):
+- **Hermes-Agent** → autonomous skill synthesis from observed successful trajectories (the closed `TRIGGER → AUTHOR → VALIDATE → REGISTER → REUSE → REFINE` loop; proposed `brain/skill_synthesizer.rs`, milestones HERMES-ADOPT-1..6) + first-class MCP YAML auto-setup. Spec: [`docs/hermes-agent-adoption.md`](../docs/hermes-agent-adoption.md).
+- **GENesis-AGI** → outcome-classified self-learning loop + confidence-tiered procedural memory (Laplace, L4→L1 promotion/demotion/quarantine) + unified activation ranking + consolidation safety gates. Spec: [`docs/genesis-agi-brain-adoption.md`](../docs/genesis-agi-brain-adoption.md).
+- **OpenClaw** → config-first agent UX + slash-command / session-design inspiration (studied alongside Claude Code). Analysis: [`docs/hermes-vs-openclaw-analysis.md`](../docs/hermes-vs-openclaw-analysis.md).
+
+#### Measured head-to-head (parity-personal-ai)
+
+Each system's **real CLI** answers the **same 22 prompts** (7 archetypes) on the **same local model `gemma4:12b-it-qat`**, with the **same injected context** and the **same LLM judge** (`gemma4:12b-it-qat`, 0–10), via [`run-headtohead.mjs`](parity-personal-ai/run-headtohead.mjs) — isolating the assistant pipeline, not the model.
+
+| System | Quality (judge 0–10) | Success | Latency p50 | Measured |
+|---|---:|---:|---:|---|
+| **TerranSoul** (brain → Ollama) | **9.82** | 22/22 | 1.0 s¹ | 2026-06-07 |
+| OpenJarvis (Stanford SAIL) | 9.55 | 22/22 | 3.2 s¹ | 2026-06-07 |
+| **OpenClaw** (`agent --local`) | **8.36** | 22/22 | 38.1 s² | 2026-06-27 |
+| **Hermes-Agent** (`-z` one-shot) | **6.90** | 21/22³ | 10.9 s² | 2026-06-27 |
+| GENesis-AGI | **n/a**⁴ | — | — | — |
+
+¹ TerranSoul/OpenJarvis latency is **inference-only** (excludes CLI cold-start). ² OpenClaw/Hermes latency is **wall-clock including the per-call CLI cold-start** (Node/Python process spawn) — *not* comparable to ¹; **quality is the apples-to-apples metric**. OpenClaw additionally runs its full agent loop each turn (hence the high p50). ³ Hermes: 1/22 prompts (`vrm-overlay/vo-3`) hit the 240 s timeout and is excluded from its mean. ⁴ **GENesis-AGI's reasoning engine is Claude Code (cloud)** and it requires an Incus container — it cannot run on the local `gemma4:12b-it-qat`, so a same-model head-to-head is architecturally impossible; we report **n/a** rather than a model-confounded or fabricated number.
+
+**Method note.** TerranSoul + OpenJarvis rows are the **2026-06-07** canonical run (recovered from git `08676f10` into the cited JSON, which now holds all four systems with a `measured_date` per row); OpenClaw + Hermes were measured **2026-06-27** — identical harness, model, judge, and prompts, so directly comparable modulo run-to-run judge variance. Each system runs its *real* pipeline at equal injected context (TerranSoul retrieves via its brain; OpenClaw runs its agent; Hermes/OpenJarvis single-pass). Runners under [`parity-personal-ai/runners/`](parity-personal-ai/runners/); raw per-prompt output for all four in `target-copilot-bench/bench-results/parity_headtohead_4way.json` (the 2-system `parity_headtohead.json` remains the canonical TerranSoul-vs-OpenJarvis run that feeds the public leaderboard). Reproduce OpenClaw/Hermes: `node benchmark/parity-personal-ai/run-headtohead.mjs --system=openclaw,hermes` (OpenClaw via its Ollama-configured `bench` profile; Hermes via `HERMES_BENCH_HOME` → an Ollama-configured home); TerranSoul/OpenJarvis via `--system=terransoul,openjarvis` (needs the MCP brain server + OpenJarvis CLI).
+
+Sources: [openclaw/openclaw](https://github.com/openclaw/openclaw) (MIT) · [NousResearch/hermes-agent](https://github.com/nousresearch/hermes-agent) (MIT) · [WingedGuardian/GENesis-AGI](https://github.com/WingedGuardian/GENesis-AGI) · plus the in-repo adoption studies cited above.
+
 ## ZorkGPT × TerranSoul — long-horizon task bench (BENCH-ZORK-1.5, 2026-05-28) — **PASS**
 
 Long-horizon task harness where the *same* agent stack (Agent/Critic/Extractor LMs + Jericho + Map) runs against *the same game* (Zork 1, `zork1.z5`) — and **only the memory/knowledge substrate is swapped**. Full setup, methodology, threats to validity, pass criteria, raw transcripts, and the iter1–iter17 history in [terransoul/zorkgpt/README.md](terransoul/zorkgpt/README.md). Paper write-up at [`docs/LLM-Brain-Design-Research-Paper.md`](../docs/LLM-Brain-Design-Research-Paper.md).
