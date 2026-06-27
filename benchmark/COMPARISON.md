@@ -11,7 +11,7 @@
 
 > Folder layout mirrors the convention from <https://github.com/rohitg00/agentmemory/tree/main/benchmark> (`benchmark/COMPARISON.md`).
 > Reference fixture pinned commit: `ae8f061cd66093d7be1539c24da6d3e595531dd2`
-> Last bench run: 2026-06-03 (BENCH-ZORK reliability fork — serving the brain's move every turn drives `gemma4:e4b` to a deterministic 350/350; AGI-pure arm 10–20 vs 0 controls; 0 MCP errors). Earlier: BENCH-ZORK-1.5 closed 2026-05-28 (spec 002–006, SC4 PASS, 0/1682 MCP errors). Write-up: `docs/LLM-Brain-Design-Research-Paper.md`.
+> Last bench run: 2026-06-21 (BENCH-ZORK self-improve campaign — `gemma4:12b-it-qat` per-run cross-episode ~15, peak 45 via across-run accumulation, honestly de-confounded; reliable serving drives `gemma4:e4b` to a deterministic 350/350; AGI-pure 4B arm 10–20 vs 0 controls; 0 MCP errors). Earlier: BENCH-ZORK-1.5 closed 2026-05-28 (spec 002–006, SC4 PASS, 0/1682 MCP errors). Write-up: `docs/LLM-Brain-Design-Research-Paper.md`.
 > LongMemEval-S adapter: 2026-05-12 (BENCH-AM-5), full result verified 2026-05-11, gateway parity verified 2026-05-26 (BENCH-MCP-PARITY-3).
 > Feature-matrix parity sweep: 2026-05-11 (BENCH-AM-7).
 
@@ -28,34 +28,35 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 
 ## Comprehensive comparison — every system at a glance
 
-> The whole field in one place: **memory systems**, **RAG frameworks**, and **self-improving LLM agents**. **Metrics differ by category and are *not* cross-comparable** — a memory system's retrieval `R@5`, a RAG framework's `R@k`, and an agent's 0–10 answer-quality measure different things; read each row's metric label, and see the detailed, sourced sections below. TerranSoul is the only entry that spans all three categories.
+> The whole field, **by the numbers**. The descriptive columns (local-first, key capability, license) are in the detailed sections below — this table is the stats. **Numbers are not comparable across categories or corpora:** the retrieval R@k columns use **LongMemEval-S** for the memory rows (shown as %) and the harder **agentmemory corpus** for the RAG rows (shown as 0–1); Quality/Success/Latency/Cost are the **parity-personal-ai** head-to-head. Read the *Benchmark* column. **TerranSoul is the only system measured on both retrieval and the agent head-to-head.**
 
-| System | Category | Local-first | Key capability | Headline result | License |
-|---|---|:---:|---|---|---|
-| **🧠 TerranSoul** (this repo) | **Memory + RAG + self-improving** | ✅ Ollama | 3-tier memory · 6-signal hybrid RAG · typed KG · self-improvement loop · earned-trust autonomy · lease mesh · omni-channel · over MCP | **R@5 99.2 %** (LongMemEval) · **9.82/10** parity quality | proprietary |
-| *— Memory systems —* | | | | | |
-| agentmemory | Memory | ✅ | dual-stream BM25 + vector | R@5 95.2 % (LongMemEval) | MIT |
-| Mem0 | Memory | ❌ cloud-first | extraction + vector memory | LoCoMo QA 68.5 %¹ | Apache-2.0 |
-| Letta (MemGPT) | Memory | ◐ self-host | tiered memory agents | published (LoCoMo)¹ | Apache-2.0 |
-| MemPalace | Memory | — | hierarchical memory | ~R@5 96.6 % (LongMemEval) | research |
-| HippoRAG | Memory / RAG | ✅ | PPR knowledge-graph retrieval | published | MIT |
-| Zep | Memory | ◐ OSS + cloud | temporal-KG memory | published (LoCoMo)¹ | Apache-2.0 |
-| Cognee | Memory | ◐ self-host | graph + vector memory | published (LoCoMo)¹ | Apache-2.0 |
-| claude-mem | Memory | ◐ Claude-only | summary memory for Claude | — | open source |
-| Khoj | Memory / assistant | ✅ | personal search + chat | — | AGPL-3.0 |
-| *— RAG frameworks —* | | | | | |
-| LangChain / LangGraph | RAG framework | ◐ your stack | orchestration + retrievers | vector R@5 0.41² | MIT |
-| LlamaIndex | RAG framework | ◐ your stack | indices + query engines | vector R@5 0.41 / R@10 0.58² | MIT |
-| GraphRAG (Microsoft) | RAG (graph) | ◐ batch index | entity/community graph RAG | local-search R@5 0.05²ᵃ | MIT |
-| Haystack (deepset) | RAG framework | ✅ | modular DAG pipelines | vector R@5 0.41² | Apache-2.0 |
-| RAGFlow (InfiniFlow) | RAG engine | ✅ | deep-doc-parsing RAG | vector R@5 0.41² | Apache-2.0 |
-| *— Self-improving LLM agents —* | | | | | |
-| OpenJarvis (Stanford SAIL) | Self-improving agent | ✅ | single-pass personal AI | 9.55/10 parity quality³ | Apache-2.0 |
-| OpenClaw | Self-improving assistant | ✅ | config-first agent loop | 8.36/10 parity quality³ | MIT |
-| Claude Code + GENesis-AGI | Self-improving agent (frontier) | ❌ cloud | autonomous cognitive agent | 8.24/10 parity quality³ᵇ | open source |
-| Hermes-Agent (Nous Research) | Self-improving agent | ✅ | DSPy / GEPA skill self-evolution | 6.90/10 parity quality³ | MIT |
+| System | Category | R@5 | R@10 | R@20 | NDCG@10 | MRR | Quality 0–10 | Success | Latency p50 | Cost | Benchmark |
+|---|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|---|
+| **🧠 TerranSoul** (this repo) | Memory + RAG + agent | **99.2 %** | **99.6 %** | **100 %** | **91.3 %** | **92.6 %** | **9.82** | 22/22 | **1.0 s** | $0 | LongMemEval-S + parity |
+| *— Memory systems —* | | | | | | | | | | | |
+| agentmemory | Memory | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | — | — | — | — | LongMemEval-S |
+| MemPalace | Memory | ~96.6 % | — | — | — | — | — | — | — | — | LongMemEval-S |
+| Mem0 | Memory | — | — | — | — | — | — | — | — | — | LoCoMo QA 68.5 %¹ |
+| Letta (MemGPT) | Memory | — | — | — | — | — | — | — | — | — | LoCoMo QA¹ |
+| Zep | Memory | — | — | — | — | — | — | — | — | — | LoCoMo QA¹ |
+| Cognee | Memory | — | — | — | — | — | — | — | — | — | LoCoMo QA¹ |
+| HippoRAG | Memory / RAG | — | — | — | — | — | — | — | — | — | PPR (published) |
+| claude-mem | Memory | — | — | — | — | — | — | — | — | — | not IR-benched |
+| Khoj | Memory / assistant | — | — | — | — | — | — | — | — | — | not IR-benched |
+| *— RAG frameworks —* | | | | | | | | | | | |
+| LangChain / LangGraph | RAG | 0.41 | 0.61 | 0.74 | — | — | — | — | — | — | agentmemory² |
+| Haystack (deepset) | RAG | 0.41 | 0.61 | 0.74 | — | — | — | — | — | — | agentmemory² |
+| RAGFlow (InfiniFlow) | RAG | 0.41 | 0.61 | 0.74 | — | — | — | — | — | — | agentmemory² |
+| LlamaIndex | RAG | 0.41 | 0.58 | 0.72 | — | — | — | — | — | — | agentmemory² |
+| GraphRAG (Microsoft) | RAG (graph) | 0.05 | 0.05 | 0.05 | — | — | — | — | — | — | agentmemory²ᵃ |
+| *— Self-improving LLM agents —* | | | | | | | | | | | |
+| OpenJarvis (Stanford SAIL) | Agent | — | — | — | — | — | 9.55 | 22/22 | 3.2 s | $0 | parity³ |
+| OpenClaw | Agent | — | — | — | — | — | 8.36 | 22/22 | 38.1 s | $0 | parity³ |
+| Claude Code + GENesis-AGI | Agent (frontier) | — | — | — | — | — | 8.24 | 21/22 | 17.5 s | $5.94 | parity³ᵇ |
+| Hermes-Agent (Nous Research) | Agent | — | — | — | — | — | 6.90 | 21/22 | 10.9 s | $0 | parity³ |
 
-¹ LoCoMo **QA** (J-score): end-to-end answer accuracy — a different benchmark, *not* comparable to retrieval R@k. ² our measured RAG-retrieval R@k on the agentmemory corpus (same `nomic-embed-text` embedder — the frameworks cluster because the embedder, not the framework, sets recall). ²ᵃ GraphRAG local search returns a small entity-focused context (≤5 sources/query) **by design** — a metric mismatch, not a retrieval failure. ³ parity-personal-ai head-to-head: same 22 prompts + injected context, judged 0–10 by `gemma4:12b-it-qat`. ³ᵇ a different **cloud** model (`claude-haiku-4-5`) — a frontier reference, not like-for-like with the local rows. Local-first / license cells reflect each project's public docs; "—" = unclear from public sources.
+¹ LoCoMo **QA** (J-score) — end-to-end answer accuracy, *not* retrieval R@k; shown for context only, not comparable to the R@k columns. ² our measured RAG-retrieval R@k on the **agentmemory corpus** (0–1, a harder corpus — **not** the LongMemEval-S % of the memory rows). Same nomic-embed-text embedder, so the frameworks cluster: the embedder, not the framework, sets recall. ²ᵃ GraphRAG local search returns ≤5 entity-focused sources by design — a metric mismatch, not a retrieval failure. ³ parity-personal-ai head-to-head — same 22 prompts + injected context, judged 0–10 by gemma4:12b-it-qat; latency p50 (TerranSoul/OpenJarvis inference-only, others wall-clock incl. cold-start). ³ᵇ different **cloud** model (claude-haiku-4-5) — a frontier reference, not like-for-like with the local rows.
+
 
 ## Latest canonical per benchmark
 
@@ -74,7 +75,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 | **LongMemEval-S** retrieval-only (500 questions, all types) | BENCH-AM-6/6.1 | `search`: **R@5 99.2 % / R@10 99.6 % / R@20 100.0 % / NDCG@10 91.3 % / MRR 92.6 %** — verified top-1 vs agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5) | 2026-05-11 | [§ LongMemEval-S](#longmemeval-s-verified-top-1-bench-am-66-1) |
 | **agentmemory bench:quality** (concept-tagged, 240 obs / 20 queries) | regenerated 2026-06-25 | keyword-only `search`: **R@10 67.1 % / NDCG@10 98.2 % / MRR 100.0 %** (quality leader); `hybrid_search_rrf` no-vector: **R@10 66.8 % / NDCG@10 95.0 % / MRR 95.0 %** (production default, restored after the RRF regression fix `c560514e`) | 2026-06-25 | [§ Feature matrix](#feature-matrix-vs-agentmemory) |
 | **MTEB LoCoMo retrieval** (250-query slice across 5 tasks) | BENCH-LCM-1 | `rrf`: **R@10 51.6 % / R@100 65.9 % / NDCG@10 41.5 % / MRR 41.4 %** — temporal-reasoning strong; multi-hop and open-domain are documented gaps requiring iterative retrieval | 2026-05-13 | [§ MTEB LoCoMo](#mteb-locomo-retrieval-adapter-bench-lcm-1) |
-| **ZorkGPT long-horizon** (`gemma4:e4b` 4B) | BENCH-ZORK (spec 002–014 + K-series → reliability fork) | **AGI-pure:** the brain lifts the same 4B from **0** (both controls) to **10–20** and stops its fixation loops; cross-episode behavioural change verified (new room *Up a Tree* via reflection hydration); **0/1682 MCP errors**. **Reliability demonstration (taught solution):** serving the brain's move on *every* turn via an exception-safe orchestrator fork drives the 4B to a deterministic **350/350** (396/396 moves, 0 errors), vs a non-deterministic 73/177 under intermittent serving — isolating *delivery reliability* from model size | 2026-06-03 | [§ ZorkGPT bench](#zorkgpt--terransoul--long-horizon-task-bench-bench-zork-15-2026-05-28--pass) |
+| **ZorkGPT long-horizon** (`gemma4:e4b` 4B) | BENCH-ZORK (spec 002–014 + K-series → reliability fork) | **AGI-pure:** the brain lifts the same 4B from **0** (both controls) to **10–20** and stops its fixation loops; cross-episode behavioural change verified (new room *Up a Tree* via reflection hydration); **0/1682 MCP errors**. **Self-improve campaign (12B, 2026-06-21):** per-run cross-episode **~15** (10/20/15 on a fresh task-naïve brain), with a **peak 45** single episode via across-run accumulation — honestly de-confounded (the 45 required accumulating a one-time discovery; supersedes the earlier r4 10→20); cross-game (Detective, 12B) shows a consistent **+20 memory-lift** (n=2). **Reliability demonstration (taught solution):** serving the brain's move on *every* turn via an exception-safe orchestrator fork drives the 4B to a deterministic **350/350** (396/396 moves, 0 errors), vs a non-deterministic 73/177 under intermittent serving — isolating *delivery reliability* from model size | 2026-06-21 | [§ ZorkGPT bench](#zorkgpt--terransoul--long-horizon-task-bench-bench-zork-15-2026-05-28--pass) |
 
 *Plain English: the single best result for each of our four benchmarks (see the glossary above for R@5 / NDCG@10 / MRR). Two test search quality (LongMemEval-S, agentmemory), one tests harder multi-document search (LoCoMo), and ZorkGPT tests whether the memory helps a small 4B model finish a long text-adventure game.*
 
