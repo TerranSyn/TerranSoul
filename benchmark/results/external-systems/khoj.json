@@ -1,0 +1,238 @@
+{
+  "system": "Khoj",
+  "khoj_version": "1.42.10",
+  "embedder": "nomic-embed-text",
+  "dim": 768,
+  "retrieval_type": "vector (bi-encoder cosine, nomic via Ollama /v1)",
+  "retrieval_mode_audit": "Khoj default /api/search is pure bi-encoder cosine top-k (text_search.query + EntryAdapters.search_with_embeddings, pgvector cosine). Cross-encoder rerank (mxbai-rerank-xsmall-v1) is optional and used in chat retrieval; reported as secondary. Headline uses nomic-embed-text via Khoj's OpenAI-compat embedding endpoint for apples-to-apples parity with the nomic-vector control.",
+  "used_real_khoj_embeddingsmodel": true,
+  "source": "Khoj 1.42.10 semantic search: EmbeddingsModel(OpenAI endpoint -> Ollama /v1, nomic-embed-text 768-d) + normalize + cosine top-k (text_search.compute_embeddings/query), verbatim 1-entry-per-obs.",
+  "avg_recall_at_5": 0.40630952380952384,
+  "avg_recall_at_10": 0.608452380952381,
+  "avg_recall_at_20": 0.7422619047619048,
+  "avg_ndcg_at_10": 0.8824465787665924,
+  "avg_mrr": 0.9166666666666667,
+  "ingest_seconds": 2.0,
+  "n_obs": 240,
+  "n_queries": 20,
+  "per_query": [
+    {
+      "recall_at_5": 0.25,
+      "recall_at_10": 0.5,
+      "recall_at_20": 1.0,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "How did we set up authentication?",
+      "relevant_count": 20,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.5,
+      "recall_at_20": 1.0,
+      "ndcg_at_10": 0.3510684246681534,
+      "mrr": 0.16666666666666666,
+      "query": "JWT token validation middleware",
+      "relevant_count": 10,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.16666666666666666,
+      "recall_at_10": 0.3333333333333333,
+      "recall_at_20": 0.6666666666666666,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "PostgreSQL connection issues",
+      "relevant_count": 30,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.5,
+      "recall_at_10": 1.0,
+      "recall_at_20": 1.0,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "Playwright test configuration",
+      "relevant_count": 10,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.16666666666666666,
+      "recall_at_10": 0.16666666666666666,
+      "recall_at_20": 0.16666666666666666,
+      "ndcg_at_10": 0.6489315753318465,
+      "mrr": 1.0,
+      "query": "Why did the production deployment fail?",
+      "relevant_count": 30,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.5,
+      "recall_at_10": 1.0,
+      "recall_at_20": 1.0,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "rate limiting implementation",
+      "relevant_count": 10,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.16666666666666666,
+      "recall_at_10": 0.3333333333333333,
+      "recall_at_20": 0.5,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "What security measures did we add?",
+      "relevant_count": 30,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.2,
+      "recall_at_10": 0.4,
+      "recall_at_20": 0.4,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "database performance optimization",
+      "relevant_count": 25,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "recall_at_20": 1.0,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "Kubernetes pod crash debugging",
+      "relevant_count": 5,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.5,
+      "recall_at_10": 0.5,
+      "recall_at_20": 0.5,
+      "ndcg_at_10": 0.6489315753318465,
+      "mrr": 1.0,
+      "query": "Docker containerization setup",
+      "relevant_count": 10,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.25,
+      "recall_at_10": 0.25,
+      "recall_at_20": 0.5,
+      "ndcg_at_10": 0.6489315753318465,
+      "mrr": 1.0,
+      "query": "How does caching work in the app?",
+      "relevant_count": 20,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.5,
+      "recall_at_10": 1.0,
+      "recall_at_20": 1.0,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "test infrastructure and factories",
+      "relevant_count": 10,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "recall_at_20": 1.0,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "What happened with the OAuth callback error?",
+      "relevant_count": 5,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.3333333333333333,
+      "recall_at_20": 0.6666666666666666,
+      "ndcg_at_10": 0.3510684246681534,
+      "mrr": 0.16666666666666666,
+      "query": "monitoring and observability setup",
+      "relevant_count": 15,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.14285714285714285,
+      "recall_at_10": 0.2857142857142857,
+      "recall_at_20": 0.42857142857142855,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "Prisma ORM configuration",
+      "relevant_count": 35,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.2,
+      "recall_at_10": 0.4,
+      "recall_at_20": 0.6,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "CI/CD pipeline configuration",
+      "relevant_count": 25,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "recall_at_20": 1.0,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "memory leak debugging",
+      "relevant_count": 5,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.25,
+      "recall_at_10": 0.5,
+      "recall_at_20": 0.75,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "API design decisions",
+      "relevant_count": 20,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 0.3333333333333333,
+      "recall_at_10": 0.6666666666666666,
+      "recall_at_20": 0.6666666666666666,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "zod validation schemas",
+      "relevant_count": 15,
+      "retrieved_count": 20
+    },
+    {
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "recall_at_20": 1.0,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "query": "infrastructure as code Terraform",
+      "relevant_count": 5,
+      "retrieved_count": 20
+    }
+  ],
+  "secondaries": {
+    "nomic_plus_mxbai_rerank": {
+      "avg_recall_at_5": 0.4479761904761904,
+      "avg_recall_at_10": 0.5876190476190477,
+      "avg_recall_at_20": 0.7422619047619048,
+      "avg_ndcg_at_10": 0.8946794725995542,
+      "avg_mrr": 1.0,
+      "ingest_seconds": 1.6
+    },
+    "gte_small_default": {
+      "avg_recall_at_5": 0.4479761904761904,
+      "avg_recall_at_10": 0.5971428571428571,
+      "avg_recall_at_20": 0.7689285714285714,
+      "avg_ndcg_at_10": 0.8946794725995539,
+      "avg_mrr": 1.0,
+      "ingest_seconds": 2.0
+    }
+  }
+}
