@@ -305,7 +305,7 @@ class JsonlClient {
     try {
       message = JSON.parse(line);
     } catch (err) {
-      throw new Error(`invalid IPC JSON: ${line}\n${err.message}`);
+      throw new Error(`invalid IPC JSON: ${line}\n${err.message}`, { cause: err });
     }
     const pending = this.pending.get(message.id);
     if (!pending) return;

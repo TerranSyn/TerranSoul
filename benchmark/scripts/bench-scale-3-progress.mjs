@@ -108,7 +108,7 @@ function progressBar(pct, width = 20) {
 }
 
 async function appendEntry(line) {
-  let md = '';
+  let md;
   try {
     md = await fs.readFile(PROGRESS_MD, 'utf8');
   } catch {
@@ -169,7 +169,7 @@ async function pollOnce(state) {
   const parsed = parseTail(tail);
 
   let pct = 0;
-  let detail = '';
+  let detail;
   let status = 'running';
 
   if (parsed.latestProgress) {

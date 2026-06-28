@@ -699,7 +699,7 @@ class JsonlClient {
     try {
       message = JSON.parse(line);
     } catch (err) {
-      throw new Error(`invalid IPC JSON: ${line}\n${err.message}`);
+      throw new Error(`invalid IPC JSON: ${line}\n${err.message}`, { cause: err });
     }
     const pending = this.pending.get(message.id);
     if (!pending) return;
@@ -865,7 +865,7 @@ async function runQaTask(client, task, options) {
 
     // 2. Generate answer from retrieved context
     const retrievedTexts = lookupRetrievedTexts(result.retrievedIds, corpusIndex, 10);
-    let generatedAnswer = '';
+    let generatedAnswer;
     const genStart = performance.now();
     try {
       const genPrompt = buildGeneratorPrompt(query.text, retrievedTexts);
