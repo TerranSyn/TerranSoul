@@ -52,6 +52,34 @@
   @keyframes ts-dot { 0%,100% { opacity:0.35; transform:scale(1) } 50% { opacity:1; transform:scale(1.7) } }
   @keyframes ts-travel { to { stroke-dashoffset:-20 } }
   @keyframes ts-blink { 0%,90%,100% { transform:scaleY(1) } 95% { transform:scaleY(0.12) } }
+
+  /* ---- overlay containment: keep region labels inside the viz at every width ---- */
+  .bp-lobe{max-width:140px;white-space:normal;overflow-wrap:break-word;word-break:break-word}
+  .bp-lobe .bp-lobe-title{overflow-wrap:break-word}
+  .bp-lobe .bp-lobe-region{overflow-wrap:break-word}
+
+  /* Tablet / stacked columns: brain over panel, give the stage the full width so
+     percentage-anchored labels have room and never spill past the container. */
+  @media (max-width:980px){
+    .bp-row{flex-direction:column}
+    .bp-stage{min-width:0 !important;flex:1 1 auto !important;width:100%}
+    .bp-panel{min-width:0 !important;width:100%}
+  }
+
+  /* Narrow / mobile: the absolute overlay can no longer fit over the shrunken SVG,
+     so let it fall out of the absolute layer and stack as a clean list BELOW the brain. */
+  @media (max-width:820px){
+    .bp-stage{overflow:visible !important}
+    .bp-overlay{position:static !important;inset:auto !important;pointer-events:auto !important;
+      display:flex;flex-direction:column;gap:7px;padding:13px 16px 4px;margin-top:4px;
+      border-top:1px solid #142033}
+    .bp-overlay .bp-lobe,.bp-overlay .bp-chan,.bp-overlay .bp-core{
+      position:static !important;left:auto !important;top:auto !important;
+      transform:none !important;text-align:left !important;white-space:normal !important;
+      max-width:none !important;background:none !important;padding:0 !important}
+    .bp-overlay .bp-chan{font-size:10px;color:#9fc7dd}
+    .bp-overlay .bp-core{order:-1;font-weight:600}
+  }
 </style>
 </helmet>
 <div style="min-height:100vh;padding:30px 38px 44px;display:flex;flex-direction:column;gap:15px;max-width:1480px;margin:0 auto">
@@ -80,10 +108,10 @@
     </div>
   </header>
 
-  <div style="display:flex;gap:16px;align-items:stretch;flex-wrap:wrap">
+  <div class="bp-row" style="display:flex;gap:16px;align-items:stretch;flex-wrap:wrap">
 
     <!-- ======= BRAIN STAGE ======= -->
-    <div style="flex:1.5;min-width:520px;position:relative;background:radial-gradient(ellipse at 46% 42%, #0b1525 0%, #070d18 60%, #04070d 100%);border:1px solid #142033;border-radius:16px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,0.5),inset 0 0 80px rgba(20,60,90,0.12)">
+    <div class="bp-stage" style="flex:1.5;min-width:520px;position:relative;background:radial-gradient(ellipse at 46% 42%, #0b1525 0%, #070d18 60%, #04070d 100%);border:1px solid #142033;border-radius:16px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,0.5),inset 0 0 80px rgba(20,60,90,0.12)">
       <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(51,170,225,0.05) 1px, transparent 1px),linear-gradient(90deg, rgba(51,170,225,0.05) 1px, transparent 1px);background-size:32px 32px;pointer-events:none;mix-blend-mode:screen;opacity:{{ gridOpacity }}"></div>
 
       <svg viewBox="0 0 620 560" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:auto">
@@ -178,17 +206,17 @@
       </svg>
 
       <!-- HTML overlay labels (SVG text holes don't paint inside <text>) -->
-      <div style="position:absolute;inset:0;pointer-events:none">
+      <div class="bp-overlay" style="position:absolute;inset:0;pointer-events:none">
         <sc-for list="{{ lobes }}" as="lobe" hint-placeholder-count="6">
-          <div data-id="{{ lobe.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="position:absolute;left:{{ lobe.px }}%;top:{{ lobe.py }}%;transform:{{ lobe.tx }};text-align:{{ lobe.align }};pointer-events:auto;cursor:pointer;opacity:{{ lobe.op }};transition:opacity .25s;white-space:nowrap">
-            <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:13px;color:#eaf5ff;line-height:1.15">{{ lobe.title }}</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.04em;color:{{ lobe.color }}">{{ lobe.region }}</div>
+          <div class="bp-lobe" data-id="{{ lobe.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="position:absolute;left:{{ lobe.px }}%;top:{{ lobe.py }}%;transform:{{ lobe.tx }};text-align:{{ lobe.align }};pointer-events:auto;cursor:pointer;opacity:{{ lobe.op }};transition:opacity .25s">
+            <div class="bp-lobe-title" style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:13px;color:#eaf5ff;line-height:1.15">{{ lobe.title }}</div>
+            <div class="bp-lobe-region" style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.04em;color:{{ lobe.color }}">{{ lobe.region }}</div>
           </div>
         </sc-for>
         <sc-for list="{{ channels }}" as="ch" hint-placeholder-count="7">
-          <div data-id="{{ ch.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="position:absolute;left:{{ ch.px }}%;top:90.5%;transform:translateX(-50%);pointer-events:auto;cursor:pointer;opacity:{{ chanOp }};transition:opacity .25s;font-family:'JetBrains Mono',monospace;font-size:9px;color:#9fc7dd;white-space:nowrap">{{ ch.title }}</div>
+          <div class="bp-chan" data-id="{{ ch.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="position:absolute;left:{{ ch.px }}%;top:90.5%;transform:translateX(-50%);pointer-events:auto;cursor:pointer;opacity:{{ chanOp }};transition:opacity .25s;font-family:'JetBrains Mono',monospace;font-size:9px;color:#9fc7dd;white-space:nowrap">{{ ch.title }}</div>
         </sc-for>
-        <div data-id="core" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="position:absolute;left:48.2%;top:45.5%;transform:translateX(-50%);text-align:center;pointer-events:auto;cursor:pointer;opacity:{{ coreOp }};white-space:nowrap;background:rgba(6,12,22,0.62);border-radius:7px;padding:3px 10px">
+        <div class="bp-core" data-id="core" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="position:absolute;left:48.2%;top:45.5%;transform:translateX(-50%);text-align:center;pointer-events:auto;cursor:pointer;opacity:{{ coreOp }};white-space:nowrap;background:rgba(6,12,22,0.62);border-radius:7px;padding:3px 10px">
           <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:13px;color:#eaf5ff;line-height:1.15">LLM Core</div>
           <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.04em;color:#22d3ee">neocortex</div>
         </div>
@@ -196,7 +224,7 @@
     </div>
 
     <!-- ======= EXPLAINER ======= -->
-    <div style="flex:1;min-width:340px;display:flex;flex-direction:column;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-radius:16px;padding:20px 22px;box-shadow:0 18px 50px rgba(0,0,0,0.4)">
+    <div class="bp-panel" style="flex:1;min-width:340px;display:flex;flex-direction:column;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-radius:16px;padding:20px 22px;box-shadow:0 18px 50px rgba(0,0,0,0.4)">
       <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.2em;text-transform:uppercase;color:#3f6f8c;margin-bottom:10px">{{ panelKicker }}</div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
         <span style="width:11px;height:11px;border-radius:50%;background:{{ panelDot }};box-shadow:0 0 12px {{ panelDot }}"></span>
@@ -443,7 +471,7 @@ class Component extends DCLogic {
   state = { filter: 'all', hoverId: null, pinId: 'grp-all' };
 
   LOBES = [
-    { id:'prefrontal', mx:299, my:130, lx:138, ly:120, lex:152, ley:124, anchor:'end',    color:'#818cf8', title:'Focus',  region:'prefrontal cortex · BA 9/46', system:'cortex' },
+    { id:'prefrontal', mx:299, my:130, lx:138, ly:120, lex:152, ley:124, anchor:'end',    color:'#818cf8', title:'Focus',  region:'dorsolateral prefrontal cortex', system:'cortex' },
     { id:'kg',         mx:344, my:176, lx:460, ly:152, lex:452, ley:154, anchor:'start',  color:'#34d399', title:'Graph',  region:'parietal · association cortex', system:'cortex' },
     { id:'rag',        mx:232, my:300, lx:138, ly:332, lex:152, ley:326, anchor:'end',    color:'#22d3ee', title:'Recall', region:'occipital · visual cortex',     system:'cortex' },
     { id:'memory',     mx:256, my:218, lx:122, ly:206, lex:134, ley:210, anchor:'end',    color:'#a78bfa', title:'Memory', region:'hippocampus · medial temporal', system:'deep' },
@@ -483,7 +511,7 @@ class Component extends DCLogic {
     core:{kicker:'NEOCORTEX · THE CONSCIOUS MIND',dot:'#22d3ee',title:'LLM Core',
       part:'Neocortex — like raw cortical activity: pure thought in the moment, with no memory of its own.',
       plain:'The raw language model — any model you choose. Brilliant at reasoning in the moment, but on its own it forgets everything the instant a chat ends.',
-      faculties:'attention-gate · curiosity · drives',
+      faculties:'attention · curiosity · motivation',
       tech:'Model-agnostic: plug in any LLM and run it locally (Ollama) or in the cloud, swapping it whenever you like. Every turn is reasoned here; the surrounding regions give it memory and learning.',tags:['any model','local or cloud','swappable']},
     'grp-all':{kicker:'WHOLE BRAIN · OVERVIEW',dot:'#22d3ee',title:'The whole brain',part:'1 core · 6 regions · 6 senses.',
       plain:'An LLM at the core, wrapped in the regions of a real brain that give it memory, recall, focus, feeling and skill — all reachable by any app through one nerve, the MCP brainstem.',
@@ -500,7 +528,7 @@ class Component extends DCLogic {
     prefrontal:{kicker:'FRONTAL LOBE · EXECUTIVE',dot:'#818cf8',title:'Focus',
       part:'Frontal lobe — the brain’s executive: it weighs each task and decides how much effort it deserves.',
       plain:'Not every message needs deep thought. Focus sizes each turn and routes it — trivial ones skip the heavy machinery, hard ones get the full pipeline.',
-      faculties:'metacognition · goal-stack · reason-budget · context-compression · narrative-self',
+      faculties:'metacognition · planning (goal-stack) · reason-budget · context-compression · narrative-self',
       tech:'Per-turn effort triage (SKIP / LIGHT / NORMAL / FULL) + graded reflection depth, from structural signals only.',tags:['triage','reflection']},
     kg:{kicker:'PARIETAL · ASSOCIATION',dot:'#34d399',title:'Knowledge Graph',
       part:'Parietal lobe — association cortex that ties separate facts into one connected picture.',
@@ -520,7 +548,7 @@ class Component extends DCLogic {
     amygdala:{kicker:'LIMBIC · AFFECT',dot:'#f472b6',title:'Affect',
       part:'Amygdala — the limbic structure that reads experience and colours it with emotion.',
       plain:'The brain reads the emotional tone of its own reply and shows it on the avatar’s face.',
-      faculties:'appraisal · mood',
+      faculties:'emotion',
       tech:'Sentiment scoring drives VRM emotion across 52 ARKit blendshape channels.',tags:['sentiment','VRM']},
     procedural:{kicker:'CEREBELLUM · SKILL',dot:'#fbbf24',title:'Skills',
       part:'Cerebellum — stores practised skills and runs them smoothly once they’re learned.',
