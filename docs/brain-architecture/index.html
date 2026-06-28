@@ -71,16 +71,14 @@
         Read the benchmark comparison →
       </a>
       <br/>
-      <a href="#planned-faculties" style="display:inline-flex;align-items:center;gap:7px;margin-top:9px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.04em;color:#ffd9a8;text-decoration:none;border:1px dashed #6a5326;border-radius:7px;padding:6px 12px;background:rgba(251,191,36,0.06);transition:border-color .2s,color .2s" style-hover="border-color:#fbbf24;color:#ffe9c8">
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style="opacity:0.85"><path d="M8 1.5A6.5 6.5 0 108 14.5 6.5 6.5 0 008 1.5zM7.2 4.4h1.6v5H7.2v-5zm0 6.2h1.6v1.6H7.2v-1.6z"/></svg>
-        Planned cognitive faculties — roadmap (WIP) ↓
-      </a>
     </div>
-    <div style="display:flex;gap:7px">
+    <div style="display:flex;gap:7px;align-items:center">
       <button type="button" data-filter="all" style="{{ btnAll }}" onClick="{{ onFilter }}">WHOLE BRAIN</button>
       <button type="button" data-filter="cortex" style="{{ btnCortex }}" onClick="{{ onFilter }}">CORTEX</button>
       <button type="button" data-filter="deep" style="{{ btnDeep }}" onClick="{{ onFilter }}">DEEP</button>
       <button type="button" data-filter="channels" style="{{ btnChannels }}" onClick="{{ onFilter }}">SENSES</button>
+      <span style="width:1px;height:20px;background:#1f3a52;margin:0 1px"></span>
+      <button type="button" data-planned="toggle" style="{{ btnPlanned }}" onClick="{{ onTogglePlanned }}" title="Show / hide the planned cognitive-faculty layer (BCF-01…17)">◷ PLANNED</button>
     </div>
   </header>
 
@@ -161,6 +159,18 @@
             <circle cx="299" cy="232" r="2.6" fill="#22d3ee"/>
             <circle cx="299" cy="232" r="18" fill="transparent"/>
           </g>
+
+          <!-- PLANNED COGNITIVE FACULTIES (WIP layer — toggled by the ◷ PLANNED button; hidden by default) -->
+          <g style="opacity:{{ plannedOp }};pointer-events:{{ plannedPe }};transition:opacity .3s">
+            <sc-for list="{{ faculties }}" as="f" hint-placeholder-count="17">
+              <g data-id="{{ f.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="cursor:pointer" style-hover="filter:brightness(1.3)">
+                <line x1="{{ f.ax }}" y1="{{ f.ay }}" x2="{{ f.mx }}" y2="{{ f.my }}" stroke="#fbbf24" stroke-width="0.7" stroke-dasharray="2 3" opacity="0.32"/>
+                <circle cx="{{ f.mx }}" cy="{{ f.my }}" r="9" fill="none" stroke="#fbbf24" stroke-width="6" opacity="{{ f.activeOp }}" style="transition:opacity .25s"/>
+                <circle cx="{{ f.mx }}" cy="{{ f.my }}" r="6.5" fill="#0a1322" stroke="#fbbf24" stroke-width="1.3" stroke-dasharray="2.4 1.8"/>
+                <path d="{{ f.fillPath }}" fill="#fbbf24" opacity="0.82"/>
+              </g>
+            </sc-for>
+          </g>
         </g>
 
         <!-- SENSES -->
@@ -192,6 +202,14 @@
         <sc-for list="{{ channels }}" as="ch" hint-placeholder-count="6">
           <div data-id="{{ ch.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="position:absolute;left:{{ ch.px }}%;top:90.5%;transform:translateX(-50%);pointer-events:auto;cursor:pointer;opacity:{{ chanOp }};transition:opacity .25s;font-family:'JetBrains Mono',monospace;font-size:9px;color:#9fc7dd;white-space:nowrap">{{ ch.title }}</div>
         </sc-for>
+        <!-- PLANNED faculty code labels (HTML overlay so the text paints crisply; gated by the ◷ PLANNED toggle) -->
+        <div style="position:absolute;inset:0;opacity:{{ plannedOp }};transition:opacity .3s">
+          <sc-for list="{{ faculties }}" as="f" hint-placeholder-count="17">
+            <div data-id="{{ f.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="position:absolute;left:{{ f.px }}%;top:{{ f.py }}%;transform:translateX(-50%);pointer-events:{{ plannedPe }};cursor:pointer;text-align:center;white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:0.02em;color:#ffd58a">
+              <span style="background:rgba(7,12,22,0.7);border-radius:4px;padding:1px 3px">{{ f.code }}</span>
+            </div>
+          </sc-for>
+        </div>
         <div data-id="core" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="position:absolute;left:48.2%;top:45.5%;transform:translateX(-50%);text-align:center;pointer-events:auto;cursor:pointer;opacity:{{ coreOp }};white-space:nowrap;background:rgba(6,12,22,0.62);border-radius:7px;padding:3px 10px">
           <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:13px;color:#eaf5ff;line-height:1.15">LLM Core</div>
           <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.04em;color:#22d3ee">neocortex</div>
@@ -349,46 +367,65 @@
         </sc-if>
 
         <sc-if value="{{ isMcp }}" hint-placeholder-val="{{ false }}">
-          <svg viewBox="0 0 380 190" style="width:100%;height:auto">
+          <svg viewBox="0 0 380 212" style="width:100%;height:auto">
             <defs>
               <marker id="mcpAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7de4ff"/></marker>
               <marker id="srcAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#fbbf24"/></marker>
             </defs>
-            <text x="45" y="9" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" letter-spacing="0.1em" fill="#5f8aa3">QUERIED BY</text>
-            <text x="339" y="9" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" letter-spacing="0.1em" fill="#7a6a3f">PULLS FROM</text>
-            <g font-family="'JetBrains Mono',monospace" font-size="8" fill="#9fc7dd">
-              <rect x="6" y="15" width="78" height="17" rx="4" fill="#0c1a27" stroke="#27506c"/><text x="13" y="27">Claude Code</text>
-              <rect x="6" y="36" width="78" height="17" rx="4" fill="#0c1a27" stroke="#27506c"/><text x="13" y="48">Codex</text>
-              <rect x="6" y="57" width="78" height="17" rx="4" fill="#0c1a27" stroke="#34d399"/><text x="13" y="69" fill="#aef0cf">OpenClaw</text>
-              <rect x="6" y="78" width="78" height="17" rx="4" fill="#0c1a27" stroke="#34d399"/><text x="13" y="90" fill="#aef0cf">Hermes Agent</text>
-              <rect x="6" y="99" width="78" height="17" rx="4" fill="#0c1a27" stroke="#22d3ee"/><text x="13" y="111" fill="#bff0ff">+ any app</text>
+            <text x="46" y="9" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" letter-spacing="0.1em" fill="#5f8aa3">QUERIED BY</text>
+            <text x="338" y="9" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" letter-spacing="0.1em" fill="#7a6a3f">PULLS FROM</text>
+
+            <!-- consumers · coding & self-learning agents -->
+            <text x="8" y="21" font-family="'JetBrains Mono',monospace" font-size="6.5" letter-spacing="0.08em" fill="#5f8aa3">AGENTS →</text>
+            <g font-family="'JetBrains Mono',monospace" font-size="8">
+              <rect x="6" y="24" width="80" height="15" rx="4" fill="#0c1a27" stroke="#27506c"/><text x="12" y="34.5" fill="#9fc7dd">Claude Code</text>
+              <rect x="6" y="42" width="80" height="15" rx="4" fill="#0c1a27" stroke="#27506c"/><text x="12" y="52.5" fill="#9fc7dd">Codex</text>
+              <rect x="6" y="60" width="80" height="15" rx="4" fill="#0c1a27" stroke="#34d399"/><text x="12" y="70.5" fill="#aef0cf">OpenClaw</text>
+              <rect x="6" y="78" width="80" height="15" rx="4" fill="#0c1a27" stroke="#34d399"/><text x="12" y="88.5" fill="#aef0cf">Hermes</text>
+              <rect x="6" y="96" width="80" height="15" rx="4" fill="#0c1a27" stroke="#a78bfa"/><text x="12" y="106.5" fill="#cdbdf7">TerranSoul (peer)</text>
             </g>
-            <g stroke="#7de4ff" stroke-width="1.2" fill="none" opacity="0.7">
-              <path d="M 84 23.5 C 100 23.5 110 80 124 86"/>
-              <path d="M 84 44.5 C 100 44.5 112 84 124 87"/>
-              <path d="M 84 65.5 C 100 65.5 116 86 124 88"/>
-              <path d="M 84 86.5 C 100 86.5 116 88 124 88"/>
-              <path d="M 84 107.5 C 100 107.5 112 92 124 90"/>
+            <!-- consumers · client apps -->
+            <text x="8" y="127" font-family="'JetBrains Mono',monospace" font-size="6.5" letter-spacing="0.08em" fill="#5f8aa3">APPS →</text>
+            <g font-family="'JetBrains Mono',monospace" font-size="8">
+              <rect x="6" y="130" width="80" height="15" rx="4" fill="#0c1a27" stroke="#22d3ee"/><text x="12" y="140.5" fill="#bff0ff">Desktop app</text>
+              <rect x="6" y="148" width="80" height="15" rx="4" fill="#0c1a27" stroke="#22d3ee"/><text x="12" y="158.5" fill="#bff0ff">Mobile app</text>
             </g>
-            <rect x="124" y="74" width="38" height="26" rx="7" fill="#06121c" stroke="#7de4ff" stroke-width="1.6"/>
-            <text x="143" y="91" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#bfe6f5">MCP</text>
-            <line x1="162" y1="87" x2="190" y2="87" stroke="#7de4ff" stroke-width="1.4" marker-end="url(#mcpAr)"/>
-            <rect x="192" y="63" width="58" height="48" rx="12" fill="#06121c" stroke="#22d3ee" stroke-width="2"/>
-            <text x="221" y="89" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#dffaff">brain</text>
-            <text x="221" y="101" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6.5" fill="#6f93a8">TerranSoul</text>
+
+            <!-- fan-in: every consumer → the one MCP nerve -->
+            <g stroke="#7de4ff" stroke-width="1.2" fill="none" opacity="0.6">
+              <path d="M 86 31.5 C 104 31.5 112 86 128 90"/>
+              <path d="M 86 49.5 C 104 49.5 114 88 128 91"/>
+              <path d="M 86 67.5 C 104 67.5 118 90 128 92"/>
+              <path d="M 86 85.5 C 104 85.5 118 92 128 92"/>
+              <path d="M 86 103.5 C 104 103.5 116 94 128 93"/>
+              <path d="M 86 137.5 C 104 137.5 116 98 128 95"/>
+              <path d="M 86 155.5 C 106 155.5 116 100 128 96"/>
+            </g>
+
+            <!-- the one nerve -->
+            <rect x="128" y="79" width="38" height="26" rx="7" fill="#06121c" stroke="#7de4ff" stroke-width="1.6"/>
+            <text x="147" y="95" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#bfe6f5">MCP</text>
+            <text x="147" y="116" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6" fill="#6f93a8">one nerve</text>
+
+            <line x1="166" y1="92" x2="194" y2="92" stroke="#7de4ff" stroke-width="1.4" marker-end="url(#mcpAr)"/>
+            <rect x="196" y="68" width="58" height="48" rx="12" fill="#06121c" stroke="#22d3ee" stroke-width="2"/>
+            <text x="225" y="94" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#dffaff">brain</text>
+            <text x="225" y="106" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6.5" fill="#6f93a8">TerranSoul</text>
+
+            <!-- sources the brain pulls from -->
             <g font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#ffd58a">
-              <rect x="300" y="16" width="78" height="20" rx="4" fill="#0c1a27" stroke="#fbbf24"/><text x="307" y="29">Connectors</text>
-              <rect x="300" y="74" width="78" height="20" rx="4" fill="#0c1a27" stroke="#fbbf24"/><text x="307" y="87">repo brains</text>
-              <rect x="300" y="132" width="78" height="20" rx="4" fill="#0c1a27" stroke="#fbbf24"/><text x="307" y="145">peer TerranSoul</text>
+              <rect x="300" y="30" width="78" height="20" rx="4" fill="#0c1a27" stroke="#fbbf24"/><text x="307" y="43">Connectors</text>
+              <rect x="300" y="82" width="78" height="20" rx="4" fill="#0c1a27" stroke="#fbbf24"/><text x="307" y="95">repo brains</text>
+              <rect x="300" y="134" width="78" height="20" rx="4" fill="#0c1a27" stroke="#fbbf24"/><text x="307" y="147">peer TerranSoul</text>
             </g>
-            <text x="339" y="47" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6" fill="#6f93a8">RSS · GitHub · IMAP · FS</text>
-            <text x="339" y="163" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6" fill="#6f93a8">over MCP / LAN</text>
-            <g stroke="#fbbf24" stroke-width="1.2" fill="none" opacity="0.75">
-              <path d="M 300 26 C 280 26 274 70 252 78" marker-end="url(#srcAr)"/>
-              <path d="M 300 84 L 252 87" marker-end="url(#srcAr)"/>
-              <path d="M 300 142 C 280 142 274 102 252 98" marker-end="url(#srcAr)"/>
+            <text x="339" y="61" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6" fill="#6f93a8">RSS · GitHub · IMAP · FS</text>
+            <text x="339" y="166" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6" fill="#6f93a8">over MCP / LAN</text>
+            <g stroke="#fbbf24" stroke-width="1.2" fill="none" opacity="0.7">
+              <path d="M 300 40 C 282 40 276 84 256 90" marker-end="url(#srcAr)"/>
+              <path d="M 300 92 L 256 92" marker-end="url(#srcAr)"/>
+              <path d="M 300 144 C 282 144 276 100 256 94" marker-end="url(#srcAr)"/>
             </g>
-            <text x="190" y="184" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#7de4ff">one brain — consumed by any client, fed by its own sources</text>
+            <text x="190" y="206" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#7de4ff">one MCP nerve → many consumers · fed by its own sources</text>
           </svg>
         </sc-if>
 
@@ -402,6 +439,18 @@
             <text x="160" y="130" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#9fc7dd">a sense feeding the same brain</text>
           </svg>
         </sc-if>
+
+        <sc-if value="{{ isFaculty }}" hint-placeholder-val="{{ false }}">
+          <div style="width:100%;display:flex;flex-direction:column;gap:11px;padding:2px 6px">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid {{ panelDot }};border-radius:6px;padding:3px 8px;white-space:nowrap">{{ facCode }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
+              <span style="{{ facStatusStyle }}">{{ facStatusLabel }}</span>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.04em;color:{{ panelDot }}">{{ facPrio }}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.55;color:#5f8aa3;border-top:1px solid #15293c;padding-top:9px">Design-only — not yet implemented. The full what / why / how-it-integrates sketch lives in the roadmap below ↓</div>
+          </div>
+        </sc-if>
       </div>
 
       <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">
@@ -413,281 +462,11 @@
     </div>
   </div>
 
-  <!-- ======= PLANNED COGNITIVE FACULTIES — WIP ROADMAP (design audit 2026-06-28; rules/milestones.md → Phase BCF) ======= -->
-  <section id="planned-faculties" style="margin-top:18px;scroll-margin-top:18px">
-
-    <!-- separation banner: implemented above / planned below -->
-    <div style="display:flex;align-items:center;gap:14px;margin:8px 0 20px">
-      <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,#1f3a52,transparent)"></div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:#ffd58a;border:1px dashed #6a5326;border-radius:999px;padding:5px 14px;background:rgba(251,191,36,0.06);white-space:nowrap">Everything above = implemented today &nbsp;·&nbsp; below = planned roadmap (not yet built)</div>
-      <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,#1f3a52,transparent)"></div>
-    </div>
-
-    <!-- section header -->
-    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.28em;text-transform:uppercase;color:#3f6f8c;margin-bottom:9px">TerranSoul // Roadmap · Cognitive-Faculty Expansion</div>
-    <h2 style="margin:0;font-family:'Orbitron',sans-serif;font-weight:700;font-size:23px;letter-spacing:0.01em;line-height:1.1">PLANNED COGNITIVE <span style="color:#fbbf24;text-shadow:0 0 16px rgba(251,191,36,0.45)">FACULTIES</span> <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.12em;vertical-align:middle;color:#ffd58a;border:1px dashed #6a5326;border-radius:999px;padding:3px 10px;background:rgba(251,191,36,0.08)">WIP</span></h2>
-    <p style="margin:10px 0 0;color:#7d92b3;font-size:13px;max-width:900px;line-height:1.62">Seventeen faculties (BCF-01 … BCF-17) from the CoALA / cognitive-faculty <strong style="color:#c2d2e8">design audit of 2026-06-28</strong>, which mapped five research sweeps against the live brain. These are <strong style="color:#ffd58a">design-only — not yet implemented</strong>: each is a what + why + how-it-integrates sketch, ordered by priority (P0 → P3) and the dependency spine — calibration is foundational; drives + the goal-stack unlock curiosity, affect and planning; the workspace gate unlocks prospective memory, working-memory compression and embodiment. Source: <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#9fc7dd">rules/milestones.md → Phase BCF</span>.</p>
-
-    <!-- legend -->
-    <div style="display:flex;flex-wrap:wrap;gap:9px;margin-top:15px;align-items:center">
-      <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#5f7d96">Legend:</span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.07em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a">◷ Planned · WIP</span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.07em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid #1f5740;background:rgba(52,211,153,0.12);color:#7dd6b0">◑ Partial — extends existing code</span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.07em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid #36356a;background:rgba(129,140,248,0.12);color:#b3b9f5">○ New — not yet built</span>
-    </div>
-
-    <!-- ===== P0 band ===== -->
-    <div style="display:flex;align-items:center;gap:12px;margin:24px 2px 12px">
-      <span style="width:10px;height:10px;border-radius:50%;background:#22d3ee;box-shadow:0 0 10px #22d3ee;flex:0 0 auto"></span>
-      <span style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eef6ff">P0 · Foundational</span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5f8aa3">the calibration gate every other faculty consults</span>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(296px,1fr));gap:13px">
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #22d3ee;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #22d3ee;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-01</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #1f5740;background:rgba(52,211,153,0.12);color:#7dd6b0;white-space:nowrap">◑ Partial</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Metacognitive confidence calibration</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#22d3ee">P0 · prefrontal · self-monitor · foundational — no deps</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> a second-order monitor that estimates a calibrated confidence in its own answer before emitting it (feeling-of-knowing, Brier/ECE, source-monitoring) and routes answer / abstain / seek-more. <strong style="color:#eaf5ff">Why:</strong> a resident behind a frozen 12B must know its own limits to avoid confident hallucination.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#7dd6b0">Partial today:</strong> reflection grades past sessions and crag.rs scores per-document retrieval quality, but nothing estimates confidence over the agent's own answer.</div>
-      </div>
-
-    </div>
-
-    <!-- ===== P1 band ===== -->
-    <div style="display:flex;align-items:center;gap:12px;margin:24px 2px 12px">
-      <span style="width:10px;height:10px;border-radius:50%;background:#818cf8;box-shadow:0 0 10px #818cf8;flex:0 0 auto"></span>
-      <span style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eef6ff">P1 · Regulatory &amp; executive spine</span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5f8aa3">drives, the goal-stack, affect, and the workspace broadcast</span>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(296px,1fr));gap:13px">
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #818cf8;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #818cf8;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-02</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #36356a;background:rgba(129,140,248,0.12);color:#b3b9f5;white-space:nowrap">○ New</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Motivation · drives · homeostasis</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#818cf8">P1 · hypothalamus · homeostasis · needs BCF-05</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> setpoint need-variables (coverage, bond, integrity, upkeep) with a need-signal on deviation, plus intrinsic reward (learning-progress / novelty). <strong style="color:#eaf5ff">Why:</strong> an always-on resident needs endogenous drives as the principled, non-hardcoded source of self-directed activity.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#b3b9f5">Absent today:</strong> with no user prompt the agent has no endogenous "what should I do now".</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #818cf8;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #818cf8;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-03</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #36356a;background:rgba(129,140,248,0.12);color:#b3b9f5;white-space:nowrap">○ New</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Executive function · goal-stack · planner</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#818cf8">P1 · dorsolateral PFC · executive · needs BCF-02</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> a durable goal/agenda store with multi-step decomposition into subgoals, arbitration among competing drives, suspend/resume across interruptions, and commitment tracking. <strong style="color:#eaf5ff">Why:</strong> the difference between a reactive chatbot and a planning agent that pursues goals across sessions.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#b3b9f5">Absent today:</strong> skill_synthesizer abstracts skills and action_trust gates execution, but there is no agenda.</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #818cf8;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #818cf8;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-04</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #1f5740;background:rgba(52,211,153,0.12);color:#7dd6b0;white-space:nowrap">◑ Partial</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Affect · appraisal · PAD/mood · regulation</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#818cf8">P1 · limbic · appraisal · needs BCF-02, BCF-01</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> an appraisal step that generates affect from events vs goals/standards, a stored PAD + mood state with onset/decay, Gross reappraisal, and affect→salience modulation. <strong style="color:#eaf5ff">Why:</strong> cross-session continuity, a believable resident VRM presence, and affect-as-salience for what consolidates.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#7dd6b0">Partial today:</strong> an "emotional" tag category with fast decay and a VRM &lt;anim&gt; emotion field exist, but no appraisal/state/mood.</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #818cf8;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #818cf8;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-05</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #1f5740;background:rgba(52,211,153,0.12);color:#7dd6b0;white-space:nowrap">◑ Partial</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Attention · salience · workspace gate</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#818cf8">P1 · thalamo-cortical · broadcast · needs BCF-02, BCF-04, BCF-01</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> a serial winner-take-all bottleneck that arbitrates all competing signals — memories, drive needs, due intentions, affect, surprise — for the single context window. <strong style="color:#eaf5ff">Why:</strong> Global Workspace Theory's broadcast is the integration point that lets drives/affect/prospective memory reach reasoning.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#7dd6b0">Partial today:</strong> activation.rs + RRF rank retrieval results and effort-triage sizes work, but there is no cross-source arbitration.</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #818cf8;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #818cf8;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-06</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #36356a;background:rgba(129,140,248,0.12);color:#b3b9f5;white-space:nowrap">○ New</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Theory of mind · user-model · empathy</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#818cf8">P1 · temporoparietal · mentalizing · needs BCF-04, BCF-01</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> an explicit model of the user's beliefs / intentions / knowledge held distinct from the agent's own, with perspective-taking, false-belief tracking, and empathic tone. <strong style="color:#eaf5ff">Why:</strong> a companion must model what the user knows, wants and feels to avoid over/under-explaining.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#b3b9f5">Absent today:</strong> semantic memory stores facts about the user but not a separated mind-model.</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #818cf8;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #818cf8;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-07</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #36356a;background:rgba(129,140,248,0.12);color:#b3b9f5;white-space:nowrap">○ New</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Prospective memory (remember-to-act)</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#818cf8">P1 · rostral PFC · intentions · needs BCF-05</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> a first-class "do Y when X happens / at time T" store with a trigger that fires intentions when their cue is met. <strong style="color:#eaf5ff">Why:</strong> flagged the single least-addressed faculty — without it a resident can't reliably follow through beyond the current turn.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#b3b9f5">Absent today:</strong> the agent cannot honour reminders, deferred follow-through, or future commitments.</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #818cf8;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #818cf8;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-08</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #1f5740;background:rgba(52,211,153,0.12);color:#7dd6b0;white-space:nowrap">◑ Partial</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Test-time-compute allocator (System-1/2)</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#818cf8">P1 · PFC · dual-process · needs BCF-01</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> a controller that decides how much deliberation (CoT length, self-consistency, tree search, Reflexion) to spend, escalating only when confidence is low. <strong style="color:#eaf5ff">Why:</strong> the lever that turns a frozen 12B into a System-2 reasoner without retraining.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#7dd6b0">Partial today:</strong> effort triage (Skip/Light/Normal/Full) exists but governs memory work, not reasoning depth.</div>
-      </div>
-
-    </div>
-
-    <!-- ===== P2 band ===== -->
-    <div style="display:flex;align-items:center;gap:12px;margin:24px 2px 12px">
-      <span style="width:10px;height:10px;border-radius:50%;background:#34d399;box-shadow:0 0 10px #34d399;flex:0 0 auto"></span>
-      <span style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eef6ff">P2 · Generative &amp; consolidating</span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5f8aa3">curiosity, world-model, replay, skills, identity, working memory</span>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(296px,1fr));gap:13px">
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #34d399;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #34d399;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-09</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #1f5740;background:rgba(52,211,153,0.12);color:#7dd6b0;white-space:nowrap">◑ Partial</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Curiosity · active information-seeking</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#34d399">P2 · dopaminergic · seeking · needs BCF-02, BCF-03</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> acting on detected gaps — an exploration trigger, curiosity-driven questions, self-directed search, and intrinsic reward for closing a gap. <strong style="color:#eaf5ff">Why:</strong> endogenous information-seeking makes the self-improvement loop self-directed rather than externally seeded.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#7dd6b0">Partial today:</strong> gap_detection.rs passively records memory_gaps rows on weak retrieval, but nothing acts on them.</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #34d399;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #34d399;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-10</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #36356a;background:rgba(129,140,248,0.12);color:#b3b9f5;white-space:nowrap">○ New</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">World model · prediction · counterfactual</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#34d399">P2 · predictive cortex · forward model · needs BCF-09, BCF-05</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> causal state-transition edges in the KG, forward simulation of action consequences, and counterfactual rollout. <strong style="color:#eaf5ff">Why:</strong> a forward model lets the resident anticipate consequences and is the source of the prediction-error that powers salience and curiosity.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#b3b9f5">Absent today:</strong> the KG captures static relations but the agent cannot imagine "if I do X, then Y".</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #34d399;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #34d399;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-11</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #1f5740;background:rgba(52,211,153,0.12);color:#7dd6b0;white-space:nowrap">◑ Partial</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Consolidation + reconsolidation (CLS replay)</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#34d399">P2 · hippocampal replay · CLS · needs BCF-01</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> idle replay that distils episodic experience into stronger semantic/procedural generalizations, update-in-place reconsolidation, and spaced-repetition review. <strong style="color:#eaf5ff">Why:</strong> lets a long-lived mind generalize from experience and revise stale beliefs cleanly instead of accumulating contradictions.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#7dd6b0">Partial today:</strong> idle N→1 dedup and conflicts.rs newer-wins soft-close exist, but contradicted memories only open a conflict row rather than updating in place.</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #34d399;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #34d399;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-12</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #1f5740;background:rgba(52,211,153,0.12);color:#7dd6b0;white-space:nowrap">◑ Partial</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Verified runnable skill library (Voyager)</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#34d399">P2 · basal ganglia · procedural · needs BCF-09, BCF-01</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> self-verification of a synthesized skill before promotion, a precondition-keyed runnable skill library, and an automatic curriculum. <strong style="color:#eaf5ff">Why:</strong> Voyager's verified, growing skill library was the dominant driver of open-ended agent performance — how a resident learns to act, not just recall.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#7dd6b0">Partial today:</strong> skill_synthesizer.rs abstracts a candidate skill and the procedural ledger tracks confidence, but skills are unverified and not a runnable library.</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #34d399;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #34d399;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-13</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #36356a;background:rgba(129,140,248,0.12);color:#b3b9f5;white-space:nowrap">○ New</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Self · identity · narrative thread</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#34d399">P2 · default-mode · narrative self · needs BCF-11, BCF-06</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> a synthesized continuous self-narrative and a self-model of capabilities/agency that binds sessions into one persistent "I". <strong style="color:#eaf5ff">Why:</strong> an autobiographical thread is what makes it the same TerranSoul across sessions — the core of the resident-embodiment mandate.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#b3b9f5">Absent today:</strong> identity is reconstructed ad hoc each session.</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #34d399;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #34d399;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-14</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #1f5740;background:rgba(52,211,153,0.12);color:#7dd6b0;white-space:nowrap">◑ Partial</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Context compression · working-memory (MemGPT)</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#34d399">P2 · PFC · context manager · needs BCF-05</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> progressive summarization / virtual-context paging within a long session, retaining a recency+salience-weighted window. <strong style="color:#eaf5ff">Why:</strong> a resident has long, multi-hour sessions; graceful compression keeps working memory coherent without truncation.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#7dd6b0">Partial today:</strong> the short-term buffer is FIFO, so detail is lost abruptly and long conversations overflow the window.</div>
-      </div>
-
-    </div>
-
-    <!-- ===== P3 band ===== -->
-    <div style="display:flex;align-items:center;gap:12px;margin:24px 2px 12px">
-      <span style="width:10px;height:10px;border-radius:50%;background:#a78bfa;box-shadow:0 0 10px #a78bfa;flex:0 0 auto"></span>
-      <span style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eef6ff">P3 · Higher-order transfer &amp; perception</span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#5f8aa3">set-level bias audit, analogy, multimodal grounding</span>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(296px,1fr));gap:13px">
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #a78bfa;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #a78bfa;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-15</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #1f5740;background:rgba(52,211,153,0.12);color:#7dd6b0;white-space:nowrap">◑ Partial</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Systematic bias detection in retrieval</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#a78bfa">P3 · post-retrieval · set audit · needs BCF-01</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> a set-level audit of the retrieved result set for statistical skew — source over-representation, recency skew, cluster dominance, contradiction density — before injection. <strong style="color:#eaf5ff">Why:</strong> biased retrieval silently skews reasoning; detecting set-level skew protects answer quality and feeds calibration.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#7dd6b0">Partial today:</strong> crag.rs evaluates per-document correctness but never the set.</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #a78bfa;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #a78bfa;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-16</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #36356a;background:rgba(129,140,248,0.12);color:#b3b9f5;white-space:nowrap">○ New</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Analogical reasoning · structure-mapping</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#a78bfa">P3 · association cortex · transfer (g-factor) · needs BCF-10, BCF-12</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> explicit structure-mapping that aligns relational structure across domains (by graph-motif over memory_edges) to transfer a solution schema. <strong style="color:#eaf5ff">Why:</strong> structure-mapping is the engine of human-like generalization to novel problems — the apex transfer mechanism behind fluid intelligence.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#b3b9f5">Absent today:</strong> KG multi-hop is a weak relational substrate, so the g-factor transfer story is unrealized.</div>
-      </div>
-
-      <div style="position:relative;background:linear-gradient(180deg,#0a1322,#070d18);border:1px solid #1f3a52;border-left:3px solid #a78bfa;border-radius:13px;padding:15px 16px 16px;display:flex;flex-direction:column;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,0.35)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid #a78bfa;border-radius:6px;padding:3px 8px;white-space:nowrap">BCF-17</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #36356a;background:rgba(129,140,248,0.12);color:#b3b9f5;white-space:nowrap">○ New</span>
-        </div>
-        <div style="font-family:'Orbitron',sans-serif;font-weight:600;font-size:14px;color:#eaf5ff;line-height:1.2">Embodied · multimodal perception (Gv)</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.03em;color:#a78bfa">P3 · occipital · perception · needs BCF-05, BCF-10</div>
-        <div style="font-size:12.5px;line-height:1.5;color:#c2d2e8"><strong style="color:#eaf5ff">What:</strong> a provider-abstracted perception front-end mapping image/screen/spatial input into the same memory schema with a modality field and spatial KG edges. <strong style="color:#eaf5ff">Why:</strong> multimodal grounding extends the resident beyond text and enables spatial/embodied reasoning.</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.5;color:#86a0bc;border-top:1px solid #15293c;padding-top:8px"><strong style="color:#b3b9f5">Absent today:</strong> the VRM avatar is output-only, leaving the CHC visual-spatial ability unrepresented.</div>
-      </div>
-
-    </div>
-
-    <div style="margin-top:20px;padding-top:13px;border-top:1px solid #15293c;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.55;color:#5f7d96">AGI-purity mandate (every chunk): all weights / thresholds / setpoints live as brain-seeded config rows in mcp-data/shared/memory-seed.sql and self-tune from logged outcomes — no hardcoded domain logic, verb lists, scores or persona text in source. Each chunk also updates docs/brain-advanced-design.md as the design contract.</div>
-
-  </section>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1480,&quot;height&quot;:760},&quot;showGrid&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;motion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
 class Component extends DCLogic {
-  state = { filter: 'all', hoverId: null, pinId: 'grp-all' };
+  state = { filter: 'all', hoverId: null, pinId: 'grp-all', showPlanned: false };
 
   LOBES = [
     { id:'prefrontal', mx:299, my:130, lx:138, ly:120, lex:152, ley:124, anchor:'end',    color:'#818cf8', title:'Focus',  region:'frontal lobe',  system:'cortex' },
@@ -705,6 +484,35 @@ class Component extends DCLogic {
     { id:'ch-connectors', x:402, title:'Ingest' },
     { id:'ch-voice',      x:498, title:'Voice' },
     { id:'ch-obs',        x:566, title:'Observe' },
+  ];
+
+  // PLANNED cognitive faculties (BCF-01…17) — WIP nodes near their parent brain region.
+  // mx,my = node marker; ax,ay = parent region marker it springs from; status drives the ◑/○ fill.
+  FACULTIES = [
+    // frontal lobe — metacognition · dual-process · goal-stack · working-memory · self
+    { id:'bcf-01', code:'BCF-01', mx:240, my:80,  ax:299, ay:130, status:'partial' },
+    { id:'bcf-03', code:'BCF-03', mx:300, my:62,  ax:299, ay:130, status:'absent'  },
+    { id:'bcf-08', code:'BCF-08', mx:360, my:80,  ax:299, ay:130, status:'partial' },
+    { id:'bcf-14', code:'BCF-14', mx:410, my:104, ax:299, ay:130, status:'partial' },
+    { id:'bcf-13', code:'BCF-13', mx:188, my:104, ax:299, ay:130, status:'absent'  },
+    // parietal / association cortex — theory-of-mind · world-model · analogy
+    { id:'bcf-06', code:'BCF-06', mx:498, my:120, ax:344, ay:176, status:'absent'  },
+    { id:'bcf-10', code:'BCF-10', mx:500, my:156, ax:344, ay:176, status:'absent'  },
+    { id:'bcf-16', code:'BCF-16', mx:512, my:190, ax:344, ay:176, status:'absent'  },
+    // amygdala / limbic — affect
+    { id:'bcf-04', code:'BCF-04', mx:470, my:232, ax:342, ay:222, status:'partial' },
+    // hippocampus — consolidation · prospective memory
+    { id:'bcf-11', code:'BCF-11', mx:150, my:196, ax:256, ay:218, status:'partial' },
+    { id:'bcf-07', code:'BCF-07', mx:138, my:234, ax:256, ay:218, status:'absent'  },
+    // occipital — retrieval-bias audit · perception
+    { id:'bcf-15', code:'BCF-15', mx:146, my:300, ax:232, ay:300, status:'partial' },
+    { id:'bcf-17', code:'BCF-17', mx:162, my:338, ax:232, ay:300, status:'absent'  },
+    // deep / brainstem core — workspace gate · drives · curiosity
+    { id:'bcf-05', code:'BCF-05', mx:300, my:352, ax:299, ay:232, status:'partial' },
+    { id:'bcf-09', code:'BCF-09', mx:240, my:372, ax:299, ay:232, status:'partial' },
+    { id:'bcf-02', code:'BCF-02', mx:362, my:372, ax:299, ay:232, status:'absent'  },
+    // basal ganglia / cerebellum — verified skill library
+    { id:'bcf-12', code:'BCF-12', mx:432, my:346, ax:300, ay:304, status:'partial' },
   ];
 
   ANTENNAS = [
@@ -775,10 +583,79 @@ class Component extends DCLogic {
     'ch-connectors':{kicker:'SENSE · INGEST',dot:'#7de4ff',title:'Ingest Connectors',plain:'Pipes that feed the brain new documents on a schedule, so you don’t have to.',tech:'IMAP, GitHub, RSS, LocalFS behind an AES-256-GCM credential vault.',tags:['IMAP','GitHub','RSS']},
     'ch-voice':{kicker:'SENSE · OUTPUT',dot:'#7de4ff',title:'Voice & Audio',plain:'The brain’s spoken and sung voice.',tech:'On-device Supertonic TTS + the song studio pipeline.',tags:['TTS','song']},
     'ch-obs':{kicker:'SENSE · TELEMETRY',dot:'#7de4ff',title:'Observability',plain:'Every turn is traced so the brain can watch — and heal — itself.',tech:'Latency, tokens and tool calls logged, feeding trace-driven optimization.',tags:['traces','metrics']},
+    // ===== PLANNED cognitive faculties (BCF-01…17) — design-only WIP; source: roadmap section + rules/milestones.md Phase BCF =====
+    'bcf-01':{kicker:'FRONTAL LOBE · METACOGNITION · WIP',dot:'#22d3ee',title:'Confidence calibration',code:'BCF-01',status:'partial',prioLabel:'P0 · Foundational',
+      part:'P0 · prefrontal · self-monitor · foundational (no deps)',
+      plain:'What: a second-order monitor that estimates a calibrated confidence in its own answer before emitting it, routing answer / abstain / seek-more. Why: a resident behind a frozen 12B must know its own limits to avoid confident hallucination.',
+      tech:'Partial today: reflection grades past sessions and crag.rs scores per-document retrieval, but nothing estimates confidence over the agent’s own answer.',tags:['◷ WIP','P0','partial']},
+    'bcf-02':{kicker:'HYPOTHALAMUS · DRIVES · WIP',dot:'#818cf8',title:'Motivation · drives · homeostasis',code:'BCF-02',status:'absent',prioLabel:'P1 · Regulatory & executive spine',
+      part:'P1 · hypothalamus · homeostasis · needs BCF-05',
+      plain:'What: setpoint need-variables (coverage, bond, integrity, upkeep) with a need-signal on deviation, plus intrinsic reward from learning-progress. Why: an always-on resident needs endogenous drives as the principled, non-hardcoded source of self-directed activity.',
+      tech:'Absent today: with no user prompt the agent has no endogenous “what should I do now”.',tags:['◷ WIP','P1','new']},
+    'bcf-03':{kicker:'DORSOLATERAL PFC · EXECUTIVE · WIP',dot:'#818cf8',title:'Executive · goal-stack · planner',code:'BCF-03',status:'absent',prioLabel:'P1 · Regulatory & executive spine',
+      part:'P1 · dorsolateral PFC · executive · needs BCF-02',
+      plain:'What: a durable goal/agenda store with multi-step decomposition into subgoals, arbitration among competing drives, suspend/resume across interruptions, and commitment tracking. Why: the difference between a reactive chatbot and an agent that pursues goals across sessions.',
+      tech:'Absent today: skill_synthesizer abstracts skills and action_trust gates execution, but there is no agenda.',tags:['◷ WIP','P1','new']},
+    'bcf-04':{kicker:'LIMBIC · AFFECT · WIP',dot:'#818cf8',title:'Affect · appraisal · PAD/mood',code:'BCF-04',status:'partial',prioLabel:'P1 · Regulatory & executive spine',
+      part:'P1 · limbic · appraisal · needs BCF-02, BCF-01',
+      plain:'What: an appraisal step that generates affect from events vs goals/standards, a stored PAD + mood with onset/decay, Gross reappraisal, and affect→salience modulation. Why: cross-session continuity, a believable resident VRM presence, and affect-as-salience for what consolidates.',
+      tech:'Partial today: an “emotional” tag category with fast decay and a VRM emotion field exist, but no appraisal, state or mood.',tags:['◷ WIP','P1','partial']},
+    'bcf-05':{kicker:'THALAMO-CORTICAL · WORKSPACE · WIP',dot:'#818cf8',title:'Attention · salience · workspace gate',code:'BCF-05',status:'partial',prioLabel:'P1 · Regulatory & executive spine',
+      part:'P1 · thalamo-cortical · broadcast · needs BCF-02, BCF-04, BCF-01',
+      plain:'What: a serial winner-take-all bottleneck that arbitrates all competing signals — memories, drive needs, due intentions, affect, surprise — for the single context window. Why: Global Workspace Theory’s broadcast is the integration point that lets drives, affect and prospective memory reach reasoning.',
+      tech:'Partial today: activation.rs + RRF rank retrieval and effort-triage sizes work, but there is no cross-source arbitration.',tags:['◷ WIP','P1','partial']},
+    'bcf-06':{kicker:'TEMPOROPARIETAL · MENTALIZING · WIP',dot:'#818cf8',title:'Theory of mind · user-model',code:'BCF-06',status:'absent',prioLabel:'P1 · Regulatory & executive spine',
+      part:'P1 · temporoparietal · mentalizing · needs BCF-04, BCF-01',
+      plain:'What: an explicit model of the user’s beliefs, intentions and knowledge held distinct from the agent’s own, with perspective-taking, false-belief tracking and empathic tone. Why: a companion must model what the user knows, wants and feels to avoid over- or under-explaining.',
+      tech:'Absent today: semantic memory stores facts about the user but not a separated mind-model.',tags:['◷ WIP','P1','new']},
+    'bcf-07':{kicker:'ROSTRAL PFC · INTENTIONS · WIP',dot:'#818cf8',title:'Prospective memory (remember-to-act)',code:'BCF-07',status:'absent',prioLabel:'P1 · Regulatory & executive spine',
+      part:'P1 · rostral PFC · intentions · needs BCF-05',
+      plain:'What: a first-class “do Y when X happens / at time T” store with a trigger that fires intentions when their cue is met. Why: flagged the single least-addressed faculty — without it a resident cannot reliably follow through beyond the current turn.',
+      tech:'Absent today: the agent cannot honour reminders, deferred follow-through, or future commitments.',tags:['◷ WIP','P1','new']},
+    'bcf-08':{kicker:'PFC · DUAL-PROCESS · WIP',dot:'#818cf8',title:'Test-time-compute allocator',code:'BCF-08',status:'partial',prioLabel:'P1 · Regulatory & executive spine',
+      part:'P1 · PFC · System-1/2 · needs BCF-01',
+      plain:'What: a controller that decides how much deliberation (CoT length, self-consistency, tree search, Reflexion) to spend, escalating only when confidence is low. Why: the lever that turns a frozen 12B into a System-2 reasoner without retraining.',
+      tech:'Partial today: effort triage (Skip/Light/Normal/Full) exists but governs memory work, not reasoning depth.',tags:['◷ WIP','P1','partial']},
+    'bcf-09':{kicker:'DOPAMINERGIC · SEEKING · WIP',dot:'#34d399',title:'Curiosity · active info-seeking',code:'BCF-09',status:'partial',prioLabel:'P2 · Generative & consolidating',
+      part:'P2 · dopaminergic · seeking · needs BCF-02, BCF-03',
+      plain:'What: acting on detected gaps — an exploration trigger, curiosity-driven questions, self-directed search, and intrinsic reward for closing a gap. Why: endogenous information-seeking makes the self-improvement loop self-directed rather than externally seeded.',
+      tech:'Partial today: gap_detection.rs passively records memory_gaps rows on weak retrieval, but nothing acts on them.',tags:['◷ WIP','P2','partial']},
+    'bcf-10':{kicker:'PREDICTIVE CORTEX · FORWARD MODEL · WIP',dot:'#34d399',title:'World model · prediction',code:'BCF-10',status:'absent',prioLabel:'P2 · Generative & consolidating',
+      part:'P2 · predictive cortex · forward model · needs BCF-09, BCF-05',
+      plain:'What: causal state-transition edges in the KG, forward simulation of action consequences, and counterfactual rollout. Why: a forward model lets the resident anticipate consequences and is the source of the prediction-error that powers salience and curiosity.',
+      tech:'Absent today: the KG captures static relations but the agent cannot imagine “if I do X, then Y”.',tags:['◷ WIP','P2','new']},
+    'bcf-11':{kicker:'HIPPOCAMPAL REPLAY · CLS · WIP',dot:'#34d399',title:'Consolidation + reconsolidation',code:'BCF-11',status:'partial',prioLabel:'P2 · Generative & consolidating',
+      part:'P2 · hippocampal replay · CLS · needs BCF-01',
+      plain:'What: idle replay that distils episodic experience into stronger semantic/procedural generalizations, update-in-place reconsolidation, and spaced-repetition review. Why: lets a long-lived mind generalize from experience and revise stale beliefs cleanly instead of accumulating contradictions.',
+      tech:'Partial today: idle N→1 dedup and conflicts.rs newer-wins soft-close exist, but contradicted memories only open a conflict row rather than updating in place.',tags:['◷ WIP','P2','partial']},
+    'bcf-12':{kicker:'BASAL GANGLIA · PROCEDURAL · WIP',dot:'#34d399',title:'Verified runnable skill library',code:'BCF-12',status:'partial',prioLabel:'P2 · Generative & consolidating',
+      part:'P2 · basal ganglia · Voyager · needs BCF-09, BCF-01',
+      plain:'What: self-verification of a synthesized skill before promotion, a precondition-keyed runnable skill library, and an automatic curriculum. Why: Voyager’s verified, growing skill library drove open-ended agent performance — how a resident learns to act, not just recall.',
+      tech:'Partial today: skill_synthesizer.rs abstracts a candidate skill and the procedural ledger tracks confidence, but skills are unverified and not a runnable library.',tags:['◷ WIP','P2','partial']},
+    'bcf-13':{kicker:'DEFAULT-MODE · NARRATIVE SELF · WIP',dot:'#34d399',title:'Self · identity · narrative thread',code:'BCF-13',status:'absent',prioLabel:'P2 · Generative & consolidating',
+      part:'P2 · default-mode · narrative self · needs BCF-11, BCF-06',
+      plain:'What: a synthesized continuous self-narrative and a self-model of capabilities/agency that binds sessions into one persistent “I”. Why: an autobiographical thread is what makes it the same TerranSoul across sessions — the core of the resident-embodiment mandate.',
+      tech:'Absent today: identity is reconstructed ad hoc each session.',tags:['◷ WIP','P2','new']},
+    'bcf-14':{kicker:'PFC · CONTEXT MANAGER · WIP',dot:'#34d399',title:'Context compression · working-memory',code:'BCF-14',status:'partial',prioLabel:'P2 · Generative & consolidating',
+      part:'P2 · PFC · MemGPT · needs BCF-05',
+      plain:'What: progressive summarization / virtual-context paging within a long session, retaining a recency + salience-weighted window. Why: a resident has long, multi-hour sessions; graceful compression keeps working memory coherent without truncation.',
+      tech:'Partial today: the short-term buffer is FIFO, so detail is lost abruptly and long conversations overflow the window.',tags:['◷ WIP','P2','partial']},
+    'bcf-15':{kicker:'POST-RETRIEVAL · SET AUDIT · WIP',dot:'#a78bfa',title:'Systematic retrieval-bias detection',code:'BCF-15',status:'partial',prioLabel:'P3 · Higher-order & perception',
+      part:'P3 · post-retrieval · set audit · needs BCF-01',
+      plain:'What: a set-level audit of the retrieved result set for statistical skew — source over-representation, recency skew, cluster dominance, contradiction density — before injection. Why: biased retrieval silently skews reasoning; detecting set-level skew protects answer quality and feeds calibration.',
+      tech:'Partial today: crag.rs evaluates per-document correctness but never the set.',tags:['◷ WIP','P3','partial']},
+    'bcf-16':{kicker:'ASSOCIATION CORTEX · STRUCTURE-MAPPING · WIP',dot:'#a78bfa',title:'Analogical reasoning',code:'BCF-16',status:'absent',prioLabel:'P3 · Higher-order & perception',
+      part:'P3 · association cortex · transfer (g-factor) · needs BCF-10, BCF-12',
+      plain:'What: explicit structure-mapping that aligns relational structure across domains (by graph-motif over memory_edges) to transfer a solution schema. Why: structure-mapping is the engine of human-like generalization to novel problems — the apex transfer mechanism behind fluid intelligence.',
+      tech:'Absent today: KG multi-hop is a weak relational substrate, so the g-factor transfer story is unrealized.',tags:['◷ WIP','P3','new']},
+    'bcf-17':{kicker:'OCCIPITAL · PERCEPTION · WIP',dot:'#a78bfa',title:'Embodied · multimodal perception',code:'BCF-17',status:'absent',prioLabel:'P3 · Higher-order & perception',
+      part:'P3 · occipital · perception (Gv) · needs BCF-05, BCF-10',
+      plain:'What: a provider-abstracted perception front-end mapping image/screen/spatial input into the same memory schema with a modality field and spatial KG edges. Why: multimodal grounding extends the resident beyond text and enables spatial/embodied reasoning.',
+      tech:'Absent today: the VRM avatar is output-only, leaving the CHC visual-spatial ability unrepresented.',tags:['◷ WIP','P3','new']},
   };
 
   componentDidMount(){
-    this._key = (e)=>{ if(e.key==='r'||e.key==='R') this.setState({ filter:'all', hoverId:null, pinId:'grp-all' }); };
+    this._key = (e)=>{ if(e.key==='r'||e.key==='R') this.setState({ filter:'all', hoverId:null, pinId:'grp-all', showPlanned:false }); };
     window.addEventListener('keydown', this._key);
   }
   componentWillUnmount(){ window.removeEventListener('keydown', this._key); }
@@ -792,6 +669,13 @@ class Component extends DCLogic {
     return { background: on ? 'rgba(34,211,238,0.14)' : 'transparent',
       border: '1px solid ' + (on ? '#22d3ee' : '#244257'),
       color: on ? '#bff0ff' : '#6f88a6', padding:'6px 12px', borderRadius:'7px',
+      fontFamily:"'JetBrains Mono',monospace", fontSize:'10px', letterSpacing:'0.06em', cursor:'pointer' };
+  }
+  btnPlannedStyle(){
+    const on = this.state.showPlanned;
+    return { background: on ? 'rgba(251,191,36,0.16)' : 'transparent',
+      border: '1px dashed ' + (on ? '#fbbf24' : '#6a5326'),
+      color: on ? '#ffe9c8' : '#9a8654', padding:'6px 12px', borderRadius:'7px',
       fontFamily:"'JetBrains Mono',monospace", fontSize:'10px', letterSpacing:'0.06em', cursor:'pointer' };
   }
 
@@ -808,6 +692,19 @@ class Component extends DCLogic {
     const mo = this.props.motion!==false;
     const channels = this.CHANNELS.map(c => ({ ...c, px: c.x/620*100 }));
     const antennas = this.ANTENNAS.map((a,i) => ({ x1:a.x1, y1:a.y1, x2:a.x2, y2:a.y2, mx:a.mid[0][0], my:a.mid[0][1], anim: mo ? ('ts-syn 6s ease-in-out ' + ((i%7)*0.6).toFixed(1) + 's infinite') : 'none' }));
+    const showP = this.state.showPlanned;
+    const FR = 6.5;
+    const faculties = this.FACULTIES.map(f => ({
+      ...f,
+      activeOp: active===f.id ? 0.5 : 0,
+      // partial → filled half-disc (◑); absent → hollow dashed ring only (○)
+      fillPath: f.status==='partial' ? ('M ' + f.mx + ' ' + (f.my-FR) + ' A ' + FR + ' ' + FR + ' 0 0 1 ' + f.mx + ' ' + (f.my+FR) + ' Z') : '',
+      px: f.mx/620*100, py: (f.my+12)/560*100,
+    }));
+    const isFac = typeof active==='string' && active.indexOf('bcf-')===0;
+    const facStatusStyle = (d && d.status==='partial')
+      ? "font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #1f5740;background:rgba(52,211,153,0.12);color:#7dd6b0"
+      : "font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid #36356a;background:rgba(129,140,248,0.12);color:#b3b9f5";
     return {
       lobes, antennas, channels, chanOp: this.opFor('channels'), coreOp: 1, coreActiveOp: active==='core' ? 0.55 : 0,
       gridOpacity: this.props.showGrid===false ? 0 : 1,
@@ -829,6 +726,14 @@ class Component extends DCLogic {
       isChannel: typeof active==='string' && active.indexOf('ch-')===0,
       btnAll: this.btnStyle('all'), btnCortex: this.btnStyle('cortex'),
       btnDeep: this.btnStyle('deep'), btnChannels: this.btnStyle('channels'),
+      btnPlanned: this.btnPlannedStyle(),
+      faculties, plannedOp: showP ? 1 : 0, plannedPe: showP ? 'auto' : 'none',
+      isFaculty: isFac,
+      facCode: isFac ? (d.code || '') : '',
+      facPrio: isFac ? (d.prioLabel || '') : '',
+      facStatusLabel: isFac ? (d.status==='partial' ? '◑ Partial — extends existing code' : '○ New — not yet built') : '',
+      facStatusStyle: isFac ? facStatusStyle : '',
+      onTogglePlanned: ()=>{ const np = !this.state.showPlanned; const patch = { showPlanned: np }; const pin = this.state.pinId; if(!np && typeof pin==='string' && pin.indexOf('bcf-')===0){ patch.pinId='grp-all'; patch.hoverId=null; } this.setState(patch); },
     };
   }
 }
