@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Inside the TerranSoul Brain — how an LLM gets memory, recall and skill</title>
-<meta name="description" content="A plain-language tour of the TerranSoul brain: an LLM core wrapped in brain-region modules — focus, memory, recall, graph, affect, skills — reached over one MCP nerve. Three-tier memory, four cognitive axes, hybrid multi-signal recall, local-or-cloud brain modes, and a self-improvement loop where outcomes shape future recall." />
+<meta name="description" content="A plain-language tour of the TerranSoul brain: an LLM core wrapped in brain-region modules — focus, memory, recall, graph, affect, skills — reached over one MCP nerve. Three-tier memory, four cognitive axes, hybrid multi-signal recall, local-or-cloud brain modes, a self-improvement loop, the seventeen BCF cognitive faculties mapped to real brain regions, a consolidated sharded database design, and generic patterns adopted from rival agent systems." />
 <link rel="canonical" href="https://terransyn.github.io/TerranSoul/brain-advanced-design/" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -112,6 +112,32 @@
   .axis h4{font-family:var(--display);font-weight:600;font-size:14px;margin:0 0 5px;color:#eef6ff}
   .axis .k{font-family:var(--mono);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--steel);margin-bottom:8px}
   .axis p{font-size:13.5px;margin:0;color:var(--ink-faint)}
+
+  /* ===== cognitive-faculty roster (BCF-01..17) ===== */
+  .bcf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin:4px 0 6px}
+  @media (max-width:840px){.bcf-grid{grid-template-columns:1fr}}
+  .bcf-row{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--rule2);border-radius:11px;padding:12px 14px;background:var(--bg-card)}
+  .bcf-row .bcf-code{font-family:var(--mono);font-size:10px;letter-spacing:0.05em;color:var(--cyan-soft);background:rgba(34,211,238,0.07);border:1px solid var(--rule2);border-radius:6px;padding:3px 7px;white-space:nowrap;flex-shrink:0}
+  .bcf-row .bcf-body{flex:1;min-width:0}
+  .bcf-row .bcf-title{font-family:var(--display);font-weight:600;font-size:13.5px;color:#eef6ff;margin:0 0 2px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .bcf-row .bcf-reg{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);margin:0 0 5px}
+  .bcf-row p{font-size:13px;line-height:1.5;margin:0;color:var(--ink-faint);max-width:none}
+  .badge{font-family:var(--mono);font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid;white-space:nowrap;flex-shrink:0}
+  .badge-live{color:#7dffd0;border-color:rgba(52,211,153,0.5);background:rgba(52,211,153,0.08)}
+  .badge-partial{color:#ffe1a3;border-color:rgba(251,191,36,0.45);background:rgba(251,191,36,0.07)}
+  .badge-planned{color:#9fc7dd;border-color:var(--rule2);background:rgba(127,146,179,0.06)}
+
+  /* ===== database-design tables / shard cards ===== */
+  .dtable{width:100%;border-collapse:collapse;margin:6px 0 16px;font-size:13.5px}
+  .dtable th,.dtable td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+  .dtable th{font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--steel);font-weight:500}
+  .dtable td{color:var(--ink-soft)}
+  .dtable td code,.dtable th code{font-family:var(--mono);font-size:12px;color:var(--cyan-soft)}
+  .dtable tr:last-child td{border-bottom:0}
+  .shard{display:flex;flex-direction:column;gap:6px}
+  .shard .sh-name{font-family:var(--mono);font-size:13px;color:#eef6ff}
+  .shard .sh-tag{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:2px}
+  .shard p{font-size:13px;margin:0;color:var(--ink-faint)}
 
   /* ===== footer ===== */
   footer.page-foot{border-top:1px solid var(--rule);margin-top:24px;padding:40px 0 64px}
@@ -358,6 +384,7 @@
       <div class="card region"><span class="tag" style="color:#f472b6"><span class="dot" style="background:#f472b6"></span>AFFECT · feeling</span><span class="name">Affect</span><p>Reads the emotional tone of the brain's own reply, so a companion avatar can show the matching expression. Feeling is part of how it presents, not just what it says.</p></div>
       <div class="card region"><span class="tag" style="color:#fbbf24"><span class="dot" style="background:#fbbf24"></span>SKILLS · practised know-how</span><span class="name">Skills</span><p>Learned how-to procedures that build confidence as they succeed and get benched when they keep failing — the brain getting better at the things it does often.</p></div>
     </div>
+    <div class="callout"><strong>Inside these six regions, finer faculties are growing.</strong> The brain's roadmap names <strong>seventeen cognitive faculties</strong> (BCF-01…17) — confidence calibration, drives, a goal-stack, bias detection and more — each anchored to a real anatomical region of these six. <a href="#faculties">See the faculty layer below →</a></div>
   </section>
 
   <!-- ========== THREE-TIER MEMORY ========== -->
@@ -463,7 +490,8 @@
       <li><strong>Activation</strong> — how connected and how often-used a memory is, a stand-in for "how alive it is in the brain right now."</li>
     </ul>
     <p>Their separate rankings are blended into one, then a final pass reorders the survivors for genuine relevance. The result reads as a single, confident answer — but it's a consensus of several independent opinions, which is exactly why it's hard to fool.</p>
-    <div class="callout"><strong>The value proposition, not the recipe.</strong> The strength is the <em>fusion of multiple signals</em>. We name the signals on purpose and stop there — the exact way they're weighed and combined is deliberately not part of this page.</div>
+    <p>There is one more pass after the rerank: a <strong>set-level bias audit</strong> (the <a href="#faculties">BCF-15 faculty</a>) inspects the whole short list for statistical skew — one source over-represented, everything clustered in a single recent window, near-duplicate dominance, or members that contradict each other — and gently <em>down-weights</em> a skewed set before it ever reaches the model. Hybrid recall checks not just <em>which</em> memories surfaced, but whether the <em>set as a whole</em> is balanced.</p>
+    <div class="callout"><strong>The value proposition, not the recipe.</strong> The strength is the <em>fusion of multiple signals</em>, plus a final fairness check on the set. We name the signals on purpose and stop there — the exact way they're weighed and combined is deliberately not part of this page.</div>
   </section>
 
   <!-- ========== BRAIN MODES ========== -->
@@ -584,9 +612,115 @@
     </div>
   </section>
 
+  <!-- ========== COGNITIVE FACULTIES (BCF) ========== -->
+  <section id="faculties">
+    <div class="sec-num">08 · Cognitive faculties</div>
+    <h2>Seventeen named faculties, each in <span class="accent">a real brain region</span></h2>
+    <p class="lede">The six regions are the coarse map. Inside them the brain is growing a layer of finer <strong>cognitive faculties</strong> — BCF-01 through BCF-17 — drawn from cognitive neuroscience and each anchored to the part of a human brain that does the same job. Four are shipped today; the rest are on the roadmap, partly built or planned, and already visible as placeholders on the interactive brain map.</p>
+
+    <h3>The four shipped faculties</h3>
+    <div class="grid grid-2">
+      <div class="card region"><span class="tag" style="color:#22d3ee"><span class="dot" style="background:#22d3ee"></span>BCF-01 · frontal lobe / prefrontal</span><span class="name">Metacognitive confidence calibration</span><p>A second-order monitor that estimates a <em>calibrated</em> confidence in the brain's own answer <em>before</em> it is spoken, and routes the turn to one of four honest choices — answer, deliberate, seek more evidence, or abstain. It reads only structural signals (top score, margin, retrieval quality, agreement across samples, supporting links) and learns its own calibration curve from logged outcomes, so a small local model can decline to bluff rather than hallucinate confidently.</p></div>
+      <div class="card region"><span class="tag" style="color:#818cf8"><span class="dot" style="background:#818cf8"></span>BCF-02 · hypothalamus · drives</span><span class="name">Motivation, drives &amp; homeostasis</span><p>Endogenous "what should I do now" for an always-on resident. A set of homeostatic drives — coverage (curiosity), competence (mastery), integrity (coherence), upkeep (tidiness) and bond (connection) — each measured from real store metrics. Deviation from a setpoint becomes a need signal, and closing a gap or tidying the store is intrinsic reward. The highest-need drive surfaces as an intent for the goal-stack to act on; drive weights are <em>learned</em> from whether pursuing them tends to succeed.</p></div>
+      <div class="card region"><span class="tag" style="color:#818cf8"><span class="dot" style="background:#818cf8"></span>BCF-03 · dorsolateral PFC · executive</span><span class="name">Executive function &amp; goal-stack</span><p>The agenda that turns a fleeting drive into sustained pursuit. A prioritised stack of goals that persists across sessions, with arbitration (priority × drive-weight × due-ness, plus a commitment bonus), a suspend / resume / done / abandon lifecycle, progress tracking that auto-closes finished goals, and commitments with optional deadlines. Stale goals decay so neglected ones sink. This is the difference between a reactive chatbot and an agent that follows through.</p></div>
+      <div class="card region"><span class="tag" style="color:#a78bfa"><span class="dot" style="background:#a78bfa"></span>BCF-15 · post-retrieval · set audit</span><span class="name">Systematic retrieval-bias detection</span><p>A fairness check on the <em>whole</em> retrieved set, run after rerank but before the model sees it. Four structural metrics — source concentration, recency skew, single-cluster dominance and contradiction density, each normalised to a 0–1 score with no domain word-lists — flag a skewed set and down-weight it. It judges the <em>set</em>, where the per-document quality check judges each row, and its thresholds self-tune from their own flag-rate history.</p></div>
+    </div>
+    <div class="callout"><strong>How they stay honest:</strong> every threshold, weight and setpoint above lives in the brain's own seeded configuration, not as a number hardcoded in source — so the brain can re-tune itself, and a fresh store with no seed simply has the faculty switched off. Each faculty writes only its own rows through the one MCP gateway; there are no private caches.</div>
+
+    <h3 style="margin-top:26px">The full faculty roster &amp; its brain-region map</h3>
+    <p>Each faculty sits beside the anatomical region that performs the matching function in a human brain — consistent with the placements on the <a href="../brain-architecture/">interactive brain map</a>. <span class="muted">Status: <strong style="color:#7dffd0">shipped</strong> = live today · <strong style="color:#ffe1a3">partial</strong> = a precursor exists · <strong style="color:#9fc7dd">planned</strong> = on the roadmap.</span></p>
+    <div class="bcf-grid">
+      <div class="bcf-row"><span class="bcf-code">BCF-01</span><div class="bcf-body"><div class="bcf-title">Confidence calibration <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Frontal lobe · prefrontal · metacognition</div><p>Knows when it doesn't know — calibrated self-confidence that gates answer vs. abstain vs. seek-more.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-02</span><div class="bcf-body"><div class="bcf-title">Drives &amp; homeostasis <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Hypothalamus · motivation</div><p>Setpoint need-variables plus intrinsic reward from learning-progress — the source of self-directed activity.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-03</span><div class="bcf-body"><div class="bcf-title">Executive · goal-stack <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Dorsolateral PFC · executive</div><p>A durable, arbitrated goal stack with suspend/resume and commitment tracking that persists across sessions.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-04</span><div class="bcf-body"><div class="bcf-title">Affect · appraisal · mood <span class="badge badge-partial">partial</span></div><div class="bcf-reg">Limbic · amygdala</div><p>Appraises events against goals into a stored mood that decays — and modulates what becomes salient.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-05</span><div class="bcf-body"><div class="bcf-title">Attention · workspace gate <span class="badge badge-partial">partial</span></div><div class="bcf-reg">Thalamo-cortical · broadcast</div><p>A winner-take-all bottleneck arbitrating memories, drives, intentions, affect and surprise for the one context window.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-06</span><div class="bcf-body"><div class="bcf-title">Theory of mind · user-model <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Temporoparietal · mentalizing</div><p>An explicit model of what the user knows, wants and feels, held apart from the agent's own.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-07</span><div class="bcf-body"><div class="bcf-title">Prospective memory <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Rostral PFC · intentions</div><p>A "do Y when X happens / at time T" store that fires an intention when its cue is met — follow-through beyond the turn.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-08</span><div class="bcf-body"><div class="bcf-title">Test-time-compute allocator <span class="badge badge-partial">partial</span></div><div class="bcf-reg">PFC · System-1 / System-2</div><p>Decides how much deliberation to spend, escalating only when confidence is low — System-2 on demand without retraining.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-09</span><div class="bcf-body"><div class="bcf-title">Curiosity · info-seeking <span class="badge badge-partial">partial</span></div><div class="bcf-reg">Dopaminergic · seeking</div><p>Acts on detected gaps with curiosity-driven questions and self-directed search, rewarded for closing a gap.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-10</span><div class="bcf-body"><div class="bcf-title">World model · prediction <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Predictive cortex · forward model</div><p>Causal "if I do X then Y" transitions for forward simulation and counterfactuals — the source of prediction-error.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-11</span><div class="bcf-body"><div class="bcf-title">Consolidation · reconsolidation <span class="badge badge-partial">partial</span></div><div class="bcf-reg">Hippocampal replay · CLS</div><p>Idle replay that distils episodes into durable generalisations and revises stale beliefs in place.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-12</span><div class="bcf-body"><div class="bcf-title">Verified skill library <span class="badge badge-partial">partial</span></div><div class="bcf-reg">Basal ganglia · procedural</div><p>Self-verified, precondition-keyed runnable skills with an automatic curriculum — learning to act, not just recall.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-13</span><div class="bcf-body"><div class="bcf-title">Self · narrative identity <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Default-mode · narrative self</div><p>A continuous self-narrative that binds sessions into one persistent "I" — the heart of resident embodiment.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-14</span><div class="bcf-body"><div class="bcf-title">Context compression <span class="badge badge-partial">partial</span></div><div class="bcf-reg">PFC · context manager</div><p>Progressive summarisation / virtual-context paging that keeps long sessions coherent without abrupt truncation.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-15</span><div class="bcf-body"><div class="bcf-title">Retrieval-bias detection <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Post-retrieval · occipital · set audit</div><p>Audits the retrieved set for statistical skew and down-weights it before injection.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-16</span><div class="bcf-body"><div class="bcf-title">Analogical reasoning <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Association cortex · structure-mapping</div><p>Aligns relational structure across domains to transfer a solution schema — human-like generalisation.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-17</span><div class="bcf-body"><div class="bcf-title">Multimodal perception <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Occipital · perception</div><p>A perception front-end mapping image / screen / spatial input into the same memory schema with spatial graph edges.</p></div></div>
+    </div>
+    <div class="callout"><strong>Why anatomy:</strong> the mapping isn't decoration. Confidence and executive control belong to the prefrontal cortex; drives to the hypothalamus; affect to the limbic system; memory consolidation to the hippocampus; perception to the occipital cortex — so the brain-region a faculty sits in is also the clearest shorthand for what it does.</div>
+  </section>
+
+  <!-- ========== DATABASE DESIGN ========== -->
+  <section id="database">
+    <div class="sec-num">09 · Database design</div>
+    <h2>One clean schema, <span class="accent">sharded for the write storm</span></h2>
+    <p class="lede">The memory store is being rebuilt around a single, self-contained schema instead of a long chain of in-place upgrades — and split into purpose-built shards so the high-frequency writes of an always-on resident never block recall. <span class="muted">This section is a <strong>design contract</strong>: the spec a follow-up change implements, not yet live in the store. Because TerranSoul is pre-release there is no production data to migrate, so the schema can be recreated clean.</span></p>
+
+    <h3>Why redesign — three structural debts</h3>
+    <ul class="clean">
+      <li><strong>A 33-step migration chain no real database needs.</strong> The old store carried one canonical schema <em>plus</em> ~20 self-heal helpers that dragged a hypothetical old table forward column-by-column — dead weight that bloated startup and made the true schema hard to read.</li>
+      <li><strong>One monolithic database file.</strong> A single SQLite file is single-writer: ingest, access-counter bumps, embedding writes, decay and append-only logging all serialised behind one lock, and every checkpoint replayed all of it.</li>
+      <li><strong>Unbounded append-only logs.</strong> Telemetry (~86k rows/day), traces, sync and calibration logs had no retention policy — inflating the write-ahead log and slowing every scan, even though their write-once, sequential access pattern is the opposite of the random-access knowledge table.</li>
+    </ul>
+
+    <h3>One definition, five table groups</h3>
+    <p>The canonical schema plus its version-helper chain collapse into a <strong>single schema applied once</strong> (version reset to 1). Every column exists in its <code>CREATE TABLE</code> from the start — no backfills, no "create indexes last" ordering hazard. The schema reads as five clearly fenced groups:</p>
+    <table class="dtable">
+      <thead><tr><th>Group</th><th>Purpose</th><th>Holds</th></tr></thead>
+      <tbody>
+        <tr><td><code>G1</code> core memory</td><td>the knowledge base + provenance</td><td>memories, versions, conflicts, sources, offload payloads</td></tr>
+        <tr><td><code>G2</code> embeddings &amp; index</td><td>vector + keyword retrieval surfaces</td><td>embeddings, pending-embeddings, full-text index + its sync triggers</td></tr>
+        <tr><td><code>G3</code> knowledge graph</td><td>typed edges + pre-aggregated stats</td><td>edges, graph clusters</td></tr>
+        <tr><td><code>G4</code> append-only logs</td><td>write-heavy, time-ordered, retention-bounded</td><td>traces, telemetry, sync log, calibration log, safety decisions</td></tr>
+        <tr><td><code>G5</code> cognitive-faculty tables</td><td>learning / metacognition state on the hot path</td><td>reinforcements, trigger patterns, gaps, tool-skills, action-trust ledger, decomposition cache, paired devices</td></tr>
+      </tbody>
+    </table>
+    <p>To keep the hot row narrow, the rarely-read <strong>procedural ledger</strong> (success / failure counts, activation tier, deprecation flag) moves out of the wide <code>memories</code> table into a keyed G5 side table — so the 90% retrieval path reads a compact row and the promoter pays a cheap join only when it needs the counters.</p>
+
+    <h3>Sharded for high-throughput writes</h3>
+    <p>The store opens one primary connection and <em>attaches</em> siblings — a single-process scale-out where joins still work but each file gets its own write-ahead log, checkpoint cadence, cache and lock. Routing is keyed on the two axes the memory model already encodes — <strong>tier</strong> (working vs. long) and <strong>access pattern</strong> (random-access knowledge vs. sequential logs):</p>
+    <div class="grid grid-3">
+      <div class="card shard"><span class="sh-tag" style="color:#34d399">durable · primary</span><span class="sh-name">long.db</span><p>The canonical read-heavy RAG database — core memory, embeddings and the knowledge graph. Tuned with the largest cache for fast fused recall.</p></div>
+      <div class="card shard"><span class="sh-tag" style="color:#a78bfa">session-scoped</span><span class="sh-name">working.db</span><p>Working-memory churn that promotes and evicts every turn, aggressively checkpointed so it never dirties the durable index.</p></div>
+      <div class="card shard"><span class="sh-tag" style="color:#fbbf24">write-heavy logs</span><span class="sh-name">logs.db</span><p>Append-only telemetry and traces on a separate checkpoint, decoupling high-frequency log writes from retrieval latency.</p></div>
+    </div>
+    <p>On top of the shards, several mechanisms absorb the write rate of a resident that records something on nearly every turn:</p>
+    <ul class="clean">
+      <li><strong>In-memory write buffer for the hottest counter.</strong> The per-search access-count bump is the worst write-amplifier; instead of one disk write per query it is accumulated in memory and flushed asynchronously, cutting write-ahead-log frames by roughly two orders of magnitude and removing the read/write lock fight on the hot path.</li>
+      <li><strong>Group-commit batching.</strong> A chat turn's many reads run in one transaction, and ingest lands in ~1000-row micro-transactions rather than row-at-a-time, so the durable index commits in batches instead of thrashing the log.</li>
+      <li><strong>Per-shard write-ahead tuning.</strong> Each attached file carries pragmas matched to its role — a large cache and relaxed checkpoint for the read-heavy durable shard, tight checkpoints for the churny working and log shards — with a one-writer / many-reader connection pool.</li>
+      <li><strong>Time-partitioned logs with retention.</strong> Each append-only table rotates into monthly partitions; a background task moves cold partitions to an archive and hard-deletes past a generous per-table window, so the logs never grow without bound.</li>
+      <li><strong>Hot/cold split inside the durable shard.</strong> Partial indexes let recall scan only the live ~10% of the corpus for far better cache residency, while decay and garbage-collection touch the cold rows without stalling reads.</li>
+    </ul>
+    <div class="callout"><strong>What stays invariant:</strong> every read and write still flows through the one MCP gateway — sharding is entirely internal to the store, and no client ever opens a shard directly or keeps a private cache. The table groups, shard keys, retention windows and pragmas are generic infrastructure; none of them encode any task answer.</div>
+  </section>
+
+  <!-- ========== COMPETITOR ADOPTIONS ========== -->
+  <section id="adoptions">
+    <div class="sec-num">10 · Adopted from the field</div>
+    <h2>Best ideas from rival agents, <span class="accent">re-grounded as our own</span></h2>
+    <p class="lede">TerranSoul studies competing agent systems and folds their strongest <em>generic</em> patterns into the brain — reimplemented on existing modules as domain-agnostic primitives. No upstream source, prompts, branded identity or schema is copied; each adoption <strong>enhances</strong> a part of the brain rather than bolting on a parallel one. Influences are credited in the project's CREDITS file.</p>
+
+    <div class="grid grid-2">
+      <div class="card region"><span class="tag" style="color:#34d399"><span class="dot" style="background:#34d399"></span>GENesis-AGI · self-improvement primitives</span><span class="name">Sharper recall &amp; safe consolidation</span><p>A study of GENesis-AGI contributed several generic mechanisms, each reimplemented in Rust: an <strong>activation signal</strong> as an extra recall term (how alive a memory is right now), an <strong>echo-collapse diversity pass</strong> that stops near-duplicates dominating a result set, <strong>auto-linking on write</strong> so new memories join the graph immediately, <strong>consolidation safety gates</strong> (reversible rollback, faithfulness review, a shrink guard), and <strong>outcome-classified write-back</strong> that routes a five-class session outcome to reinforce, quarantine or extract.</p></div>
+      <div class="card region"><span class="tag" style="color:#fbbf24"><span class="dot" style="background:#fbbf24"></span>Hermes · autonomous skill loop</span><span class="name">Mint, prove &amp; refine new skills</span><p>Reverse-engineered from the Hermes agent (generically, nothing vendored): a closed learning loop — <em>observe → author → validate → register → reuse → refine</em> — that detects a recurring or workaround-successful trajectory and <strong>creates a fresh reusable skill</strong>, the one capability the brain lacked. New skills are governed by the existing confidence ledger, surfaced by <strong>description-first retrieval</strong> (names and one-liners in the prompt, bodies hydrated on match), and curated through an Active → Stale → Archived lifecycle. <span class="muted">Design contract; not yet shipped.</span></p></div>
+    </div>
+
+    <h3>The patterns it borrows — and where they land</h3>
+    <ul class="clean">
+      <li><strong>A proof-before-trust ledger.</strong> A synthesized skill is born "cold" and advisory-only: retrievable for audit but never auto-injected until it earns promotion through the confidence ledger and clears an offline replay check that confirms it doesn't lower answer quality. Unproven know-how can't change live behaviour.</li>
+      <li><strong>Snapshot-style checkpoints.</strong> Every self-authored write is snapshotted before it mutates anything and archived rather than deleted, so a bad consolidation can be rolled back — and a <strong>frozen-snapshot write</strong> persists to disk now but only folds into the prompt next session, keeping the model's prefix cache stable mid-conversation.</li>
+      <li><strong>Self-repairing skills.</strong> Re-authoring an existing skill is an <em>idempotent patch</em> keyed on source + name, so an outdated procedure is updated in place instead of spawning a duplicate — repair, not proliferation.</li>
+      <li><strong>A pre-write safety scan.</strong> Before any self-authored artefact is stored, a generic content scan (prompt-injection, credential-exfiltration, hidden-character checks) gates it behind a trust tier and quarantines anything below the floor — complementing the faithfulness review that already guards fidelity.</li>
+      <li><strong>An import seam for external tool-skills.</strong> The same skill catalog can ingest tool-skills from sibling agents such as OpenClaw and Hermes, tagged by source, so imported, synthesized and built-in skills share one search, install and uninstall surface.</li>
+    </ul>
+    <div class="callout"><strong>Every borrowed knob is brain-resident.</strong> Cluster sizes, look-back windows, length caps, promotion floors and curator timings all live in the brain's seeded configuration — read at runtime, never hardcoded — so adoptions stay tunable and free of task-specific answers.</div>
+  </section>
+
   <!-- ========== CLOSING ========== -->
   <section id="closing">
-    <div class="sec-num">08 · In a sentence</div>
+    <div class="sec-num">11 · In a sentence</div>
     <h2>The whole idea</h2>
     <p class="lede">An LLM at the core, wrapped in the regions of a real brain — focus, memory, recall, association, feeling and skill — all reachable through one nerve, all learning from how things turn out. A model that doesn't just answer, but remembers, connects and grows.</p>
     <div class="hero-cta" style="margin-top:8px">

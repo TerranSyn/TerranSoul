@@ -76,9 +76,7 @@
       <button type="button" data-filter="all" style="{{ btnAll }}" onClick="{{ onFilter }}">WHOLE BRAIN</button>
       <button type="button" data-filter="cortex" style="{{ btnCortex }}" onClick="{{ onFilter }}">CORTEX</button>
       <button type="button" data-filter="deep" style="{{ btnDeep }}" onClick="{{ onFilter }}">DEEP</button>
-      <button type="button" data-filter="channels" style="{{ btnChannels }}" onClick="{{ onFilter }}">SENSES</button>
-      <span style="width:1px;height:20px;background:#1f3a52;margin:0 1px"></span>
-      <button type="button" data-planned="toggle" style="{{ btnPlanned }}" onClick="{{ onTogglePlanned }}" title="Show / hide the planned cognitive-faculty layer (BCF-01…17)">◷ PLANNED</button>
+      <button type="button" data-filter="channels" style="{{ btnChannels }}" onClick="{{ onFilter }}">CLIENTS</button>
     </div>
   </header>
 
@@ -160,14 +158,14 @@
             <circle cx="299" cy="232" r="18" fill="transparent"/>
           </g>
 
-          <!-- PLANNED COGNITIVE FACULTIES (WIP layer — toggled by the ◷ PLANNED button; hidden by default) -->
-          <g style="opacity:{{ plannedOp }};pointer-events:{{ plannedPe }};transition:opacity .3s">
+          <!-- COGNITIVE FACULTIES (BCF-01…17) — permanent first-class regions, each anchored to its parent brain area -->
+          <g>
             <sc-for list="{{ faculties }}" as="f" hint-placeholder-count="17">
-              <g data-id="{{ f.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="cursor:pointer" style-hover="filter:brightness(1.3)">
-                <line x1="{{ f.ax }}" y1="{{ f.ay }}" x2="{{ f.mx }}" y2="{{ f.my }}" stroke="#fbbf24" stroke-width="0.7" stroke-dasharray="2 3" opacity="0.32"/>
-                <circle cx="{{ f.mx }}" cy="{{ f.my }}" r="9" fill="none" stroke="#fbbf24" stroke-width="6" opacity="{{ f.activeOp }}" style="transition:opacity .25s"/>
-                <circle cx="{{ f.mx }}" cy="{{ f.my }}" r="6.5" fill="#0a1322" stroke="#fbbf24" stroke-width="1.3" stroke-dasharray="2.4 1.8"/>
-                <path d="{{ f.fillPath }}" fill="#fbbf24" opacity="0.82"/>
+              <g data-id="{{ f.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="opacity:{{ f.op }};cursor:pointer;transition:opacity .25s" style-hover="filter:brightness(1.3)">
+                <line x1="{{ f.ax }}" y1="{{ f.ay }}" x2="{{ f.mx }}" y2="{{ f.my }}" stroke="{{ f.color }}" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.4"/>
+                <circle cx="{{ f.mx }}" cy="{{ f.my }}" r="10" fill="none" stroke="{{ f.color }}" stroke-width="6" opacity="{{ f.activeOp }}" style="transition:opacity .25s"/>
+                <circle cx="{{ f.mx }}" cy="{{ f.my }}" r="5.5" fill="#0a1322" stroke="{{ f.color }}" stroke-width="1.6"/>
+                <circle cx="{{ f.mx }}" cy="{{ f.my }}" r="2.2" fill="{{ f.color }}"/>
               </g>
             </sc-for>
           </g>
@@ -182,10 +180,10 @@
             <circle cx="299" cy="416" r="3" fill="#22d3ee"/>
             <text x="299" y="438" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#9fe9f5">MCP · brainstem · the one nerve</text>
           </g>
-          <sc-for list="{{ channels }}" as="ch" hint-placeholder-count="6">
+          <sc-for list="{{ channels }}" as="ch" hint-placeholder-count="7">
             <g data-id="{{ ch.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="cursor:pointer" style-hover="filter:brightness(1.3)">
               <line x1="299" y1="424" x2="{{ ch.x }}" y2="484" stroke="#1f4358" stroke-width="1.2" stroke-dasharray="3 6" style="animation:ts-flow 9s linear infinite"/>
-              <circle cx="{{ ch.x }}" cy="490" r="5" fill="#06121c" stroke="#34d399" stroke-width="1.4"/>
+              <circle cx="{{ ch.x }}" cy="490" r="5" fill="#06121c" stroke="{{ ch.color }}" stroke-width="1.4"/>
             </g>
           </sc-for>
         </g>
@@ -199,13 +197,13 @@
             <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.04em;color:{{ lobe.color }}">{{ lobe.region }}</div>
           </div>
         </sc-for>
-        <sc-for list="{{ channels }}" as="ch" hint-placeholder-count="6">
+        <sc-for list="{{ channels }}" as="ch" hint-placeholder-count="7">
           <div data-id="{{ ch.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="position:absolute;left:{{ ch.px }}%;top:90.5%;transform:translateX(-50%);pointer-events:auto;cursor:pointer;opacity:{{ chanOp }};transition:opacity .25s;font-family:'JetBrains Mono',monospace;font-size:9px;color:#9fc7dd;white-space:nowrap">{{ ch.title }}</div>
         </sc-for>
-        <!-- PLANNED faculty code labels (HTML overlay so the text paints crisply; gated by the ◷ PLANNED toggle) -->
-        <div style="position:absolute;inset:0;opacity:{{ plannedOp }};transition:opacity .3s">
+        <!-- Faculty code labels (HTML overlay so the text paints crisply) — permanent, always visible -->
+        <div style="position:absolute;inset:0">
           <sc-for list="{{ faculties }}" as="f" hint-placeholder-count="17">
-            <div data-id="{{ f.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="position:absolute;left:{{ f.px }}%;top:{{ f.py }}%;transform:translateX(-50%);pointer-events:{{ plannedPe }};cursor:pointer;text-align:center;white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:0.02em;color:#ffd58a">
+            <div data-id="{{ f.id }}" onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" onClick="{{ onEnter }}" style="position:absolute;left:{{ f.px }}%;top:{{ f.py }}%;transform:translateX(-50%);pointer-events:auto;cursor:pointer;opacity:{{ f.op }};transition:opacity .25s;text-align:center;white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:0.02em;color:{{ f.labelColor }}">
               <span style="background:rgba(7,12,22,0.7);border-radius:4px;padding:1px 3px">{{ f.code }}</span>
             </div>
           </sc-for>
@@ -444,11 +442,10 @@
           <div style="width:100%;display:flex;flex-direction:column;gap:11px;padding:2px 6px">
             <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px">
               <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.05em;color:#dffaff;background:#0a1322;border:1px solid {{ panelDot }};border-radius:6px;padding:3px 8px;white-space:nowrap">{{ facCode }}</span>
-              <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px dashed #6a5326;background:rgba(251,191,36,0.10);color:#ffd58a;white-space:nowrap">◷ Planned · WIP</span>
               <span style="{{ facStatusStyle }}">{{ facStatusLabel }}</span>
             </div>
             <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.04em;color:{{ panelDot }}">{{ facPrio }}</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.55;color:#5f8aa3;border-top:1px solid #15293c;padding-top:9px">Design-only — not yet implemented. The full what / why / how-it-integrates sketch lives in the roadmap below ↓</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.55;color:#5f8aa3;border-top:1px solid #15293c;padding-top:9px">A first-class cognitive faculty in the brain map. The full what / why / how-it-integrates sketch lives in the roadmap below ↓</div>
           </div>
         </sc-if>
       </div>
@@ -466,53 +463,55 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1480,&quot;height&quot;:760},&quot;showGrid&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;motion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
 class Component extends DCLogic {
-  state = { filter: 'all', hoverId: null, pinId: 'grp-all', showPlanned: false };
+  state = { filter: 'all', hoverId: null, pinId: 'grp-all' };
 
   LOBES = [
-    { id:'prefrontal', mx:299, my:130, lx:138, ly:120, lex:152, ley:124, anchor:'end',    color:'#818cf8', title:'Focus',  region:'frontal lobe',  system:'cortex' },
-    { id:'kg',         mx:344, my:176, lx:460, ly:152, lex:452, ley:154, anchor:'start',  color:'#34d399', title:'Graph',  region:'parietal lobe', system:'cortex' },
-    { id:'rag',        mx:232, my:300, lx:138, ly:332, lex:152, ley:326, anchor:'end',    color:'#22d3ee', title:'Recall', region:'occipital lobe',system:'cortex' },
-    { id:'memory',     mx:256, my:218, lx:122, ly:206, lex:134, ley:210, anchor:'end',    color:'#a78bfa', title:'Memory', region:'hippocampus',   system:'deep' },
-    { id:'amygdala',   mx:342, my:222, lx:486, ly:236, lex:478, ley:232, anchor:'start',  color:'#f472b6', title:'Affect', region:'amygdala',      system:'deep' },
-    { id:'procedural', mx:300, my:304, lx:452, ly:330, lex:444, ley:326, anchor:'start',  color:'#fbbf24', title:'Skills', region:'cerebellum',    system:'deep' },
+    { id:'prefrontal', mx:299, my:130, lx:138, ly:120, lex:152, ley:124, anchor:'end',    color:'#818cf8', title:'Focus',  region:'prefrontal cortex · BA 9/46', system:'cortex' },
+    { id:'kg',         mx:344, my:176, lx:460, ly:152, lex:452, ley:154, anchor:'start',  color:'#34d399', title:'Graph',  region:'parietal · association cortex', system:'cortex' },
+    { id:'rag',        mx:232, my:300, lx:138, ly:332, lex:152, ley:326, anchor:'end',    color:'#22d3ee', title:'Recall', region:'occipital · visual cortex',     system:'cortex' },
+    { id:'memory',     mx:256, my:218, lx:122, ly:206, lex:134, ley:210, anchor:'end',    color:'#a78bfa', title:'Memory', region:'hippocampus · medial temporal', system:'deep' },
+    { id:'amygdala',   mx:342, my:222, lx:486, ly:236, lex:478, ley:232, anchor:'start',  color:'#f472b6', title:'Affect', region:'amygdala · limbic',             system:'deep' },
+    { id:'procedural', mx:300, my:304, lx:452, ly:330, lex:444, ley:326, anchor:'start',  color:'#fbbf24', title:'Skills', region:'cerebellum',                    system:'deep' },
   ];
 
+  // MCP brainstem fan-out: the agents and apps that reach the one brain over MCP.
   CHANNELS = [
-    { id:'ch-desktop',    x:90,  title:'Desktop' },
-    { id:'ch-coding',     x:192, title:'Coding' },
-    { id:'ch-bench',      x:300, title:'Bench' },
-    { id:'ch-connectors', x:402, title:'Ingest' },
-    { id:'ch-voice',      x:498, title:'Voice' },
-    { id:'ch-obs',        x:566, title:'Observe' },
+    { id:'ch-claude',   x:60,  title:'Claude',   color:'#34d399' },
+    { id:'ch-codex',    x:140, title:'Codex',    color:'#34d399' },
+    { id:'ch-openclaw', x:220, title:'OpenClaw', color:'#34d399' },
+    { id:'ch-hermes',   x:300, title:'Hermes',   color:'#34d399' },
+    { id:'ch-peer',     x:380, title:'Peer TS',  color:'#a78bfa' },
+    { id:'ch-desktop',  x:460, title:'Desktop',  color:'#22d3ee' },
+    { id:'ch-mobile',   x:540, title:'Mobile',   color:'#22d3ee' },
   ];
 
-  // PLANNED cognitive faculties (BCF-01…17) — WIP nodes near their parent brain region.
-  // mx,my = node marker; ax,ay = parent region marker it springs from; status drives the ◑/○ fill.
+  // Cognitive faculties (BCF-01…17) — first-class permanent nodes, each placed over its real brain region.
+  // mx,my = node marker; ax,ay = parent region marker it springs from; color tints by region; status = build maturity.
   FACULTIES = [
-    // frontal lobe — metacognition · dual-process · goal-stack · working-memory · self
-    { id:'bcf-01', code:'BCF-01', mx:240, my:80,  ax:299, ay:130, status:'partial' },
-    { id:'bcf-03', code:'BCF-03', mx:300, my:62,  ax:299, ay:130, status:'absent'  },
-    { id:'bcf-08', code:'BCF-08', mx:360, my:80,  ax:299, ay:130, status:'partial' },
-    { id:'bcf-14', code:'BCF-14', mx:410, my:104, ax:299, ay:130, status:'partial' },
-    { id:'bcf-13', code:'BCF-13', mx:188, my:104, ax:299, ay:130, status:'absent'  },
+    // prefrontal cortex — metacognition · dual-process · goal-stack · working-memory · self
+    { id:'bcf-01', code:'BCF-01', mx:240, my:80,  ax:299, ay:130, color:'#818cf8', system:'cortex', status:'partial' },
+    { id:'bcf-03', code:'BCF-03', mx:300, my:62,  ax:299, ay:130, color:'#818cf8', system:'cortex', status:'absent'  },
+    { id:'bcf-08', code:'BCF-08', mx:360, my:80,  ax:299, ay:130, color:'#818cf8', system:'cortex', status:'partial' },
+    { id:'bcf-14', code:'BCF-14', mx:410, my:104, ax:299, ay:130, color:'#818cf8', system:'cortex', status:'partial' },
+    { id:'bcf-13', code:'BCF-13', mx:188, my:104, ax:299, ay:130, color:'#818cf8', system:'cortex', status:'absent'  },
     // parietal / association cortex — theory-of-mind · world-model · analogy
-    { id:'bcf-06', code:'BCF-06', mx:498, my:120, ax:344, ay:176, status:'absent'  },
-    { id:'bcf-10', code:'BCF-10', mx:500, my:156, ax:344, ay:176, status:'absent'  },
-    { id:'bcf-16', code:'BCF-16', mx:512, my:190, ax:344, ay:176, status:'absent'  },
+    { id:'bcf-06', code:'BCF-06', mx:498, my:120, ax:344, ay:176, color:'#34d399', system:'cortex', status:'absent'  },
+    { id:'bcf-10', code:'BCF-10', mx:500, my:156, ax:344, ay:176, color:'#34d399', system:'cortex', status:'absent'  },
+    { id:'bcf-16', code:'BCF-16', mx:512, my:190, ax:344, ay:176, color:'#34d399', system:'cortex', status:'absent'  },
     // amygdala / limbic — affect
-    { id:'bcf-04', code:'BCF-04', mx:470, my:232, ax:342, ay:222, status:'partial' },
-    // hippocampus — consolidation · prospective memory
-    { id:'bcf-11', code:'BCF-11', mx:150, my:196, ax:256, ay:218, status:'partial' },
-    { id:'bcf-07', code:'BCF-07', mx:138, my:234, ax:256, ay:218, status:'absent'  },
-    // occipital — retrieval-bias audit · perception
-    { id:'bcf-15', code:'BCF-15', mx:146, my:300, ax:232, ay:300, status:'partial' },
-    { id:'bcf-17', code:'BCF-17', mx:162, my:338, ax:232, ay:300, status:'absent'  },
-    // deep / brainstem core — workspace gate · drives · curiosity
-    { id:'bcf-05', code:'BCF-05', mx:300, my:352, ax:299, ay:232, status:'partial' },
-    { id:'bcf-09', code:'BCF-09', mx:240, my:372, ax:299, ay:232, status:'partial' },
-    { id:'bcf-02', code:'BCF-02', mx:362, my:372, ax:299, ay:232, status:'absent'  },
+    { id:'bcf-04', code:'BCF-04', mx:470, my:232, ax:342, ay:222, color:'#f472b6', system:'deep',   status:'partial' },
+    // hippocampus / medial temporal — consolidation · prospective memory
+    { id:'bcf-11', code:'BCF-11', mx:150, my:196, ax:256, ay:218, color:'#a78bfa', system:'deep',   status:'partial' },
+    { id:'bcf-07', code:'BCF-07', mx:138, my:234, ax:256, ay:218, color:'#a78bfa', system:'deep',   status:'absent'  },
+    // occipital / visual cortex — retrieval-bias audit · perception
+    { id:'bcf-15', code:'BCF-15', mx:146, my:300, ax:232, ay:300, color:'#22d3ee', system:'cortex', status:'partial' },
+    { id:'bcf-17', code:'BCF-17', mx:162, my:338, ax:232, ay:300, color:'#22d3ee', system:'cortex', status:'absent'  },
+    // diencephalon / midbrain core — thalamic gate · hypothalamic drives · dopaminergic curiosity
+    { id:'bcf-05', code:'BCF-05', mx:300, my:352, ax:299, ay:232, color:'#22d3ee', system:'deep',   status:'partial' },
+    { id:'bcf-09', code:'BCF-09', mx:240, my:372, ax:299, ay:232, color:'#22d3ee', system:'deep',   status:'partial' },
+    { id:'bcf-02', code:'BCF-02', mx:362, my:372, ax:299, ay:232, color:'#22d3ee', system:'deep',   status:'absent'  },
     // basal ganglia / cerebellum — verified skill library
-    { id:'bcf-12', code:'BCF-12', mx:432, my:346, ax:300, ay:304, status:'partial' },
+    { id:'bcf-12', code:'BCF-12', mx:432, my:346, ax:300, ay:304, color:'#fbbf24', system:'deep',   status:'partial' },
   ];
 
   ANTENNAS = [
@@ -546,9 +545,9 @@ class Component extends DCLogic {
     'grp-deep':{kicker:'DEEP STRUCTURES · MEMORY & FEELING',dot:'#a78bfa',title:'Deep memory',part:'Beneath the cortex.',
       plain:'The structures that store memories, colour them with emotion, and hold learned skills.',
       members:[{label:'Memory — hippocampus',color:'#a78bfa'},{label:'Affect — amygdala',color:'#f472b6'},{label:'Skills — cerebellum',color:'#fbbf24'}],tags:['Memory','Affect','Skills']},
-    'grp-channels':{kicker:'SENSES · INPUT & OUTPUT',dot:'#34d399',title:'The senses',part:'Nerves to the world.',
-      plain:'The apps and feeds that send signals into the brain and carry its actions back out — every one through the MCP brainstem.',
-      members:[{label:'Desktop · Coding · Bench',color:'#34d399'},{label:'Ingest · Voice · Observe',color:'#22d3ee'},{label:'MCP — brainstem',color:'#7de4ff'}],tags:['clients','feeds','MCP']},
+    'grp-channels':{kicker:'CLIENTS · AGENTS & APPS',dot:'#34d399',title:'The clients',part:'Everything that reaches the brain.',
+      plain:'The agents and apps that send signals into the brain and carry its actions back out — every one through the MCP brainstem.',
+      members:[{label:'Agents — Claude · Codex · OpenClaw · Hermes · peer TS',color:'#34d399'},{label:'Apps — Desktop · Mobile',color:'#22d3ee'},{label:'MCP — brainstem',color:'#7de4ff'}],tags:['agents','apps','MCP']},
     prefrontal:{kicker:'FRONTAL LOBE · EXECUTIVE',dot:'#818cf8',title:'Focus',
       part:'Frontal lobe — the brain’s executive: it weighs each task and decides how much effort it deserves.',
       plain:'Not every message needs deep thought. Focus sizes each turn and routes it — trivial ones skip the heavy machinery, hard ones get the full pipeline.',
@@ -577,85 +576,86 @@ class Component extends DCLogic {
       part:'Brainstem — the trunk every signal passes through on its way into the brain.',
       plain:'One protocol any client speaks to reach the brain — coding & self-learning agents (Claude Code, Codex, OpenClaw, Hermes, even another TerranSoul) and apps on desktop or mobile alike, all sharing one memory. The flow runs both ways: the brain also keeps that memory current by pulling from its own sources — RSS/GitHub/IMAP/file connectors, per-repo brains, and peer TerranSoul instances over MCP.',
       tech:'brain_search / brain_suggest_context / brain_ingest_lesson — all CRUD funnelled through the Rust AppStateGateway, the single source of truth. Inbound: scheduled ConnectorSource ingest (RSS/GitHub/IMAP/LocalFS, AES-256-GCM vault), multi-source repo RAG (memory_sources self + repo), and remote-brain search over MCP (lan_share).',tags:['MCP','gateway','connectors']},
-    'ch-desktop':{kicker:'SENSE · CLIENT',dot:'#7de4ff',title:'Desktop Chat',plain:'A VRM companion on Tauri — voice, avatar, and live citation chips, all over the same brain.',tech:'Vue 3 · Tauri · VRM avatar.',tags:['Vue 3','Tauri']},
-    'ch-coding':{kicker:'SENSE · CLIENT',dot:'#7de4ff',title:'Coding Agents',plain:'Claude Code, Copilot, Codex and Cursor read and write one shared memory.',tech:'Same brain over MCP — knowledge one agent writes is legible to the next.',tags:['MCP']},
-    'ch-bench':{kicker:'SENSE · CLIENT',dot:'#7de4ff',title:'Bench Runners',plain:'Test harnesses that measure how well the brain remembers and acts over long tasks.',tech:'Zork I long-horizon play + LongMemEval retrieval quality.',tags:['Zork','LongMemEval']},
-    'ch-connectors':{kicker:'SENSE · INGEST',dot:'#7de4ff',title:'Ingest Connectors',plain:'Pipes that feed the brain new documents on a schedule, so you don’t have to.',tech:'IMAP, GitHub, RSS, LocalFS behind an AES-256-GCM credential vault.',tags:['IMAP','GitHub','RSS']},
-    'ch-voice':{kicker:'SENSE · OUTPUT',dot:'#7de4ff',title:'Voice & Audio',plain:'The brain’s spoken and sung voice.',tech:'On-device Supertonic TTS + the song studio pipeline.',tags:['TTS','song']},
-    'ch-obs':{kicker:'SENSE · TELEMETRY',dot:'#7de4ff',title:'Observability',plain:'Every turn is traced so the brain can watch — and heal — itself.',tech:'Latency, tokens and tool calls logged, feeding trace-driven optimization.',tags:['traces','metrics']},
-    // ===== PLANNED cognitive faculties (BCF-01…17) — design-only WIP; source: roadmap section + rules/milestones.md Phase BCF =====
-    'bcf-01':{kicker:'FRONTAL LOBE · METACOGNITION · WIP',dot:'#22d3ee',title:'Confidence calibration',code:'BCF-01',status:'partial',prioLabel:'P0 · Foundational',
+    'ch-claude':{kicker:'AGENT · CODING',dot:'#7de4ff',title:'Claude Code',plain:'A coding & self-learning agent that reads and writes the one shared brain over MCP.',tech:'Same brain over MCP — knowledge it writes is legible to every other client.',tags:['agent','MCP']},
+    'ch-codex':{kicker:'AGENT · CODING',dot:'#7de4ff',title:'Codex',plain:'A coding agent on the same brain — its memories outlive any single session.',tech:'brain_search / brain_ingest_lesson over MCP, into the shared AppStateGateway.',tags:['agent','MCP']},
+    'ch-openclaw':{kicker:'AGENT · SELF-LEARNING',dot:'#7de4ff',title:'OpenClaw',plain:'A self-learning agent that grows the same memory it reasons over.',tech:'Reads and writes the shared brain over the one MCP nerve.',tags:['agent','MCP']},
+    'ch-hermes':{kicker:'AGENT · SELF-LEARNING',dot:'#7de4ff',title:'Hermes',plain:'A self-learning agent sharing one brain with every other client.',tech:'All CRUD funnelled through the Rust AppStateGateway over MCP.',tags:['agent','MCP']},
+    'ch-peer':{kicker:'AGENT · PEER',dot:'#7de4ff',title:'TerranSoul (peer)',plain:'Another TerranSoul instance reaching this brain — minds sharing memory over MCP / LAN.',tech:'Remote-brain search over MCP (lan_share) between peer instances.',tags:['peer','LAN']},
+    'ch-desktop':{kicker:'APP · CLIENT',dot:'#7de4ff',title:'Desktop app',plain:'A VRM companion on Tauri — voice, avatar, and live citation chips, all over the same brain.',tech:'Vue 3 · Tauri · VRM avatar, all over MCP.',tags:['Vue 3','Tauri']},
+    'ch-mobile':{kicker:'APP · CLIENT',dot:'#7de4ff',title:'Mobile app',plain:'The same brain in your pocket — chat and memory carried over the one MCP nerve.',tech:'Mobile client speaking MCP to the shared brain.',tags:['mobile','MCP']},
+    // ===== cognitive faculties (BCF-01…17) — first-class brain regions; source: roadmap section + rules/milestones.md Phase BCF =====
+    'bcf-01':{kicker:'FRONTAL LOBE · METACOGNITION',dot:'#22d3ee',title:'Confidence calibration',code:'BCF-01',status:'partial',prioLabel:'P0 · Foundational',
       part:'P0 · prefrontal · self-monitor · foundational (no deps)',
       plain:'What: a second-order monitor that estimates a calibrated confidence in its own answer before emitting it, routing answer / abstain / seek-more. Why: a resident behind a frozen 12B must know its own limits to avoid confident hallucination.',
-      tech:'Partial today: reflection grades past sessions and crag.rs scores per-document retrieval, but nothing estimates confidence over the agent’s own answer.',tags:['◷ WIP','P0','partial']},
-    'bcf-02':{kicker:'HYPOTHALAMUS · DRIVES · WIP',dot:'#818cf8',title:'Motivation · drives · homeostasis',code:'BCF-02',status:'absent',prioLabel:'P1 · Regulatory & executive spine',
+      tech:'Partial today: reflection grades past sessions and crag.rs scores per-document retrieval, but nothing estimates confidence over the agent’s own answer.',tags:['P0','partial']},
+    'bcf-02':{kicker:'HYPOTHALAMUS · DRIVES',dot:'#818cf8',title:'Motivation · drives · homeostasis',code:'BCF-02',status:'absent',prioLabel:'P1 · Regulatory & executive spine',
       part:'P1 · hypothalamus · homeostasis · needs BCF-05',
       plain:'What: setpoint need-variables (coverage, bond, integrity, upkeep) with a need-signal on deviation, plus intrinsic reward from learning-progress. Why: an always-on resident needs endogenous drives as the principled, non-hardcoded source of self-directed activity.',
-      tech:'Absent today: with no user prompt the agent has no endogenous “what should I do now”.',tags:['◷ WIP','P1','new']},
-    'bcf-03':{kicker:'DORSOLATERAL PFC · EXECUTIVE · WIP',dot:'#818cf8',title:'Executive · goal-stack · planner',code:'BCF-03',status:'absent',prioLabel:'P1 · Regulatory & executive spine',
+      tech:'Absent today: with no user prompt the agent has no endogenous “what should I do now”.',tags:['P1','new']},
+    'bcf-03':{kicker:'DORSOLATERAL PFC · EXECUTIVE',dot:'#818cf8',title:'Executive · goal-stack · planner',code:'BCF-03',status:'absent',prioLabel:'P1 · Regulatory & executive spine',
       part:'P1 · dorsolateral PFC · executive · needs BCF-02',
       plain:'What: a durable goal/agenda store with multi-step decomposition into subgoals, arbitration among competing drives, suspend/resume across interruptions, and commitment tracking. Why: the difference between a reactive chatbot and an agent that pursues goals across sessions.',
-      tech:'Absent today: skill_synthesizer abstracts skills and action_trust gates execution, but there is no agenda.',tags:['◷ WIP','P1','new']},
-    'bcf-04':{kicker:'LIMBIC · AFFECT · WIP',dot:'#818cf8',title:'Affect · appraisal · PAD/mood',code:'BCF-04',status:'partial',prioLabel:'P1 · Regulatory & executive spine',
+      tech:'Absent today: skill_synthesizer abstracts skills and action_trust gates execution, but there is no agenda.',tags:['P1','new']},
+    'bcf-04':{kicker:'LIMBIC · AFFECT',dot:'#818cf8',title:'Affect · appraisal · PAD/mood',code:'BCF-04',status:'partial',prioLabel:'P1 · Regulatory & executive spine',
       part:'P1 · limbic · appraisal · needs BCF-02, BCF-01',
       plain:'What: an appraisal step that generates affect from events vs goals/standards, a stored PAD + mood with onset/decay, Gross reappraisal, and affect→salience modulation. Why: cross-session continuity, a believable resident VRM presence, and affect-as-salience for what consolidates.',
-      tech:'Partial today: an “emotional” tag category with fast decay and a VRM emotion field exist, but no appraisal, state or mood.',tags:['◷ WIP','P1','partial']},
-    'bcf-05':{kicker:'THALAMO-CORTICAL · WORKSPACE · WIP',dot:'#818cf8',title:'Attention · salience · workspace gate',code:'BCF-05',status:'partial',prioLabel:'P1 · Regulatory & executive spine',
+      tech:'Partial today: an “emotional” tag category with fast decay and a VRM emotion field exist, but no appraisal, state or mood.',tags:['P1','partial']},
+    'bcf-05':{kicker:'THALAMO-CORTICAL · WORKSPACE',dot:'#818cf8',title:'Attention · salience · workspace gate',code:'BCF-05',status:'partial',prioLabel:'P1 · Regulatory & executive spine',
       part:'P1 · thalamo-cortical · broadcast · needs BCF-02, BCF-04, BCF-01',
       plain:'What: a serial winner-take-all bottleneck that arbitrates all competing signals — memories, drive needs, due intentions, affect, surprise — for the single context window. Why: Global Workspace Theory’s broadcast is the integration point that lets drives, affect and prospective memory reach reasoning.',
-      tech:'Partial today: activation.rs + RRF rank retrieval and effort-triage sizes work, but there is no cross-source arbitration.',tags:['◷ WIP','P1','partial']},
-    'bcf-06':{kicker:'TEMPOROPARIETAL · MENTALIZING · WIP',dot:'#818cf8',title:'Theory of mind · user-model',code:'BCF-06',status:'absent',prioLabel:'P1 · Regulatory & executive spine',
+      tech:'Partial today: activation.rs + RRF rank retrieval and effort-triage sizes work, but there is no cross-source arbitration.',tags:['P1','partial']},
+    'bcf-06':{kicker:'TEMPOROPARIETAL · MENTALIZING',dot:'#818cf8',title:'Theory of mind · user-model',code:'BCF-06',status:'absent',prioLabel:'P1 · Regulatory & executive spine',
       part:'P1 · temporoparietal · mentalizing · needs BCF-04, BCF-01',
       plain:'What: an explicit model of the user’s beliefs, intentions and knowledge held distinct from the agent’s own, with perspective-taking, false-belief tracking and empathic tone. Why: a companion must model what the user knows, wants and feels to avoid over- or under-explaining.',
-      tech:'Absent today: semantic memory stores facts about the user but not a separated mind-model.',tags:['◷ WIP','P1','new']},
-    'bcf-07':{kicker:'ROSTRAL PFC · INTENTIONS · WIP',dot:'#818cf8',title:'Prospective memory (remember-to-act)',code:'BCF-07',status:'absent',prioLabel:'P1 · Regulatory & executive spine',
+      tech:'Absent today: semantic memory stores facts about the user but not a separated mind-model.',tags:['P1','new']},
+    'bcf-07':{kicker:'ROSTRAL PFC · INTENTIONS',dot:'#818cf8',title:'Prospective memory (remember-to-act)',code:'BCF-07',status:'absent',prioLabel:'P1 · Regulatory & executive spine',
       part:'P1 · rostral PFC · intentions · needs BCF-05',
       plain:'What: a first-class “do Y when X happens / at time T” store with a trigger that fires intentions when their cue is met. Why: flagged the single least-addressed faculty — without it a resident cannot reliably follow through beyond the current turn.',
-      tech:'Absent today: the agent cannot honour reminders, deferred follow-through, or future commitments.',tags:['◷ WIP','P1','new']},
-    'bcf-08':{kicker:'PFC · DUAL-PROCESS · WIP',dot:'#818cf8',title:'Test-time-compute allocator',code:'BCF-08',status:'partial',prioLabel:'P1 · Regulatory & executive spine',
+      tech:'Absent today: the agent cannot honour reminders, deferred follow-through, or future commitments.',tags:['P1','new']},
+    'bcf-08':{kicker:'PFC · DUAL-PROCESS',dot:'#818cf8',title:'Test-time-compute allocator',code:'BCF-08',status:'partial',prioLabel:'P1 · Regulatory & executive spine',
       part:'P1 · PFC · System-1/2 · needs BCF-01',
       plain:'What: a controller that decides how much deliberation (CoT length, self-consistency, tree search, Reflexion) to spend, escalating only when confidence is low. Why: the lever that turns a frozen 12B into a System-2 reasoner without retraining.',
-      tech:'Partial today: effort triage (Skip/Light/Normal/Full) exists but governs memory work, not reasoning depth.',tags:['◷ WIP','P1','partial']},
-    'bcf-09':{kicker:'DOPAMINERGIC · SEEKING · WIP',dot:'#34d399',title:'Curiosity · active info-seeking',code:'BCF-09',status:'partial',prioLabel:'P2 · Generative & consolidating',
+      tech:'Partial today: effort triage (Skip/Light/Normal/Full) exists but governs memory work, not reasoning depth.',tags:['P1','partial']},
+    'bcf-09':{kicker:'DOPAMINERGIC · SEEKING',dot:'#34d399',title:'Curiosity · active info-seeking',code:'BCF-09',status:'partial',prioLabel:'P2 · Generative & consolidating',
       part:'P2 · dopaminergic · seeking · needs BCF-02, BCF-03',
       plain:'What: acting on detected gaps — an exploration trigger, curiosity-driven questions, self-directed search, and intrinsic reward for closing a gap. Why: endogenous information-seeking makes the self-improvement loop self-directed rather than externally seeded.',
-      tech:'Partial today: gap_detection.rs passively records memory_gaps rows on weak retrieval, but nothing acts on them.',tags:['◷ WIP','P2','partial']},
-    'bcf-10':{kicker:'PREDICTIVE CORTEX · FORWARD MODEL · WIP',dot:'#34d399',title:'World model · prediction',code:'BCF-10',status:'absent',prioLabel:'P2 · Generative & consolidating',
+      tech:'Partial today: gap_detection.rs passively records memory_gaps rows on weak retrieval, but nothing acts on them.',tags:['P2','partial']},
+    'bcf-10':{kicker:'PREDICTIVE CORTEX · FORWARD MODEL',dot:'#34d399',title:'World model · prediction',code:'BCF-10',status:'absent',prioLabel:'P2 · Generative & consolidating',
       part:'P2 · predictive cortex · forward model · needs BCF-09, BCF-05',
       plain:'What: causal state-transition edges in the KG, forward simulation of action consequences, and counterfactual rollout. Why: a forward model lets the resident anticipate consequences and is the source of the prediction-error that powers salience and curiosity.',
-      tech:'Absent today: the KG captures static relations but the agent cannot imagine “if I do X, then Y”.',tags:['◷ WIP','P2','new']},
-    'bcf-11':{kicker:'HIPPOCAMPAL REPLAY · CLS · WIP',dot:'#34d399',title:'Consolidation + reconsolidation',code:'BCF-11',status:'partial',prioLabel:'P2 · Generative & consolidating',
+      tech:'Absent today: the KG captures static relations but the agent cannot imagine “if I do X, then Y”.',tags:['P2','new']},
+    'bcf-11':{kicker:'HIPPOCAMPAL REPLAY · CLS',dot:'#34d399',title:'Consolidation + reconsolidation',code:'BCF-11',status:'partial',prioLabel:'P2 · Generative & consolidating',
       part:'P2 · hippocampal replay · CLS · needs BCF-01',
       plain:'What: idle replay that distils episodic experience into stronger semantic/procedural generalizations, update-in-place reconsolidation, and spaced-repetition review. Why: lets a long-lived mind generalize from experience and revise stale beliefs cleanly instead of accumulating contradictions.',
-      tech:'Partial today: idle N→1 dedup and conflicts.rs newer-wins soft-close exist, but contradicted memories only open a conflict row rather than updating in place.',tags:['◷ WIP','P2','partial']},
-    'bcf-12':{kicker:'BASAL GANGLIA · PROCEDURAL · WIP',dot:'#34d399',title:'Verified runnable skill library',code:'BCF-12',status:'partial',prioLabel:'P2 · Generative & consolidating',
+      tech:'Partial today: idle N→1 dedup and conflicts.rs newer-wins soft-close exist, but contradicted memories only open a conflict row rather than updating in place.',tags:['P2','partial']},
+    'bcf-12':{kicker:'BASAL GANGLIA · PROCEDURAL',dot:'#34d399',title:'Verified runnable skill library',code:'BCF-12',status:'partial',prioLabel:'P2 · Generative & consolidating',
       part:'P2 · basal ganglia · Voyager · needs BCF-09, BCF-01',
       plain:'What: self-verification of a synthesized skill before promotion, a precondition-keyed runnable skill library, and an automatic curriculum. Why: Voyager’s verified, growing skill library drove open-ended agent performance — how a resident learns to act, not just recall.',
-      tech:'Partial today: skill_synthesizer.rs abstracts a candidate skill and the procedural ledger tracks confidence, but skills are unverified and not a runnable library.',tags:['◷ WIP','P2','partial']},
-    'bcf-13':{kicker:'DEFAULT-MODE · NARRATIVE SELF · WIP',dot:'#34d399',title:'Self · identity · narrative thread',code:'BCF-13',status:'absent',prioLabel:'P2 · Generative & consolidating',
+      tech:'Partial today: skill_synthesizer.rs abstracts a candidate skill and the procedural ledger tracks confidence, but skills are unverified and not a runnable library.',tags:['P2','partial']},
+    'bcf-13':{kicker:'DEFAULT-MODE · NARRATIVE SELF',dot:'#34d399',title:'Self · identity · narrative thread',code:'BCF-13',status:'absent',prioLabel:'P2 · Generative & consolidating',
       part:'P2 · default-mode · narrative self · needs BCF-11, BCF-06',
       plain:'What: a synthesized continuous self-narrative and a self-model of capabilities/agency that binds sessions into one persistent “I”. Why: an autobiographical thread is what makes it the same TerranSoul across sessions — the core of the resident-embodiment mandate.',
-      tech:'Absent today: identity is reconstructed ad hoc each session.',tags:['◷ WIP','P2','new']},
-    'bcf-14':{kicker:'PFC · CONTEXT MANAGER · WIP',dot:'#34d399',title:'Context compression · working-memory',code:'BCF-14',status:'partial',prioLabel:'P2 · Generative & consolidating',
+      tech:'Absent today: identity is reconstructed ad hoc each session.',tags:['P2','new']},
+    'bcf-14':{kicker:'PFC · CONTEXT MANAGER',dot:'#34d399',title:'Context compression · working-memory',code:'BCF-14',status:'partial',prioLabel:'P2 · Generative & consolidating',
       part:'P2 · PFC · MemGPT · needs BCF-05',
       plain:'What: progressive summarization / virtual-context paging within a long session, retaining a recency + salience-weighted window. Why: a resident has long, multi-hour sessions; graceful compression keeps working memory coherent without truncation.',
-      tech:'Partial today: the short-term buffer is FIFO, so detail is lost abruptly and long conversations overflow the window.',tags:['◷ WIP','P2','partial']},
-    'bcf-15':{kicker:'POST-RETRIEVAL · SET AUDIT · WIP',dot:'#a78bfa',title:'Systematic retrieval-bias detection',code:'BCF-15',status:'partial',prioLabel:'P3 · Higher-order & perception',
+      tech:'Partial today: the short-term buffer is FIFO, so detail is lost abruptly and long conversations overflow the window.',tags:['P2','partial']},
+    'bcf-15':{kicker:'POST-RETRIEVAL · SET AUDIT',dot:'#a78bfa',title:'Systematic retrieval-bias detection',code:'BCF-15',status:'partial',prioLabel:'P3 · Higher-order & perception',
       part:'P3 · post-retrieval · set audit · needs BCF-01',
       plain:'What: a set-level audit of the retrieved result set for statistical skew — source over-representation, recency skew, cluster dominance, contradiction density — before injection. Why: biased retrieval silently skews reasoning; detecting set-level skew protects answer quality and feeds calibration.',
-      tech:'Partial today: crag.rs evaluates per-document correctness but never the set.',tags:['◷ WIP','P3','partial']},
-    'bcf-16':{kicker:'ASSOCIATION CORTEX · STRUCTURE-MAPPING · WIP',dot:'#a78bfa',title:'Analogical reasoning',code:'BCF-16',status:'absent',prioLabel:'P3 · Higher-order & perception',
+      tech:'Partial today: crag.rs evaluates per-document correctness but never the set.',tags:['P3','partial']},
+    'bcf-16':{kicker:'ASSOCIATION CORTEX · STRUCTURE-MAPPING',dot:'#a78bfa',title:'Analogical reasoning',code:'BCF-16',status:'absent',prioLabel:'P3 · Higher-order & perception',
       part:'P3 · association cortex · transfer (g-factor) · needs BCF-10, BCF-12',
       plain:'What: explicit structure-mapping that aligns relational structure across domains (by graph-motif over memory_edges) to transfer a solution schema. Why: structure-mapping is the engine of human-like generalization to novel problems — the apex transfer mechanism behind fluid intelligence.',
-      tech:'Absent today: KG multi-hop is a weak relational substrate, so the g-factor transfer story is unrealized.',tags:['◷ WIP','P3','new']},
-    'bcf-17':{kicker:'OCCIPITAL · PERCEPTION · WIP',dot:'#a78bfa',title:'Embodied · multimodal perception',code:'BCF-17',status:'absent',prioLabel:'P3 · Higher-order & perception',
+      tech:'Absent today: KG multi-hop is a weak relational substrate, so the g-factor transfer story is unrealized.',tags:['P3','new']},
+    'bcf-17':{kicker:'OCCIPITAL · PERCEPTION',dot:'#a78bfa',title:'Embodied · multimodal perception',code:'BCF-17',status:'absent',prioLabel:'P3 · Higher-order & perception',
       part:'P3 · occipital · perception (Gv) · needs BCF-05, BCF-10',
       plain:'What: a provider-abstracted perception front-end mapping image/screen/spatial input into the same memory schema with a modality field and spatial KG edges. Why: multimodal grounding extends the resident beyond text and enables spatial/embodied reasoning.',
-      tech:'Absent today: the VRM avatar is output-only, leaving the CHC visual-spatial ability unrepresented.',tags:['◷ WIP','P3','new']},
+      tech:'Absent today: the VRM avatar is output-only, leaving the CHC visual-spatial ability unrepresented.',tags:['P3','new']},
   };
 
   componentDidMount(){
-    this._key = (e)=>{ if(e.key==='r'||e.key==='R') this.setState({ filter:'all', hoverId:null, pinId:'grp-all', showPlanned:false }); };
+    this._key = (e)=>{ if(e.key==='r'||e.key==='R') this.setState({ filter:'all', hoverId:null, pinId:'grp-all' }); };
     window.addEventListener('keydown', this._key);
   }
   componentWillUnmount(){ window.removeEventListener('keydown', this._key); }
@@ -671,14 +671,6 @@ class Component extends DCLogic {
       color: on ? '#bff0ff' : '#6f88a6', padding:'6px 12px', borderRadius:'7px',
       fontFamily:"'JetBrains Mono',monospace", fontSize:'10px', letterSpacing:'0.06em', cursor:'pointer' };
   }
-  btnPlannedStyle(){
-    const on = this.state.showPlanned;
-    return { background: on ? 'rgba(251,191,36,0.16)' : 'transparent',
-      border: '1px dashed ' + (on ? '#fbbf24' : '#6a5326'),
-      color: on ? '#ffe9c8' : '#9a8654', padding:'6px 12px', borderRadius:'7px',
-      fontFamily:"'JetBrains Mono',monospace", fontSize:'10px', letterSpacing:'0.06em', cursor:'pointer' };
-  }
-
   renderVals(){
     const active = this.state.hoverId || this.state.pinId || 'core';
     const d = this.DETAILS[active] || this.DETAILS.core;
@@ -692,13 +684,11 @@ class Component extends DCLogic {
     const mo = this.props.motion!==false;
     const channels = this.CHANNELS.map(c => ({ ...c, px: c.x/620*100 }));
     const antennas = this.ANTENNAS.map((a,i) => ({ x1:a.x1, y1:a.y1, x2:a.x2, y2:a.y2, mx:a.mid[0][0], my:a.mid[0][1], anim: mo ? ('ts-syn 6s ease-in-out ' + ((i%7)*0.6).toFixed(1) + 's infinite') : 'none' }));
-    const showP = this.state.showPlanned;
-    const FR = 6.5;
     const faculties = this.FACULTIES.map(f => ({
       ...f,
+      op: this.opFor(f.system),
       activeOp: active===f.id ? 0.5 : 0,
-      // partial → filled half-disc (◑); absent → hollow dashed ring only (○)
-      fillPath: f.status==='partial' ? ('M ' + f.mx + ' ' + (f.my-FR) + ' A ' + FR + ' ' + FR + ' 0 0 1 ' + f.mx + ' ' + (f.my+FR) + ' Z') : '',
+      labelColor: f.color,
       px: f.mx/620*100, py: (f.my+12)/560*100,
     }));
     const isFac = typeof active==='string' && active.indexOf('bcf-')===0;
@@ -717,7 +707,7 @@ class Component extends DCLogic {
       onLeave: ()=> this.setState({ hoverId: null }),
       onFilter: (e)=>{ const f=e.currentTarget.getAttribute('data-filter'); this.setState({ filter:f, hoverId:null, pinId:'grp-'+f }); },
       panelKicker: d.kicker, panelTitle: d.title, panelPlain: d.plain,
-      panelPart: d.part || (typeof active==='string' && active.indexOf('ch-')===0 ? 'A sensory nerve carrying signals to and from the brain.' : ''),
+      panelPart: d.part || (typeof active==='string' && active.indexOf('ch-')===0 ? 'A client reaching the brain through the MCP brainstem.' : ''),
       panelTech: d.tech || '', panelDot: d.dot, panelTags: d.tags||[], groupMembers: d.members||[],
       isGroup: typeof active==='string' && active.indexOf('grp-')===0,
       isCore: active==='core', isPrefrontal: active==='prefrontal', isKg: active==='kg',
@@ -726,14 +716,12 @@ class Component extends DCLogic {
       isChannel: typeof active==='string' && active.indexOf('ch-')===0,
       btnAll: this.btnStyle('all'), btnCortex: this.btnStyle('cortex'),
       btnDeep: this.btnStyle('deep'), btnChannels: this.btnStyle('channels'),
-      btnPlanned: this.btnPlannedStyle(),
-      faculties, plannedOp: showP ? 1 : 0, plannedPe: showP ? 'auto' : 'none',
+      faculties,
       isFaculty: isFac,
       facCode: isFac ? (d.code || '') : '',
       facPrio: isFac ? (d.prioLabel || '') : '',
-      facStatusLabel: isFac ? (d.status==='partial' ? '◑ Partial — extends existing code' : '○ New — not yet built') : '',
+      facStatusLabel: isFac ? (d.status==='partial' ? '◑ Partial — extends existing code' : '○ New faculty') : '',
       facStatusStyle: isFac ? facStatusStyle : '',
-      onTogglePlanned: ()=>{ const np = !this.state.showPlanned; const patch = { showPlanned: np }; const pin = this.state.pinId; if(!np && typeof pin==='string' && pin.indexOf('bcf-')===0){ patch.pinId='grp-all'; patch.hoverId=null; } this.setState(patch); },
     };
   }
 }
