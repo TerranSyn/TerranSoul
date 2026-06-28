@@ -1,0 +1,227 @@
+{
+  "system": "Hermes-Agent",
+  "provider": "builtin holographic (plugins/memory/holographic)",
+  "embedder": "none (FTS5 keyword + Jaccard + numpy-HRR; no model)",
+  "source": "Nous Research hermes-agent, MIT; SQLite FTS5 MemoryStore + FactRetriever",
+  "pipeline": "FTS5 candidates(limit*3) -> Jaccard rerank -> trust weight -> HRR(0.3) -> sort",
+  "weights": {
+    "fts": 0.4,
+    "jaccard": 0.3,
+    "hrr": 0.3
+  },
+  "has_numpy_hrr": true,
+  "avg_recall_at_5": 0.14166666666666666,
+  "avg_recall_at_10": 0.15833333333333333,
+  "avg_recall_at_20": 0.15833333333333333,
+  "avg_ndcg_at_10": 0.18244657876659232,
+  "avg_mrr": 0.2,
+  "latency_p50_ms": 0.0,
+  "ingest_seconds": 167.6,
+  "queries_with_results": 4,
+  "n_obs": 240,
+  "n_unique_texts": 48,
+  "n_queries": 20,
+  "facts_stored": 240,
+  "per_query": [
+    {
+      "query": "How did we set up authentication?",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 20,
+      "retrieved_count": 0
+    },
+    {
+      "query": "JWT token validation middleware",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 10,
+      "retrieved_count": 0
+    },
+    {
+      "query": "PostgreSQL connection issues",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 30,
+      "retrieved_count": 0
+    },
+    {
+      "query": "Playwright test configuration",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 10,
+      "retrieved_count": 0
+    },
+    {
+      "query": "Why did the production deployment fail?",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 30,
+      "retrieved_count": 0
+    },
+    {
+      "query": "rate limiting implementation",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 10,
+      "retrieved_count": 0
+    },
+    {
+      "query": "What security measures did we add?",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 30,
+      "retrieved_count": 0
+    },
+    {
+      "query": "database performance optimization",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 25,
+      "retrieved_count": 0
+    },
+    {
+      "query": "Kubernetes pod crash debugging",
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "recall_at_20": 1.0,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "relevant_count": 5,
+      "retrieved_count": 5
+    },
+    {
+      "query": "Docker containerization setup",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 10,
+      "retrieved_count": 0
+    },
+    {
+      "query": "How does caching work in the app?",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 20,
+      "retrieved_count": 0
+    },
+    {
+      "query": "test infrastructure and factories",
+      "recall_at_5": 0.5,
+      "recall_at_10": 0.5,
+      "recall_at_20": 0.5,
+      "ndcg_at_10": 0.6489315753318465,
+      "mrr": 1.0,
+      "relevant_count": 10,
+      "retrieved_count": 5
+    },
+    {
+      "query": "What happened with the OAuth callback error?",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 5,
+      "retrieved_count": 0
+    },
+    {
+      "query": "monitoring and observability setup",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 15,
+      "retrieved_count": 0
+    },
+    {
+      "query": "Prisma ORM configuration",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 35,
+      "retrieved_count": 0
+    },
+    {
+      "query": "CI/CD pipeline configuration",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 25,
+      "retrieved_count": 0
+    },
+    {
+      "query": "memory leak debugging",
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "recall_at_20": 1.0,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "relevant_count": 5,
+      "retrieved_count": 5
+    },
+    {
+      "query": "API design decisions",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 20,
+      "retrieved_count": 0
+    },
+    {
+      "query": "zod validation schemas",
+      "recall_at_5": 0.3333333333333333,
+      "recall_at_10": 0.6666666666666666,
+      "recall_at_20": 0.6666666666666666,
+      "ndcg_at_10": 1.0,
+      "mrr": 1.0,
+      "relevant_count": 15,
+      "retrieved_count": 10
+    },
+    {
+      "query": "infrastructure as code Terraform",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 5,
+      "retrieved_count": 0
+    }
+  ]
+}
