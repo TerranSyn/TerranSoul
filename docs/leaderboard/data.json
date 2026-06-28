@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-27T10:36:20.788Z",
+  "generated_at": "2026-06-28T06:47:11.763Z",
   "version": 1,
   "notes": {
     "OpenJarvis-Parity": "Both local stacks answer the same 22 prompts (7 archetypes) with the same model (gemma4:12b-it-qat) + same injected context, judged 0–10 by the same model. USD = $0 (fully local). Energy = n/a*: this GPU (RTX 3080 Ti) does not expose power.draw via NVML/nvidia-smi, so it is reported as n/a rather than fabricated. Latency is inference time (excludes the OpenJarvis CLI cold-start)."
@@ -144,59 +144,88 @@
       "bench": "LongMemEval-S",
       "system": "search",
       "metrics": {
-        "R@5": "98.6%",
+        "R@5": "98.4%",
         "R@10": "99.8%",
         "R@20": "100.0%",
         "NDCG@10": "88.8%",
-        "MRR": "89.1%",
-        "Latency p50 (ms)": "671.4"
+        "MRR": "89.0%",
+        "Latency p50 (ms)": "409.5"
       },
       "observations": 500,
       "queries": 500,
-      "date": "2026-06-09T01:07:22.980Z"
+      "date": "2026-06-28T03:30:04.380Z"
     },
     {
       "bench": "LongMemEval-S",
       "system": "rrf",
       "metrics": {
-        "R@5": "98.6%",
+        "R@5": "99.4%",
         "R@10": "99.8%",
         "R@20": "100.0%",
-        "NDCG@10": "88.6%",
-        "MRR": "88.9%",
-        "Latency p50 (ms)": "878.8"
+        "NDCG@10": "95.1%",
+        "MRR": "96.0%",
+        "Latency p50 (ms)": "657.5"
       },
       "observations": 500,
       "queries": 500,
-      "date": "2026-06-09T01:07:22.980Z"
+      "date": "2026-06-28T03:30:04.380Z"
+    },
+    {
+      "bench": "LongMemEval-S",
+      "system": "rrf_emb",
+      "metrics": {
+        "R@5": "99.4%",
+        "R@10": "100.0%",
+        "R@20": "100.0%",
+        "NDCG@10": "94.4%",
+        "MRR": "95.2%",
+        "Latency p50 (ms)": "615.3"
+      },
+      "observations": 500,
+      "queries": 500,
+      "date": "2026-06-28T03:30:04.380Z"
     },
     {
       "bench": "LoCoMo-MTEB",
       "system": "search",
       "metrics": {
-        "R@5": "49.8%",
-        "R@10": "56.5%",
-        "NDCG@10": "44.9%",
-        "MRR": "43.9%",
-        "Latency (ms)": "763.6"
+        "R@5": "49.6%",
+        "R@10": "55.9%",
+        "NDCG@10": "44.4%",
+        "MRR": "43.4%",
+        "Latency (ms)": "711.2"
       },
       "observations": 1976,
       "queries": 1976,
-      "date": "2026-06-09T01:54:14.693Z"
+      "date": "2026-06-28T05:25:07.937Z"
     },
     {
       "bench": "LoCoMo-MTEB",
       "system": "rrf",
       "metrics": {
-        "R@5": "50.0%",
-        "R@10": "57.2%",
-        "NDCG@10": "45.0%",
-        "MRR": "43.7%",
-        "Latency (ms)": "588.9"
+        "R@5": "61.4%",
+        "R@10": "69.3%",
+        "NDCG@10": "54.9%",
+        "MRR": "53.6%",
+        "Latency (ms)": "1229.4"
       },
       "observations": 1976,
       "queries": 1976,
-      "date": "2026-06-09T01:54:14.693Z"
+      "date": "2026-06-28T05:25:07.937Z"
+    },
+    {
+      "bench": "LoCoMo-MTEB",
+      "system": "rrf_emb",
+      "metrics": {
+        "R@5": "60.4%",
+        "R@10": "66.6%",
+        "NDCG@10": "53.5%",
+        "MRR": "52.5%",
+        "Latency (ms)": "775.7"
+      },
+      "observations": 1976,
+      "queries": 1976,
+      "date": "2026-06-28T05:25:07.937Z"
     },
     {
       "bench": "LoCoMo-at-scale",

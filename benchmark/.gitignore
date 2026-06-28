@@ -13,11 +13,12 @@ bench-results/
 # Transient per-attempt raw logs can get large; keep curated results + summaries.
 # (raw_*.jsonl under results/ are committed evidence — do NOT ignore those.)
 
-# Large per-query retrieval-DETAIL JSONs from the LongMemEval/LoCoMo harnesses
-# (tens of MB — e.g. locomo_mteb_terransoul.json was 40-60 MB). They are fully
-# reproducible from the harness; the committed .md summaries carry the headline
-# numbers that COMPARISON.md cites, so we keep the .md and ignore the heavy .json.
-results/longmemeval_s_terransoul*.json
+# Heavy per-query retrieval-DETAIL JSON from the LoCoMo MTEB harness (40-60 MB) —
+# fully reproducible; the committed .md summary carries the headline numbers that
+# COMPARISON.md cites, so we keep the .md and ignore the heavy .json.
+# NOTE: longmemeval_s_terransoul.json (~1.8 MB) IS committed — the leaderboard
+# build (docs/leaderboard/build.mjs) reads it to emit the LongMemEval-S row,
+# asserted by src/stores/leaderboard.test.ts.
 results/locomo_mteb_terransoul*.json
 
 # External-system bench scratch stores (Chroma/SQLite indexes rebuilt per run).
