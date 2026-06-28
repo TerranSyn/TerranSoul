@@ -51,6 +51,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 | RAGFlow (InfiniFlow) | RAG | 41.0 % | 61.0 % | 74.0 % | — | — | — | — | — | — | agentmemory |
 | LlamaIndex | RAG | 41.0 % | 58.0 % | 72.0 % | — | — | — | — | — | — | agentmemory |
 | GraphRAG (Microsoft) | RAG (graph) | 5.0 % | 5.0 % | 5.0 % | — | — | — | — | — | — | agentmemory |
+| obsidian-wiki | Markdown wiki (grep, no DB) | — | — | — | — | — | — | — | — | — | agentmemory vault, grep-only; O(n) scan — index.md grows linearly, 24k docs = 0.64 s/query (no DB/embeddings; QMD optional) |
 | *— Self-improving LLM agents —* | | | | | | | | | | | |
 | OpenJarvis (Stanford SAIL) | Agent | — | — | — | — | — | 9.6 | 100.0 % | 3.2 s | $0 | parity |
 | OpenClaw | Agent | — | — | — | — | — | 8.4 | 100.0 % | 38.1 s | $0 | parity |

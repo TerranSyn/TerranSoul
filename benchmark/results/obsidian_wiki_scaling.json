@@ -1,0 +1,49 @@
+{
+  "system": "obsidian-wiki",
+  "source": "Ar9av/obsidian-wiki \u2014 skill-based 'LLM Wiki' (Karpathy pattern); pure-stdlib installer (dependencies=[]) that copies markdown SKILL.md files into AI coding agents. No retrieval code, no DB, no ANN, no in-process vector store, no embeddings of its own. Retrieval = an LLM agent executing .skills/wiki-query/SKILL.md by hand with Grep/Read over a plain-markdown Obsidian vault. Bench QMD-DISABLED (the grep-only baseline the repo calls 'fully functional').",
+  "retrieval_type": "keyword grep + LLM prose synthesis (NOT vector ANN; NO callable search() returning ranked doc ids)",
+  "comparable_retrieval": false,
+  "recall_skipped_reason": "obsidian-wiki exposes no programmatic ranked retrieval \u2014 answers are an LLM agent's synthesized prose, not a ranked doc-id list. Dropping it into the in-process 240-doc store()/search() recall fixture 1:1 would be apples-to-oranges, so R@5/R@10/etc are reported as '\u2014' (not fabricated).",
+  "mechanism_audited": "INGEST: one .md page/obs (YAML frontmatter title/tags/summary/tier/lifecycle/base_confidence + typed relationships edges) + Obsidian body; single growing index.md registry; hot.md cache; log.md; .manifest.json with SHA-256 per source. QUERY (wiki-query grep-only): read hot.md + read index.md IN FULL (O(n)) + ripgrep page FRONTMATTER across vault (Index Pass); worst-case broad CONTENT grep across every .md (Step 4 fallback). Real ripgrep C:\\Users\\DevStar\\AppData\\Local\\Microsoft\\WinGet\\Links\\rg.EXE",
+  "scaling_acknowledged_by_repo": "llm-wiki/SKILL.md:465 \u2014 'a 20-page vault lets you get away with full-vault scans. A 200-page vault does not ... how the skills framework scales to large vaults WITHOUT a database.'",
+  "embedder": null,
+  "machine": "24 logical CPUs, 68.4 GB RAM, ripgrep ripgrep 15.1.0 (rev af60c2de9d)",
+  "scaling_curve": [
+    {
+      "corpus_size": 240,
+      "multiplier": 1,
+      "ingest_s": 0.141,
+      "query_p50_ms": 37.58,
+      "query_p95_ms": 56.72,
+      "content_grep_p50_ms": 37.08,
+      "content_grep_p95_ms": 55.86,
+      "index_md_bytes": 23668,
+      "peak_mem_mb": 30.5,
+      "n_queries": 20
+    },
+    {
+      "corpus_size": 2400,
+      "multiplier": 10,
+      "ingest_s": 1.022,
+      "query_p50_ms": 93.83,
+      "query_p95_ms": 141.24,
+      "content_grep_p50_ms": 94.9,
+      "content_grep_p95_ms": 118.21,
+      "index_md_bytes": 242908,
+      "peak_mem_mb": 35.2,
+      "n_queries": 20
+    },
+    {
+      "corpus_size": 24000,
+      "multiplier": 100,
+      "ingest_s": 8.76,
+      "query_p50_ms": 640.19,
+      "query_p95_ms": 824.88,
+      "content_grep_p50_ms": 677.51,
+      "content_grep_p95_ms": 973.81,
+      "index_md_bytes": 2456908,
+      "peak_mem_mb": 60.1,
+      "n_queries": 20
+    }
+  ]
+}
