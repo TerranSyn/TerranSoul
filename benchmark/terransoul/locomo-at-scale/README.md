@@ -2,7 +2,7 @@
 
 **Task:** Same LoCoMo MTEB fixture as the per-query bench, but ingested into a fresh `MemoryStore` populated to 10k / 100k / 1M total memories with gold + distractor + entity-swap chunks. Measures quality + retrieval latency at scale.
 
-**Harness:** [scripts/locomo-at-scale.mjs](../../../scripts/locomo-at-scale.mjs).
+**Harness:** [benchmark/scripts/locomo-at-scale.mjs](../../scripts/locomo-at-scale.mjs).
 
 > **MCP Gateway Parity: ✅ PASS** — Dual-parity validation at 100k scale (BENCH-MCP-PARITY-5). Quality: R@10=64.0% via both paths (±0.0 pp drift). Per-query: 85/100 bit-identical ID lists, 15/100 differ in ordering due to Ollama embedding non-determinism (GPU floats differ across calls). Gateway is architecturally identical — `AppStateGateway::search()` delegates to `store.hybrid_search_rrf()`. Unit test confirms 0 mismatches when embedding is shared. See [parity-enforcement-rules.md](../../parity-enforcement-rules.md).
 
@@ -29,10 +29,10 @@ Two-arm comparison at 1M docs:
 
 ```pwsh
 # Arm A — production sharded retrieval (router-routed, 15 shards, top-p shard probe)
-node scripts/locomo-at-scale.mjs --scale=1000000 --task=adversarial --query-count=100 --shard-mode=routed
+node benchmark/scripts/locomo-at-scale.mjs --scale=1000000 --task=adversarial --query-count=100 --shard-mode=routed
 
 # Arm B — single-index baseline (all 15 shards probed every query, no router cost)
-node scripts/locomo-at-scale.mjs --scale=1000000 --task=adversarial --query-count=100 --shard-mode=all
+node benchmark/scripts/locomo-at-scale.mjs --scale=1000000 --task=adversarial --query-count=100 --shard-mode=all
 ```
 
 Each arm writes a distinct file `locomo_scale_1000000_adversarial_100q_<mode>.{json,md}` — the filename suffix closes the SCALE-1b overwrite footgun. The report JSON and markdown both include a `shard_mode` field so post-hoc diffing is unambiguous.

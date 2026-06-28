@@ -1,14 +1,14 @@
 # TerranSoul LongMemEval-S Retrieval Report
 
-Date: 2026-06-09T01:07:22.980Z
-Dataset: D:\Git\TerranSoul\target-copilot-bench\longmemeval\longmemeval_s_cleaned.json
+Date: 2026-06-27T16:17:51.994Z
+Dataset: D:\Git\TerranSoulApp\target-copilot-bench\longmemeval\longmemeval_s_cleaned.json
 Questions: 500 (0 abstention rows excluded)
 Methodology: retrieval-only recall_any@K, matching agentmemory benchmark/longmemeval-bench.ts
 
 | System | R@5 | R@10 | R@20 | NDCG@10 | MRR | Avg latency | Avg retrieved tokens |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| search | 98.6% | 99.8% | 100.0% | 88.8% | 89.1% | 671.43ms | 62,492 |
-| rrf | 98.6% | 99.8% | 100.0% | 88.6% | 88.9% | 878.82ms | 62,945 |
+| search | 98.6% | 99.8% | 100.0% | 88.8% | 89.1% | 409.48ms | 62,492 |
+| rrf | 98.6% | 99.8% | 100.0% | 88.6% | 88.9% | 530.11ms | 62,945 |
 
 ## By Question Type
 

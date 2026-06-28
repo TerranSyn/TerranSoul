@@ -74,10 +74,10 @@ Latency: 0.98 s → 4.2 s per query (cross-encoder hop adds ~3 s for `gemma3:4b`
 
 ```pwsh
 # Full canonical run (~30-40 min wall clock with Ollama gemma3:4b)
-node scripts/locomo-mteb.mjs --systems=rrf_rerank --query-count=1976
+node benchmark/scripts/locomo-mteb.mjs --systems=rrf_rerank --query-count=1976
 
 # 100-q smoke first per the smoke-slice rule (rules/milestones.md):
-node scripts/locomo-mteb.mjs --systems=rrf_rerank --query-count=100
+node benchmark/scripts/locomo-mteb.mjs --systems=rrf_rerank --query-count=100
 ```
 
 ## Durable lessons from this round series

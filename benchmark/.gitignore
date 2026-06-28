@@ -1,0 +1,27 @@
+# Benchmark build cache + downloaded datasets — large, regenerable, NOT committed.
+# The brain bench harnesses (benchmark/scripts/*.mjs) build a Rust IPC bin and
+# download datasets (LongMemEval-S, LoCoMo) into here. Results worth keeping are
+# written to benchmark/results/ (committed); everything below is scratch.
+.cache/
+target-bench/
+bench-results/
+
+# Python bytecode caches from the Python harnesses (embedder-sweep, arc-agi-2).
+**/__pycache__/
+*.pyc
+
+# Transient per-attempt raw logs can get large; keep curated results + summaries.
+# (raw_*.jsonl under results/ are committed evidence — do NOT ignore those.)
+
+# Large per-query retrieval-DETAIL JSONs from the LongMemEval/LoCoMo harnesses
+# (tens of MB — e.g. locomo_mteb_terransoul.json was 40-60 MB). They are fully
+# reproducible from the harness; the committed .md summaries carry the headline
+# numbers that COMPARISON.md cites, so we keep the .md and ignore the heavy .json.
+results/longmemeval_s_terransoul*.json
+results/locomo_mteb_terransoul*.json
+
+# External-system bench scratch stores (Chroma/SQLite indexes rebuilt per run).
+results/external-systems/.mem0_chroma/
+results/external-systems/*.sqlite
+results/external-systems/.cognee*/
+

@@ -41,7 +41,7 @@
 
 > ✅ **Resume succeeded.** The earlier 950 K stall on 2026-05-17 ~06:05 UTC
 > was a single-process crash, not a corrupt store. A fresh `node
-> scripts/locomo-ivfpq.mjs run --resume` invocation against the same
+> benchmark/scripts/locomo-ivfpq.mjs run --resume` invocation against the same
 > `target-copilot-bench/locomo-ivfpq-store-10m/` store picked up from row
 > 305,000 (the last committed checkpoint), re-embedded gold rows, and is
 > currently ingesting at ~1,450 docs/s. PID 74636 (`longmemeval-ipc`) is
@@ -75,7 +75,7 @@
 | Stage | % weight | Status | Started | Finished | Notes |
 |---|---:|---|---|---|---|
 | 0. Preflight (Ollama + parquet) | 5 % | ✅ done | 2026-05-15 | 2026-05-15 | Ollama 0.20.7 reachable; `mxbai-embed-large:latest` present; all 15 LoCoMo parquet files present. |
-| 1. Runner code (`--systems=ivfpq` + IVF-PQ knobs) | 10 % | ✅ done | 2026-05-15 | 2026-05-15 | Patched [`scripts/locomo-at-scale.mjs`](../scripts/locomo-at-scale.mjs): `ivfpq` system, `LONGMEM_DATA_DIR` plumbing via `--store-dir`, post-ingest `build_ivf_pq` op, `nprobe` per query, `_ivfpq` filename suffix. `--help` confirms all new flags surfaced. |
+| 1. Runner code (`--systems=ivfpq` + IVF-PQ knobs) | 10 % | ✅ done | 2026-05-15 | 2026-05-15 | Patched [`benchmark/scripts/locomo-at-scale.mjs`](scripts/locomo-at-scale.mjs): `ivfpq` system, `LONGMEM_DATA_DIR` plumbing via `--store-dir`, post-ingest `build_ivf_pq` op, `nprobe` per query, `_ivfpq` filename suffix. `--help` confirms all new flags surfaced. |
 | 2. 10 k smoke (HNSW vs IVF-PQ, adversarial, 50q) | 10 % | ⏭️ skipped | — | — | Skipped per user directive (“no smoke! Doing big bag for everything”). |
 | 3. 100 k smoke (HNSW vs IVF-PQ, adversarial, 100q) | 15 % | ⏭️ skipped | — | — | Skipped per user directive. SCALE-1b @100k (R@10=64.0 % rrf) remains the published cross-scale anchor. |
 | 4. 1 M run (HNSW vs IVF-PQ, adversarial, 100q) | 30 % | ⏭️ skipped | — | — | Skipped per user directive; salvaged 1.56 M run in stage 5 supersedes this. |
@@ -102,28 +102,28 @@
 $env:LONGMEM_EMBED_MODEL = 'mxbai-embed-large'
 
 # Stage 2 — 10 k smoke
-node scripts/locomo-at-scale.mjs run --systems=rrf,ivfpq `
+node benchmark/scripts/locomo-at-scale.mjs run --systems=rrf,ivfpq `
   --scale=10000 --task=adversarial --limit=50
 
 # Stage 3 — 100 k smoke
-node scripts/locomo-at-scale.mjs run --systems=rrf,ivfpq `
+node benchmark/scripts/locomo-at-scale.mjs run --systems=rrf,ivfpq `
   --scale=100000 --task=adversarial --limit=100
 
 # Stage 4 — 1 M (overnight)
-node scripts/locomo-at-scale.mjs run --systems=rrf,ivfpq `
+node benchmark/scripts/locomo-at-scale.mjs run --systems=rrf,ivfpq `
   --scale=1000000 --task=adversarial --limit=100
 
 # Stage 5 — 10 M (multi-day; runs after stage 4 passes)
-node scripts/locomo-at-scale.mjs run --systems=ivfpq `
+node benchmark/scripts/locomo-at-scale.mjs run --systems=ivfpq `
   --scale=10000000 --task=adversarial --limit=100
 ```
 
 ## Live log
 
 - **2026-05-15 — preflight passed.** Ollama 0.20.7 reachable; `mxbai-embed-large:latest` present; all 15 LoCoMo parquet files in `target-copilot-bench/locomo-mteb/`.
-- **2026-05-15 — stage 1 done.** `scripts/locomo-at-scale.mjs --help` lists `ivfpq` + all IVF-PQ flags. No syntax errors.
+- **2026-05-15 — stage 1 done.** `benchmark/scripts/locomo-at-scale.mjs --help` lists `ivfpq` + all IVF-PQ flags. No syntax errors.
 - **2026-05-15 — stage 2 started.** Building `longmemeval-ipc` then running 10 k smoke for `rrf` (HNSW baseline) and `ivfpq` arms.
-- **2026-05-16 — poller wired.** `scripts/bench-scale-3-progress.mjs` running in background (5-min cadence). It appends one line below every 5 min and updates the `Overall:` % at the top of this file. Bogus first-tick entries that pointed at the poller's own stderr log were removed once the filename glob was tightened to exclude `*poller*`.
+- **2026-05-16 — poller wired.** `benchmark/scripts/bench-scale-3-progress.mjs` running in background (5-min cadence). It appends one line below every 5 min and updates the `Overall:` % at the top of this file. Bogus first-tick entries that pointed at the poller's own stderr log were removed once the filename glob was tightened to exclude `*poller*`.
 ### Root Cause Fix + Turbo Mode (2026-05-17)
 
 **Crash**: Windows `STATUS_STACK_BUFFER_OVERRUN` (0xC0000409) — OS killed the IPC binary at ~2.7M rows due to unbounded RAM usage (~16+ GB).
@@ -138,7 +138,7 @@ node scripts/locomo-at-scale.mjs run --systems=ivfpq `
 - Removed the `get_all()` call; token counts now computed per-batch from `content.len() / 4`.
 - Net RAM savings at 10M: ~40 GB embeddings + ~20 GB contents_lower + eliminates per-batch `get_all()` spike.
 
-**Fix B — Resilience (Node runner `scripts/locomo-ivfpq.mjs`)**:
+**Fix B — Resilience (Node runner `benchmark/scripts/locomo-ivfpq.mjs`)**:
 - Added IPC auto-restart: on crash, respawns binary, queries `op: count` to find committed rows, fast-forwards cursor, continues. Capped at 20 restarts / 3 without progress.
 
 **Fix C — Throughput (turbo mode)**: prior run was Ollama-embedding-bound at ~16 docs/s (10M × ~62 ms/embed = ~7 days). Diagnosis: 99.94 % of corpus rows are synthetic distractors (`nat-`/`swap-`/`syn-` session prefixes); spending real Ollama embeddings on them dominates wall time but is wasted work.
@@ -187,7 +187,7 @@ User directive: **"I want 1m/s, loop debug, analysis, retest nd fix"** — follo
 **What's already landed today (commits/edits in this session)**:
 - `src-tauri/src/memory/store.rs`: `set_embedding_many_no_ann`, `drop_fts5_for_bench`, `add_many_bench`, `BenchInsert` struct.
 - `src-tauri/src/bin/longmemeval_ipc.rs`: `LONGMEM_DROP_FTS=2` startup hook, `LONGMEM_PROFILE_INGEST=1` per-batch timing, all-distractor fused fast-path that calls `add_many_bench` and skips the embed-pass entirely.
-- `scripts/locomo-ivfpq.mjs`: default-enables `LONGMEM_DROP_FTS=2` for bench runs; spawn now passes `--features bench-million,storage-fjall` so the LSM cold tier is linked into the IPC binary (activation still gated by `LONGMEM_STORAGE=fjall` env var).
+- `benchmark/scripts/locomo-ivfpq.mjs`: default-enables `LONGMEM_DROP_FTS=2` for bench runs; spawn now passes `--features bench-million,storage-fjall` so the LSM cold tier is linked into the IPC binary (activation still gated by `LONGMEM_STORAGE=fjall` env var).
 - `src-tauri/Cargo.toml`: optional `fjall = "2"` + `postcard = "1"` deps; new feature `storage-fjall`.
 - `src-tauri/src/memory/fjall_cold_store.rs` (new, ~320 LOC, feature-gated): `FjallColdStore` with batched `add_many`, point reads, `iter_embeddings`, `persist`. Two passing unit tests (`roundtrip_and_iter`, `reopen_recovers_next_id`).
 - `src-tauri/src/bin/longmemeval_ipc.rs`: cold-tier selection (`build_cold_store`) under the `storage-fjall` feature; all-distractor branch routes `BenchInsert` to `cold.add_many` when `LONGMEM_STORAGE=fjall`.
@@ -202,10 +202,10 @@ User directive: **"I want 1m/s, loop debug, analysis, retest nd fix"** — follo
 **What's already landed today (commits/edits in this session)**:
 - `src-tauri/src/memory/store.rs`: `set_embedding_many_no_ann`, `drop_fts5_for_bench`, `add_many_bench`, `BenchInsert` struct.
 - `src-tauri/src/bin/longmemeval_ipc.rs`: `LONGMEM_DROP_FTS=2` startup hook, `LONGMEM_PROFILE_INGEST=1` per-batch timing, all-distractor fused fast-path that calls `add_many_bench` and skips the embed-pass entirely.
-- `scripts/locomo-ivfpq.mjs`: default-enables `LONGMEM_DROP_FTS=2` for bench runs.
+- `benchmark/scripts/locomo-ivfpq.mjs`: default-enables `LONGMEM_DROP_FTS=2` for bench runs.
 - **2026-05-17 06:38:37 UTC** — `bench-scale-3-10m-turbo2-20260517-155602.log`: ingest 950,000/10,000,000 (9.50 %) (since-resume 950,000), elapsed 0.16 h, ETA ~1h 29m.
 - **2026-05-17 ~06:05 UTC** — `longmemeval-ipc` (turbo2) exited unexpectedly at row 950,000. Store on disk left checkpointed at row 305,000 (last `op:count` confirmed value). Identical poller appends through 08:03 UTC collapsed.
-- **2026-05-18 00:11 UTC** — `node scripts/locomo-ivfpq.mjs run --resume … --data-dir-bench=target-copilot-bench/locomo-ivfpq-store-10m/` launched. IPC banner printed `disk_mode=true`, `SYNTH_EMBED=true`, `LONGMEM_DROP_FTS=2`. `op:count` returned 305,000; ingest cursor fast-forwarded; spawn loop resumed at row 305,001.
+- **2026-05-18 00:11 UTC** — `node benchmark/scripts/locomo-ivfpq.mjs run --resume … --data-dir-bench=target-copilot-bench/locomo-ivfpq-store-10m/` launched. IPC banner printed `disk_mode=true`, `SYNTH_EMBED=true`, `LONGMEM_DROP_FTS=2`. `op:count` returned 305,000; ingest cursor fast-forwarded; spawn loop resumed at row 305,001.
 - **2026-05-18 00:55 UTC** — `bench-scale-3-10m-resume-20260518-001133.log`: ingest 3,300,000/10,000,000 (33.0 %), elapsed 0.63 h since resume, steady-state ~1,450 docs/s. Process alive (PID 74636, ~364 MB RSS). Projected wall-clock to 10 M: ~1.3 h from now.
 - **2026-05-17 14:56:40 UTC** — poller started (5-min cadence, idle cap 360 min, mtime+size guard).
 - **2026-05-17 14:56:40 UTC** — `bench-scale-3-10m-resume-20260518-001133.log`: ingest 3,460,000/10,000,000 (34.60 %) (since-resume 3,155,000), elapsed 0.66 h, ETA ~1h 21m.
