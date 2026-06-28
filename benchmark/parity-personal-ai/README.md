@@ -86,8 +86,8 @@ real pipeline; the harness can run both stacks or one side only.
 - **Energy** = `n/a*` — the test GPU (RTX 3080 Ti) does not expose `power.draw`
   via NVML/`nvidia-smi`, so energy is reported as n/a rather than fabricated.
 
-Output is committed alongside the harness and surfaced on
-the [leaderboard](../../docs/leaderboard/) under **OpenJarvis-Parity**.
+Output is committed alongside the harness and rolled up in
+[COMPARISON.md](../COMPARISON.md) under **OpenJarvis-Parity**.
 
 **Setup:** OpenJarvis is installed from its public repo and pointed at the
 existing local Ollama (reuses `gemma4:12b-it-qat`, no new model download).
