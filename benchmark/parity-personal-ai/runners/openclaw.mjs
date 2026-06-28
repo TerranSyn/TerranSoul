@@ -22,8 +22,18 @@ import { execFile } from 'node:child_process';
 import { join } from 'node:path';
 
 const PROFILE = process.env.OPENCLAW_BENCH_PROFILE || 'bench';
-const ENTRY = process.env.OPENCLAW_ENTRY
-  || join(process.env.APPDATA || '', 'npm', 'node_modules', 'openclaw', 'openclaw.mjs');
+// resolveEntry(): prefer an explicit override, then the source-built monorepo
+// entry (pnpm build → dist/entry.js behind openclaw.mjs), then the npm-global
+// shim. Machine-local build artifact resolved by this path-fallback chain.
+function resolveEntry() {
+  const candidates = [
+    process.env.OPENCLAW_ENTRY,
+    'D:/Git/openclaw/openclaw.mjs',
+    join(process.env.APPDATA || '', 'npm', 'node_modules', 'openclaw', 'openclaw.mjs'),
+  ].filter(Boolean);
+  return candidates.find((p) => existsSync(p)) || candidates[candidates.length - 1] || '';
+}
+const ENTRY = resolveEntry();
 const TIMEOUT = 240_000;
 
 /** First complete JSON object from noisy stdout (brace-matched). */
@@ -44,9 +54,16 @@ function extractJson(text) {
 function ask(query, sid) {
   const args = [ENTRY, '--profile', PROFILE, 'agent', '--local', '--session-id', sid,
     '--message', query, '--json', '--thinking', 'off'];
+  // Inject OLLAMA_API_KEY so OpenClaw treats the local Ollama host as authed.
+  // The `bench` profile config (~/.openclaw-bench/openclaw.json) carries the
+  // REQUIRED models.providers.ollama.params.num_ctx=32768 — at the default ctx
+  // OpenClaw's ~16K-token system prompt + ~39 tool schemas fills the window, the
+  // model returns done_reason="length" after 1 token, and OpenClaw discards the
+  // answer as incomplete_turn. num_ctx=32768 restores done_reason="stop".
+  const env = { ...process.env, OLLAMA_API_KEY: process.env.OLLAMA_API_KEY || 'ollama-local' };
   return new Promise((res) => {
     const t0 = performance.now();
-    execFile(process.execPath, args, { timeout: TIMEOUT, maxBuffer: 16 * 1024 * 1024, windowsHide: true },
+    execFile(process.execPath, args, { env, timeout: TIMEOUT, maxBuffer: 16 * 1024 * 1024, windowsHide: true },
       (err, stdout, stderr) => {
         const wall = (performance.now() - t0) / 1000;
         const j = extractJson(`${stdout || ''}\n${stderr || ''}`);

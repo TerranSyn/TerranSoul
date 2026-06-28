@@ -18,14 +18,37 @@
  * Latency is wall-clock (includes the Python CLI cold-start — an artifact of
  * invocation; quality is the apples-to-apples metric).
  */
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, mkdirSync } from 'node:fs';
 import { execFile } from 'node:child_process';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
-const HERMES_EXE = process.env.HERMES_EXE
-  || join(process.env.LOCALAPPDATA || '', 'hermes', 'hermes-agent', 'venv', 'Scripts', 'hermes.exe');
-const HOME = process.env.HERMES_BENCH_HOME || '';
+// resolveHermesExe(): prefer an explicit override, then the cloned editable
+// install's isolated bench venv (uv venv .venv-bench → hermes.exe), then the
+// legacy global-venv guess. The cloned CLI is a machine-local artifact resolved
+// by this path-fallback chain so the bench is self-contained.
+function resolveHermesExe() {
+  const candidates = [
+    process.env.HERMES_EXE,
+    'D:/Git/hermes-agent/.venv-bench/Scripts/hermes.exe',
+    join(process.env.LOCALAPPDATA || '', 'hermes', 'hermes-agent', 'venv', 'Scripts', 'hermes.exe'),
+  ].filter(Boolean);
+  return candidates.find((p) => existsSync(p)) || candidates[candidates.length - 1] || '';
+}
+const HERMES_EXE = resolveHermesExe();
+// Isolated, ollama-configured Hermes home (config.yaml: provider custom,
+// base_url http://127.0.0.1:11434/v1, default gemma4:12b-it-qat). Defaults to
+// %LOCALAPPDATA%/hermes-bench so the user's real hermes config is never touched.
+const HOME = process.env.HERMES_BENCH_HOME
+  || join(process.env.LOCALAPPDATA || '', 'hermes-bench');
 const TIMEOUT = 240_000;
+
+// CRITICAL FIX: Hermes auto-injects AGENTS.md/CLAUDE.md from its working dir as
+// hidden context. Spawned from the repo root that is a 60KB+ payload that makes
+// gemma4 burn its whole decode budget on hidden reasoning and return an empty
+// answer (the run gets marked failed). Always spawn from a dedicated EMPTY cwd.
+const CLEAN_CWD = join(tmpdir(), 'hermes-bench-cwd');
+try { mkdirSync(CLEAN_CWD, { recursive: true }); } catch { /* already exists */ }
 
 function ask(query) {
   const env = { ...process.env };
@@ -33,7 +56,7 @@ function ask(query) {
   const args = ['-z', query, '--yolo', '-t', ''];
   return new Promise((res) => {
     const t0 = performance.now();
-    execFile(HERMES_EXE, args, { env, timeout: TIMEOUT, maxBuffer: 16 * 1024 * 1024, windowsHide: true },
+    execFile(HERMES_EXE, args, { env, cwd: CLEAN_CWD, timeout: TIMEOUT, maxBuffer: 16 * 1024 * 1024, windowsHide: true },
       (err, stdout, stderr) => {
         const wall = (performance.now() - t0) / 1000;
         const text = String(stdout || '').trim();
