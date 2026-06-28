@@ -35,19 +35,21 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 | **🧠 TerranSoul** (this repo) | Memory + RAG + agent | **98.6 %** | **99.8 %** | **100 %** | **88.8 %** | **89.1 %** | **9.82** | 22/22 | **1.0 s** | $0 | LongMemEval-S + parity |
 | *— Memory systems —* | | | | | | | | | | | |
 | agentmemory | Memory | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | — | — | — | — | LongMemEval-S |
-| MemPalace | Memory | ~96.6 % | — | — | — | — | — | — | — | — | LongMemEval-S |
+| MemPalace | Memory | ~96.6 % | ~97.6 % | — | — | — | — | — | — | — | LongMemEval-S⁵ |
 | Mem0 | Memory | 0.41 | 0.61 | 0.74 | 0.88 | 0.92 | — | — | — | — | agentmemory² · LoCoMo QA 68.5 %¹ |
-| Letta (MemGPT) | Memory | — | — | — | — | — | — | — | — | — | LoCoMo QA¹ |
-| Zep | Memory | — | — | — | — | — | — | — | — | — | LoCoMo QA¹ |
-| Cognee | Memory | — | — | — | — | — | — | — | — | — | LoCoMo QA¹ |
-| HippoRAG | Memory / RAG | — | — | — | — | — | — | — | — | — | PPR (published) |
+| Letta (MemGPT) | Memory | 0.41 | 0.61 | 0.74 | 0.88 | 0.92 | — | — | — | — | agentmemory² · LoCoMo QA 83.2 %¹ |
+| Zep | Memory | — | — | — | — | — | — | — | — | — | LoCoMo QA only¹ ⁶ |
+| Cognee | Memory | 0.41 | 0.61 | 0.74 | 0.88 | 0.92 | — | — | — | — | agentmemory² · LoCoMo QA¹ |
+| Khoj | Memory / assistant | 0.41 | 0.61 | 0.74 | 0.88 | 0.92 | — | — | — | — | agentmemory² |
+| HippoRAG | Memory / RAG | 0.34 | 0.56 | 0.68 | 0.74 | 0.79 | — | — | — | — | agentmemory²ᵇ |
+| Memary | Memory (graph) | 0.06 | 0.07 | 0.07 | 0.10 | 0.10 | — | — | — | — | agentmemory²ᶜ |
+| A-MEM | Memory | — | — | — | — | — | — | — | — | — | agentmemory⁴ (partial) |
 | claude-mem | Memory | — | — | — | — | — | — | — | — | — | not IR-benched |
-| Khoj | Memory / assistant | — | — | — | — | — | — | — | — | — | not IR-benched |
 | *— RAG frameworks —* | | | | | | | | | | | |
-| LangChain / LangGraph | RAG | 0.41 | 0.61 | 0.74 | — | — | — | — | — | — | agentmemory² |
-| Haystack (deepset) | RAG | 0.41 | 0.61 | 0.74 | — | — | — | — | — | — | agentmemory² |
-| RAGFlow (InfiniFlow) | RAG | 0.41 | 0.61 | 0.74 | — | — | — | — | — | — | agentmemory² |
-| LlamaIndex | RAG | 0.41 | 0.58 | 0.72 | — | — | — | — | — | — | agentmemory² |
+| LangChain / LangGraph | RAG | 0.41 | 0.61 | 0.74 | — | — | — | — | — | — | agentmemory²·⁷ |
+| Haystack (deepset) | RAG | 0.41 | 0.61 | 0.74 | — | — | — | — | — | — | agentmemory²·⁷ |
+| RAGFlow (InfiniFlow) | RAG | 0.41 | 0.61 | 0.74 | — | — | — | — | — | — | agentmemory²·⁷ |
+| LlamaIndex | RAG | 0.41 | 0.58 | 0.72 | — | — | — | — | — | — | agentmemory²·⁷ |
 | GraphRAG (Microsoft) | RAG (graph) | 0.05 | 0.05 | 0.05 | — | — | — | — | — | — | agentmemory²ᵃ |
 | *— Self-improving LLM agents —* | | | | | | | | | | | |
 | OpenJarvis (Stanford SAIL) | Agent | — | — | — | — | — | 9.55 | 22/22 | 3.2 s | $0 | parity³ |
@@ -55,7 +57,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 | Claude Code + GENesis-AGI | Agent (frontier) | — | — | — | — | — | 8.24 | 21/22 | 17.5 s | $5.94 | parity³ᵇ |
 | Hermes-Agent (Nous Research) | Agent | — | — | — | — | — | 6.90 | 21/22 | 10.9 s | $0 | parity³ |
 
-¹ LoCoMo **QA** (J-score) — end-to-end answer accuracy, *not* retrieval R@k; shown for context only, not comparable to the R@k columns. ² our measured RAG-retrieval R@k on the **agentmemory corpus** (0–1, a harder corpus — **not** the LongMemEval-S % of the memory rows). Same nomic-embed-text embedder, so the frameworks **and Mem0** (memory system, benched verbatim with `infer=False`, 2026-06-28) cluster at 0.41 / 0.61 / 0.74: the embedder, not the framework or memory system, sets recall. ²ᵃ GraphRAG local search returns ≤5 entity-focused sources by design — a metric mismatch, not a retrieval failure. ³ parity-personal-ai head-to-head — same 22 prompts + injected context, judged 0–10 by gemma4:12b-it-qat; latency p50 (TerranSoul/OpenJarvis inference-only, others wall-clock incl. cold-start). ³ᵇ different **cloud** model (claude-haiku-4-5) — a frontier reference, not like-for-like with the local rows.
+¹ LoCoMo **QA** (J-score) — end-to-end answer accuracy, *not* retrieval R@k; shown for context only, not comparable to the R@k columns. ² our measured RAG-retrieval R@k on the **agentmemory corpus** (240 obs / 20 queries, 0–1, a harder corpus — **not** the LongMemEval-S % of the memory rows; `benchmark/results/external-systems/*.json`). Same nomic-embed-text embedder, so the frameworks **and the pure-vector memory systems** (Mem0 `infer=False` / Chroma, Letta pgvector archival, Cognee CHUNKS / LanceDB, Khoj bi-encoder — all 2026-06-28) cluster at 0.41 / 0.61 / 0.74 / 0.88 / 0.92: the embedder, not the framework or memory system, sets recall. ²ᵃ GraphRAG local search returns ≤5 entity-focused sources by design — a metric mismatch, not a retrieval failure. ²ᵇ HippoRAG 2 (2.0.0a4) graph PPR over an OpenIE KG (same nomic embedder) scores **below** the pure-vector control (R@5 0.34) — Personalized PageRank diffuses probability mass across the graph, which suits its target multi-hop wiki QA but costs raw recall on this single-doc corpus; its *published* numbers are passage R@2/R@5 on MuSiQue/2Wiki/HotpotQA (<https://arxiv.org/abs/2405.14831> / <https://arxiv.org/abs/2502.14802>), a different corpus not comparable to these columns. ²ᶜ Memary returns a KG entity/relation subgraph (LlamaIndex `KnowledgeGraphRAGRetriever`, keyword mode over Neo4j), not ranked passages — a metric mismatch on this corpus (like GraphRAG ²ᵃ), so the low R@k reflects the retrieval shape, not a like-for-like failure. ³ parity-personal-ai head-to-head — same 22 prompts + injected context, judged 0–10 by gemma4:12b-it-qat; latency p50 (TerranSoul/OpenJarvis inference-only, others wall-clock incl. cold-start). ³ᵇ different **cloud** model (claude-haiku-4-5) — a frontier reference, not like-for-like with the local rows. ⁴ A-MEM completed only a **20-observation subset** of the 240-doc corpus (its LLM note-construction + memory-evolution via local Ollama is too slow to ingest the full corpus here; `amem.json` `subset:true`), so its measured recall (≈0.004) is structurally capped and **not comparable** to the full-corpus rows → "—". By design A-MEM embeds LLM-augmented notes (content + context + keywords + tags), expected to diverge from the plain nomic control. ⁵ MemPalace has **no primary paper**; R@5 ~96.6 % and R@10 ~97.6 % are vendor **self-reports** relayed via agentmemory's `LONGMEMEVAL.md`. R@20 / NDCG@10 / MRR were not published → "—". ⁶ Zep / Graphiti publish only **end-to-end LoCoMo QA accuracy** (<https://arxiv.org/abs/2501.13956>); no retrieval recall@k is published, so the R@k columns are honestly blank ("—"). ⁷ NDCG@10 / MRR were not separately measured for the RAG frameworks, so those cells stay "—" — we do **not** impute the control's 0.88 / 0.92, since LlamaIndex already diverges on recall (R@10 0.58, R@20 0.72), proving the pipelines differ.
 
 
 ## Latest canonical per benchmark
@@ -213,7 +215,7 @@ This is the same retrieval-only shape used by agentmemory's LongMemEval-S script
 | **TerranSoul `search`** | **98.6 %** | **99.8 %** | **100.0 %** | **88.8 %** | **89.1 %** | committed result files |
 | TerranSoul `rrf` | 98.6 % | 99.8 % | 100.0 % | 88.6 % | 88.9 % | same run |
 | agentmemory LongMemEval-S | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | upstream published row |
-| MemPalace LongMemEval-S | ~96.6 % | — | — | — | — | MemPalace paper |
+| MemPalace LongMemEval-S | ~96.6 % | ~97.6 % | — | — | — | self-reported; via agentmemory LONGMEMEVAL.md; no primary paper |
 
 *Plain English: a 500-question search test. TerranSoul finds the right saved info in its top 5 results 98.6 % of the time — ahead of agentmemory (95.2 %) and MemPalace (~96.6 %).*
 
@@ -259,7 +261,7 @@ Per-task signal (from the earlier 250-query slice): temporal reasoning is alread
 | agentmemory built-in (CLAUDE.md / grep) | agentmemory bench:quality | R@10 55.8 % | 80.3 % | 82.5 % | upstream `QUALITY.md` | ✅ mirrored in this repo |
 | agentmemory built-in (200-line MEMORY.md cap) | agentmemory bench:quality | R@10 37.8 % | 56.4 % | 65.5 % | upstream `QUALITY.md` | ✅ mirrored in this repo |
 | agentmemory dual-stream | LongMemEval-S retrieval-only | R@5 95.2 % / R@10 98.6 % / R@20 99.4 % | 87.9 % | 88.2 % | upstream README + LongMemEval-S | published upstream |
-| MemPalace (best published) | LongMemEval-S | ~96.6 % R@5 | — | — | <https://arxiv.org/abs/2503.06868> | published upstream |
+| MemPalace (self-reported) | LongMemEval-S | ~96.6 % R@5 / ~97.6 % R@10 | — | — | self-reported; via agentmemory LONGMEMEVAL.md; no primary paper | vendor self-report |
 | Mem0 | LoCoMo (QA, J score) | 68.5 % | — | — | <https://arxiv.org/abs/2504.19413> | different bench (QA, not retrieval-only) |
 | Letta / MemGPT | LoCoMo (QA, J score) | 83.2 % | — | — | <https://arxiv.org/abs/2310.08560> + Letta blog | different bench (QA, not retrieval-only) |
 | Zep | LoCoMo (QA, J score) | 34.53 % | — | — | <https://arxiv.org/abs/2504.19413> Table 2 | different bench |
