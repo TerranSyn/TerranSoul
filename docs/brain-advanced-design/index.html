@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Inside the TerranSoul Brain — how an LLM gets memory, recall and skill</title>
-<meta name="description" content="A plain-language tour of the TerranSoul brain: an LLM core wrapped in brain-region modules — focus, memory, recall, graph, affect, skills — reached over one MCP nerve. Three-tier memory, four cognitive axes, hybrid multi-signal recall, local-or-cloud brain modes, a self-improvement loop, the seventeen BCF cognitive faculties mapped to real brain regions, a consolidated sharded database design, and generic patterns adopted from rival agent systems." />
+<meta name="description" content="A plain-language tour of the TerranSoul brain: an LLM core wrapped in brain-region modules — focus, memory, recall, graph, affect, skills — reached over one MCP nerve. Three-tier memory, four cognitive axes, hybrid multi-signal recall, local-or-cloud brain modes, a self-improvement loop, the twenty BCF cognitive faculties (including insight, creativity and cognitive control) mapped to real brain regions, a consolidated sharded database design, and generic patterns adopted from rival agent systems." />
 <link rel="canonical" href="https://terransyn.github.io/TerranSoul/brain-advanced-design/" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -384,7 +384,7 @@
       <div class="card region"><span class="tag" style="color:#f472b6"><span class="dot" style="background:#f472b6"></span>AFFECT · feeling</span><span class="name">Affect</span><p>Reads the emotional tone of the brain's own reply, so a companion avatar can show the matching expression. Feeling is part of how it presents, not just what it says.</p></div>
       <div class="card region"><span class="tag" style="color:#fbbf24"><span class="dot" style="background:#fbbf24"></span>SKILLS · practised know-how</span><span class="name">Skills</span><p>Learned how-to procedures that build confidence as they succeed and get benched when they keep failing — the brain getting better at the things it does often.</p></div>
     </div>
-    <div class="callout"><strong>Inside these six regions, finer faculties are growing.</strong> The brain's roadmap names <strong>seventeen cognitive faculties</strong> (BCF-01…17) — confidence calibration, drives, a goal-stack, bias detection and more — each anchored to a real anatomical region of these six. <a href="#faculties">See the faculty layer below →</a></div>
+    <div class="callout"><strong>Inside these six regions, finer faculties are growing.</strong> The brain's roadmap names <strong>twenty cognitive faculties</strong> (BCF-01…20) — confidence calibration, drives, a goal-stack, attention, motivation, insight, creativity, cognitive control and more — each anchored to a real anatomical region of these six. <a href="#faculties">See the faculty layer below →</a></div>
   </section>
 
   <!-- ========== THREE-TIER MEMORY ========== -->
@@ -615,8 +615,8 @@
   <!-- ========== COGNITIVE FACULTIES (BCF) ========== -->
   <section id="faculties">
     <div class="sec-num">08 · Cognitive faculties</div>
-    <h2>Seventeen named faculties, each in <span class="accent">a real brain region</span></h2>
-    <p class="lede">The six regions are the coarse map. Inside them the brain is growing a layer of finer <strong>cognitive faculties</strong> — BCF-01 through BCF-17 — drawn from cognitive neuroscience and each anchored to the part of a human brain that does the same job. Four are shipped today; the rest are on the roadmap, partly built or planned, and already visible as placeholders on the interactive brain map.</p>
+    <h2>Twenty named faculties, each in <span class="accent">a real brain region</span></h2>
+    <p class="lede">The six regions are the coarse map. Inside them the brain is growing a layer of finer <strong>cognitive faculties</strong> — BCF-01 through BCF-20 — drawn from cognitive neuroscience and each anchored to the part of a human brain that does the same job. The roster was completed against a four-angle research sweep (cognitive-neuroscience taxonomy, the cognitive-architecture canon, LLM-agent architectures, and deep dives on insight, creativity, metacognition and curiosity), which added three faculties the literature treats as core — <strong>insight</strong>, <strong>creativity</strong>, and <strong>cognitive control</strong>. Four are shipped today; the rest are on the roadmap, partly built or planned, and already visible as placeholders on the interactive brain map.</p>
 
     <h3>The four shipped faculties</h3>
     <div class="grid grid-2">
@@ -647,6 +647,9 @@
       <div class="bcf-row"><span class="bcf-code">BCF-15</span><div class="bcf-body"><div class="bcf-title">Retrieval-bias detection <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Post-retrieval · occipital · set audit</div><p>Audits the retrieved set for statistical skew and down-weights it before injection.</p></div></div>
       <div class="bcf-row"><span class="bcf-code">BCF-16</span><div class="bcf-body"><div class="bcf-title">Analogical reasoning <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Association cortex · structure-mapping</div><p>Aligns relational structure across domains to transfer a solution schema — human-like generalisation.</p></div></div>
       <div class="bcf-row"><span class="bcf-code">BCF-17</span><div class="bcf-body"><div class="bcf-title">Multimodal perception <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Occipital · perception</div><p>A perception front-end mapping image / screen / spatial input into the same memory schema with spatial graph edges.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-18</span><div class="bcf-body"><div class="bcf-title">Insight · restructuring <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Right anterior temporal · association cortex</div><p>When analytic search stalls, it re-encodes the stuck problem and reaches a remote association — the Aha! leap, measured as a real solution jump, not a token.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-19</span><div class="bcf-body"><div class="bcf-title">Creativity · divergent thinking <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Default-mode + control · generate-evaluate</div><p>Generates many varied candidate ideas then filters them against constraints — balancing novelty against appropriateness on the four classic divergent-thinking axes.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-20</span><div class="bcf-body"><div class="bcf-title">Cognitive control · inhibition <span class="badge badge-partial">partial</span></div><div class="bcf-reg">Anterior cingulate · right IFG · conflict/error</div><p>Inhibits a prepotent or unsafe answer, monitors conflict between candidate responses, and catches its own errors to trigger self-correction.</p></div></div>
     </div>
     <div class="callout"><strong>Why anatomy:</strong> the mapping isn't decoration. Confidence and executive control belong to the prefrontal cortex; drives to the hypothalamus; affect to the limbic system; memory consolidation to the hippocampus; perception to the occipital cortex — so the brain-region a faculty sits in is also the clearest shorthand for what it does.</div>
   </section>
