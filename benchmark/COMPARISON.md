@@ -49,7 +49,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 | RAGFlow (InfiniFlow) | RAG | 41.0 % | 61.0 % | 74.0 % | — | — | — | — | — | — | agentmemory |
 | LlamaIndex | RAG | 41.0 % | 58.0 % | 72.0 % | — | — | — | — | — | — | agentmemory |
 | GraphRAG (Microsoft) | RAG (graph) | 5.0 % | 5.0 % | 5.0 % | — | — | — | — | — | — | agentmemory |
-| obsidian-wiki | Markdown wiki (grep, no DB) | — | — | — | — | — | — | — | — | — | agentmemory vault, grep-only; **not R@k-benchable** (no DB / ANN / embeddings / `search()` returning ranked doc ids — an LLM hand-runs ripgrep over a markdown vault and synthesizes prose). Benched on the axis it supports: query p50 **42.8 ms** / p95 63.8 ms at 240 docs → **95.1 ms** at 2.4k → **666.1 ms** at 24k (O(n) index.md scan), ingest 0.46 s, peak mem 30.0 MB |
+| obsidian-wiki | Markdown wiki (grep, no DB) | — | — | — | — | — | — | — | **42.8 ms** | $0 | agentmemory vault, grep-only — **not R@k-benchable** (no DB/ANN/embeddings/ranked `search()`; an LLM hand-runs ripgrep + synthesizes prose, so R@k/NDCG/MRR are N/A). Latency p50 is its only measurable axis, and it scales O(n): 42.8 ms@240 docs → 95.1 ms@2.4k → 666 ms@24k (index.md scan), ingest 0.46 s, peak 30 MB |
 | *— Self-improving LLM agents —* | | | | | | | | | | | |
 | OpenJarvis (Stanford SAIL) | Agent | 40.6 % | 60.9 % | 74.2 % | 88.2 % | 91.7 % | 9.6 | 100.0 % | 3.2 s | $0 | agentmemory (DenseMemory + nomic) + parity |
 | OpenClaw | Agent | — | — | — | — | — | 8.4 | 100.0 % | 38.1 s | $0 | parity; retrieval not IR-benched (config-first agent, no retrieval/RAG engine) |
