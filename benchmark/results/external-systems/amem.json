@@ -1,0 +1,221 @@
+{
+  "system": "A-MEM",
+  "embedder": "nomic-embed-text",
+  "dim": 768,
+  "llm": "ollama/gemma3:1b",
+  "source": "A-MEM (agentic_memory, arXiv:2502.12110; ChromaDB vector search over LLM-ENHANCED documents = content+context+keywords+tags; note construction + memory evolution via local Ollama LLM; embedder pinned to nomic-embed-text via Ollama, 768-d; verbatim content ingest keyed by obs id)",
+  "retrieval_type": "vector (nomic, over LLM-augmented A-MEM notes)",
+  "retrieval_mode_audit": "A-MEM ChromaRetriever.add_document embeds enhanced_document = content + ' context:'+ctx + ' keywords:'+kw + ' tags:'+tags (LLM-generated); search() is a pure ChromaDB cosine query over those enhanced docs. The LLM augmentation + evolution links are A-MEM's contribution vs the raw-text anchor.",
+  "avg_recall_at_5": 0.004,
+  "avg_recall_at_10": 0.004,
+  "avg_recall_at_20": 0.004,
+  "avg_ndcg_at_10": 0.015261744196985057,
+  "avg_mrr": 0.05,
+  "ingest_seconds": 181.2,
+  "evolutions": 18,
+  "n_obs": 20,
+  "n_queries": 20,
+  "subset": true,
+  "per_query": [
+    {
+      "query": "How did we set up authentication?",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 20,
+      "retrieved_count": 20
+    },
+    {
+      "query": "JWT token validation middleware",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 10,
+      "retrieved_count": 20
+    },
+    {
+      "query": "PostgreSQL connection issues",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 30,
+      "retrieved_count": 20
+    },
+    {
+      "query": "Playwright test configuration",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 10,
+      "retrieved_count": 20
+    },
+    {
+      "query": "Why did the production deployment fail?",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 30,
+      "retrieved_count": 20
+    },
+    {
+      "query": "rate limiting implementation",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 10,
+      "retrieved_count": 20
+    },
+    {
+      "query": "What security measures did we add?",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 30,
+      "retrieved_count": 20
+    },
+    {
+      "query": "database performance optimization",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 25,
+      "retrieved_count": 20
+    },
+    {
+      "query": "Kubernetes pod crash debugging",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 5,
+      "retrieved_count": 20
+    },
+    {
+      "query": "Docker containerization setup",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 10,
+      "retrieved_count": 20
+    },
+    {
+      "query": "How does caching work in the app?",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 20,
+      "retrieved_count": 20
+    },
+    {
+      "query": "test infrastructure and factories",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 10,
+      "retrieved_count": 20
+    },
+    {
+      "query": "What happened with the OAuth callback error?",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 5,
+      "retrieved_count": 20
+    },
+    {
+      "query": "monitoring and observability setup",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 15,
+      "retrieved_count": 20
+    },
+    {
+      "query": "Prisma ORM configuration",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 35,
+      "retrieved_count": 20
+    },
+    {
+      "query": "CI/CD pipeline configuration",
+      "recall_at_5": 0.08,
+      "recall_at_10": 0.08,
+      "recall_at_20": 0.08,
+      "ndcg_at_10": 0.30523488393970116,
+      "mrr": 1.0,
+      "relevant_count": 25,
+      "retrieved_count": 20
+    },
+    {
+      "query": "memory leak debugging",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 5,
+      "retrieved_count": 20
+    },
+    {
+      "query": "API design decisions",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 20,
+      "retrieved_count": 20
+    },
+    {
+      "query": "zod validation schemas",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 15,
+      "retrieved_count": 20
+    },
+    {
+      "query": "infrastructure as code Terraform",
+      "recall_at_5": 0.0,
+      "recall_at_10": 0.0,
+      "recall_at_20": 0.0,
+      "ndcg_at_10": 0.0,
+      "mrr": 0.0,
+      "relevant_count": 5,
+      "retrieved_count": 20
+    }
+  ]
+}
