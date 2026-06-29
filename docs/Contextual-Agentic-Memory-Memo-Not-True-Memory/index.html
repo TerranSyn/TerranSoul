@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Contextual Agentic Memory is a Memo, Not True Memory — a position paper</title>
+<meta name="description" content="A position paper engaging arXiv:2604.27707v1. We accept the memo-vs-memory charge but argue it lands on naive retrieval, not on a governed, consolidating external substrate. TerranSoul is offered as an existence proof that true memory — consolidation, reconsolidation, decay, calibrated metacognition, governed self-evolution — is achievable with model weights frozen. Real benchmark numbers, sourced; architectural argument kept distinct from measurement." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg: oklch(0.985 0.008 80);
+    --bg-card: oklch(0.97 0.01 80);
+    --bg-deep: oklch(0.93 0.012 75);
+    --ink: oklch(0.22 0.015 60);
+    --ink-soft: oklch(0.42 0.012 65);
+    --ink-faint: oklch(0.62 0.01 70);
+    --rule: oklch(0.88 0.012 75);
+    --accent: oklch(0.62 0.14 45);
+    --accent-soft: oklch(0.92 0.04 55);
+    --accent-ink: oklch(0.38 0.10 45);
+    --sans: "IBM Plex Sans", system-ui, sans-serif;
+    --serif: "Newsreader", Georgia, serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    --maxw: 1280px;
+    --col: 720px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:400;line-height:1.55;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--accent-soft);color:var(--accent-ink)}
+  a{color:var(--accent-ink);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;text-decoration-color:color-mix(in oklch, var(--accent-ink) 35%, transparent)}
+  a:hover{text-decoration-color:var(--accent-ink)}
+
+  .topbar{position:sticky;top:0;z-index:50;background:color-mix(in oklch, var(--bg) 88%, transparent);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--rule)}
+  .topbar-in{max-width:var(--maxw);margin:0 auto;padding:12px 32px;display:flex;align-items:center;gap:20px;font-size:13px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:600;font-size:17px;letter-spacing:-0.01em}
+  .brand-mark{width:18px;height:18px;border-radius:50%;background:var(--accent);position:relative}
+  .brand-mark::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg)}
+  .crumbs{color:var(--ink-faint);display:flex;gap:10px;align-items:center}
+  .crumbs span{color:var(--ink-soft)}
+  .crumbs em{font-style:normal;color:var(--ink)}
+  .topbar .spacer{flex:1}
+  .topbar a.lnk{color:var(--ink-soft);text-decoration:none}
+  .topbar a.lnk:hover{color:var(--ink)}
+  .topbar .meta{color:var(--ink-faint);font-family:var(--mono);font-size:11px;letter-spacing:0.05em;text-transform:uppercase}
+  @media (max-width:780px){.crumbs,.topbar .meta{display:none}.topbar-in{gap:12px;padding:10px 18px}}
+
+  .page{max-width:var(--maxw);margin:0 auto;padding:0 32px;display:grid;grid-template-columns:1fr;gap:48px}
+  article{padding:64px 0 96px;max-width:var(--col);margin:0 auto}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:24px}
+  .eyebrow .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);vertical-align:middle;margin:0 10px 2px 0}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(36px, 4.6vw, 50px);line-height:1.08;letter-spacing:-0.02em;margin:0 0 24px;color:var(--ink);text-wrap:balance}
+  h1 em{font-style:italic;color:var(--accent-ink);font-weight:500}
+  .deck{font-family:var(--serif);font-size:22px;line-height:1.45;color:var(--ink-soft);font-weight:400;font-style:italic;margin:0 0 40px;text-wrap:pretty}
+  .byline{display:flex;gap:16px;align-items:center;padding:16px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font-size:13px;color:var(--ink-soft);margin-bottom:48px;flex-wrap:wrap}
+  .byline .who{display:flex;gap:10px;align-items:center}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;font-family:var(--serif);font-weight:600;color:var(--accent-ink);font-size:13px}
+  .byline strong{color:var(--ink);font-weight:500}
+  .byline .sep{color:var(--ink-faint)}
+
+  article h2{font-family:var(--serif);font-weight:600;font-size:32px;line-height:1.18;letter-spacing:-0.01em;margin:64px 0 6px;color:var(--ink);text-wrap:balance}
+  article h2 .scene-num{display:block;font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-ink);font-weight:500;margin-bottom:10px}
+  article h3{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.3;margin:36px 0 8px;color:var(--ink)}
+  article p{font-size:18px;line-height:1.65;margin:0 0 20px;color:var(--ink);text-wrap:pretty}
+  article p.lede{font-size:20px;line-height:1.55}
+  article ul, article ol{font-size:18px;line-height:1.65;padding-left:24px;margin:0 0 24px}
+  article ul li, article ol li{margin-bottom:8px}
+  article blockquote{margin:24px 0;padding:4px 0 4px 24px;border-left:3px solid var(--accent);font-family:var(--serif);font-style:italic;font-size:21px;line-height:1.5;color:var(--ink-soft)}
+  article blockquote cite{display:block;font-style:normal;font-family:var(--sans);font-size:13px;color:var(--ink-faint);margin-top:8px}
+  article hr{border:0;border-top:1px solid var(--rule);margin:48px 0}
+  article code, article kbd{font-family:var(--mono);font-size:0.86em;background:var(--bg-deep);padding:1px 6px;border-radius:3px;color:var(--accent-ink)}
+  article pre{background:var(--ink);color:var(--bg);padding:18px 22px;border-radius:6px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.55;margin:20px 0}
+  article pre code{background:transparent;color:inherit;padding:0;font-size:13px}
+  .small{font-size:14px;color:var(--ink-soft)}
+  ol.refs{font-size:14px;line-height:1.5;color:var(--ink-soft)}
+  ol.refs li{margin-bottom:7px}
+  ol.refs cite{font-style:italic;color:var(--ink)}
+  .refgroup{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent-ink);margin:28px 0 6px}
+
+  table.compare{width:100%;border-collapse:collapse;font-size:15px;margin:16px 0 24px}
+  table.compare th, table.compare td{padding:12px 14px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+  table.compare th{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:500}
+  table.compare td{color:var(--ink)}
+  table.compare tr:last-child td{border-bottom:0}
+  table.compare td.num{font-family:var(--mono);text-align:right}
+  table.compare .delta-good{color:var(--accent-ink);font-weight:500}
+
+  .summary-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;padding:20px 24px;margin:32px 0 40px;display:grid;gap:8px}
+  .summary-card h6{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent-ink);margin:0 0 4px;font-weight:500}
+  .summary-card ul{padding-left:20px;margin:0;font-size:15px;line-height:1.55;color:var(--ink-soft)}
+  .summary-card ul li{margin-bottom:6px}
+  .summary-card strong{color:var(--ink);font-weight:500}
+
+  .disclosure-card{background:oklch(0.96 0.015 55);border:1px solid oklch(0.85 0.03 50);border-radius:8px;padding:16px 20px;margin:0 0 40px;font-size:14px;color:var(--ink-soft);line-height:1.55}
+  .disclosure-card strong{color:var(--ink);font-weight:600}
+
+  .pill{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent-ink);padding:2px 10px;border-radius:99px;border:1px solid color-mix(in oklch, var(--accent-ink) 30%, transparent)}
+
+  footer.page-foot{border-top:1px solid var(--rule);padding:48px 32px;max-width:var(--maxw);margin:48px auto 0;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;font-size:13px;color:var(--ink-soft)}
+  footer.page-foot .links{display:flex;gap:20px;flex-wrap:wrap}
+  footer.page-foot a{color:var(--ink)}
+
+  .endmark{display:flex;align-items:center;gap:14px;color:var(--ink-faint);font-family:var(--mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;margin:40px 0 0}
+  .endmark::before,.endmark::after{content:"";flex:1;height:1px;background:var(--rule)}
+</style>
+</head>
+<body>
+<!-- ts-site-nav: shared docs-site dropdown. The SAME block lives on every
+     docs page (only the relative prefix differs) so every page can reach
+     every other page — keep the link list in sync across pages. -->
+<details class="ts-site-nav">
+  <summary>&#9776; Site</summary>
+  <nav>
+    <a href="../">Docs home</a>
+    <a href="../brain-architecture/">Brain architecture</a>
+    <a href="../brain-advanced-design/">Brain advanced design</a>
+    <a href="../LLM-Brain-Design-Research-Paper/">Research paper</a>
+    <a href="../Contextual-Agentic-Memory-Memo-Not-True-Memory/" class="sub">&mdash; Memo-not-memory (this page)</a>
+    <a href="../zorkgpt/">ZorkGPT bench</a>
+    <a href="../zorkgpt/claude-opus-4.8/" class="sub">&mdash; Opus 4.8 run</a>
+    <a href="../zorkgpt/taughtLocalLLM/" class="sub">&mdash; TaughtLocalLLM run</a>
+    <a href="https://github.com/TerranSyn/TerranSoul">GitHub &#8599;</a>
+  </nav>
+</details>
+<style>
+.ts-site-nav{position:fixed;top:10px;right:12px;z-index:2147483000;font:13px/1.45 system-ui,"Segoe UI",sans-serif}
+.ts-site-nav summary{list-style:none;cursor:pointer;user-select:none;background:rgba(17,19,28,.92);color:#e7e9f0;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px)}
+.ts-site-nav summary::-webkit-details-marker{display:none}
+.ts-site-nav[open] summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.ts-site-nav nav{position:absolute;right:0;min-width:230px;display:flex;flex-direction:column;background:rgba(17,19,28,.96);border:1px solid rgba(255,255,255,.18);border-radius:10px 0 10px 10px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.45)}
+.ts-site-nav nav a{color:#e7e9f0;text-decoration:none;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ts-site-nav nav a:last-child{border-bottom:0}
+.ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
+.ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+</style>
+
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="brand-mark"></span> <a href="../" style="color:var(--ink);text-decoration:none">TerranSoul</a></div>
+    <div class="crumbs">
+      <span>Papers</span> <span>/</span> <em>Memo, not memory &mdash; a position paper</em>
+    </div>
+    <div class="spacer"></div>
+    <a class="lnk" href="../LLM-Brain-Design-Research-Paper/">Memory-layer bench &rarr;</a>
+    <a class="lnk" href="https://github.com/TerranSyn/TerranSoul/blob/main/benchmark/COMPARISON.md">Results matrix</a>
+    <div class="meta">2026-06</div>
+  </div>
+</div>
+
+<div class="page">
+  <article>
+    <div class="eyebrow"><span class="dot"></span>Position paper</div>
+    <h1>Contextual Agentic Memory is a Memo, Not True Memory: <em>and a frozen-weight existence proof of the memory the charge demands.</em></h1>
+    <p class="deck">We adopt the title and the indictment of Xu, Dai &amp; Zhang (arXiv:2604.27707) without softening it. Retrieve-and-stuff &ldquo;agentic memory&rdquo; <em>is</em> a memo: an ephemeral working note, stateless across the retrieval boundary, with no consolidation, no belief-revision, no forgetting, no metacognition. But we argue the charge lands on naive RAG and scratchpads &mdash; not on a governed, consolidating, reconsolidating external substrate. TerranSoul is offered as a working counter-example: true-memory behaviour with the language model&rsquo;s weights deliberately frozen.</p>
+
+    <div class="summary-card">
+      <h6>What this paper argues</h6>
+      <ul>
+        <li>We <strong>agree</strong> with arXiv:2604.27707&rsquo;s diagnosis: per-turn context engineering is lookup, not memory, and naming it &ldquo;learning&rdquo; is a category error.</li>
+        <li>We <strong>contest its dichotomy.</strong> The paper splits persistence into context (CC) vs. weights (&theta;) and prescribes moving knowledge into &theta;. We argue a third locus exists: a <em>governed, structured, self-evolving external substrate</em> that delivers the behavioural properties of memory (consolidation, reconsolidation, decay, calibration, governance) without editing &theta;.</li>
+        <li>We propose <strong>five falsifiable criteria</strong> that separate a memo from memory, and map each to a real, file-referenced TerranSoul faculty.</li>
+        <li>We report <strong>only measured numbers</strong>, every one sourced to a committed result file, and keep architectural argument explicitly separate from measurement. Limitations are stated plainly: single-PC, n-limited benches, and criteria that are themselves arguable.</li>
+      </ul>
+    </div>
+
+    <div class="disclosure-card">
+      <strong>Honesty and standpoint.</strong> This is a <em>position paper</em> by the TerranSoul project, not a neutral survey, and TerranSoul is the system it advocates. We have a stake in the conclusion; we try to earn it by reporting the numbers that cut against us (the modal Zork I result is 10&rarr;10, not the peak 45; the deep cross-episode climb is high-variance and largely an across-run accumulation artifact). We also concede the single most important point to arXiv:2604.27707 up front: TerranSoul does <strong>not</strong> edit model weights, so on the paper&rsquo;s own definition our &ldquo;memory&rdquo; is weight-frozen by mandate. The argument below is that weight-editing is one route to the properties of memory, not the only one.
+    </div>
+
+    <div class="byline">
+      <div class="who"><div class="avatar">T</div><div><strong>TerranSoul project</strong><br /><span class="small">Position paper &mdash; engaging arXiv:2604.27707v1, June 2026.</span></div></div>
+      <div class="sep">&middot;</div>
+      <div>Companion measurements: <a href="../LLM-Brain-Design-Research-Paper/">memory-layer bench</a> &middot; <a href="https://github.com/TerranSyn/TerranSoul/blob/main/benchmark/COMPARISON.md">results matrix</a>.</div>
+    </div>
+
+    <h2><span class="scene-num">Abstract</span>The memo, the memory, and the frozen-weight middle</h2>
+    <p>Xu, Dai &amp; Zhang argue that the dominant &ldquo;contextual / agentic memory&rdquo; paradigm &mdash; retrieve passages, inject them into the context window per turn &mdash; is not memory but a <em>memo</em>: an ephemeral working note that implements lookup, not learning [<a href="#ref-1">1</a>]. They formalise two structurally distinct substrates &mdash; context engineering (CC) and weight-based memory (&theta;) &mdash; and prove a sample-complexity separation: retrieval generalises by similarity to stored cases, parametric learning by applying abstract rules to never-seen inputs, and the gap is context-window-independent. Their prescription is a <em>consolidation channel</em> that writes episodic experience into weights.</p>
+    <p>We accept the diagnosis and reject the implied trichotomy of remedies-of-one. We argue that what makes a store a <em>memory</em> rather than a <em>memo</em> is a set of <em>behavioural</em> properties &mdash; offline consolidation and reconsolidation (belief-revision in place), adaptive forgetting, a typed structure that evolves, calibrated metacognition, and governed self-evolution &mdash; and that these can be realised in a structured external substrate <em>with model weights frozen</em>. We state five falsifiable criteria, map each to a real TerranSoul faculty with source-file references, and report measured evidence: on <strong>LongMemEval-S</strong> retrieval (500 questions) the substrate reaches R@5 98.6&nbsp;% / R@10 99.8&nbsp;% / R@20 100.0&nbsp;% at p50 1.0&nbsp;s and $0 [<a href="#ref-12">12</a>]; on the <strong>full 1976-query LoCoMo slice</strong>, R@10 64.5&nbsp;% / R@100 85.8&nbsp;% with documented multi-hop gaps [<a href="#ref-12">12</a>]; on <strong>ZorkGPT</strong> the externalised memory lifts a frozen 4B from 0 to 10&ndash;20 and a frozen 12B&rsquo;s per-run cross-episode score to ~15 (peak 45 via across-run accumulation, honestly de-confounded) with weights never touched [<a href="#ref-12">12</a>]. We are explicit about what this does <em>not</em> show: it does not refute the paper&rsquo;s compositional-generalisation theorem, which is about &theta; vs. retrieval and which our weight-frozen design does not contest on its own terms. It shows, rather, that the &ldquo;memo&rdquo; charge is escapable without &theta;-editing &mdash; that consolidation, decay, structure, calibration and governance are the operative distinction, and that a frozen-weight system can have all five.</p>
+
+    <h2><span class="scene-num">01 &middot; Introduction</span>A memo is not a memory</h2>
+    <p>A memo is a note you write to get through the afternoon: you jot what you need, you act on it, and you throw it away. Nothing about today&rsquo;s note changes how you write tomorrow&rsquo;s. Xu, Dai &amp; Zhang argue that this is precisely what &ldquo;agentic memory&rdquo; has become &mdash; a per-turn working note assembled by retrieval, used, and discarded across the retrieval boundary [<a href="#ref-1">1</a>]. The system retrieves the <em>k</em> nearest passages, pastes them into the prompt, generates, and the only thing that persists is more undigested passages in the same flat store. They call treating this as learning a &ldquo;category error with provable consequences,&rdquo; and we think they are right.</p>
+    <p>Their constructive claim is sharper than the critique. Knowledge persistence, they argue, has two structurally distinct substrates. <em>Context engineering</em> (CC) injects information into the window via RAG, vector stores, or scratchpads; it can generalise only by <em>similarity</em> to stored cases. <em>Weight-based memory</em> (&theta;) writes knowledge into parameters via fine-tuning; it generalises by applying <em>abstract rules</em> to inputs never seen before. Their Theorem&nbsp;1 (a compositional sample-complexity separation, via Fano&rsquo;s inequality and VC bounds) states that retrieval needs &Omega;(<em>k</em><sup>2</sup>) stored examples to hit a target accuracy on <em>k</em> concept pairs, while parametric learning needs only O(<em>d</em>&nbsp;+&nbsp;log(1/&delta;)/&delta;) &mdash; and the gap is <em>context-window-independent</em>. Bigger windows do not close it. From this they derive four structural limitations &mdash; definitional (lookup cannot extrapolate), structural (a provable generalisation ceiling), dynamic (the &ldquo;Frozen Novice&rdquo;: agents accumulate notes but never develop expertise because weights never change between sessions), and security (injected malicious content becomes persistent across all future sessions) &mdash; and prescribe a <em>consolidation channel</em>: an asynchronous background pathway that distils episodic experience into weights (LoRA, MEMIT, SSR, TTT, self-distillation).</p>
+    <p>We agree with the diagnosis and with most of the constructive frame. Our disagreement is narrow and, we think, important. The paper equates &ldquo;true memory&rdquo; with &ldquo;knowledge in &theta;.&rdquo; We argue that <em>memory</em> is better individuated by what it <em>does</em> than by where it <em>lives</em>: a substrate is a memory, not a memo, when it consolidates offline, revises beliefs in place, forgets adaptively, grows a typed structure, calibrates its own confidence, and governs its own evolution. Those are behavioural commitments, and &mdash; this is the wager of the paper &mdash; they are realisable in a structured external store while the language model&rsquo;s weights stay frozen. We are not claiming this closes the paper&rsquo;s <em>compositional</em> gap (it does not; &sect;6); we are claiming the <em>memo-vs-memory</em> distinction is not the same distinction as <em>CC-vs-&theta;</em>, and that conflating them concedes too much to fine-tuning.</p>
+    <p>This matters operationally. TerranSoul runs under a standing mandate to keep its local model (<code>gemma4:12b-it-qat</code>) frozen &mdash; an explicit project constraint, not an oversight. If &ldquo;memory&rdquo; <em>required</em> &theta;-editing, TerranSoul could have none. The rest of this paper asks whether that is true, states criteria that would settle it, and maps each criterion to a shipped faculty with file references and measured behaviour.</p>
+
+    <h2><span class="scene-num">02 &middot; Related work</span>The 2026 agentic-memory debate</h2>
+    <p><strong>The target paper.</strong> Xu, Dai &amp; Zhang [<a href="#ref-1">1</a>] is the proximate interlocutor. Its empirical scaffolding (which we report as <em>their</em> evidence, not independently verified here) cites ParamMem-style results that parametric storage outperforms retrieval with the gap widening on novel tasks; Ovadia&nbsp;2024 that RAG does not improve compositional reasoning; SCAN/COGS multi-hop results where fine-tuning beats RAG; and two memory-injection attacks &mdash; MINJA at 98.2&nbsp;% success and PoisonedRAG at 90&nbsp;% with five adversarial texts &mdash; as evidence that a persistent store is a persistent attack surface. It explicitly names MemGPT (context paging without weight updates), Reflexion (&ldquo;verbal RL&rdquo; leaving weights frozen), and Voyager (skills stored as retrievable code) as &ldquo;CC-engineering only.&rdquo; For benchmark designers it proposes a <em>Compositional Generalization over Time</em> (CGT) metric: does accuracy on <em>novel concept combinations</em> rise with experience, not just recall@k?</p>
+    <p><strong>The dual-process line.</strong> DCPM &mdash; &ldquo;Memory Beyond Recall: a Dual-Process Cognitive Memory System&rdquo; [<a href="#ref-2">2</a>] &mdash; splits a System-1 &ldquo;daytime writer&rdquo; (raw episodic capture) from a System-2 &ldquo;nighttime&rdquo; schema-induction pass that distils reusable strategies and treats failures as first-class memory. Its raw-recall-vs-distilled-strategy split is exactly the memo/memory line drawn behaviourally rather than by substrate, and it validates the consolidation/reflection architecture we describe in &sect;4 without ever editing weights.</p>
+    <p><strong>The governance line.</strong> SSGM &mdash; the Stability and Safety Governed Memory framework [<a href="#ref-3">3</a>] &mdash; frames drift, poisoning, and unbounded growth as the missing <em>governance</em> layer over an evolving store. Its key observation cuts directly at the target paper&rsquo;s security limitation: the danger only <em>exists</em> once memory truly persists and self-evolves; a scratchpad has nothing to govern. Governance, on this view, is the price of real memory &mdash; and its presence is evidence that a store has crossed from memo to memory. SSGM is the stated basis for TerranSoul&rsquo;s governed-self-evolution faculty (&sect;4.5).</p>
+    <p><strong>The surveys and taxonomies.</strong> A cluster of 2026 surveys converges on a shared picture: &ldquo;memory&rdquo; is the externalisation layer (memory + skills + protocols + harness) around a frozen LLM, distinct from per-turn context/retrieval. These include &ldquo;Externalization in LLM Agents &mdash; a Unified Review&rdquo; [<a href="#ref-4">4</a>], &ldquo;Towards Autonomous Memory Agents&rdquo; (a learned, Thompson-sampling retrieval policy) [<a href="#ref-5">5</a>], &ldquo;Are We Ready For An Agent-Native Memory System?&rdquo; (which argues conservative consolidation beats aggressive reorganisation) [<a href="#ref-6">6</a>], and DeepMind&rsquo;s 10-faculty cognitive framework [<a href="#ref-7">7</a>]. Three further taxonomy surveys (arXiv:2602.06052, 2602.19320, 2603.07670) are frequently cited in this space; we record them as <em>cited</em> rather than independently verified against their abstracts here, and flag that caveat explicitly.</p>
+    <p><strong>The production systems the target paper indicts.</strong> Mem0 [<a href="#ref-8">8</a>] is a production memory layer that distinguishes extracted/consolidated memory from raw conversation context and reports a LoCoMo QA J-score of 68.5&nbsp;%; in the paper&rsquo;s terms it is still CC-only (no weight pathway). Letta / MemGPT [<a href="#ref-9">9</a>] is memory-as-OS context paging (LoCoMo QA J-score 83.2&nbsp;% [<a href="#ref-11">11</a>]) and is the canonical &ldquo;memo&rdquo; the paper names. Zep / Graphiti [<a href="#ref-10">10</a>] is a temporal knowledge-graph memory (LoCoMo QA J-score 34.53&nbsp;% [<a href="#ref-11">11</a>]) &mdash; closest in <em>shape</em> to TerranSoul&rsquo;s typed edge store, but with no decay/reconsolidation/calibration loop layered over it. We stress an honesty point inherited from our results matrix: the Mem0/Letta/Zep figures are end-to-end QA accuracy (J-score), <em>not</em> retrieval recall, and are not comparable to our retrieval numbers in &sect;5 [<a href="#ref-11">11</a>].</p>
+
+    <h2><span class="scene-num">03 &middot; The distinction</span>Five criteria that separate a memo from a memory</h2>
+    <p>To make the debate falsifiable we propose five criteria. They are <em>behavioural</em>: they ask what a store does over time, not where its bits sit. A pure retrieval-and-stuff pipeline fails all five; the target paper&rsquo;s &theta;-editing remedy passes some by construction. We claim a structured external substrate can pass all five with weights frozen, and we concede in &sect;6 that the criteria are themselves arguable.</p>
+    <table class="compare">
+      <tr><th>#</th><th>Criterion</th><th>Memo (retrieve-and-stuff)</th><th>Memory (the demand)</th></tr>
+      <tr><td>C1</td><td><strong>Offline consolidation &amp; reconsolidation</strong></td><td>none; the store only grows by append</td><td>idle replay distils experience; reactivation makes a belief labile and revises it <em>in place</em></td></tr>
+      <tr><td>C2</td><td><strong>Adaptive forgetting / decay</strong></td><td>nothing decays; old notes rank forever</td><td>time-anchored decay and tiered eviction; salience, not recency-of-write, survives</td></tr>
+      <tr><td>C3</td><td><strong>Typed structure that evolves</strong></td><td>flat list of passages</td><td>typed, directional graph with <code>supersedes</code>/<code>contradicts</code> edges that self-correct</td></tr>
+      <tr><td>C4</td><td><strong>Calibrated metacognition</strong></td><td>no model of its own reliability</td><td>a second-order monitor that estimates calibrated confidence and recalibrates from outcomes</td></tr>
+      <tr><td>C5</td><td><strong>Governed self-evolution</strong></td><td>any write persists; injection is permanent</td><td>autonomous writes pass a drift/poisoning/growth gate; uncorroborated writes are quarantined</td></tr>
+    </table>
+    <p>Two of the target paper&rsquo;s four limitations are <em>about these criteria</em>. The &ldquo;Frozen Novice&rdquo; (their dynamic limitation) is the absence of C1: a store that only appends never develops expertise. The security limitation (&ldquo;evil&sup2;&rdquo; persistent injection) is the absence of C5: a store with no write-time governance carries an attacker&rsquo;s payload into every future session. We take these two seriously and answer them directly in &sect;4.1 and &sect;4.5. The remaining two limitations &mdash; definitional and structural &mdash; are genuinely about CC-vs-&theta; and the compositional ceiling; we do <em>not</em> claim the five criteria dissolve them, and we say so in &sect;6.</p>
+
+    <h2><span class="scene-num">04 &middot; Existence proof</span>TerranSoul, mapped criterion-by-criterion</h2>
+    <p>TerranSoul is a local-first companion (Vue&nbsp;+&nbsp;Tauri&nbsp;+&nbsp;Rust&nbsp;+&nbsp;SQLite&nbsp;+&nbsp;Ollama) whose &ldquo;brain&rdquo; is a Rust memory server reached over the Model Context Protocol. By project mandate the language model&rsquo;s weights are frozen; <em>all</em> learning is externalised into the substrate. Below, each criterion of &sect;3 is mapped to a real faculty with source-file references. We label each honestly: what it does, and what it does <em>not</em> (in particular, every faculty strengthens or revises <em>stored</em> structure, never &theta;).</p>
+
+    <h3>4.1 &nbsp;C1 &mdash; Consolidation and reconsolidation (the answer to the Frozen Novice)</h3>
+    <p>The reconsolidation module (<code>src-tauri/src/memory/reconsolidation.rs</code>) implements an idle complementary-learning-systems (CLS) replay pass. <code>consolidate()</code> / <code>consolidate_conn()</code> (lines 423 / 428) sample the highest-salience episodic rows that are <em>due</em> under FSRS-style spacing &mdash; <code>salience()</code> (line 207) weighs importance, access count and age; <code>next_stability()</code> (line 223) schedules the next review &mdash; and <code>strengthen_memory()</code> (line 347) raises a row&rsquo;s Laplace-smoothed confidence, increments its success count, and stamps a <code>consolidation_run_id</code>. This is the hippocampus&rarr;neocortex replay the target paper says agents lack: experience is distilled offline into strengthened generalisations rather than left as raw episodics.</p>
+    <p>The harder property is <em>reconsolidation</em>: when a belief is reactivated it becomes labile and can be revised <em>in place</em>. <code>reactivate()</code> (line 452) marks a row labile; <code>should_reconsolidate()</code> (line 256) gates whether a new, similar observation should overwrite rather than co-exist; and <code>reconsolidate_in_place()</code> / <code>reconsolidate_in_place_conn()</code> (lines 476&ndash;519) perform belief-revision-in-place &mdash; correcting a stale belief cleanly instead of stacking a contradicting duplicate beside it. A memo cannot do this: appending the correction leaves the error retrievable forever. <strong>Honest caveat:</strong> this revises stored confidence and content, not &theta;. The Frozen Novice charge is that <em>weights</em> never change between sessions; our answer is that <em>behaviour</em> changes between sessions because the substrate the frozen model reads has changed &mdash; which &sect;5 shows is measurable.</p>
+
+    <h3>4.2 &nbsp;C2 &mdash; Three tiers and adaptive forgetting</h3>
+    <p>The store (<code>src-tauri/src/memory/store.rs</code>) defines a <code>MemoryTier</code> enum (line 1298): <em>Short</em> (evicted at session end), <em>Working</em> (held until consolidation), and <em>Long</em> (permanent, vector-indexed). Forgetting is not incidental &mdash; it is a typed, time-anchored function. <code>src-tauri/src/memory/confidence_decay.rs</code> applies a per-cognitive-kind multiplicative decay <code>confidence &times; 0.5^(age/half_life)</code> with half-lives of <strong>365&nbsp;days for judgments, 90 for semantic, 60 for procedural, 7 for episodic</strong> (lines 7&ndash;10, 29&ndash;32), folded into the retrieval RRF score. A correction (judgment) is durable for a year; a time-stamped episode loses rank in a week. This is the inverse of a memo: salience, not recency-of-write, determines what survives, and low-salience material ages out and is pruned rather than ranking forever.</p>
+
+    <h3>4.3 &nbsp;C3 &mdash; A typed knowledge graph that evolves</h3>
+    <p>The edge store (<code>src-tauri/src/memory/edges.rs</code>) holds typed, directional edges. <code>COMMON_RELATION_TYPES</code> (line 32) includes <code>supersedes</code>, <code>contradicts</code>, <code>derived_from</code>, <code>governs</code>, and <code>depends_on</code>; the <code>(src_id, dst_id, rel_type)</code> tuple is unique so extraction is idempotent, and an <code>EdgeSource</code> records provenance (user / LLM / auto). <code>add_edge()</code> (line 226) and <code>add_edges_batch()</code> (line 249) are exposed to any client over MCP via <code>brain_add_edge</code> (<code>src-tauri/src/ai_integrations/mcp/tools.rs</code>:1120). This buys two things a flat note list cannot: <em>multi-hop</em> recall (walk from a vector hit to keyword-disjoint memories) and a structure that <em>self-corrects</em> &mdash; a <code>supersedes</code> or <code>contradicts</code> edge demotes a stale claim rather than leaving two equal-rank contradictions in the store. The structure evolves; the memo&rsquo;s does not.</p>
+
+    <h3>4.4 &nbsp;C4 &mdash; Calibrated metacognition</h3>
+    <p>The metacognition module (<code>src-tauri/src/memory/metacognition.rs</code>) is a second-order monitor that estimates a <em>calibrated</em> confidence in the agent&rsquo;s own answer <em>before</em> it is emitted &mdash; the &ldquo;know-when-you-don&rsquo;t-know&rdquo; faculty. <code>route()</code> (line 361) turns the score into one of answer / deliberate / seek-more / abstain. Crucially, the calibration is <em>learned from outcomes</em>: <code>recalibrate()</code> (line 559) refits a Platt map from the logged calibration data against realised five-class session outcomes (minimising log-loss / ECE) and rewrites the brain-seeded config rows. The curve is not hardcoded; it improves with experience. This is the metacognitive faculty the &ldquo;Frozen Novice&rdquo; is said to lack &mdash; and it improves with weights frozen, because the thing being refit is a config row in the substrate, not a parameter in &theta;.</p>
+
+    <h3>4.5 &nbsp;C5 &mdash; Governed self-evolution (the answer to persistent injection)</h3>
+    <p>The target paper&rsquo;s sharpest practical point is security: MINJA-style injection at 98.2&nbsp;% and PoisonedRAG at 90&nbsp;% with five texts mean that a store which accepts any write carries an attacker&rsquo;s payload into every future session. TerranSoul&rsquo;s answer is a write-time governance gate, BCF-21 (<code>docs/brain-advanced-design.md</code>:7649&ndash;7690). <strong>Honest status caveat: BCF-21 is a DESIGN, not yet a shipped <code>.rs</code> module.</strong> The design routes every <em>autonomous</em> (brain-authored) durable write through <code>brain_govern_memory</code>, composing existing structural signals: a drift guard (reusing the C1 reconsolidation/corroboration path), a poisoning/injection guard (source-concentration and source-trust provenance), a growth guard (the decay/prune budget of C2), and quarantine of peer-brain imports until corroborated. User writes bypass the gate; only the brain&rsquo;s own writes are governed. It cites SSGM [<a href="#ref-3">3</a>] as its basis. The point for this paper is that governance is <em>possible and meaningful</em> only because the store is real memory &mdash; a memo has nothing to govern &mdash; and that the persistent-injection threat is the explicit adversary this gate must defeat.</p>
+
+    <h3>4.6 &nbsp;The closed loop: write &rarr; manage &rarr; read</h3>
+    <p>The five faculties compose into a loop. <strong>Write:</strong> a policy (<code>src-tauri/src/memory/auto_learn.rs</code>) decides <em>when</em> to extract memories from a session (default every ~10 turns with a cooldown). <strong>Manage / self-tune:</strong> idle passes run consolidation (&sect;4.1) and recalibration (&sect;4.4), strengthening salient rows and refitting the confidence map. <strong>Read:</strong> hybrid FTS5&nbsp;+&nbsp;vector&nbsp;+&nbsp;KG retrieval with rerank. Every turn writes; idle passes manage and self-tune the brain&rsquo;s own seeded weights; retrieval reads. The learning lives in the substrate, not in &theta; &mdash; which is exactly the architecture the target paper says is impossible to call &ldquo;memory.&rdquo; The remainder of this paper asks whether the loop produces the <em>behavioural</em> signatures of memory, measurably.</p>
+
+    <h2><span class="scene-num">05 &middot; Evidence</span>What is measured, and what it does and does not show</h2>
+    <p>Every number below is from a committed result file in the project&rsquo;s benchmark matrix [<a href="#ref-11">11</a>,<a href="#ref-12">12</a>]. We separate measurement from argument: these results establish that the substrate is a competitive <em>retriever</em> and that it produces <em>cross-episode behavioural change with weights frozen</em>. They do <strong>not</strong> measure compositional generalisation over time (the target paper&rsquo;s CGT metric, which we have not yet implemented), and they do not refute its &theta;-vs-retrieval theorem.</p>
+
+    <h3>5.1 Retrieval quality (the orthogonal axis)</h3>
+    <p>On <strong>LongMemEval-S</strong> (500 questions, all types; BENCH-AM-6.2, EmbeddingGemma embedder, 2026-06-28) the substrate&rsquo;s <code>search</code> path leads published baselines on recall and ranking at interactive latency and zero marginal cost [<a href="#ref-12">12</a>]:</p>
+    <table class="compare">
+      <tr><th>System</th><th class="num">R@5</th><th class="num">R@10</th><th class="num">R@20</th><th class="num">NDCG@10</th><th class="num">MRR</th><th>Latency / cost</th></tr>
+      <tr><td><strong>TerranSoul (<code>search</code>)</strong></td><td class="num delta-good">98.6%</td><td class="num delta-good">99.8%</td><td class="num delta-good">100.0%</td><td class="num delta-good">88.8%</td><td class="num delta-good">89.1%</td><td>p50 1.0 s / $0</td></tr>
+      <tr><td>agentmemory (published)</td><td class="num">95.2%</td><td class="num">98.6%</td><td class="num">&mdash;</td><td class="num">87.9%</td><td class="num">88.2%</td><td>&mdash;</td></tr>
+      <tr><td>MemoryPalace (vendor self-report)</td><td class="num">~96.6%</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td>&mdash;</td></tr>
+    </table>
+    <p>Per-type R@5 is uniformly high (single-session-assistant 100.0&nbsp;%, knowledge-update 98.7&nbsp;%, temporal-reasoning 98.5&nbsp;%) [<a href="#ref-12">12</a>]. On the harder <strong>full 1976-query MTEB LoCoMo slice</strong> (BENCH-LCM-1, re-measured 2026-06-28), the EmbeddingGemma vector path (<code>rrf_emb</code>) scores R@10 64.5&nbsp;% / R@100 85.8&nbsp;% / NDCG@10 49.9&nbsp;% / MRR@100 48.3&nbsp;%, with the lexical <code>rrf</code> at R@10 57.2&nbsp;% / R@100 76.9&nbsp;% [<a href="#ref-12">12</a>]. Temporal reasoning is strong (R@10 ~90&nbsp;%); <strong>multi-hop and open-domain are documented gaps</strong> requiring query decomposition / iterative retrieval &mdash; an honest weakness, and (notably) exactly the compositional region the target paper predicts retrieval will struggle with.</p>
+    <p><strong>Token efficiency</strong> (regenerated 2026-06-25, post RRF-fix): <code>hybrid_search_rrf</code> no-vector reaches R@10 66.8&nbsp;% / NDCG@10 95.0&nbsp;% at <strong>2,748 retrieved tokens/query</strong> vs. a keyword-only quality leader at 67.1&nbsp;% / 8,245 tokens &mdash; ~3&times; fewer tokens at near-equal quality [<a href="#ref-11">11</a>].</p>
+    <p><strong>An instructive contrast with frontier agentic retrieval.</strong> Run as an <em>agentic</em> retriever (grep/read &rarr; ranked top-20, cloud claude-haiku-4-5), Claude Code + GENesis-AGI scores R@5 43.6&nbsp;% / R@10 57.2&nbsp;% / R@20 72.3&nbsp;% / NDCG@10 83.9&nbsp;% / MRR 100.0&nbsp;% at ~53&nbsp;s/query and ~$6, vs. the local hybrid substrate&rsquo;s 98.6&nbsp;% R@5 at 1.0&nbsp;s p50 and $0 on the same retrieval shape [<a href="#ref-11">11</a>]. Frontier grep-and-read lands only in the vector-cluster recall range (with perfect first-hit ranking) at two orders of magnitude more latency and non-local cost. This is a measurement about retrieval modalities, not about the memo/memory thesis; we report it because it bears on whether &ldquo;the agent will just search&rdquo; is a substitute for a structured store. It is not, on these numbers.</p>
+
+    <h3>5.2 Behavioural change with weights frozen (the Frozen-Novice rebuttal)</h3>
+    <p>The most direct evidence against the &ldquo;Frozen Novice&rdquo; claim is the <strong>ZorkGPT long-horizon</strong> bench, where the language model&rsquo;s weights are provably untouched and only the external substrate varies [<a href="#ref-11">11</a>,<a href="#ref-12">12</a>]. AGI-pure (no game-specific seeds), the substrate lifts the same frozen 4B (<code>gemma4:e4b</code>) from <strong>0</strong> (both the bare-LLM and ZorkGPT-default controls) to <strong>10&ndash;20</strong>, and removes its fixation loops; cross-episode behavioural change is verified (a new room, <em>Up a Tree</em>, reached in a later episode via a reflection hydrated from an earlier one), at 0/1682 MCP errors. On a frozen 12B (<code>gemma4:12b-it-qat</code>) self-improvement campaign, the de-confounded <strong>per-run cross-episode score is ~15</strong> on a fresh task-naive brain, with a <strong>peak single episode of 45</strong> reached <em>via across-run accumulation</em> on a persistent brain &mdash; a one-time lucky discovery carried forward, <em>not</em> repeatable single-run self-improvement. We label this distinction explicitly because it is the difference between an honest result and an inflated one.</p>
+    <table class="compare">
+      <tr><th>Setting (frozen model)</th><th class="num">Score</th><th>What it shows</th></tr>
+      <tr><td>Bare LLM / ZorkGPT-default control (4B)</td><td class="num">0</td><td>no substrate &rarr; fixation loop, no progress</td></tr>
+      <tr><td><strong>External substrate, AGI-pure (4B)</strong></td><td class="num delta-good">10&ndash;20</td><td>memory lift + cross-episode new-room discovery, weights frozen</td></tr>
+      <tr><td>External substrate, per-run cross-episode (12B, de-confounded)</td><td class="num">~15</td><td>repeatable within-run lift on a fresh task-naive brain</td></tr>
+      <tr><td>External substrate, peak episode (12B, persistent brain)</td><td class="num">45</td><td><em>across-run</em> accumulation of a one-time discovery (not repeatable per-run)</td></tr>
+      <tr><td>Cross-game (Detective, 12B), memory-lift</td><td class="num delta-good">+20</td><td>death-aversion transfers to a second game (n = 2)</td></tr>
+    </table>
+    <p>The argument this supports is narrow and we state it narrowly: <em>behaviour changed across sessions with the model&rsquo;s weights frozen, driven entirely by changes in the external substrate.</em> That is a counter-example to &ldquo;agents accumulate notes but never develop expertise because weights never change.&rdquo; Expertise here is operational (avoiding a fatal move learned last episode; reaching a room via a hydrated reflection), and it is bounded &mdash; the score ceiling is set by the frozen actor&rsquo;s planning depth, not by the memory layer, which is itself on-thesis: the substrate keeps unblocking progress and the residual bound is the model&rsquo;s, not the memory&rsquo;s.</p>
+
+    <h3>5.3 What this evidence does <em>not</em> show</h3>
+    <ul>
+      <li><strong>It does not refute Theorem&nbsp;1.</strong> The compositional sample-complexity separation is a statement about &theta; vs. retrieval generalisation. Our weight-frozen substrate does not contest it on its own ground; our LoCoMo multi-hop gap is, if anything, consistent with it.</li>
+      <li><strong>It does not measure CGT.</strong> We do not yet have a compositional-generalisation-over-time metric. Adopting one (&sect;6) is the cleanest way to put our cross-episode behavioural-change claim on a principled footing &mdash; and to test it adversarially.</li>
+      <li><strong>The benchmarks are n-limited and single-PC.</strong> The Zork cross-game result is n = 2; the deep cross-episode climb is high-variance; retrieval numbers are cross-benchmark-incomparable by construction [<a href="#ref-11">11</a>]. None of these is a leaderboard claim.</li>
+    </ul>
+
+    <h2><span class="scene-num">06 &middot; Discussion</span>Where we agree, where we diverge</h2>
+    <p><strong>The diagnosis is correct.</strong> Naive contextual agentic memory is a memo. A flat vector store that only appends, never decays, never reconsolidates, and never governs its writes is a working note, and calling its accumulation &ldquo;learning&rdquo; is the category error the paper names. We adopt that framing wholesale; it is the title of this paper.</p>
+    <p><strong>The remedy is one route, not the route.</strong> The paper&rsquo;s prescription &mdash; a consolidation channel into &theta; via LoRA / MEMIT / SSR / TTT &mdash; is a valid way to obtain the <em>behaviours</em> of memory. But the memo/memory distinction is behavioural, and those behaviours are obtainable in a governed external substrate without touching &theta;. TerranSoul is the existence proof: consolidation and reconsolidation (C1), decay and tiering (C2), an evolving typed graph (C3), and calibrated metacognition that refits from outcomes (C4) all ship and run with the model frozen; governed self-evolution (C5) is designed and partially composed from shipped guards. The &ldquo;Frozen Novice&rdquo; charge mislabels weight-freezing as expertise-freezing; &sect;5.2 shows behaviour changing across sessions with weights frozen.</p>
+    <p><strong>Why we hold weights frozen on purpose.</strong> This is not merely a constraint we tolerate. Editing &theta; per session re-imports the very problems an external store solves cleanly: a weight edit is not <em>inspectable</em>, not <em>revertible</em> as a row, not <em>governable</em> at write time, and not <em>portable</em> to another client &mdash; and MEMIT-class edits have documented spillover. The properties that make the target paper&rsquo;s security limitation tractable (quarantine, supersession, provenance, audit) are <em>properties of structured data</em>, not of parameters. So the divergence is principled: we accept the compositional ceiling the theorem describes in exchange for an auditable, governable, revertible memory &mdash; and we route compositional needs to retrieval-time decomposition rather than weight edits. Where a frontier model has already solved a task, we capture its solution into the substrate once and let a cheap frozen model replay it (the &ldquo;distillation through memory&rdquo; result of the companion paper) &mdash; distillation into <em>data</em>, not <em>weights</em>.</p>
+    <p><strong>Adopting what the paper gets right.</strong> Two of its contributions we intend to take up. (1) The <strong>CGT metric</strong> is the right instrument for our central claim and is model-frozen-compatible; adding a &ldquo;compositional generalisation over time&rdquo; axis to our LongMemEval / LoCoMo / ZorkGPT adapters would test whether accuracy on <em>novel</em> concept combinations rises with experience, not just static recall@k. (2) The <strong>persistent-injection threat model</strong> (MINJA / PoisonedRAG) is a sharper framing than our current design text and should be folded in as the explicit adversary BCF-21&rsquo;s poisoning guard must defeat, with a regression test that an uncorroborated poisoned peer/connector write cannot reach the durable store. We are explicit that the paper&rsquo;s weight-editing techniques themselves (LoRA/MEMIT/SSR/TTT-into-&theta;) are <em>not</em> adoptable for the resident actor without violating the frozen-model mandate; that is a deliberate architectural divergence, not an oversight, and at most they could ever be a separate offline opt-in adapter distilled from traces.</p>
+
+    <h2><span class="scene-num">07 &middot; Limitations</span>Stated plainly</h2>
+    <ul>
+      <li><strong>The criteria are arguable.</strong> Our five-criterion definition of &ldquo;memory&rdquo; is a position, not a theorem. A reader who defines memory as &ldquo;knowledge in &theta;&rdquo; (the target paper&rsquo;s definition) will say we have built an excellent <em>database</em>, not a memory. We think the behavioural definition is more useful, but it is contestable, and the disagreement is partly terminological.</li>
+      <li><strong>We do not close the compositional gap.</strong> Theorem&nbsp;1 stands; our multi-hop LoCoMo gap is consistent with it. We claim escape from the <em>memo</em> charge, not from the <em>compositional-ceiling</em> charge.</li>
+      <li><strong>Single-PC, n-limited evidence.</strong> All results are single-machine, local-model, and several are single-trial or n = 2 (cross-game Zork). The headline Zork peak (45) is an across-run accumulation artifact, not repeatable per-run self-improvement; the modal AGI-pure Zork I result is 10&rarr;10. Retrieval numbers across benchmarks are not mutually comparable.</li>
+      <li><strong>C5 is partly design, not code.</strong> BCF-21 governed self-evolution is a design composing shipped guards (reconsolidation, source-trust, decay budget); it is not yet a single shipped module, and the persistent-injection regression test is proposed, not yet written.</li>
+      <li><strong>Self-advocacy.</strong> This is a position paper by the system&rsquo;s authors. We have mitigated, not eliminated, the bias by sourcing every number to a committed file and reporting the figures that cut against us; a reader should still weight it as advocacy.</li>
+    </ul>
+
+    <h2><span class="scene-num">08 &middot; Conclusion</span>The memo charge is escapable without editing &theta;</h2>
+    <p>Xu, Dai &amp; Zhang are right that contextual agentic memory, as commonly built, is a memo. We disagree only that the cure must be written into weights. Memory is what a store <em>does</em> over time &mdash; consolidate, reconsolidate, forget, structure, calibrate, govern &mdash; and a frozen-weight system that does all six is not a memo, whatever its parameters do. TerranSoul ships the first five faculties and designs the sixth, and produces measurable cross-episode behavioural change with its model frozen. The compositional ceiling the paper proves is real and we do not claim to have lifted it; we claim that the <em>memo-vs-memory</em> distinction and the <em>CC-vs-&theta;</em> distinction are not the same distinction, and that conflating them concedes to fine-tuning a victory it has not earned. The honest scorecard: diagnosis accepted, remedy generalised, two of the paper&rsquo;s ideas (CGT and the injection threat model) adopted, one (weight-editing) declined by mandate &mdash; and the central charge answered by construction.</p>
+
+    <h2><span class="scene-num">09 &middot; References</span>Cited work and artifacts</h2>
+    <div class="refgroup">The debate and the 2026 agentic-memory literature</div>
+    <ol class="refs">
+      <li id="ref-1">Xu, B., Dai, X., Zhang, K. <cite>Contextual Agentic Memory is a Memo, Not True Memory.</cite> 2026. arXiv:2604.27707v1. (Chinese University of Hong Kong; Zhejiang University.) The interlocutor of this paper.</li>
+      <li id="ref-2"><cite>Memory Beyond Recall: a Dual-Process Cognitive Memory System (DCPM).</cite> 2026. arXiv:2606.09483.</li>
+      <li id="ref-3"><cite>Governing Evolving Memory in LLM Agents: the Stability and Safety Governed Memory framework (SSGM).</cite> 2026. arXiv:2603.11768 (Mar 2026; v2 May 2026).</li>
+      <li id="ref-4"><cite>Externalization in LLM Agents &mdash; a Unified Review.</cite> 2026. arXiv:2604.08224.</li>
+      <li id="ref-5"><cite>Towards Autonomous Memory Agents</cite> (learned / Thompson-sampling retrieval policy). 2026. arXiv:2602.22406.</li>
+      <li id="ref-6"><cite>Are We Ready For An Agent-Native Memory System?</cite> (conservative consolidation &gt; aggressive reorganisation). 2026. arXiv:2606.24775.</li>
+      <li id="ref-7">DeepMind. <cite>A 10-faculty cognitive framework for LLM-agent memory.</cite> 2026. arXiv:2605.28405.</li>
+    </ol>
+    <div class="refgroup">Production memory systems named in the debate</div>
+    <ol class="refs" start="8">
+      <li id="ref-8"><cite>Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory.</cite> 2025. arXiv:2504.19413. LoCoMo QA J-score 68.5&nbsp;%.</li>
+      <li id="ref-9">Packer et al. <cite>MemGPT: Towards LLMs as Operating Systems</cite> (Letta). 2023. arXiv:2310.08560.</li>
+      <li id="ref-10">Zep AI. <cite>Zep / Graphiti: A Temporal Knowledge-Graph Architecture for Agent Memory.</cite> 2024/2025.</li>
+    </ol>
+    <div class="refgroup">Our own measurements, code, and artifacts</div>
+    <ol class="refs" start="11">
+      <li id="ref-11"><a href="https://github.com/TerranSyn/TerranSoul/blob/main/benchmark/COMPARISON.md">Retrieval-bench results matrix</a> (LongMemEval-S, agentmemory, LoCoMo, ZorkGPT; Mem0/Letta/Zep LoCoMo QA J-scores; token economy; agentic-retriever contrast). Source of all third-party comparison figures cited here.</li>
+      <li id="ref-12">Committed benchmark result files and adapters: <code>benchmark/results/</code>, <code>docs/longmemeval-s-adapter.md</code>, <code>docs/locomo-mteb-adapter.md</code>, <code>benchmark/terransoul/zorkgpt/</code>. LongMemEval-S BENCH-AM-6.2; LoCoMo BENCH-LCM-1; ZorkGPT BENCH-ZORK.</li>
+      <li id="ref-13">Companion measurement paper: <a href="../LLM-Brain-Design-Research-Paper/">Memory as a First-Class Architectural Layer</a> (delivery-reliability and distillation-through-memory results, Zork I).</li>
+      <li id="ref-14">TerranSoul faculties referenced by file: <code>src-tauri/src/memory/reconsolidation.rs</code> (C1), <code>store.rs</code>:1298 + <code>confidence_decay.rs</code> (C2), <code>edges.rs</code> + <code>ai_integrations/mcp/tools.rs</code>:1120 (C3), <code>metacognition.rs</code> (C4), <code>docs/brain-advanced-design.md</code>:7649 / BCF-21 (C5), <code>auto_learn.rs</code> (write loop).</li>
+    </ol>
+
+    <div class="endmark">End</div>
+  </article>
+</div>
+
+<footer class="page-foot">
+  <div>
+    <div class="links">
+      <a href="../">Docs home</a>
+      <a href="../LLM-Brain-Design-Research-Paper/">Memory-layer bench</a>
+      <a href="../brain-advanced-design/">Brain advanced design</a>
+      <a href="https://github.com/TerranSyn/TerranSoul/blob/main/benchmark/COMPARISON.md">Results matrix</a>
+    </div>
+  </div>
+  <div class="small">Position paper &middot; engaging arXiv:2604.27707v1 &middot; 2026-06</div>
+</footer>
+</body>
+</html>
