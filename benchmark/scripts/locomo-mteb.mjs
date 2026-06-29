@@ -31,8 +31,8 @@ const DEFAULT_TASKS = [
   'adversarial',
 ];
 const DEFAULT_SYSTEMS = ['search', 'rrf'];
-const ALL_SYSTEMS = new Set(['search', 'rrf', 'emb', 'rrf_emb', 'search_emb', 'best', 'rrf_rerank', 'rrf_hyde', 'rrf_hyde_rerank', 'rrf_ctx', 'rrf_ctx_rerank', 'rrf_kg', 'rrf_kg_rerank', 'rrf_temporal', 'rrf_temporal_rerank', 'rrf_iterative', 'rrf_decomposed', 'rrf_multihop']);
-const EMB_SYSTEMS = new Set(['emb', 'rrf_emb', 'search_emb', 'best', 'rrf_rerank', 'rrf_hyde', 'rrf_hyde_rerank', 'rrf_ctx', 'rrf_ctx_rerank', 'rrf_kg', 'rrf_kg_rerank', 'rrf_temporal', 'rrf_temporal_rerank', 'rrf_iterative', 'rrf_decomposed', 'rrf_multihop']);
+const ALL_SYSTEMS = new Set(['search', 'rrf', 'emb', 'rrf_emb', 'search_emb', 'best', 'rrf_rerank', 'rrf_hyde', 'rrf_hyde_rerank', 'rrf_ctx', 'rrf_ctx_rerank', 'rrf_kg', 'rrf_kg_rerank', 'rrf_temporal', 'rrf_temporal_rerank', 'rrf_iterative', 'rrf_decomposed', 'rrf_multihop', 'rrf_multihop_llm']);
+const EMB_SYSTEMS = new Set(['emb', 'rrf_emb', 'search_emb', 'best', 'rrf_rerank', 'rrf_hyde', 'rrf_hyde_rerank', 'rrf_ctx', 'rrf_ctx_rerank', 'rrf_kg', 'rrf_kg_rerank', 'rrf_temporal', 'rrf_temporal_rerank', 'rrf_iterative', 'rrf_decomposed', 'rrf_multihop', 'rrf_multihop_llm']);
 const RERANK_SYSTEMS = new Set(['rrf_rerank', 'rrf_hyde_rerank', 'rrf_ctx_rerank', 'rrf_kg_rerank', 'rrf_temporal_rerank']);
 const HYDE_SYSTEMS = new Set(['rrf_hyde', 'rrf_hyde_rerank']);
 const CTX_SYSTEMS = new Set(['rrf_ctx', 'rrf_ctx_rerank']);
@@ -40,7 +40,11 @@ const CTX_SYSTEMS = new Set(['rrf_ctx', 'rrf_ctx_rerank']);
 // (LONGMEM_KG_EDGES=1). It does NOT take the `wants_kg` cascade-expand path in
 // the IPC binary (that stays scoped to rrf_kg / rrf_kg_rerank) — membership
 // here only gates edge construction.
-const KG_SYSTEMS = new Set(['rrf_kg', 'rrf_kg_rerank', 'rrf_multihop']);
+const KG_SYSTEMS = new Set(['rrf_kg', 'rrf_kg_rerank', 'rrf_multihop', 'rrf_multihop_llm']);
+// `rrf_multihop_llm` decomposes each query with the brain (gemma4:12b-it-qat)
+// — the production `AppStateGateway::search_multihop` System-2 path — so it
+// sets LONGMEM_MULTIHOP_LLM=1 on the IPC process.
+const MULTIHOP_LLM_SYSTEMS = new Set(['rrf_multihop_llm']);
 const DATA_KINDS = ['corpus', 'queries', 'qrels'];
 const METRIC_KS = [1, 5, 10, 20, 100];
 
@@ -401,6 +405,10 @@ function needsKg(systems) {
   return systems.some(s => KG_SYSTEMS.has(s));
 }
 
+function needsMultihopLlm(systems) {
+  return systems.some(s => MULTIHOP_LLM_SYSTEMS.has(s));
+}
+
 function parquetUrl(task, kind) {
   const config = `${task}-${kind}`;
   return `https://huggingface.co/datasets/${DATASET_REPO}/resolve/${DATASET_REV}/${config}/test-00000-of-00001.parquet`;
@@ -648,7 +656,7 @@ function writeReports(report, options) {
 }
 
 class JsonlClient {
-  constructor({ embed = false, rerank = false, hyde = false, contextualize = false, kg = false, convAware = false } = {}) {
+  constructor({ embed = false, rerank = false, hyde = false, contextualize = false, kg = false, convAware = false, multihopLlm = false } = {}) {
     this.nextId = 1;
     this.pending = new Map();
     this.buffer = '';
@@ -659,6 +667,7 @@ class JsonlClient {
       ...(contextualize ? { LONGMEM_CONTEXTUALIZE: '1' } : {}),
       ...(kg ? { LONGMEM_KG_EDGES: '1' } : {}),
       ...(convAware ? { LCM_CONV_AWARE: '1' } : {}),
+      ...(multihopLlm ? { LONGMEM_MULTIHOP_LLM: '1' } : {}),
     };
     this.proc = spawn('cargo', [
       'run',
@@ -805,8 +814,9 @@ async function run(options) {
   const hyde = needsHyde(options.systems);
   const contextualize = needsContextualize(options.systems);
   const kg = needsKg(options.systems);
+  const multihopLlm = needsMultihopLlm(options.systems);
   const convAware = process.env.LCM_CONV_AWARE === '1';
-  const client = new JsonlClient({ embed, rerank, hyde, contextualize, kg, convAware });
+  const client = new JsonlClient({ embed, rerank, hyde, contextualize, kg, convAware, multihopLlm });
   try {
     const byTask = [];
     for (const task of options.tasks) {
@@ -1011,8 +1021,9 @@ async function runQaEval(options) {
   const hyde = needsHyde(options.systems);
   const contextualize = needsContextualize(options.systems);
   const kg = needsKg(options.systems);
+  const multihopLlm = needsMultihopLlm(options.systems);
   const convAware = process.env.LCM_CONV_AWARE === '1';
-  const client = new JsonlClient({ embed, rerank, hyde, contextualize, kg, convAware });
+  const client = new JsonlClient({ embed, rerank, hyde, contextualize, kg, convAware, multihopLlm });
   try {
     const byTask = [];
     for (const task of options.tasks) {
