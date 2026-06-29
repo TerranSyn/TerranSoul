@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Inside the TerranSoul Brain — how an LLM gets memory, recall and skill</title>
-<meta name="description" content="A plain-language tour of the TerranSoul brain: an LLM core wrapped in brain-region modules — focus, memory, recall, graph, affect, skills — reached over one MCP nerve. Three-tier memory, four cognitive axes, hybrid multi-signal recall, local-or-cloud brain modes, a self-improvement loop, the twenty-one BCF cognitive faculties (including insight, creativity, cognitive control and governed self-evolving memory) mapped to real brain regions, refreshed against the freshest-2026 research frontier, a consolidated sharded database design, and generic patterns adopted from rival agent systems." />
+<meta name="description" content="A plain-language tour of the TerranSoul brain: an LLM core wrapped in brain-region modules — focus, memory, recall, graph, affect, skills — reached over one MCP nerve. Three-tier memory, four cognitive axes, hybrid multi-signal recall, local-or-cloud brain modes, a self-improvement loop, the twenty-one BCF cognitive faculties (including insight, creativity, cognitive control and governed self-evolving memory) mapped to real brain regions, refreshed against the freshest-2026 research frontier, per-turn adaptive thinking modes, a never-forget deep-research retrieval tier, a consolidated sharded database design, and generic patterns adopted from rival agent systems." />
 <link rel="canonical" href="https://terransyn.github.io/TerranSoul/brain-advanced-design/" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -113,7 +113,7 @@
   .axis .k{font-family:var(--mono);font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--steel);margin-bottom:8px}
   .axis p{font-size:13.5px;margin:0;color:var(--ink-faint)}
 
-  /* ===== cognitive-faculty roster (BCF-01..17) ===== */
+  /* ===== cognitive-faculty roster (BCF-01..21) ===== */
   .bcf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin:4px 0 6px}
   @media (max-width:840px){.bcf-grid{grid-template-columns:1fr}}
   .bcf-row{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--rule2);border-radius:11px;padding:12px 14px;background:var(--bg-card)}
@@ -384,7 +384,7 @@
       <div class="card region"><span class="tag" style="color:#f472b6"><span class="dot" style="background:#f472b6"></span>AFFECT · feeling</span><span class="name">Affect</span><p>Reads the emotional tone of the brain's own reply, so a companion avatar can show the matching expression. Feeling is part of how it presents, not just what it says.</p></div>
       <div class="card region"><span class="tag" style="color:#fbbf24"><span class="dot" style="background:#fbbf24"></span>SKILLS · practised know-how</span><span class="name">Skills</span><p>Learned how-to procedures that build confidence as they succeed and get benched when they keep failing — the brain getting better at the things it does often.</p></div>
     </div>
-    <div class="callout"><strong>Inside these six regions, finer faculties are growing.</strong> The brain's roadmap names <strong>twenty-one cognitive faculties</strong> (BCF-01…21) — confidence calibration, drives, a goal-stack, attention, motivation, insight, creativity, cognitive control, governed self-evolving memory and more — each anchored to a real anatomical region of these six. <a href="#faculties">See the faculty layer below →</a></div>
+    <div class="callout"><strong>Inside these six regions, finer faculties live.</strong> The brain's design names <strong>twenty-one cognitive faculties</strong> (BCF-01…21) — confidence calibration, drives, a goal-stack, attention, motivation, insight, creativity, cognitive control, governed self-evolving memory and more — each anchored to a real anatomical region of these six, and all implemented today. <a href="#faculties">See the faculty layer below →</a></div>
   </section>
 
   <!-- ========== THREE-TIER MEMORY ========== -->
@@ -491,6 +491,7 @@
     </ul>
     <p>Their separate rankings are blended into one, then a final pass reorders the survivors for genuine relevance. The result reads as a single, confident answer — but it's a consensus of several independent opinions, which is exactly why it's hard to fool.</p>
     <p>There is one more pass after the rerank: a <strong>set-level bias audit</strong> (the <a href="#faculties">BCF-15 faculty</a>) inspects the whole short list for statistical skew — one source over-represented, everything clustered in a single recent window, near-duplicate dominance, or members that contradict each other — and gently <em>down-weights</em> a skewed set before it ever reaches the model. Hybrid recall checks not just <em>which</em> memories surfaced, but whether the <em>set as a whole</em> is balanced.</p>
+    <p>And when a question must not miss anything, this same recall escalates into a <a href="#deep-research">never-forget deep tier</a> that keeps pulling, critiques its own coverage and follows the graph until nothing relevant is left unread.</p>
     <div class="callout"><strong>The value proposition, not the recipe.</strong> The strength is the <em>fusion of multiple signals</em>, plus a final fairness check on the set. We name the signals on purpose and stop there — the exact way they're weighed and combined is deliberately not part of this page.</div>
   </section>
 
@@ -527,9 +528,95 @@
     </div>
   </section>
 
+  <!-- ========== ADAPTIVE THINKING MODES ========== -->
+  <section id="thinking-modes">
+    <div class="sec-num">06 · Adaptive thinking modes</div>
+    <h2>The right <span class="accent">gear for every turn</span></h2>
+    <p class="lede">Choosing the <em>mind</em> is one axis; choosing how hard it should think is another. A greeting should answer instantly; a multi-step build deserves an agent loop; an open-ended question may need a full evidence sweep. TerranSoul has seven real thinking modes, and on every turn the brain reads the message and shifts into the one that fits — automatically, unless you pin a mode yourself.</p>
+
+    <figure>
+      <svg viewBox="0 0 720 250" role="img" aria-label="An incoming turn routed by a per-turn classifier into one of seven thinking modes: chat, think, deep, agent, research, code and digest.">
+        <defs><marker id="tm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7de4ff"/></marker></defs>
+        <rect x="30" y="104" width="120" height="42" rx="10" fill="#0c1a27" stroke="#7de4ff" stroke-width="1.6"/>
+        <text x="90" y="123" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#bfe6f5">this turn</text>
+        <text x="90" y="137" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#7d92b3">+ recent chat</text>
+        <polygon points="178,104 214,125 178,146" fill="#0c1a27" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="196" y="98" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#9fe9f5">pick</text>
+        <g font-family="'JetBrains Mono',monospace" font-size="10">
+          <rect x="250" y="14" width="170" height="26" rx="6" fill="#0c1a27" stroke="#34d399"/><text x="264" y="31" fill="#a9eccf">Chat — instant</text>
+          <rect x="250" y="46" width="170" height="26" rx="6" fill="#0c1a27" stroke="#818cf8"/><text x="264" y="63" fill="#bcc6ff">Think — light reasoning</text>
+          <rect x="250" y="78" width="170" height="26" rx="6" fill="#0c1a27" stroke="#a78bfa"/><text x="264" y="95" fill="#d7c4ff">Deep — extended reasoning</text>
+          <rect x="250" y="110" width="170" height="26" rx="6" fill="#0c1a27" stroke="#22d3ee"/><text x="264" y="127" fill="#9fe9f5">Agent — reason · act · loop</text>
+          <rect x="250" y="142" width="170" height="26" rx="6" fill="#0c1a27" stroke="#fbbf24"/><text x="264" y="159" fill="#ffe1a3">Research — evidence sweep</text>
+          <rect x="250" y="174" width="170" height="26" rx="6" fill="#0c1a27" stroke="#f472b6"/><text x="264" y="191" fill="#ffbfe8">Code — plan · run · verify</text>
+          <rect x="250" y="206" width="170" height="26" rx="6" fill="#0c1a27" stroke="#7de4ff"/><text x="264" y="223" fill="#bfe6f5">Digest — chunk · summarise</text>
+        </g>
+        <g stroke="#5b8cff" stroke-width="1.2" fill="none" opacity="0.55">
+          <path d="M214,125 C234,110 234,33 248,27" marker-end="url(#tm)"/>
+          <path d="M214,125 C234,118 234,65 248,59" marker-end="url(#tm)"/>
+          <path d="M214,125 L248,91" marker-end="url(#tm)"/>
+          <path d="M214,125 L248,123" marker-end="url(#tm)"/>
+          <path d="M214,125 C234,132 234,155 248,155" marker-end="url(#tm)"/>
+          <path d="M214,125 C234,140 234,187 248,187" marker-end="url(#tm)"/>
+          <path d="M214,125 C234,148 234,219 248,219" marker-end="url(#tm)"/>
+        </g>
+        <text x="438" y="121" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#9fc7dd">one mode wins,</text>
+        <text x="438" y="135" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#9fc7dd">setting depth + harness</text>
+      </svg>
+      <figcaption>Every turn is sized and routed into the mode that fits — light when it can be, heavyweight only when the work demands it.</figcaption>
+    </figure>
+
+    <p>Each mode sets two dials at once — how much the model deliberates, and which behavioural harness wraps the reply:</p>
+    <ul class="clean">
+      <li><strong>Chat</strong> — fast, direct answers with no chain-of-thought, for greetings and quick questions.</li>
+      <li><strong>Think</strong> — light reasoning before answering; the balanced default for everyday tasks and recall.</li>
+      <li><strong>Deep</strong> — full extended chain-of-thought for hard questions, analysis and edge cases.</li>
+      <li><strong>Agent</strong> — a reason → act → observe loop for tool use and multi-step autonomous tasks.</li>
+      <li><strong>Research</strong> — a hypothesis → evidence → contradiction-sweep → conclusion harness for fact-checking.</li>
+      <li><strong>Code</strong> — an intent → plan → runnable-code → verify harness, every reply with an explicit plan.</li>
+      <li><strong>Digest</strong> — a chunk → extract → summarise pass for long papers, reports and references.</li>
+    </ul>
+    <div class="callout"><strong>Auto by default, yours to pin.</strong> Left on <em>auto</em>, a per-turn router reads the request and the recent conversation and resolves the mode — so effort and harness scale with the task instead of being fixed. Choose any mode by hand and it stays put. This is the same executive sizing the brain map shows in the <em>Focus</em> region, now choosing not just <em>how much</em> to think but <em>how</em>.</div>
+  </section>
+
+  <!-- ========== NEVER-FORGET DEEP RESEARCH ========== -->
+  <section id="deep-research">
+    <div class="sec-num">07 · Never-forget deep research</div>
+    <h2>When nothing may be <span class="accent">left unread</span></h2>
+    <p class="lede">Ordinary recall returns a short, confident list — fast, and right for almost every turn. But some questions can't tolerate a miss. For those, the research and deep modes engage a <strong>never-forget</strong> tier: instead of one retrieval pass it keeps searching, keeps asking what it still hasn't seen, and follows the knowledge graph until the well runs dry — then spends its deepest thinking on a fully-cited answer.</p>
+
+    <figure>
+      <svg viewBox="0 0 720 250" role="img" aria-label="An exhaustive loop: retrieve, then a completeness critic asks what is still missing, expand along graph edges, re-query, and once coverage is saturated synthesise a fully cited answer.">
+        <defs><marker id="dr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#fbbf24"/></marker><marker id="dr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34d399"/></marker></defs>
+        <g font-family="'JetBrains Mono',monospace" font-size="11">
+          <g><circle cx="130" cy="86" r="50" fill="#0c1a27" stroke="#22d3ee" stroke-width="1.8"/><text x="130" y="82" text-anchor="middle" fill="#9fe9f5" font-weight="500">RETRIEVE</text><text x="130" y="99" text-anchor="middle" font-size="8.5" fill="#7d92b3">exhaustively</text></g>
+          <g><circle cx="360" cy="86" r="50" fill="#0c1a27" stroke="#fbbf24" stroke-width="1.8"/><text x="360" y="78" text-anchor="middle" fill="#ffe1a3" font-weight="500">CRITIC</text><text x="360" y="94" text-anchor="middle" font-size="8.5" fill="#7d92b3">what did I</text><text x="360" y="106" text-anchor="middle" font-size="8.5" fill="#7d92b3">miss?</text></g>
+          <g><circle cx="590" cy="86" r="50" fill="#0c1a27" stroke="#34d399" stroke-width="1.8"/><text x="590" y="82" text-anchor="middle" fill="#a9eccf" font-weight="500">EXPAND</text><text x="590" y="99" text-anchor="middle" font-size="8.5" fill="#7d92b3">along edges</text></g>
+        </g>
+        <line x1="180" y1="86" x2="306" y2="86" stroke="#fbbf24" stroke-width="1.6" marker-end="url(#dr)"/>
+        <line x1="410" y1="86" x2="536" y2="86" stroke="#fbbf24" stroke-width="1.6" marker-end="url(#dr)"/>
+        <path d="M 590 136 C 590 192 130 192 130 138" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#dr)"/>
+        <text x="360" y="184" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#f0c489">re-query the gaps — loop until coverage is saturated</text>
+        <rect x="262" y="212" width="196" height="30" rx="9" fill="#0c1626" stroke="#34d399" stroke-width="1.6"/>
+        <text x="360" y="231" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#aef0cf">cited synthesis · [1][2][3]</text>
+        <path d="M 360 196 L 360 210" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#dr2)"/>
+      </svg>
+      <figcaption>Retrieve, critique coverage, expand along the graph, re-query — and only once nothing relevant is left unseen, synthesise a cited answer.</figcaption>
+    </figure>
+
+    <ul class="clean">
+      <li><strong>Retrieve exhaustively.</strong> Each frontier query runs the full multi-signal recall with a graph-edge bridge, not a single pass.</li>
+      <li><strong>Critique coverage.</strong> A completeness critic asks the brain <em>"what relevant memory did I not surface?"</em> over everything seen so far, and re-queues the still-missing aspects.</li>
+      <li><strong>Expand along the graph.</strong> The top results seed a walk over knowledge-graph edges, pulling in linked-but-unsurfaced memories and chaining across rounds.</li>
+      <li><strong>Stop only when dry.</strong> The loop ends when coverage is saturated, gains flatten, the frontier empties, or a generous round cap is hit — every bound a brain-seeded setting, none hardcoded.</li>
+      <li><strong>Synthesise with citations.</strong> The final answer is forced through the deepest thinking tier with full source context and rendered with <code>[n]</code> markers and a sources list — and the findings flow back into memory so the next deep pass starts further ahead.</li>
+    </ul>
+    <div class="callout"><strong>The guarantee is coverage, not speed.</strong> This tier is reserved for the questions that ask for it — research and deep modes — precisely because it trades latency for the promise that nothing durable bearing on the answer goes unread.</div>
+  </section>
+
   <!-- ========== SELF-IMPROVEMENT LOOP ========== -->
   <section id="loop">
-    <div class="sec-num">06 · The self-improvement loop</div>
+    <div class="sec-num">08 · The self-improvement loop</div>
     <h2>A brain that <span class="accent">learns from its own outcomes</span></h2>
     <p class="lede">The point of giving a model memory isn't just to look things up — it's to get better. TerranSoul closes the loop: what the brain does, how it turns out, and what it remembers all feed back into what it recalls next time. The cycle is simply <em>write → manage → read</em>.</p>
 
@@ -559,7 +646,7 @@
 
   <!-- ========== MCP NERVE ========== -->
   <section id="mcp">
-    <div class="sec-num">07 · The MCP nerve</div>
+    <div class="sec-num">09 · The MCP nerve</div>
     <h2>One brain, reached and fed <span class="accent">through one connection</span></h2>
     <p class="lede">Every region connects to the world through a single nerve: the Model Context Protocol. That means any client can query the same brain — and the brain, in turn, keeps itself current by pulling from its own sources. Knowledge written by one client is legible to the next.</p>
 
@@ -614,12 +701,12 @@
 
   <!-- ========== COGNITIVE FACULTIES (BCF) ========== -->
   <section id="faculties">
-    <div class="sec-num">08 · Cognitive faculties</div>
+    <div class="sec-num">10 · Cognitive faculties</div>
     <h2>Twenty-one named faculties, each in <span class="accent">a real brain region</span></h2>
-    <p class="lede">The six regions are the coarse map. Inside them the brain is growing a layer of finer <strong>cognitive faculties</strong> — BCF-01 through BCF-21 — drawn from cognitive neuroscience and each anchored to the part of a human brain that does the same job. The roster was completed against a four-angle research sweep (cognitive-neuroscience taxonomy, the cognitive-architecture canon, LLM-agent architectures, and deep dives on insight, creativity, metacognition and curiosity), which added three faculties the literature treats as core — <strong>insight</strong>, <strong>creativity</strong>, and <strong>cognitive control</strong>. Four are shipped today; the rest are on the roadmap, partly built or planned, and already visible as placeholders on the interactive brain map.</p>
+    <p class="lede">The six regions are the coarse map. Inside them the brain is growing a layer of finer <strong>cognitive faculties</strong> — BCF-01 through BCF-21 — drawn from cognitive neuroscience and each anchored to the part of a human brain that does the same job. The roster was completed against a four-angle research sweep (cognitive-neuroscience taxonomy, the cognitive-architecture canon, LLM-agent architectures, and deep dives on insight, creativity, metacognition and curiosity), which added three faculties the literature treats as core — <strong>insight</strong>, <strong>creativity</strong>, and <strong>cognitive control</strong>. All twenty-one are now implemented (v1) — the complete roster, each anchored to its matching region on the interactive brain map.</p>
     <div class="callout"><strong>Refreshed against the 2026 frontier.</strong> A freshest-2026 sweep (June-2026 agent-memory preprints, the DeepMind cognitive-AGI framework, and the 2026 cognitive-neuroscience literature) re-checked the roster. It mostly <em>confirmed</em> the set — and added one genuinely-distinct faculty, <strong>governed self-evolving memory</strong> (BCF-21): the write-time safety gate that guards the brain's own autonomous memory against drift, poisoning and unbounded growth. The rest of the frontier landed as dated refinements to existing faculties (memory-aware test-time scaling, latent world-model rollout, conservative consolidation, learned retrieval policies).</div>
 
-    <h3>The four shipped faculties</h3>
+    <h3>Four faculties, up close</h3>
     <div class="grid grid-2">
       <div class="card region"><span class="tag" style="color:#22d3ee"><span class="dot" style="background:#22d3ee"></span>BCF-01 · frontal lobe / prefrontal</span><span class="name">Metacognitive confidence calibration</span><p>A second-order monitor that estimates a <em>calibrated</em> confidence in the brain's own answer <em>before</em> it is spoken, and routes the turn to one of four honest choices — answer, deliberate, seek more evidence, or abstain. It reads only structural signals (top score, margin, retrieval quality, agreement across samples, supporting links) and learns its own calibration curve from logged outcomes, so a small local model can decline to bluff rather than hallucinate confidently.</p></div>
       <div class="card region"><span class="tag" style="color:#818cf8"><span class="dot" style="background:#818cf8"></span>BCF-02 · hypothalamus · drives</span><span class="name">Motivation, drives &amp; homeostasis</span><p>Endogenous "what should I do now" for an always-on resident. A set of homeostatic drives — coverage (curiosity), competence (mastery), integrity (coherence), upkeep (tidiness) and bond (connection) — each measured from real store metrics. Deviation from a setpoint becomes a need signal, and closing a gap or tidying the store is intrinsic reward. The highest-need drive surfaces as an intent for the goal-stack to act on; drive weights are <em>learned</em> from whether pursuing them tends to succeed.</p></div>
@@ -629,38 +716,38 @@
     <div class="callout"><strong>How they stay honest:</strong> every threshold, weight and setpoint above lives in the brain's own seeded configuration, not as a number hardcoded in source — so the brain can re-tune itself, and a fresh store with no seed simply has the faculty switched off. Each faculty writes only its own rows through the one MCP gateway; there are no private caches.</div>
 
     <h3 style="margin-top:26px">The full faculty roster &amp; its brain-region map</h3>
-    <p>Each faculty sits beside the anatomical region that performs the matching function in a human brain — consistent with the placements on the <a href="../brain-architecture/">interactive brain map</a>. <span class="muted">Status: <strong style="color:#7dffd0">shipped</strong> = live today · <strong style="color:#ffe1a3">partial</strong> = a precursor exists · <strong style="color:#9fc7dd">planned</strong> = on the roadmap.</span></p>
+    <p>Each faculty sits beside the anatomical region that performs the matching function in a human brain — consistent with the placements on the <a href="../brain-architecture/">interactive brain map</a>. <span class="muted">Every faculty below is <strong style="color:#7dffd0">implemented (v1)</strong> today — the full twenty-one-faculty roster, complete.</span></p>
     <div class="bcf-grid">
       <div class="bcf-row"><span class="bcf-code">BCF-01</span><div class="bcf-body"><div class="bcf-title">Confidence calibration <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Frontal lobe · prefrontal · metacognition</div><p>Knows when it doesn't know — calibrated self-confidence that gates answer vs. abstain vs. seek-more.</p></div></div>
       <div class="bcf-row"><span class="bcf-code">BCF-02</span><div class="bcf-body"><div class="bcf-title">Drives &amp; homeostasis <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Hypothalamus · motivation</div><p>Setpoint need-variables plus intrinsic reward from learning-progress — the source of self-directed activity.</p></div></div>
       <div class="bcf-row"><span class="bcf-code">BCF-03</span><div class="bcf-body"><div class="bcf-title">Executive · goal-stack <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Dorsolateral PFC · executive</div><p>A durable, arbitrated goal stack with suspend/resume and commitment tracking that persists across sessions.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-04</span><div class="bcf-body"><div class="bcf-title">Affect · appraisal · mood <span class="badge badge-partial">partial</span></div><div class="bcf-reg">Limbic · amygdala</div><p>Appraises events against goals into a stored mood that decays — and modulates what becomes salient.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-05</span><div class="bcf-body"><div class="bcf-title">Attention · workspace gate <span class="badge badge-partial">partial</span></div><div class="bcf-reg">Thalamo-cortical · broadcast</div><p>A winner-take-all bottleneck arbitrating memories, drives, intentions, affect and surprise for the one context window.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-06</span><div class="bcf-body"><div class="bcf-title">Theory of mind · user-model <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Temporoparietal · mentalizing</div><p>An explicit model of what the user knows, wants and feels, held apart from the agent's own.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-07</span><div class="bcf-body"><div class="bcf-title">Prospective memory <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Rostral PFC · intentions</div><p>A "do Y when X happens / at time T" store that fires an intention when its cue is met — follow-through beyond the turn.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-08</span><div class="bcf-body"><div class="bcf-title">Test-time-compute allocator <span class="badge badge-partial">partial</span></div><div class="bcf-reg">PFC · System-1 / System-2</div><p>Decides how much deliberation to spend, escalating only when confidence is low — System-2 on demand without retraining.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-09</span><div class="bcf-body"><div class="bcf-title">Curiosity · info-seeking <span class="badge badge-partial">partial</span></div><div class="bcf-reg">Dopaminergic · seeking</div><p>Acts on detected gaps with curiosity-driven questions and self-directed search, rewarded for closing a gap.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-10</span><div class="bcf-body"><div class="bcf-title">World model · prediction <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Predictive cortex · forward model</div><p>Causal "if I do X then Y" transitions for forward simulation and counterfactuals — the source of prediction-error.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-11</span><div class="bcf-body"><div class="bcf-title">Consolidation · reconsolidation <span class="badge badge-partial">partial</span></div><div class="bcf-reg">Hippocampal replay · CLS</div><p>Idle replay that distils episodes into durable generalisations and revises stale beliefs in place.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-12</span><div class="bcf-body"><div class="bcf-title">Verified skill library <span class="badge badge-partial">partial</span></div><div class="bcf-reg">Basal ganglia · procedural</div><p>Self-verified, precondition-keyed runnable skills with an automatic curriculum — learning to act, not just recall.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-13</span><div class="bcf-body"><div class="bcf-title">Self · narrative identity <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Default-mode · narrative self</div><p>A continuous self-narrative that binds sessions into one persistent "I" — the heart of resident embodiment.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-14</span><div class="bcf-body"><div class="bcf-title">Context compression <span class="badge badge-partial">partial</span></div><div class="bcf-reg">PFC · context manager</div><p>Progressive summarisation / virtual-context paging that keeps long sessions coherent without abrupt truncation.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-04</span><div class="bcf-body"><div class="bcf-title">Affect · appraisal · mood <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Limbic · amygdala</div><p>Appraises events against goals into a stored mood that decays — and modulates what becomes salient.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-05</span><div class="bcf-body"><div class="bcf-title">Attention · workspace gate <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Thalamo-cortical · broadcast</div><p>A winner-take-all bottleneck arbitrating memories, drives, intentions, affect and surprise for the one context window.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-06</span><div class="bcf-body"><div class="bcf-title">Theory of mind · user-model <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Temporoparietal · mentalizing</div><p>An explicit model of what the user knows, wants and feels, held apart from the agent's own.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-07</span><div class="bcf-body"><div class="bcf-title">Prospective memory <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Rostral PFC · intentions</div><p>A "do Y when X happens / at time T" store that fires an intention when its cue is met — follow-through beyond the turn.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-08</span><div class="bcf-body"><div class="bcf-title">Test-time-compute allocator <span class="badge badge-live">shipped</span></div><div class="bcf-reg">PFC · System-1 / System-2</div><p>Decides how much deliberation to spend, escalating only when confidence is low — System-2 on demand without retraining.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-09</span><div class="bcf-body"><div class="bcf-title">Curiosity · info-seeking <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Dopaminergic · seeking</div><p>Acts on detected gaps with curiosity-driven questions and self-directed search, rewarded for closing a gap.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-10</span><div class="bcf-body"><div class="bcf-title">World model · prediction <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Predictive cortex · forward model</div><p>Causal "if I do X then Y" transitions for forward simulation and counterfactuals — the source of prediction-error.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-11</span><div class="bcf-body"><div class="bcf-title">Consolidation · reconsolidation <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Hippocampal replay · CLS</div><p>Idle replay that distils episodes into durable generalisations and revises stale beliefs in place.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-12</span><div class="bcf-body"><div class="bcf-title">Verified skill library <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Basal ganglia · procedural</div><p>Self-verified, precondition-keyed runnable skills with an automatic curriculum — learning to act, not just recall.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-13</span><div class="bcf-body"><div class="bcf-title">Self · narrative identity <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Default-mode · narrative self</div><p>A continuous self-narrative that binds sessions into one persistent "I" — the heart of resident embodiment.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-14</span><div class="bcf-body"><div class="bcf-title">Context compression <span class="badge badge-live">shipped</span></div><div class="bcf-reg">PFC · context manager</div><p>Progressive summarisation / virtual-context paging that keeps long sessions coherent without abrupt truncation.</p></div></div>
       <div class="bcf-row"><span class="bcf-code">BCF-15</span><div class="bcf-body"><div class="bcf-title">Retrieval-bias detection <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Post-retrieval · occipital · set audit</div><p>Audits the retrieved set for statistical skew and down-weights it before injection.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-16</span><div class="bcf-body"><div class="bcf-title">Analogical reasoning <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Association cortex · structure-mapping</div><p>Aligns relational structure across domains to transfer a solution schema — human-like generalisation.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-17</span><div class="bcf-body"><div class="bcf-title">Multimodal perception <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Occipital · perception</div><p>A perception front-end mapping image / screen / spatial input into the same memory schema with spatial graph edges.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-18</span><div class="bcf-body"><div class="bcf-title">Insight · restructuring <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Right anterior temporal · association cortex</div><p>When analytic search stalls, it re-encodes the stuck problem and reaches a remote association — the Aha! leap, measured as a real solution jump, not a token.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-19</span><div class="bcf-body"><div class="bcf-title">Creativity · divergent thinking <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Default-mode + control · generate-evaluate</div><p>Generates many varied candidate ideas then filters them against constraints — balancing novelty against appropriateness on the four classic divergent-thinking axes.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-20</span><div class="bcf-body"><div class="bcf-title">Cognitive control · inhibition <span class="badge badge-partial">partial</span></div><div class="bcf-reg">Anterior cingulate · right IFG · conflict/error</div><p>Inhibits a prepotent or unsafe answer, monitors conflict between candidate responses, and catches its own errors to trigger self-correction.</p></div></div>
-      <div class="bcf-row"><span class="bcf-code">BCF-21</span><div class="bcf-body"><div class="bcf-title">Governed self-evolving memory <span class="badge badge-planned">planned</span></div><div class="bcf-reg">Hippocampal–prefrontal gate · memory governance</div><p>A write-time safety gate over the brain's own autonomous writes — guarding against belief drift, poisoned or anomalous sources, and unbounded growth, and quarantining peer-brain imports until corroborated. The 2026 frontier's missing layer before a memory is allowed to evolve itself.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-16</span><div class="bcf-body"><div class="bcf-title">Analogical reasoning <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Association cortex · structure-mapping</div><p>Aligns relational structure across domains to transfer a solution schema — human-like generalisation.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-17</span><div class="bcf-body"><div class="bcf-title">Multimodal perception <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Occipital · perception</div><p>A perception front-end mapping image / screen / spatial input into the same memory schema with spatial graph edges.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-18</span><div class="bcf-body"><div class="bcf-title">Insight · restructuring <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Right anterior temporal · association cortex</div><p>When analytic search stalls, it re-encodes the stuck problem and reaches a remote association — the Aha! leap, measured as a real solution jump, not a token.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-19</span><div class="bcf-body"><div class="bcf-title">Creativity · divergent thinking <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Default-mode + control · generate-evaluate</div><p>Generates many varied candidate ideas then filters them against constraints — balancing novelty against appropriateness on the four classic divergent-thinking axes.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-20</span><div class="bcf-body"><div class="bcf-title">Cognitive control · inhibition <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Anterior cingulate · right IFG · conflict/error</div><p>Inhibits a prepotent or unsafe answer, monitors conflict between candidate responses, and catches its own errors to trigger self-correction.</p></div></div>
+      <div class="bcf-row"><span class="bcf-code">BCF-21</span><div class="bcf-body"><div class="bcf-title">Governed self-evolving memory <span class="badge badge-live">shipped</span></div><div class="bcf-reg">Hippocampal–prefrontal gate · memory governance</div><p>A write-time safety gate over the brain's own autonomous writes — guarding against belief drift, poisoned or anomalous sources, and unbounded growth, and quarantining peer-brain imports until corroborated. The 2026 frontier's missing layer before a memory is allowed to evolve itself.</p></div></div>
     </div>
     <div class="callout"><strong>Why anatomy:</strong> the mapping isn't decoration. Confidence and executive control belong to the prefrontal cortex; drives to the hypothalamus; affect to the limbic system; memory consolidation to the hippocampus; perception to the occipital cortex — so the brain-region a faculty sits in is also the clearest shorthand for what it does.</div>
   </section>
 
   <!-- ========== DATABASE DESIGN ========== -->
   <section id="database">
-    <div class="sec-num">09 · Database design</div>
+    <div class="sec-num">11 · Database design</div>
     <h2>One clean schema, <span class="accent">sharded for the write storm</span></h2>
-    <p class="lede">The memory store is being rebuilt around a single, self-contained schema instead of a long chain of in-place upgrades — and split into purpose-built shards so the high-frequency writes of an always-on resident never block recall. <span class="muted">This section is a <strong>design contract</strong>: the spec a follow-up change implements, not yet live in the store. Because TerranSoul is pre-release there is no production data to migrate, so the schema can be recreated clean.</span></p>
+    <p class="lede">The memory store is being rebuilt around a single, self-contained schema instead of a long chain of in-place upgrades — and split into purpose-built shards sized for the order of a million memories, so the high-frequency writes of an always-on resident never block recall. <span class="muted">This section is a <strong>design contract</strong>: the spec a follow-up change implements, not yet live in the store. Because TerranSoul is pre-release there is no production data to migrate, so the schema can be recreated clean.</span></p>
 
     <h3>Why redesign — three structural debts</h3>
     <ul class="clean">
@@ -703,13 +790,18 @@
 
   <!-- ========== COMPETITOR ADOPTIONS ========== -->
   <section id="adoptions">
-    <div class="sec-num">10 · Adopted from the field</div>
+    <div class="sec-num">12 · Adopted from the field</div>
     <h2>Best ideas from rival agents, <span class="accent">re-grounded as our own</span></h2>
     <p class="lede">TerranSoul studies competing agent systems and folds their strongest <em>generic</em> patterns into the brain — reimplemented on existing modules as domain-agnostic primitives. No upstream source, prompts, branded identity or schema is copied; each adoption <strong>enhances</strong> a part of the brain rather than bolting on a parallel one. Influences are credited in the project's CREDITS file.</p>
 
     <div class="grid grid-2">
       <div class="card region"><span class="tag" style="color:#34d399"><span class="dot" style="background:#34d399"></span>GENesis-AGI · self-improvement primitives</span><span class="name">Sharper recall &amp; safe consolidation</span><p>A study of GENesis-AGI contributed several generic mechanisms, each reimplemented in Rust: an <strong>activation signal</strong> as an extra recall term (how alive a memory is right now), an <strong>echo-collapse diversity pass</strong> that stops near-duplicates dominating a result set, <strong>auto-linking on write</strong> so new memories join the graph immediately, <strong>consolidation safety gates</strong> (reversible rollback, faithfulness review, a shrink guard), and <strong>outcome-classified write-back</strong> that routes a five-class session outcome to reinforce, quarantine or extract.</p></div>
       <div class="card region"><span class="tag" style="color:#fbbf24"><span class="dot" style="background:#fbbf24"></span>Hermes · autonomous skill loop</span><span class="name">Mint, prove &amp; refine new skills</span><p>Reverse-engineered from the Hermes agent (generically, nothing vendored): a closed learning loop — <em>observe → author → validate → register → reuse → refine</em> — that detects a recurring or workaround-successful trajectory and <strong>creates a fresh reusable skill</strong>, the one capability the brain lacked. New skills are governed by the existing confidence ledger, surfaced by <strong>description-first retrieval</strong> (names and one-liners in the prompt, bodies hydrated on match), and curated through an Active → Stale → Archived lifecycle. <span class="muted">Design contract; not yet shipped.</span></p></div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:16px">
+      <div class="card region"><span class="tag" style="color:#22d3ee"><span class="dot" style="background:#22d3ee"></span>Hermes · automation blueprints</span><span class="name">Routines it proposes, you approve</span><p>A blueprint unifies a parameterised skill and a human-friendly schedule into one typed object — no raw cron is ever written. When the brain notices a routine worth automating it adds a <strong>consent-first suggestion</strong> to a queue: it proposes, you accept or dismiss, and only an explicit accept ever schedules anything. The proposal bar is learned from how often suggestions are taken up, so it grows more or less forward over time.</p></div>
+      <div class="card region"><span class="tag" style="color:#f472b6"><span class="dot" style="background:#f472b6"></span>OpenClaw · proactive commitments</span><span class="name">Closing the loops you left open</span><p>A continuously-running companion should notice the follow-ups a conversation leaves dangling — "I'll let you know when the build finishes," "check in after their interview" — without being asked. Inferred open-loops are stored as future intentions, and a gentle heartbeat surfaces the <em>due</em> ones through the same attention gate as everything else, held back by quiet-hours, busy-skip and don't-repeat guards so it never nags. How proactive it is, is itself learned.</p></div>
     </div>
 
     <h3>The patterns it borrows — and where they land</h3>
@@ -725,7 +817,7 @@
 
   <!-- ========== CLOSING ========== -->
   <section id="closing">
-    <div class="sec-num">11 · In a sentence</div>
+    <div class="sec-num">13 · In a sentence</div>
     <h2>The whole idea</h2>
     <p class="lede">An LLM at the core, wrapped in the regions of a real brain — focus, memory, recall, association, feeling and skill — all reachable through one nerve, all learning from how things turn out. A model that doesn't just answer, but remembers, connects and grows.</p>
     <div class="hero-cta" style="margin-top:8px">
