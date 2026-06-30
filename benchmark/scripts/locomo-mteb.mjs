@@ -31,8 +31,8 @@ const DEFAULT_TASKS = [
   'adversarial',
 ];
 const DEFAULT_SYSTEMS = ['search', 'rrf'];
-const ALL_SYSTEMS = new Set(['search', 'rrf', 'emb', 'rrf_emb', 'search_emb', 'best', 'rrf_rerank', 'rrf_hyde', 'rrf_hyde_rerank', 'rrf_ctx', 'rrf_ctx_rerank', 'rrf_kg', 'rrf_kg_rerank', 'rrf_temporal', 'rrf_temporal_rerank', 'rrf_iterative', 'rrf_decomposed', 'rrf_multihop']);
-const EMB_SYSTEMS = new Set(['emb', 'rrf_emb', 'search_emb', 'best', 'rrf_rerank', 'rrf_hyde', 'rrf_hyde_rerank', 'rrf_ctx', 'rrf_ctx_rerank', 'rrf_kg', 'rrf_kg_rerank', 'rrf_temporal', 'rrf_temporal_rerank', 'rrf_iterative', 'rrf_decomposed', 'rrf_multihop']);
+const ALL_SYSTEMS = new Set(['search', 'rrf', 'emb', 'rrf_emb', 'search_emb', 'best', 'rrf_rerank', 'rrf_hyde', 'rrf_hyde_rerank', 'rrf_ctx', 'rrf_ctx_rerank', 'rrf_kg', 'rrf_kg_rerank', 'rrf_temporal', 'rrf_temporal_rerank', 'rrf_iterative', 'rrf_multihop']);
+const EMB_SYSTEMS = new Set(['emb', 'rrf_emb', 'search_emb', 'best', 'rrf_rerank', 'rrf_hyde', 'rrf_hyde_rerank', 'rrf_ctx', 'rrf_ctx_rerank', 'rrf_kg', 'rrf_kg_rerank', 'rrf_temporal', 'rrf_temporal_rerank', 'rrf_iterative', 'rrf_multihop']);
 const RERANK_SYSTEMS = new Set(['rrf_rerank', 'rrf_hyde_rerank', 'rrf_ctx_rerank', 'rrf_kg_rerank', 'rrf_temporal_rerank']);
 const HYDE_SYSTEMS = new Set(['rrf_hyde', 'rrf_hyde_rerank']);
 const CTX_SYSTEMS = new Set(['rrf_ctx', 'rrf_ctx_rerank']);
