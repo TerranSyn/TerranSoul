@@ -1,0 +1,57 @@
+{
+  "benchmark": "SIA-scRNA-seq denoising (molecular cross-validation, OpenProblems-style)",
+  "method": "TerranSoul frozen-model coding agent (deepseek-v4-pro via deepseek, NO weight training)",
+  "dataset": "10x Genomics PBMC3k (real public scRNA counts)",
+  "protocol": "molecular cross-validation (Batson 2019): Binomial(c,0.5) train/test split",
+  "metric": "molecular-CV MSE on library-normalized log1p expression (LOWER is better)",
+  "n_hvg": 1000,
+  "cells": 2700,
+  "mse_baseline_no_denoise": 0.07039,
+  "best_mse": 0.04574,
+  "improvement_pct_vs_baseline": 35.02,
+  "any_correct": true,
+  "n_iters": 4,
+  "iters_log": [
+    {
+      "iter": 1,
+      "gen_s": 101.2,
+      "ok": true,
+      "mse": 0.0458967096614141,
+      "secs": 6.44,
+      "err": null
+    },
+    {
+      "iter": 2,
+      "gen_s": 116.1,
+      "ok": true,
+      "mse": 0.04573868221922797,
+      "secs": 46.91,
+      "err": null
+    },
+    {
+      "iter": 3,
+      "gen_s": 111.1,
+      "ok": true,
+      "mse": 0.045946146613667666,
+      "secs": 69.33,
+      "err": null
+    },
+    {
+      "iter": 4,
+      "gen_s": 73.5,
+      "ok": true,
+      "mse": 0.04656551373741196,
+      "secs": 10.88,
+      "err": null
+    }
+  ],
+  "best_code": "import numpy as np\nfrom sklearn.decomposition import TruncatedSVD\nfrom sklearn.neighbors import NearestNeighbors\n\ndef denoise(train):\n    \"\"\"\n    Denoise single-cell RNA-seq UMI count data via:\n      1) Library-size normalization + log1p\n      2) Centering genes (feature-wise)\n      3) Truncated SVD on centered data\n      4) kNN smoothing using the SVD embedding\n      5) Blending low-rank reconstruction and kNN smoothed mean\n    Hyperparameters (rank, blend weight, number of neighbors) are chosen\n    by nested molecular cross-validation on a binomial half-split of the\n    training molecules.\n    \"\"\"\n    # Library size and normalization target\n    lib_size = np.maximum(train.sum(axis=1), 1)\n    target_sum = np.median(lib_size)\n    \n    # Log-normalized expression\n    X_log = np.log1p(train / lib_size[:, None] * target_sum)\n    \n    # ---- Nested molecular cross-validation ----\n    # Split each molecule with probability 0.5 into sub/val\n    rng = np.random.RandomState(42)\n    sub = rng.binomial(train.astype(np.int32), 0.5)\n    val = train - sub\n    \n    sub_lib = np.maximum(sub.sum(axis=1), 1)\n    val_lib = np.maximum(val.sum(axis=1), 1)\n    sub_target = np.median(sub_lib)\n    val_target = np.median(val_lib)\n    \n    sub_log = np.log1p(sub / sub_lib[:, None] * sub_target)\n    val_log = np.log1p(val / val_lib[:, None] * val_target)\n    \n    # Center the sub log-data (per gene)\n    sub_log_mean = sub_log.mean(axis=0)\n    sub_centered = sub_log - sub_log_mean\n    \n    n_cells, n_genes = sub_log.shape\n    max_rank = min(100, min(n_cells, n_genes) - 1)\n    # Candidates for rank, blend, neighbors\n    rank_candidates = sorted(list(set([r for r in [1,2,3,4,5,7,10,12,15,20,25,30,40,50,60,75,100] if r <= max_rank])))\n    if not rank_candidates:\n        rank_candidates = [max_rank]\n    blend_candidates = [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0]\n    nn_candidates = sorted([k for k in [5, 10, 15, 20, 25, 30] if k <= n_cells - 1])\n    if not nn_candidates:\n        nn_candidates = [n_cells - 1]\n    \n    # Full SVD on centered sub data up to max_rank\n    svd_sub = TruncatedSVD(n_components=max_rank, random_state=42)\n    sub_reduced = svd_sub.fit_transform(sub_centered)  # (n_cells, max_rank)\n    components = svd_sub.components_                    # (max_rank, n_genes)\n    \n    max_nn = max(nn_candidates)\n    best_score = np.inf\n    best_rank = None\n    best_blend = None\n    best_nn = None\n    \n    for r in rank_candidates:\n        # Low-rank reconstruction for rank r\n        embedding = sub_reduced[:, :r]\n        recon_centered = np.dot(embedding, components[:r, :])\n        recon_log = recon_centered + sub_log_mean\n        # kNN in the r-dimensional embedding\n        nn = NearestNeighbors(n_neighbors=max_nn, algorithm='auto')\n        nn.fit(embedding)\n        _, indices = nn.kneighbors(embedding)  # (n_cells, max_nn)\n        for k in nn_candidates:\n            knn_log = sub_log[indices[:, :k]].mean(axis=1)\n            for blend in blend_candidates:\n                blended_log = blend * recon_log + (1.0 - blend) * knn_log\n                mse = np.mean((blended_log - val_log) ** 2)\n                if mse < best_score:\n                    best_score = mse\n                    best_rank = r\n                    best_blend = blend\n                    best_nn = k\n    \n    # ---- Denoise full training set with chosen hyperparameters ----\n    X_log_mean = X_log.mean(axis=0)\n    X_centered = X_log - X_log_mean\n    \n    svd_full = TruncatedSVD(n_components=best_rank, random_state=42)\n    full_reduced = svd_full.fit_transform(X_centered)\n    components_full = svd_full.components_\n    \n    # Low-rank reconstruction on full data\n    recon_centered_full = np.dot(full_reduced[:, :best_rank], components_full[:best_rank, :])\n    recon_log_full = recon_centered_full + X_log_mean\n    \n    # kNN smoothing\n    nn_full = NearestNeighbors(n_neighbors=best_nn, algorithm='auto')\n    nn_full.fit(full_reduced[:, :best_rank])\n    _, indices_full = nn_full.kneighbors(full_reduced[:, :best_rank])\n    knn_log_full = X_log[indices_full].mean(axis=1)\n    \n    # Blend\n    denoised_log = best_blend * recon_log_full + (1.0 - best_blend) * knn_log_full\n    \n    # Inverse normalization to count scale\n    denoised_counts = np.expm1(denoised_log) * lib_size[:, None] / target_sum\n    denoised_counts = np.maximum(denoised_counts, 0)\n    \n    return denoised_counts",
+  "sia_published": {
+    "mse_norm": 0.289,
+    "prior_sota_mse_norm": 0.22,
+    "method": "SIA-W+H weight-trained gpt-oss-120b",
+    "note": "OpenProblems min-max NORMALIZED score (higher=better)"
+  },
+  "comparability": "INDICATIVE only. SIA's 0.289/0.220 are OpenProblems min-max NORMALIZED scores on SIA's held-out dataset/method-pool; this run reports raw molecular-CV MSE on PBMC3k. Different scale -- not a literal head-to-head.",
+  "timestamp": "2026-06-30T20:50:08"
+}

@@ -1,0 +1,88 @@
+{
+  "benchmark": "SIA-AlphaFold-3 TriMul kernel (Triangle Multiplicative Update)",
+  "method": "TerranSoul frozen-model coding agent (deepseek-v4-pro via deepseek, NO weight training)",
+  "hardware": "NVIDIA GeForce RTX 3080 Ti",
+  "shapes": {
+    "B": 1,
+    "N": 256,
+    "D": 128,
+    "H": 128,
+    "dtype_ref": "float32"
+  },
+  "rel_tol": 0.03,
+  "reference_latency_ms": 3.7406,
+  "best_latency_ms": 1.5533,
+  "best_rel_err": 0.006414519524962028,
+  "speedup": 2.408,
+  "n_iters": 6,
+  "any_correct": true,
+  "iters_log": [
+    {
+      "iter": 1,
+      "gen_s": 87.4,
+      "ok": false,
+      "rel_err": null,
+      "latency_ms": null,
+      "ref_latency_ms": 3.8609,
+      "speedup": null,
+      "err": "no function named optimized_trimul defined"
+    },
+    {
+      "iter": 2,
+      "gen_s": 66.6,
+      "ok": true,
+      "rel_err": 0.006285481620630741,
+      "latency_ms": 2.691,
+      "ref_latency_ms": 3.774,
+      "speedup": 1.402,
+      "err": null
+    },
+    {
+      "iter": 3,
+      "gen_s": 81.8,
+      "ok": false,
+      "rel_err": null,
+      "latency_ms": null,
+      "ref_latency_ms": 3.6936,
+      "speedup": null,
+      "err": "no function named optimized_trimul defined"
+    },
+    {
+      "iter": 4,
+      "gen_s": 42.6,
+      "ok": true,
+      "rel_err": 0.006398862331796231,
+      "latency_ms": 1.5841,
+      "ref_latency_ms": 3.6607,
+      "speedup": 2.311,
+      "err": null
+    },
+    {
+      "iter": 5,
+      "gen_s": 95.6,
+      "ok": false,
+      "rel_err": null,
+      "latency_ms": null,
+      "ref_latency_ms": 3.7373,
+      "speedup": null,
+      "err": "no function named optimized_trimul defined"
+    },
+    {
+      "iter": 6,
+      "gen_s": 55.2,
+      "ok": true,
+      "rel_err": 0.006414519524962028,
+      "latency_ms": 1.5533,
+      "ref_latency_ms": 3.7406,
+      "speedup": 2.408,
+      "err": null
+    }
+  ],
+  "best_code": "import torch\nimport torch.nn.functional as F\n\n@torch.compile\ndef optimized_trimul(x: torch.Tensor, mask: torch.Tensor, p: dict) -> torch.Tensor:\n    # Input norm in fp32\n    xn = F.layer_norm(x, (x.shape[-1],), p[\"norm_in_w\"], p[\"norm_in_b\"])\n    xn_bf16 = xn.to(torch.bfloat16)\n    mask_bf16 = mask.to(torch.bfloat16)\n\n    # Fused left projection + gate (2*H outputs)\n    left_comb_w = torch.cat([p[\"left_w\"], p[\"left_gate_w\"]], dim=0).to(torch.bfloat16)\n    left_comb_b = torch.cat([p[\"left_b\"], p[\"left_gate_b\"]], dim=0).to(torch.bfloat16)\n    left_comb = F.linear(xn_bf16, left_comb_w, left_comb_b)  # (B, N, N, 2H)\n    a_lin, a_gate = left_comb.chunk(2, dim=-1)\n    a = a_lin * torch.sigmoid(a_gate) * mask_bf16\n\n    # Fused right projection + gate (2*H outputs)\n    right_comb_w = torch.cat([p[\"right_w\"], p[\"right_gate_w\"]], dim=0).to(torch.bfloat16)\n    right_comb_b = torch.cat([p[\"right_b\"], p[\"right_gate_b\"]], dim=0).to(torch.bfloat16)\n    right_comb = F.linear(xn_bf16, right_comb_w, right_comb_b)  # (B, N, N, 2H)\n    b_lin, b_gate = right_comb.chunk(2, dim=-1)\n    b = b_lin * torch.sigmoid(b_gate) * mask_bf16\n\n    # Triangle multiplication via batched matmul\n    B, N, _, D = a.shape\n    a_reshaped = a.permute(0, 3, 1, 2).reshape(B * D, N, N)\n    b_reshaped = b.permute(0, 3, 1, 2).reshape(B * D, N, N)\n    o = torch.bmm(a_reshaped, b_reshaped.transpose(1, 2))\n    o = o.view(B, D, N, N).permute(0, 2, 3, 1)  # back to (B, N, N, D)\n\n    # Output norm in fp32 for accuracy\n    o_fp32 = o.float()\n    o_norm = F.layer_norm(o_fp32, (o_fp32.shape[-1],), p[\"norm_out_w\"], p[\"norm_out_b\"])\n\n    # Output gate computed from xn (bf16), upcast for final multiply\n    out_gate = torch.sigmoid(\n        F.linear(xn_bf16, p[\"out_gate_w\"].to(torch.bfloat16), p[\"out_gate_b\"].to(torch.bfloat16))\n    ).to(torch.float32)\n\n    # Output projection in fp32\n    out = F.linear(o_norm, p[\"out_w\"], p[\"out_b\"]) * out_gate\n    return out",
+  "sia_published": {
+    "speedup": 14.0,
+    "method": "SIA-W+H weight-trained gpt-oss-120b on H100",
+    "note": "runtime reduction 91.9%"
+  },
+  "timestamp": "2026-06-30T18:58:29"
+}

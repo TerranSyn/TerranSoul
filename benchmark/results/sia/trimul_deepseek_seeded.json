@@ -1,0 +1,88 @@
+{
+  "benchmark": "SIA-AlphaFold-3 TriMul kernel (Triangle Multiplicative Update)",
+  "method": "TerranSoul frozen-model coding agent (deepseek-v4-pro via deepseek, NO weight training)",
+  "hardware": "NVIDIA GeForce RTX 3080 Ti",
+  "shapes": {
+    "B": 1,
+    "N": 256,
+    "D": 128,
+    "H": 128,
+    "dtype_ref": "float32"
+  },
+  "rel_tol": 0.03,
+  "reference_latency_ms": 3.3903,
+  "best_latency_ms": 1.2974,
+  "best_rel_err": 0.007144899737383919,
+  "speedup": 2.613,
+  "n_iters": 6,
+  "any_correct": true,
+  "iters_log": [
+    {
+      "iter": 1,
+      "gen_s": 79.4,
+      "ok": false,
+      "rel_err": null,
+      "latency_ms": null,
+      "ref_latency_ms": 3.4126,
+      "speedup": null,
+      "err": "no function named optimized_trimul defined"
+    },
+    {
+      "iter": 2,
+      "gen_s": 27.9,
+      "ok": true,
+      "rel_err": 0.006661523019270653,
+      "latency_ms": 1.3678,
+      "ref_latency_ms": 3.5092,
+      "speedup": 2.566,
+      "err": null
+    },
+    {
+      "iter": 3,
+      "gen_s": 88.2,
+      "ok": false,
+      "rel_err": null,
+      "latency_ms": null,
+      "ref_latency_ms": 4.5186,
+      "speedup": null,
+      "err": "no function named optimized_trimul defined"
+    },
+    {
+      "iter": 4,
+      "gen_s": 89.8,
+      "ok": false,
+      "rel_err": null,
+      "latency_ms": null,
+      "ref_latency_ms": 3.6752,
+      "speedup": null,
+      "err": "no function named optimized_trimul defined"
+    },
+    {
+      "iter": 5,
+      "gen_s": 13.1,
+      "ok": true,
+      "rel_err": 0.007144899737383919,
+      "latency_ms": 1.2974,
+      "ref_latency_ms": 3.3903,
+      "speedup": 2.613,
+      "err": null
+    },
+    {
+      "iter": 6,
+      "gen_s": 94.8,
+      "ok": false,
+      "rel_err": null,
+      "latency_ms": null,
+      "ref_latency_ms": 3.4446,
+      "speedup": null,
+      "err": "no function named optimized_trimul defined"
+    }
+  ],
+  "best_code": "import torch\nimport torch.nn.functional as F\n\n@torch.compile(mode=\"max-autotune\")\ndef _compiled_trimul(x, mask, p):\n    with torch.autocast(\"cuda\", dtype=torch.bfloat16):\n        # In-place LayerNorm needs float32, but autocast will downcast.\n        # Force norm computation in float32 for stability.\n        xn = F.layer_norm(x, (x.shape[-1],), p[\"norm_in_w\"], p[\"norm_in_b\"])\n        a = F.linear(xn, p[\"left_w\"], p[\"left_b\"]) * torch.sigmoid(\n            F.linear(xn, p[\"left_gate_w\"], p[\"left_gate_b\"])\n        ) * mask\n        b = F.linear(xn, p[\"right_w\"], p[\"right_b\"]) * torch.sigmoid(\n            F.linear(xn, p[\"right_gate_w\"], p[\"right_gate_b\"])\n        ) * mask\n        o = torch.einsum(\"b i k d, b j k d -> b i j d\", a, b)\n        o = F.layer_norm(o, (o.shape[-1],), p[\"norm_out_w\"], p[\"norm_out_b\"])\n        out_gate = torch.sigmoid(F.linear(xn, p[\"out_gate_w\"], p[\"out_gate_b\"]))\n        o = F.linear(o, p[\"out_w\"], p[\"out_b\"]) * out_gate\n    return o.float()\n\ndef optimized_trimul(x: torch.Tensor, mask: torch.Tensor, p: dict) -> torch.Tensor:\n    return _compiled_trimul(x, mask, p)",
+  "sia_published": {
+    "speedup": 14.0,
+    "method": "SIA-W+H weight-trained gpt-oss-120b on H100",
+    "note": "runtime reduction 91.9%"
+  },
+  "timestamp": "2026-06-30T19:07:44"
+}

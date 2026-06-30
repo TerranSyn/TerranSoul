@@ -43,6 +43,19 @@
 
 > **Read:** TerranSoul's frozen-model + memory approach **wins the knowledge/recall benchmark (LawBench)** outright, and its frozen 12B can act as a real **coding agent** (TriMul: a correct, faster-than-reference GPU kernel) and **data-pipeline agent** (scRNA: a real +23 % denoiser) — but it does **not** match SIA's weight-trained 120B on the heavy compute-optimization tasks (14× kernels) where SIA's RL-tuned weights specialize, and the full MLE-Bench harness is out of single-PC budget. Harnesses: [`scripts/sia/`](scripts/sia/).
 
+## Stronger frozen actors + the H100 projection
+
+The frozen actor is **swappable** — re-running the *same* loop (memory + iteration, **no weight training**) with stronger frozen actors:
+
+- **scRNA** (same molecular-CV protocol): gemma4:12b **+23.2 %** → Claude Opus 4.8 **+34.6 %** → DeepSeek-v4-pro **+35.0 %**. Stronger actor → better denoiser, frozen, for free — the "ride the LLM curve" effect.
+- **TriMul** (DeepSeek-v4-pro, fair fp32 baseline, RTX 3080 Ti): **3.87×** measured → **~14–15× H100-estimated †** (≈ SIA's measured 14×). The actor reached *correct* fused Triton kernels but couldn't out-tune cuBLAS locally; the torch.compile kernel is the champion.
+
+> **† H100 projection — spec · evidence · math** (estimate; settled by the H100 re-bench in `rules/milestones.md`):
+> - **Evidence (measured):** 1.254 ms kernel vs 4.847 ms fp32-naive baseline = **3.87×** on RTX 3080 Ti — `scripts/sia/_measure_fair.py`, GPU-prewarmed interleaved median, rel-err 7e-3.
+> - **Spec (peak throughput):** RTX 3080 Ti — fp32 ~34, bf16 tensor-core ~136 TFLOPS. H100 SXM — fp32 ~67, bf16 tensor-core ~990 TFLOPS.
+> - **Math:** the fp32 baseline scales 67/34 ≈ **2.0×** on H100; the bf16 kernel scales 990/136 ≈ **7.3×**. Compute-bound, the speedup *multiple* scales by 7.3 / 2.0 ≈ **3.65×**, so 3.87 × 3.65 ≈ **~14×** (round ~15×) — matching SIA's measured **14×** on H100.
+> - **Caveat:** assumes compute-boundness (matmul-heavy ops trend that way on big GPUs); the memory-bound floor (BW 912→3350 GB/s = 3.7× vs the 2.0× baseline → ~1.85× scaling) would give ~7×. The H100 re-bench resolves which.
+
 ## TerranSoul's memory benchmarks
 
 > What TerranSoul measures and SIA cannot — SIA ships no memory / retrieval subsystem.

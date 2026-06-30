@@ -1,0 +1,43 @@
+{
+  "benchmark": "SIA-TriMul 10-iter push (deepseek-v4-pro + TerranSoul memory, champion-in-context)",
+  "actor": "deepseek-v4-pro (frozen, via API)",
+  "iters": 6,
+  "best_speedup": 2.631,
+  "best_latency_ms": 1.3052,
+  "ref_latency_ms": 3.4338,
+  "sia_published_speedup": 14.0,
+  "log": [
+    {
+      "iter": 1,
+      "ok": true,
+      "speedup": 2.631
+    },
+    {
+      "iter": 2,
+      "ok": false,
+      "speedup": null
+    },
+    {
+      "iter": 3,
+      "ok": false,
+      "speedup": null
+    },
+    {
+      "iter": 4,
+      "ok": true,
+      "speedup": 1.482
+    },
+    {
+      "iter": 5,
+      "ok": true,
+      "speedup": 1.463
+    },
+    {
+      "iter": 6,
+      "ok": false,
+      "speedup": null
+    }
+  ],
+  "best_code": "import torch\nimport torch.nn.functional as F\n\ndef _trimul_core(x: torch.Tensor, mask: torch.Tensor, p: dict) -> torch.Tensor:\n    xn = F.layer_norm(x, (x.shape[-1],), p[\"norm_in_w\"], p[\"norm_in_b\"])\n    a = (\n        F.linear(xn, p[\"left_w\"], p[\"left_b\"])\n        * torch.sigmoid(F.linear(xn, p[\"left_gate_w\"], p[\"left_gate_b\"]))\n        * mask\n    )\n    b = (\n        F.linear(xn, p[\"right_w\"], p[\"right_b\"])\n        * torch.sigmoid(F.linear(xn, p[\"right_gate_w\"], p[\"right_gate_b\"]))\n        * mask\n    )\n    o = torch.einsum(\"b i k d, b j k d -> b i j d\", a, b)\n    o = F.layer_norm(o, (o.shape[-1],), p[\"norm_out_w\"], p[\"norm_out_b\"])\n    out_gate = torch.sigmoid(F.linear(xn, p[\"out_gate_w\"], p[\"out_gate_b\"]))\n    o = F.linear(o, p[\"out_w\"], p[\"out_b\"]) * out_gate\n    return o\n\n_compiled_trimul = torch.compile(_trimul_core, mode=\"max-autotune\")\n\ndef optimized_trimul(x: torch.Tensor, mask: torch.Tensor, p: dict) -> torch.Tensor:\n    with torch.autocast(device_type=\"cuda\", dtype=torch.bfloat16):\n        return _compiled_trimul(x, mask, p).float()",
+  "note": "per-iter single-shot (GPU-noisy); best re-measured stably afterward."
+}
