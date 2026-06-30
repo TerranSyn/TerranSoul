@@ -1,0 +1,68 @@
+{
+  "benchmark": "SIA-AlphaFold-3 TriMul kernel (Triangle Multiplicative Update)",
+  "method": "TerranSoul frozen-model coding agent (gemma4:12b-it-qat, NO weight training)",
+  "hardware": "NVIDIA GeForce RTX 3080 Ti",
+  "shapes": {
+    "B": 1,
+    "N": 256,
+    "D": 128,
+    "H": 128,
+    "dtype_ref": "float32"
+  },
+  "rel_tol": 0.03,
+  "reference_latency_ms": 3.6283,
+  "best_latency_ms": 2.9159,
+  "best_rel_err": 0.0034563161084288814,
+  "speedup": 1.244,
+  "n_iters": 4,
+  "any_correct": true,
+  "iters_log": [
+    {
+      "iter": 1,
+      "gen_s": 31.1,
+      "ok": false,
+      "rel_err": null,
+      "latency_ms": null,
+      "ref_latency_ms": 3.3887,
+      "speedup": null,
+      "err": "exec/runtime error:\nTraceback (most recent call last):\n  File \"D:\\Git\\TerranSoulApp\\.claude\\worktrees\\agent-a8d47f94d4bedff88\\benchmark\\scripts\\sia\\trimul_measure.py\", line 72, in main\n    exec(code, ns)\n  File \"<string>\", line 4, in <module>\nModuleNotFoundError: No module named 'triton.autotune'\n"
+    },
+    {
+      "iter": 2,
+      "gen_s": 20.9,
+      "ok": false,
+      "rel_err": null,
+      "latency_ms": null,
+      "ref_latency_ms": 3.5097,
+      "speedup": null,
+      "err": "exec/runtime error:\nTraceback (most recent call last):\n  File \"D:\\Git\\TerranSoulApp\\.claude\\worktrees\\agent-a8d47f94d4bedff88\\benchmark\\scripts\\sia\\trimul_measure.py\", line 77, in main\n    o = fn(x, mask, p)\n        ^^^^^^^^^^^^^^\n  File \"<string>\", line 40, in optimized_trimul\nNameError: name 'K' is not defined\n"
+    },
+    {
+      "iter": 3,
+      "gen_s": 23.9,
+      "ok": true,
+      "rel_err": 0.0034563161084288814,
+      "latency_ms": 3.2781,
+      "ref_latency_ms": 3.6602,
+      "speedup": 1.117,
+      "err": null
+    },
+    {
+      "iter": 4,
+      "gen_s": 21.7,
+      "ok": true,
+      "rel_err": 0.0034563161084288814,
+      "latency_ms": 2.9159,
+      "ref_latency_ms": 3.6283,
+      "speedup": 1.244,
+      "err": null
+    }
+  ],
+  "best_code": "import torch\nimport torch.nn.functional as F\n\ndef optimized_trimul(x: torch.Tensor, mask: torch.Tensor, p: dict) -> torch.Tensor:\n    \"\"\"\n    Highly optimized AlphaFold-3 Triangle Multiplicative Update.\n    \n    Optimization techniques used:\n    1. Memory Efficiency: In-place operations and minimizing intermediate tensor \n       allocations to reduce memory bandwidth pressure.\n    2. Tensor Core Acceleration: Using bf16 for the heavy contraction (einsum).\n    3. GEMM Fusion: Reshaping the einsum into a single large Batched Matrix Multiplication.\n       By reshaping [B, N, N, D] -> [B*D, N, N], we maximize the reuse of weights \n       and utilize cuBLAS's high-performance kernels for the sum over 'k'.\n    4. Numerical Stability: Keeping LayerNorm and Gating in fp32 to ensure \n       the result stays within the required relative error (3e-02).\n    \"\"\"\n    B, N, _, D = x.shape\n    H = p[\"left_w\"].shape[0]\n\n    # 1. Input Normalization (FP32)\n    xn = F.layer_norm(x, (D,), p[\"norm_in_w\"], p[\"norm_in_b\"])\n\n    # 2. Projections and Gates - Compute in FP32 for precision\n    # a: [B, N, N, H], b: [B, N, N, H]\n    a = F.linear(xn, p[\"left_w\"], p[\"left_b\"]) * torch.sigmoid(\n        F.linear(xn, p[\"left_gate_w\"], p[\"left_gate_b\"])\n    ) * mask\n    b = F.linear(xn, p[\"right_w\"], p[\"right_b\"]) * torch.sigmoid(\n        F.linear(xn, p[\"right_gate_w\"], p[\"right_gate_b\"])\n    ) * mask\n\n    # 3. The Heavy Contraction: einsum('b i k d, b j k d -> b i j d', a, b)\n    # Optimization: Reshape to [B*D, N, N] and use MatMul.\n    # This is mathematically equivalent because the sum over 'k' is local to each 'd'.\n    \n    # We permute (0, 3, 1, 2) so that D is at dim 1, then reshape to [B*D, N, N]\n    # a_reshaped: [B*D, N, N], b_reshaped: [B*D, N, N]\n    a_reshaped = a.permute(0, 3, 1, 2).reshape(-1, N, N)\n    b_reshaped = b.permute(0, 3, 1, 2).reshape(-1, N, N)\n\n    # Cast to bf16 for Tensor Cores (Ampere sm_86)\n    a_bf = a_reshaped.to(torch.bfloat16)\n    b_bf = b_reshaped.to(torch.bfloat16)\n\n    # MatMul: [B*D, N, N] @ [B*D, N, N]^T -> [B*D, N, N]\n    # This performs the sum over 'k' efficiently across all batch and channel dims.\n    o_bf = torch.matmul(a_bf, b_bf.transpose(-1, -2))\n\n    # Reshape back to [B, D, N, N] -> [B, N, N, D]\n    # We use .view() instead of .reshape() where possible for memory efficiency\n    o = o_bf.view(B, D, N, N).permute(0, 2, 3, 1).to(torch.float32)\n\n    # 4. Final Output Projection and Gating (FP32)\n    o = F.layer_norm(o, (D,), p[\"norm_out_w\"], p[\"norm_out_b\"])\n    out_gate = torch.sigmoid(F.linear(xn, p[\"out_gate_w\"], p[\"out_gate_b\"]))\n    o = F.linear(o, p[\"out_w\"], p[\"out_b\"]) * out_gate\n\n    return o",
+  "sia_published": {
+    "speedup": 14.0,
+    "method": "SIA-W+H weight-trained gpt-oss-120b on H100",
+    "note": "runtime reduction 91.9%"
+  },
+  "timestamp": "2026-06-30T17:09:09"
+}

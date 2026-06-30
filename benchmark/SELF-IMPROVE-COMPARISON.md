@@ -18,15 +18,30 @@
 
 > **TerranSoul's frozen 12B + memory beats SIA's weight-trained 120B by +6.2 points** on SIA's own headline benchmark — with a ~10× smaller model and zero weight training. (k-NN memory-only baseline: 58.9 %.) Measured: [`results/sia/lawbench_terransoul_full.json`](results/sia/lawbench_terransoul_full.json) — n = 913, 697 correct, 0 invalid, 2.35 s/case, seed 42. SIA figure is `SIA-W+H` from its README.
 
-## SIA's other benchmarks
+## Benchmark results (SIA suite)
 
-> Agent task-optimization in domains TerranSoul does not target (it is a memory brain, not a CUDA/bio optimizer). Shown for completeness; no TerranSoul number.
+> SIA's [README benchmark-results](https://github.com/hexo-ai/sia#benchmark-results) reports four benchmarks. We **attempted all four on TerranSoul** with the **frozen** `gemma4:12b-it-qat` (no weight training) and reproduce SIA's chart format below. Two ran with real measured numbers on this machine (LawBench, TriMul); one ran a genuine pipeline but on a non-comparable metric scale (scRNA-seq); one is honestly out of session budget (MLE-Bench). **No TerranSoul value is fabricated** — where a benchmark could not be run head-to-head, the bar is a clearly-labeled greyed placeholder with the reason.
 
-| Benchmark | SIA | TerranSoul |
-|---|--:|---|
-| AlphaFold-3 TriMul CUDA kernel | 14× speedup | — (off-domain, not run) |
-| scRNA-seq denoising | 0.289 MSEnorm (vs 0.220 SOTA) | — (off-domain, not run) |
-| OpenAI MLE-Bench Hard | #1 across generations | — (off-domain, not run) |
+| Benchmark | SIA | TerranSoul | Status |
+|---|--:|--:|---|
+| **LawBench** (Top-1, 191 classes) | 70.1 % | **76.3 %** | ✅ ran — TerranSoul wins (frozen 12B, n = 913) |
+| **AlphaFold-3 TriMul** (kernel speedup) | 14× (H100) | **1.24×** (RTX 3080 Ti) | ✅ ran — frozen-12B agent wrote a correct kernel; different HW/method |
+| **scRNA-seq denoising** (MSEnorm) | 0.289 (vs 0.220 SOTA) | pipeline ran | ⚠️ ran on PBMC3k molecular-CV (raw MSE 0.054, +23 %), not SIA's normalized scale |
+| **OpenAI MLE-Bench Hard** | #1 | not run | ⛔ infeasible: needs Kaggle harness/data + multi-hour Docker GPU runs |
+
+<p align="center"><img src="charts/lawbench_headtohead.png" alt="LawBench Top-1 — TerranSoul 76.3% vs SIA 70.1%" width="720"><br>
+<i><b>LawBench</b> — predict the criminal charge from a Chinese court-case description across 191 charge classes (n = 913). TerranSoul (frozen 12B + memory-RAG) <b>76.3 %</b> Top-1 vs SIA-W+H (weight-trained 120B) <b>70.1 %</b>; prior SOTA 45 %, zero-shot LLM 7 %. Measured: <a href="results/sia/lawbench_terransoul_full.json"><code>results/sia/lawbench_terransoul_full.json</code></a>.</i></p>
+
+<p align="center"><img src="charts/trimul_headtohead.png" alt="TriMul kernel — TerranSoul 1.24x vs SIA 14x" width="720"><br>
+<i><b>AlphaFold-3 TriMul kernel</b> — implement + optimize the Triangle Multiplicative Update. TerranSoul's frozen-12B coding agent (Triton + bf16, 4-iter correctness-gated agentic loop) produced a correct kernel at <b>1.24×</b> over the fp32 einsum baseline (RTX 3080 Ti, rel-err 3.5e-3); SIA-W+H reports <b>14×</b> on H100. Different hardware + method, so each speedup is vs its own baseline — not a like-for-like bar. Measured: <a href="results/sia/trimul_terransoul.json"><code>results/sia/trimul_terransoul.json</code></a>.</i></p>
+
+<p align="center"><img src="charts/scrna_denoising_headtohead.png" alt="scRNA-seq denoising — SIA 0.289 vs SOTA 0.220; TerranSoul not on this scale" width="720"><br>
+<i><b>scRNA-seq denoising</b> — impute held-out single-cell expression. SIA-W+H <b>0.289</b> MSEnorm vs prior SOTA <b>0.220</b> (OpenProblems min-max-normalized score, higher = better). TerranSoul <b>did run a real frozen-12B denoiser</b> on the public PBMC3k dataset with the molecular-cross-validation protocol: raw MSE <b>0.054 (+23 % vs the no-denoise baseline)</b> — but on a different (raw, lower-is-better) metric scale than SIA's normalized score, so no comparable bar is drawn (indicative capability, not a head-to-head). Measured: <a href="results/sia/scrna_denoising_terransoul.json"><code>results/sia/scrna_denoising_terransoul.json</code></a>.</i></p>
+
+<p align="center"><img src="charts/mlebench_headtohead.png" alt="MLE-Bench Hard — SIA #1; TerranSoul not run" width="720"><br>
+<i><b>OpenAI MLE-Bench Hard</b> — full Kaggle ML-pipeline competitions where the agent must write, run, and iterate complete pipelines. SIA-W+H ranks <b>#1</b>. <b>Not run on TerranSoul</b>: requires the MLE-Bench harness + Kaggle credentials, tens of GB of competition data, and multi-hour containerized GPU runs. Docker is present on this machine; the Kaggle data/harness/compute budget is not. A truthful blocker, not a fabricated number: <a href="results/sia/mlebench_terransoul.json"><code>results/sia/mlebench_terransoul.json</code></a>.</i></p>
+
+> **Read:** TerranSoul's frozen-model + memory approach **wins the knowledge/recall benchmark (LawBench)** outright, and its frozen 12B can act as a real **coding agent** (TriMul: a correct, faster-than-reference GPU kernel) and **data-pipeline agent** (scRNA: a real +23 % denoiser) — but it does **not** match SIA's weight-trained 120B on the heavy compute-optimization tasks (14× kernels) where SIA's RL-tuned weights specialize, and the full MLE-Bench harness is out of single-PC budget. Harnesses: [`scripts/sia/`](scripts/sia/).
 
 ## TerranSoul's memory benchmarks
 

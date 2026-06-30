@@ -1,0 +1,19 @@
+{
+  "benchmark": "SIA-OpenAI MLE-Bench Hard",
+  "status": "infeasible",
+  "feasible": false,
+  "reason": "Requires the OpenAI MLE-Bench harness (github.com/openai/mle-bench) + per-competition Kaggle datasets. The 'Hard' split is ~15 of the hardest Kaggle competitions; running it needs: (1) Kaggle API credentials + manual per-competition rule acceptance, (2) tens-to-hundreds of GB of competition data downloads, (3) a full agent (e.g. AIDE) writing+running+iterating ML pipelines inside Docker containers for multiple GPU-hours per competition, (4) the held-out MLE-Bench graders. Docker IS available on this machine (28.3.2), but the Kaggle credentials, datasets, grading harness, and multi-hour GPU budget are not available in this session.",
+  "environment_probe": {
+    "docker": "28.3.2 (present)",
+    "kaggle_credentials": "absent",
+    "mle_bench_harness": "not installed",
+    "gpu": "NVIDIA GeForce RTX 3080 Ti 12GB (single consumer GPU; MLE-Bench Hard assumes larger budgets)"
+  },
+  "sia_published": {
+    "rank": "#1 across all model generations tested",
+    "method": "SIA-W+H weight-trained gpt-oss-120b"
+  },
+  "terransoul_value": null,
+  "note": "No TerranSoul value is fabricated. A truthful blocker is the recorded result. TerranSoul is a frozen-model memory/RAG brain, not a Kaggle ML-pipeline agent; this benchmark is off-domain and out of session budget.",
+  "timestamp": "2026-06-30"
+}

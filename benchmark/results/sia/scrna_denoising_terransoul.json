@@ -1,0 +1,57 @@
+{
+  "benchmark": "SIA-scRNA-seq denoising (molecular cross-validation, OpenProblems-style)",
+  "method": "TerranSoul frozen-model coding agent (gemma4:12b-it-qat, NO weight training)",
+  "dataset": "10x Genomics PBMC3k (real public scRNA counts)",
+  "protocol": "molecular cross-validation (Batson 2019): Binomial(c,0.5) train/test split",
+  "metric": "molecular-CV MSE on library-normalized log1p expression (LOWER is better)",
+  "n_hvg": 1000,
+  "cells": 2700,
+  "mse_baseline_no_denoise": 0.07039,
+  "best_mse": 0.05404,
+  "improvement_pct_vs_baseline": 23.23,
+  "any_correct": true,
+  "n_iters": 4,
+  "iters_log": [
+    {
+      "iter": 1,
+      "gen_s": 15.7,
+      "ok": true,
+      "mse": 0.05882344432000813,
+      "secs": 0.46,
+      "err": null
+    },
+    {
+      "iter": 2,
+      "gen_s": 11.2,
+      "ok": true,
+      "mse": 0.054036508326562545,
+      "secs": 0.27,
+      "err": null
+    },
+    {
+      "iter": 3,
+      "gen_s": 11.3,
+      "ok": false,
+      "mse": null,
+      "secs": 0.4,
+      "err": "non-finite MSE (denoised produced NaN/inf score)"
+    },
+    {
+      "iter": 4,
+      "gen_s": 12.8,
+      "ok": true,
+      "mse": 0.05415332132626288,
+      "secs": 0.24,
+      "err": null
+    }
+  ],
+  "best_code": "import numpy as np\nfrom sklearn.decomposition import TruncatedSVD\nfrom sklearn.neighbors import NearestNeighbors\n\ndef denoise(train):\n    \"\"\"\n    Optimized denoising for scRNA-seq using a hybrid approach: \n    1. Library size normalization (CPM).\n    2. Low-rank reconstruction via TruncatedSVD to capture global biological variance.\n    3. Local kNN smoothing on the latent space to preserve cell-type specific signals.\n    4. Non-linear blending of local and global components.\n    \"\"\"\n    # 1. Library Size Normalization (CPM)\n    lib_sizes = train.sum(axis=1, keepdims=True)\n    lib_sizes[lib_sizes == 0] = 1\n    norm_data = (train / lib_sizes) * 1e6\n    \n    # 2. Low-Rank Approximation (TruncatedSVD)\n    # Rank selection: 50 is a robust heuristic for capturing major cell types/states\n    n_components = min(50, train.shape[1] - 1)\n    svd = TruncatedSVD(n_components=n_components, algorithm='arpack')\n    latent = svd.fit_transform(norm_data)\n    reconstructed = svd.inverse_transform(latent)\n    \n    # 3. Local Neighborhood Smoothing (kNN on Latent Space)\n    # Performing kNN in the latent space is significantly faster and filters noise better\n    nn = NearestNeighbors(n_neighbors=15, metric='cosine', n_jobs=-1)\n    nn.fit(latent)\n    distances, indices = nn.kneighbors(latent)\n    \n    # Compute local neighborhood mean in the latent space\n    # This preserves high-frequency biological signals lost by SVD alone\n    local_latent = np.zeros_like(latent)\n    for i in range(latent.shape[0]):\n        local_latent[i] = np.mean(latent[indices[i]], axis=0)\n        \n    # Project local latent back to gene space\n    local_reconstructed = svd.inverse_transform(local_latent)\n    \n    # 4. Hybrid Blending & Scaling\n    # We use a weighted sum: SVD captures global trends, Local captures specificities.\n    # The weights are tuned for scRNA-seq noise profiles (0.7 global / 0.3 local).\n    denoised_norm = 0.7 * reconstructed + 0.3 * local_reconstructed\n    \n    # Final scaling to original count magnitude\n    # We use the mean of the training counts to ensure the output matches the input scale\n    scale_factor = np.mean(train) / np.mean(denoised_norm)\n    return denoised_norm * scale_factor",
+  "sia_published": {
+    "mse_norm": 0.289,
+    "prior_sota_mse_norm": 0.22,
+    "method": "SIA-W+H weight-trained gpt-oss-120b",
+    "note": "OpenProblems min-max NORMALIZED score (higher=better)"
+  },
+  "comparability": "INDICATIVE only. SIA's 0.289/0.220 are OpenProblems min-max NORMALIZED scores on SIA's held-out dataset/method-pool; this run reports raw molecular-CV MSE on PBMC3k. Different scale -- not a literal head-to-head.",
+  "timestamp": "2026-06-30T17:11:26"
+}
