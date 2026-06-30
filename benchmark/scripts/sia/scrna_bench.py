@@ -97,6 +97,19 @@ reconstruction of normalized data, kNN smoothing over cells, or a combination.
 Use ONLY numpy and scikit-learn (sklearn.decomposition.PCA, TruncatedSVD,
 NearestNeighbors, normalize). No GPU, no internet, no extra installs. Keep it
 under ~30 seconds on a {{n_cells}}x{N_HVG} matrix. Return ONLY the function.
+
+PRIOR TERRANSOUL OPTIMIZATION MEMORY (best findings from earlier denoising runs --
+BUILD ON THESE, do not rediscover):
+- STRONG (~+33% vs no-denoise): library-size normalize + log1p, then low-rank
+  TruncatedSVD reconstruction of the normalized matrix, PLUS kNN smoothing over
+  cells in the SVD embedding, blended ~0.4*recon + 0.6*(kNN mean). Return COUNT
+  scale (expm1 then rescale by lib/target) -- the scorer re-log-normalizes, so do
+  NOT return already-log-normalized values.
+- BEST (~+34.6%): pick the SVD rank by NESTED molecular cross-validation -- split
+  train again with Binomial(c,0.5) into sub/val, denoise sub at several ranks,
+  choose the rank with lowest MSE vs val (log-normalized). This self-tunes the
+  rank WITHOUT touching the real held-out test. Then denoise full train at that
+  rank with kNN smoothing (n_neighbors ~15).
 """
 
 
@@ -159,6 +172,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--iters", type=int, default=6)
     ap.add_argument("--model", default="gemma4:12b-it-qat")
+    ap.add_argument("--provider", default="ollama")  # ollama | deepseek
     ap.add_argument("--out", default=os.path.join(HERE, "..", "..", "results", "sia",
                     "scrna_denoising_terransoul.json"))
     args = ap.parse_args()
@@ -175,10 +189,14 @@ def main():
         print(f"\n=== iter {it+1}/{args.iters} : asking {args.model} ===")
         t0 = time.time()
         try:
-            reply = ollama_chat(args.model, build_messages(history, train.shape))
+            if args.provider == "deepseek":
+                from _actor import deepseek_chat
+                reply = deepseek_chat(args.model, build_messages(history, train.shape))
+            else:
+                reply = ollama_chat(args.model, build_messages(history, train.shape))
         except Exception as e:
-            print("  ollama error:", e)
-            iters_log.append(dict(iter=it + 1, ok=False, err=f"ollama: {e}"))
+            print("  actor error:", e)
+            iters_log.append(dict(iter=it + 1, ok=False, err=f"actor: {e}"))
             break
         gen_s = round(time.time() - t0, 1)
         code = extract_code(reply)
@@ -203,7 +221,7 @@ def main():
 
     out = {
         "benchmark": "SIA-scRNA-seq denoising (molecular cross-validation, OpenProblems-style)",
-        "method": "TerranSoul frozen-model coding agent (gemma4:12b-it-qat, NO weight training)",
+        "method": f"TerranSoul frozen-model coding agent ({args.model} via {args.provider}, NO weight training)",
         "dataset": "10x Genomics PBMC3k (real public scRNA counts)",
         "protocol": "molecular cross-validation (Batson 2019): Binomial(c,0.5) train/test split",
         "metric": "molecular-CV MSE on library-normalized log1p expression (LOWER is better)",

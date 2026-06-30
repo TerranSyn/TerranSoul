@@ -69,8 +69,11 @@ def main():
         except Exception:
             pass
         try:
-            exec(code, ns)
-            fn = ns.get("optimized_trimul")
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("_cand_mod", args.code)
+            _mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(_mod)  # import as a real module: @triton.jit needs a source file (exec'd strings break triton's inspect.getsourcelines)
+            fn = getattr(_mod, "optimized_trimul", None)
             if fn is None:
                 out["err"] = "no function named optimized_trimul defined"
             else:

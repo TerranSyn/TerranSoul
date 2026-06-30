@@ -56,6 +56,25 @@ NVIDIA GPU (Ampere, sm_86). Rules:
 - Prefer a CONCISE, complete, correct solution (under ~120 lines) -- e.g. bf16
   batched-matmul with fused gating -- over a long complex kernel. Output the
   COMPLETE function; do not get cut off mid-code.
+
+PRIOR TERRANSOUL OPTIMIZATION MEMORY (hard-won findings on THIS exact kernel from
+earlier self-improvement runs -- BUILD ON THESE, do not rediscover them):
+- BEST KNOWN (~2.9x, correct, rel-err ~7e-3): keep the forward in einsum form
+  (torch.einsum("bikd,bjkd->bijd", a, b)), wrap the whole function body in
+  torch.compile(mode="max-autotune") (cache the compiled fn in a module-global),
+  and run the matmuls under torch.autocast("cuda", torch.bfloat16). Let inductor
+  lower the einsum -- this fuses the layernorms/gates and uses bf16 tensor cores.
+- KNOWN REGRESSION -- AVOID: hand-writing the triangle product as
+  a.permute(...).reshape(...) then torch.bmm(...). The permute/reshape COPIES are
+  memory-bound and erase the speedup (~1.0x). Plain eager bf16 (no compile) is
+  only ~1.1x. Do NOT go down these paths.
+- BOTTLENECK after compile: the triangle batched-matmul is occupancy-limited at
+  N=256, D=128. The biggest remaining win is a SINGLE fused Triton kernel that
+  computes the projections + gating + triangle product WITHOUT materializing the
+  [B,N,N,H] intermediates. If you attempt the frontier, do that.
+- bf16 matmuls with fp32 accumulation stay well within the 3e-2 tolerance.
+- FORMAT: output exactly ONE ```python block that DEFINES optimized_trimul(x,
+  mask, p); the grader calls that function by name directly.
 """
 
 
@@ -117,6 +136,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--iters", type=int, default=6)
     ap.add_argument("--model", default="gemma4:12b-it-qat")
+    ap.add_argument("--provider", default="ollama")  # ollama | deepseek
     ap.add_argument("--out", default=os.path.join(HERE, "..", "..", "results", "sia",
                     "trimul_terransoul.json"))
     args = ap.parse_args()
@@ -131,10 +151,14 @@ def main():
         print(f"\n=== iter {it+1}/{args.iters} : asking {args.model} ===")
         t0 = time.time()
         try:
-            reply = ollama_chat(args.model, build_messages(history))
+            if args.provider == "deepseek":
+                from _actor import deepseek_chat
+                reply = deepseek_chat(args.model, build_messages(history))
+            else:
+                reply = ollama_chat(args.model, build_messages(history))
         except Exception as e:
-            print("  ollama error:", e)
-            iters_log.append(dict(iter=it + 1, ok=False, err=f"ollama: {e}"))
+            print("  actor error:", e)
+            iters_log.append(dict(iter=it + 1, ok=False, err=f"actor: {e}"))
             break
         gen_s = round(time.time() - t0, 1)
         code = extract_code(reply)
@@ -167,7 +191,7 @@ def main():
 
     out = {
         "benchmark": "SIA-AlphaFold-3 TriMul kernel (Triangle Multiplicative Update)",
-        "method": "TerranSoul frozen-model coding agent (gemma4:12b-it-qat, NO weight training)",
+        "method": f"TerranSoul frozen-model coding agent ({args.model} via {args.provider}, NO weight training)",
         "hardware": gpu,
         "shapes": {"B": B, "N": N, "D": D, "H": H, "dtype_ref": "float32"},
         "rel_tol": REL_TOL,
