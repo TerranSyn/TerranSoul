@@ -104,7 +104,7 @@
 
 ## What we could adopt from SIA
 
-SIA is **MIT-licensed**, so under TerranSoul's private-repo policy any of it could be vendored verbatim today — but the valuable parts here are **methodology and architecture patterns**, not code to copy. MIT is permissive (no copyleft / no unknown-license risk), so **no `docs/licensing-audit.md` entry is required** if we adopt patterns rather than verbatim source; if we ever do vendor a SIA file verbatim, add a deduplicated `CREDITS.md` row and note it in the audit as MIT (cheap pass).
+SIA is **MIT-licensed**, so under TerranSoul's private-repo policy the right move is to **COPY / VENDOR the exact implementation** of SIA's self-improvement *bookkeeping* (the patterns enumerated below) — vendor the actual SIA source and port it faithfully (Python → our Rust/TS bench bridge, ~line-by-line) rather than reimplement it from this summary. Copying verbatim is the NORM here; **"reference, don't copy" is an anti-pattern** that silently misses details and edge cases. Add a deduplicated `CREDITS.md` row and note it in `docs/licensing-audit.md` as MIT (cheap pass — MIT is permissive, no copyleft / no unknown-license risk).
 
 The flat-file, single-run, embedder-less memory model and the **weight-editing (LoRA+RL) path are explicitly NOT adoptable** — the former is strictly weaker than TerranSoul's hybrid-RAG + typed-KG brain, and the latter directly violates the frozen-`gemma4:12b-it-qat` mandate. Cite weight-editing as a **contrasting design point**, do not copy it.
 
