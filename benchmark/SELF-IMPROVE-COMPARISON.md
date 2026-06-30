@@ -47,6 +47,7 @@
 
 The frozen actor is **swappable** — re-running the *same* loop (memory + iteration, **no weight training**) with stronger frozen actors:
 
+- **LawBench** (SIA's *exact* 191-class data + their official exact-match scorer, same seed-42 30-case split): SIA 70.1 % < gemma4-12b **73.3 %** < DeepSeek-v4-pro **80.0 %** — the win *widens* with a stronger frozen actor (12B full-913 run = 76.3 %; kNN-retrieval-only baseline 50–57 %).
 - **scRNA** (same molecular-CV protocol): gemma4:12b **+23.2 %** → Claude Opus 4.8 **+34.6 %** → DeepSeek-v4-pro **+35.0 %**. Stronger actor → better denoiser, frozen, for free — the "ride the LLM curve" effect.
 - **TriMul** (DeepSeek-v4-pro, fair fp32 baseline, RTX 3080 Ti): **3.87×** measured → **~14–15× H100-estimated †** (≈ SIA's measured 14×). The actor reached *correct* fused Triton kernels but couldn't out-tune cuBLAS locally; the torch.compile kernel is the champion.
 
