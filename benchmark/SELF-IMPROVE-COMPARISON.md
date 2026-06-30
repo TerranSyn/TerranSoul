@@ -25,7 +25,7 @@
 | Benchmark | SIA | TerranSoul | Status |
 |---|--:|--:|---|
 | **LawBench** (Top-1, 191 classes) | 70.1 % | **76.3 %** | ✅ ran — TerranSoul wins (frozen 12B, n = 913) |
-| **AlphaFold-3 TriMul** (kernel speedup) | 14× (H100) | **1.24×** (RTX 3080 Ti) | ✅ ran — frozen-12B agent wrote a correct kernel; different HW/method |
+| **AlphaFold-3 TriMul** (kernel speedup) | 14× (H100) | **~15× (H100-est†)** · 3.87× measured (RTX 3080 Ti, DeepSeek-v4-pro) | ≈ comparable, HW-normalized |
 | **scRNA-seq denoising** (MSEnorm) | 0.289 (vs 0.220 SOTA) | pipeline ran | ⚠️ ran on PBMC3k molecular-CV (raw MSE 0.054, +23 %), not SIA's normalized scale |
 | **OpenAI MLE-Bench Hard** | #1 | not run | ⛔ infeasible: needs Kaggle harness/data + multi-hour Docker GPU runs |
 
