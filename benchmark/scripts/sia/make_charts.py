@@ -1,9 +1,10 @@
 """Generate SIA-suite head-to-head charts in the clean bar style of
 benchmark/charts/lawbench_headtohead.png (~720px wide). Reads the measured
-result JSONs and emits one PNG per benchmark. The LawBench chart already exists
-and is reused as-is (not regenerated). Infeasible / not-comparable benchmarks
-get a clearly-labeled greyed placeholder bar at 0 with an annotation -- never a
-fabricated TerranSoul value.
+result JSONs and emits one PNG per benchmark. Every TerranSoul series is
+labelled "TerranSoul" so each chart names whose result it is (LawBench and the
+memory-recall chart are generated here too, not reused as-is). Infeasible /
+not-comparable benchmarks get a clearly-labeled greyed placeholder bar at 0
+with an annotation -- never a fabricated TerranSoul value.
 """
 import json, os
 import matplotlib
@@ -155,10 +156,47 @@ def chart_zork():
     print("wrote", out)
 
 
+def chart_lawbench():
+    # SIA's headline benchmark. The TerranSoul bar (frozen 12B + memory-RAG)
+    # is named so readers can tell whose 76.3% it is. Values unchanged from the
+    # measured run (results/sia/lawbench_terransoul_full.json) and SIA's paper.
+    fig, ax = base_fig(
+        "LawBench — Top-1 accuracy",
+        "(Chinese criminal-charge prediction, 191 classes, n=913)",
+        "Top-1 accuracy (%)", 100)
+    labels = ["TerranSoul\n(frozen 12B + memory)", "SIA\n120B trained", "prior\nSOTA", "zero-shot\nLLM"]
+    values = [76.3, 70.1, 45.0, 7.0]
+    colors = [TS_GREEN, SIA_BLUE, SOTA_GREY, LIGHT_GREY]
+    bars(ax, labels, values, colors, lambda v: f"{v:.1f}%")
+    fig.tight_layout()
+    out = os.path.join(CHARTS, "lawbench_headtohead.png")
+    fig.savefig(out)
+    plt.close(fig)
+    print("wrote", out)
+
+
+def chart_memory_recall():
+    # The retrieval axis SIA has no analog for; all three bars are TerranSoul's
+    # LongMemEval-S recall, so each is labelled TerranSoul.
+    fig, ax = base_fig(
+        "TerranSoul memory recall — LongMemEval-S",
+        "(SIA ships no memory/retrieval — no comparable number)",
+        "Recall (%)", 108)
+    labels = ["TerranSoul\nR@5", "TerranSoul\nR@10", "TerranSoul\nR@20"]
+    values = [98.6, 99.8, 100.0]
+    bars(ax, labels, values, [TS_GREEN, TS_GREEN, TS_GREEN], lambda v: f"{v:.1f}%")
+    fig.tight_layout()
+    out = os.path.join(CHARTS, "terransoul_memory_recall.png")
+    fig.savefig(out)
+    plt.close(fig)
+    print("wrote", out)
+
+
 if __name__ == "__main__":
+    chart_lawbench()
+    chart_memory_recall()
     chart_answer_quality()
     chart_zork()
     chart_trimul()
     chart_scrna()
     chart_mlebench()
-    print("LawBench chart reused as-is:", os.path.join(CHARTS, "lawbench_headtohead.png"))
