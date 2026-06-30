@@ -119,7 +119,45 @@ def chart_mlebench():
     print("wrote", out)
 
 
+def chart_answer_quality():
+    fig, ax = base_fig(
+        "Personal-assistant answer quality — independent 0–10 judge",
+        "22 everyday-assistant prompts · same model · same judge",
+        "quality score (0–10, higher = better)", 11)
+    labels = ["TerranSoul", "OpenJarvis", "OpenClaw", "Claude Code\n+GENesis*", "Hermes"]
+    values = [9.82, 9.55, 8.36, 8.24, 6.90]
+    colors = [TS_GREEN, SIA_BLUE, SOTA_GREY, "#b0a6d4", SOTA_GREY]
+    bars(ax, labels, values, colors, lambda v: f"{v:.2f}")
+    annotate(ax, "Same gemma4:12b model, context and judge across the local rows; Claude Code = cloud frontier ref ($5.94).\n"
+                 "TerranSoul scores highest (9.82) and is fastest (~1.0 s/answer), for $0.")
+    fig.tight_layout()
+    out = os.path.join(CHARTS, "answer_quality_headtohead.png")
+    fig.savefig(out)
+    plt.close(fig)
+    print("wrote", out)
+
+
+def chart_zork():
+    fig, ax = base_fig(
+        "Frozen-model self-improvement — ZorkGPT (unaided 4B model)",
+        "30-turn cold start · no game-specific seeds (AGI-pure)",
+        "game score reached", 26)
+    labels = ["AGI-pure\ncontrol A", "AGI-pure\ncontrol B", "+ TerranSoul\nbrain (memory)"]
+    values = [0.0, 0.0, 15.0]
+    bars(ax, labels, values, [LIGHT_GREY, LIGHT_GREY, TS_GREEN],
+         lambda v: "0" if v == 0 else "10–20")
+    annotate(ax, "Both controls stay at 0; external memory + cross-episode reflection lifts the same frozen\n"
+                 "4B model to 10–20, reaching rooms it never visited — no weight edits.")
+    fig.tight_layout()
+    out = os.path.join(CHARTS, "zork_selfimprove.png")
+    fig.savefig(out)
+    plt.close(fig)
+    print("wrote", out)
+
+
 if __name__ == "__main__":
+    chart_answer_quality()
+    chart_zork()
     chart_trimul()
     chart_scrna()
     chart_mlebench()
