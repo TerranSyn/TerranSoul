@@ -58,9 +58,15 @@ def bars(ax, labels, values, colors, fmt, placeholders=None, hatches=None):
 
 
 def annotate(ax, text):
-    ax.text(0.5, 0.93, text, transform=ax.transAxes, ha="center", va="top",
-            fontsize=8.2, color="#333", style="italic",
-            bbox=dict(boxstyle="round,pad=0.4", fc="#f4f5f7", ec="#cfd2d6", lw=0.8))
+    """Place the caption in reserved EMPTY space below the plot -- never over the
+    bars or their value labels. Must be called AFTER fig.tight_layout()."""
+    fig = ax.figure
+    lines = text.count("\n") + 1
+    band = 0.10 + 0.052 * lines  # reserve bottom space proportional to caption height
+    fig.subplots_adjust(bottom=fig.subplotpars.bottom + band)
+    fig.text(0.5, 0.025, text, ha="center", va="bottom",
+             fontsize=8.2, color="#333", style="italic",
+             bbox=dict(boxstyle="round,pad=0.4", fc="#f4f5f7", ec="#cfd2d6", lw=0.8))
 
 
 def chart_trimul():
@@ -74,9 +80,9 @@ def chart_trimul():
     values = [3.87, 14.5, 14.0]
     bars(ax, labels, values, [TS_GREEN, TS_GREEN, SIA_BLUE],
          lambda v: f"{v:.1f}×", hatches=[False, True, False])
+    fig.tight_layout()
     annotate(ax, "Frozen DeepSeek-v4-pro: 3.87× measured on a 3080 Ti (fair fp32 baseline, rel-err 7e-3).\n"
                  "H100 estimate ~14–15× (compute-bound throughput scaling) ≈ SIA's 14× — re-bench is a TODO.")
-    fig.tight_layout()
     out = os.path.join(CHARTS, "trimul_headtohead.png")
     fig.savefig(out); plt.close(fig)
     print("wrote", out)
@@ -92,10 +98,10 @@ def chart_scrna():
     values = [0.0, 0.289, 0.220]
     bars(ax, labels, values, [PLACEHOLDER, SIA_BLUE, SOTA_GREY], lambda v: f"{v:.3f}",
          placeholders=[True, False, False], hatches=[True, False, False])
+    fig.tight_layout()
     annotate(ax, "TerranSoul DID run a real frozen-actor denoiser (DeepSeek-v4-pro; PBMC3k, molecular-CV):\n"
                  "raw MSE 0.046 (+35.0% vs no-denoise; 12B +23.2% → Opus +34.6% → DeepSeek +35.0%).\n"
                  "Not on SIA's OpenProblems NORMALIZED scale — no comparable bar drawn.")
-    fig.tight_layout()
     out = os.path.join(CHARTS, "scrna_denoising_headtohead.png")
     fig.savefig(out); plt.close(fig)
     print("wrote", out)
@@ -111,10 +117,10 @@ def chart_mlebench():
     bars(ax, labels, values, [PLACEHOLDER, SIA_BLUE],
          lambda v: "#1" if v >= 1 else "", placeholders=[True, False], hatches=[True, False])
     ax.set_yticks([])
+    fig.tight_layout()
     annotate(ax, "TerranSoul not run: requires the MLE-Bench harness + Kaggle credentials,\n"
                  "tens of GB of competition data, and multi-hour containerized GPU runs.\n"
                  "(Docker is present; the Kaggle data/harness/compute budget is not.)")
-    fig.tight_layout()
     out = os.path.join(CHARTS, "mlebench_headtohead.png")
     fig.savefig(out); plt.close(fig)
     print("wrote", out)
@@ -129,9 +135,9 @@ def chart_answer_quality():
     values = [9.82, 9.55, 8.36, 8.24, 6.90]
     colors = [TS_GREEN, SIA_BLUE, SOTA_GREY, "#b0a6d4", SOTA_GREY]
     bars(ax, labels, values, colors, lambda v: f"{v:.2f}")
+    fig.tight_layout()
     annotate(ax, "Same gemma4:12b model, context and judge across the local rows; Claude Code = cloud frontier ref ($5.94).\n"
                  "TerranSoul scores highest (9.82) and is fastest (~1.0 s/answer), for $0.")
-    fig.tight_layout()
     out = os.path.join(CHARTS, "answer_quality_headtohead.png")
     fig.savefig(out)
     plt.close(fig)
@@ -147,9 +153,9 @@ def chart_zork():
     values = [0.0, 0.0, 15.0]
     bars(ax, labels, values, [LIGHT_GREY, LIGHT_GREY, TS_GREEN],
          lambda v: "0" if v == 0 else "10–20")
+    fig.tight_layout()
     annotate(ax, "Both controls stay at 0; external memory + cross-episode reflection lifts the same frozen\n"
                  "4B model to 10–20, reaching rooms it never visited — no weight edits.")
-    fig.tight_layout()
     out = os.path.join(CHARTS, "zork_selfimprove.png")
     fig.savefig(out)
     plt.close(fig)
