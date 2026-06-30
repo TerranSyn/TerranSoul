@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Inside the TerranSoul Brain — how an LLM gets memory, recall and skill</title>
-<meta name="description" content="A plain-language tour of the TerranSoul brain: an LLM core wrapped in brain-region modules — focus, memory, recall, graph, affect, skills — reached over one MCP nerve. Three-tier memory, four cognitive axes, hybrid multi-signal recall, local-or-cloud brain modes, a self-improvement loop, the twenty-one BCF cognitive faculties (including insight, creativity, cognitive control and governed self-evolving memory) mapped to real brain regions, refreshed against the freshest-2026 research frontier, per-turn adaptive thinking modes, a never-forget deep-research retrieval tier, a consolidated sharded database design, and generic patterns adopted from rival agent systems." />
+<meta name="description" content="A plain-language tour of the TerranSoul brain: an LLM core wrapped in brain-region modules — focus, memory, recall, graph, affect, skills — reached over one MCP nerve. Three-tier memory, four cognitive axes, hybrid multi-signal recall, local-or-cloud brain modes, a self-improvement loop, the twenty-one BCF cognitive faculties (including insight, creativity, cognitive control and governed self-evolving memory) mapped to real brain regions, refreshed against the freshest-2026 research frontier, per-turn adaptive thinking modes, an optional deep-research coverage mode (exhaustive cited answers), a consolidated sharded database design, and generic patterns adopted from rival agent systems." />
 <link rel="canonical" href="https://terransyn.github.io/TerranSoul/brain-advanced-design/" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -491,7 +491,7 @@
     </ul>
     <p>Their separate rankings are blended into one, then a final pass reorders the survivors for genuine relevance. The result reads as a single, confident answer — but it's a consensus of several independent opinions, which is exactly why it's hard to fool.</p>
     <p>There is one more pass after the rerank: a <strong>set-level bias audit</strong> (the <a href="#faculties">BCF-15 faculty</a>) inspects the whole short list for statistical skew — one source over-represented, everything clustered in a single recent window, near-duplicate dominance, or members that contradict each other — and gently <em>down-weights</em> a skewed set before it ever reaches the model. Hybrid recall checks not just <em>which</em> memories surfaced, but whether the <em>set as a whole</em> is balanced.</p>
-    <p>And when a question must not miss anything, this same recall escalates into a <a href="#deep-research">never-forget deep tier</a> that keeps pulling, critiques its own coverage and follows the graph until nothing relevant is left unread.</p>
+    <p>For research and agent turns, this recall also feeds an optional <a href="#deep-research">deep-research answer-mode</a> that loops — critiquing its own coverage and following the knowledge graph — to assemble thoroughly-cited answers. It widens answer coverage, not retrieval: at production cutoffs its candidate set is the same one this single pass already returns.</p>
     <div class="callout"><strong>The value proposition, not the recipe.</strong> The strength is the <em>fusion of multiple signals</em>, plus a final fairness check on the set. We name the signals on purpose and stop there — the exact way they're weighed and combined is deliberately not part of this page.</div>
   </section>
 
@@ -579,11 +579,11 @@
     <div class="callout"><strong>Auto by default, yours to pin.</strong> Left on <em>auto</em>, a per-turn router reads the request and the recent conversation and resolves the mode — so effort and harness scale with the task instead of being fixed. Choose any mode by hand and it stays put. This is the same executive sizing the brain map shows in the <em>Focus</em> region, now choosing not just <em>how much</em> to think but <em>how</em>.</div>
   </section>
 
-  <!-- ========== NEVER-FORGET DEEP RESEARCH ========== -->
+  <!-- ========== DEEP RESEARCH (COVERAGE MODE) ========== -->
   <section id="deep-research">
-    <div class="sec-num">07 · Never-forget deep research</div>
-    <h2>When nothing may be <span class="accent">left unread</span></h2>
-    <p class="lede">Ordinary recall returns a short, confident list — fast, and right for almost every turn. But some questions can't tolerate a miss. For those, the research and deep modes engage a <strong>never-forget</strong> tier: instead of one retrieval pass it keeps searching, keeps asking what it still hasn't seen, and follows the knowledge graph until the well runs dry — then spends its deepest thinking on a fully-cited answer.</p>
+    <div class="sec-num">07 · Deep research mode</div>
+    <h2>Exhaustive, <span class="accent">fully-cited answers</span></h2>
+    <p class="lede">Most turns are well served by a single recall pass and a short, confident answer. For research and agent work, the <strong>research</strong> and <strong>deep</strong> modes can instead engage an optional <strong>deep-research answer-mode</strong>: it loops — retrieve, ask a completeness critic what the answer still hasn't covered, follow knowledge-graph edges, re-query — then spend its deepest thinking on a thoroughly-cited synthesis. The point is <em>coverage and answer quality</em>, not more recall.</p>
 
     <figure>
       <svg viewBox="0 0 720 250" role="img" aria-label="An exhaustive loop: retrieve, then a completeness critic asks what is still missing, expand along graph edges, re-query, and once coverage is saturated synthesise a fully cited answer.">
@@ -605,13 +605,13 @@
     </figure>
 
     <ul class="clean">
-      <li><strong>Retrieve exhaustively.</strong> Each frontier query runs the full multi-signal recall with a graph-edge bridge, not a single pass.</li>
+      <li><strong>Retrieve per sub-question.</strong> Each critic-generated frontier query runs the same multi-signal recall with a graph-edge bridge — the loop widens the set of <em>questions asked</em>, it does not re-rank or deepen any single query's retrieval.</li>
       <li><strong>Critique coverage.</strong> A completeness critic asks the brain <em>"what relevant memory did I not surface?"</em> over everything seen so far, and re-queues the still-missing aspects.</li>
       <li><strong>Expand along the graph.</strong> The top results seed a walk over knowledge-graph edges, pulling in linked-but-unsurfaced memories and chaining across rounds.</li>
       <li><strong>Stop only when dry.</strong> The loop ends when coverage is saturated, gains flatten, the frontier empties, or a generous round cap is hit — every bound a brain-seeded setting, none hardcoded.</li>
       <li><strong>Synthesise with citations.</strong> The final answer is forced through the deepest thinking tier with full source context and rendered with <code>[n]</code> markers and a sources list — and the findings flow back into memory so the next deep pass starts further ahead.</li>
     </ul>
-    <div class="callout"><strong>The guarantee is coverage, not speed.</strong> This tier is reserved for the questions that ask for it — research and deep modes — precisely because it trades latency for the promise that nothing durable bearing on the answer goes unread.</div>
+    <div class="callout"><strong>An answer-mode, not a recall benchmark.</strong> This tier trades latency for coverage and citation quality on research and agent turns. It is <em>not</em> a retrieval-recall improvement: because critic and edge hits are appended after the first round's citations without re-ranking, at the production recall depth (50) and a typical top-k (≤20) its candidate set is identical to the single-shot path — it can only change results at ranks beyond that depth, a regime production never reads. Reach for it when you need thorough, fully-cited answers, not to surface memories ordinary recall would miss.</div>
   </section>
 
   <!-- ========== SELF-IMPROVEMENT LOOP ========== -->
