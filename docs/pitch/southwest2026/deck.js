@@ -216,6 +216,7 @@
         { label: 'OpenJarvis · 3.2 s', value: 9.6, kind: 'other' },
         { label: 'OpenClaw · 38.1 s', value: 8.4, kind: 'other' },
         { label: 'Claude Code+GENesis · 17.5 s', value: 8.2, kind: 'other' },
+        { label: 'Hermes · 10.9 s', value: 6.9, kind: 'other' },
       ],
     }));
 
