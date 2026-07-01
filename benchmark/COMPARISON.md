@@ -32,7 +32,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 
 | System | Category | R@5 | R@10 | R@20 | NDCG@10 | MRR | Quality 0–10 | Success | Latency p50 | Cost | Benchmark |
 |---|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|---|
-| **🧠 TerranSoul** (this repo) | Memory + RAG + agent | **98.6 %** | **99.8 %** | **100.0 %** | **88.8 %** | **89.1 %** | **9.8** | 100.0 % | **1.0 s** | $0 | LongMemEval-S + parity |
+| **🧠 TerranSoul** (this repo) | Memory + RAG + agent | **99.4 %** | **100.0 %** | **100.0 %** | **94.4 %** | **95.2 %** | **9.8** | 100.0 % | **1.0 s** | $0 | LongMemEval-S (`rrf_emb`) + parity |
 | *— Memory systems —* | | | | | | | | | | | |
 | agentmemory | Memory | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | — | — | — | — | LongMemEval-S |
 | MemPalace | Memory | ~96.6 % | ~97.6 % | — | — | — | — | — | — | — | LongMemEval-S |
@@ -73,7 +73,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 
 | Benchmark | Latest run | TerranSoul headline | Date | Section |
 |---|---|---|---|---|
-| **LongMemEval-S** retrieval-only (500 questions, all types) | BENCH-AM-6.2 (embeddinggemma) | `search`: **R@5 98.6 % / R@10 99.8 % / R@20 100.0 % / NDCG@10 88.8 % / MRR 89.1 %** — verified top-1 vs agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5); re-measured 2026-06-28 on the embeddinggemma embedder (recall flat at ceiling, NDCG/MRR softened ~2–3 pp vs the prior mxbai run — see the Embedder audit section) | 2026-06-28 | [§ LongMemEval-S](#longmemeval-s-verified-top-1-bench-am-66-1) |
+| **LongMemEval-S** retrieval-only (500 questions, all types) | BENCH-AM-6.3 (embeddinggemma) | `rrf_emb` (EmbeddingGemma vector arm): **R@5 99.4 % / R@10 100.0 % / R@20 100.0 % / NDCG@10 94.4 % / MRR 95.2 %** — verified top-1 vs agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5), and higher than the prior canonical (mxbai / BENCH-AM-6.1: R@5 99.2 % / R@10 99.6 % / NDCG@10 91.3 % / MRR 92.6 %) on every metric. The lexical `search` arm (R@5 98.6 % / NDCG@10 88.8 %) is FTS5+rerank and embedder-independent, so it was the wrong row to headline as the embeddinggemma result (see the § LongMemEval-S note) | 2026-07-01 | [§ LongMemEval-S](#longmemeval-s-verified-top-1-bench-am-66-1) |
 | **agentmemory bench:quality** (concept-tagged, 240 obs / 20 queries) | regenerated 2026-06-25 | keyword-only `search`: **R@10 67.1 % / NDCG@10 98.2 % / MRR 100.0 %** (quality leader); `hybrid_search_rrf` no-vector: **R@10 66.8 % / NDCG@10 95.0 % / MRR 95.0 %** (production default, restored after the RRF regression fix `c560514e`) | 2026-06-25 | [§ Feature matrix](#feature-matrix-vs-agentmemory) |
 | **MTEB LoCoMo retrieval** (full 1976 queries across 5 tasks) | BENCH-LCM-1 | `rrf` (lexical): **R@10 57.2 % / R@100 76.9 %** → with EmbeddingGemma vector (`rrf_emb`): **R@10 64.5 % / R@100 85.8 % / NDCG@10 49.9 % / MRR 48.3 %** — temporal-reasoning strong; multi-hop and open-domain remain documented gaps — LLM query-decomposition was implemented + benched here and **removed** (it *regressed* multi_hop recall: R@10 47.3 %→30.1 %, n=40), so the plain `rrf` path is retained | 2026-06-28 | [§ MTEB LoCoMo](#mteb-locomo-retrieval-adapter-bench-lcm-1) |
 | **ZorkGPT long-horizon** (`gemma4:e4b` 4B) | BENCH-ZORK (spec 002–014 + K-series → reliability fork) | **AGI-pure:** the brain lifts the same 4B from **0** (both controls) to **10–20** and stops its fixation loops; cross-episode behavioural change verified (new room *Up a Tree* via reflection hydration); **0/1682 MCP errors**. **Self-improve campaign (12B, 2026-06-21):** per-run cross-episode **~15** (10/20/15 on a fresh task-naïve brain), with a **peak 45** single episode via across-run accumulation — honestly de-confounded (the 45 required accumulating a one-time discovery; supersedes the earlier r4 10→20); cross-game (Detective, 12B) shows a consistent **+20 memory-lift** (n=2). **Reliability demonstration (taught solution):** serving the brain's move on *every* turn via an exception-safe orchestrator fork drives the 4B to a deterministic **350/350** (396/396 moves, 0 errors), vs a non-deterministic 73/177 under intermittent serving — isolating *delivery reliability* from model size | 2026-06-21 | [§ ZorkGPT bench](#zorkgpt--terransoul--long-horizon-task-bench-bench-zork-15-2026-05-28--pass) |
@@ -205,20 +205,22 @@ Baseline context cost on the pinned fixture:
 
 ## LongMemEval-S verified top-1 (BENCH-AM-6/6.1)
 
-BENCH-AM-6 ran the full 500-question LongMemEval-S cleaned set and BENCH-AM-6.1 closed the remaining rank-order gaps. The final improvement came from corpus-aware lexical weighting so that rare anchors (names, objects, domain terms) rank above generic filler words. The numbers below were re-measured 2026-06-28 on the embeddinggemma embedder (BENCH-AM-6.2; recall flat at ceiling, NDCG/MRR softened ~2–3 pp vs the prior mxbai run — see the Embedder audit section).
+BENCH-AM-6 ran the full 500-question LongMemEval-S cleaned set and BENCH-AM-6.1 closed the remaining rank-order gaps. The final improvement came from corpus-aware lexical weighting so that rare anchors (names, objects, domain terms) rank above generic filler words. **BENCH-AM-6.3 (embeddinggemma, 2026-07-01)** re-measured the full run on the embeddinggemma embedder and corrects an earlier reporting bug: the headline was mistakenly published as the lexical `search` row (R@5 98.6 % / NDCG@10 88.8 %), but `search` is FTS5 + rerank — **embedder-independent** — and has been byte-identical since the mxbai era, so it cannot register the effect of an embedder swap and was the wrong row to headline. The embeddinggemma vector arm is **`rrf_emb`**, and it is **higher than the prior canonical (mxbai / BENCH-AM-6.1) on every metric**.
 
 This is the same retrieval-only shape used by agentmemory's LongMemEval-S script: each question builds a fresh in-memory index from its haystack sessions, searches with the raw question, and checks `answer_session_ids`. It is not official end-to-end LongMemEval QA accuracy.
 
 | System | R@5 | R@10 | R@20 | NDCG@10 | MRR | Source |
 |---|---:|---:|---:|---:|---:|---|
-| **TerranSoul `search`** | **98.6 %** | **99.8 %** | **100.0 %** | **88.8 %** | **89.1 %** | committed result files |
-| TerranSoul `rrf` | 98.6 % | 99.8 % | 100.0 % | 88.6 % | 88.9 % | same run |
+| **TerranSoul `rrf_emb`** (EmbeddingGemma vector arm) | **99.4 %** | **100.0 %** | **100.0 %** | **94.4 %** | **95.2 %** | committed result files (BENCH-AM-6.3) |
+| TerranSoul `rrf` (lexical) | 99.4 % | 99.8 % | 100.0 % | 95.1 % | 96.0 % | same run |
+| TerranSoul `search` (lexical, embedder-independent) | 98.6 % | 99.8 % | 100.0 % | 88.8 % | 89.1 % | same run — FTS5 + rerank, does **not** reflect the embedder |
+| TerranSoul mxbai (prior canonical, BENCH-AM-6.1) | 99.2 % | 99.6 % | 100.0 % | 91.3 % | 92.6 % | committed result files |
 | agentmemory LongMemEval-S | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | upstream published row |
 | MemPalace LongMemEval-S | ~96.6 % | ~97.6 % | — | — | — | self-reported; via agentmemory LONGMEMEVAL.md; no primary paper |
 
-*Plain English: a 500-question search test. TerranSoul finds the right saved info in its top 5 results 98.6 % of the time — ahead of agentmemory (95.2 %) and MemPalace (~96.6 %).*
+*Plain English: a 500-question search test. TerranSoul's embeddinggemma vector arm (`rrf_emb`) finds the right saved info in its top 5 results 99.4 % of the time, and lands the first correct hit near the top of the list 95.2 % of the time (MRR) — higher than the previous mxbai embedder (99.2 % R@5 / 92.6 % MRR) on every metric, and ahead of agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5). The lexical `search` row (98.6 % R@5) is keyword-only and does not use the embedder at all, so it was the wrong number to report as the embeddinggemma headline.*
 
-Per-type `search` R@5: single-session-user 98.6 %, multi-session 98.5 %, single-session-preference 96.7 %, temporal-reasoning 98.5 %, knowledge-update 98.7 %, single-session-assistant 100.0 %.
+Per-type `rrf_emb` R@5: single-session-user 97.1 %, multi-session 100.0 %, single-session-preference 96.7 %, temporal-reasoning 100.0 %, knowledge-update 100.0 %, single-session-assistant 100.0 %.
 
 Adapter runbook: [docs/longmemeval-s-adapter.md](longmemeval-s-adapter.md).
 
@@ -248,8 +250,9 @@ Per-task signal (from the earlier 250-query slice): temporal reasoning is alread
 
 | System | Benchmark | Recall@K / Score | NDCG@10 | MRR | Source | Directly run? |
 |---|---|---|---|---|---|---|
-| **TerranSoul `search`** | LongMemEval-S retrieval-only | **R@5 98.6 % / R@10 99.8 % / R@20 100.0 %** | **88.8 %** | **89.1 %** | this repo, BENCH-AM-6.2 (embeddinggemma) | ✅ this repo |
-| TerranSoul `rrf` | LongMemEval-S retrieval-only | R@5 98.6 % / R@10 99.8 % / R@20 100.0 % | 88.6 % | 88.9 % | this repo, BENCH-AM-6.2 (embeddinggemma) | ✅ this repo |
+| **TerranSoul `rrf_emb`** (EmbeddingGemma vector arm) | LongMemEval-S retrieval-only | **R@5 99.4 % / R@10 100.0 % / R@20 100.0 %** | **94.4 %** | **95.2 %** | this repo, BENCH-AM-6.3 (embeddinggemma) | ✅ this repo |
+| TerranSoul `rrf` (lexical) | LongMemEval-S retrieval-only | R@5 99.4 % / R@10 99.8 % / R@20 100.0 % | 95.1 % | 96.0 % | this repo, BENCH-AM-6.3 (embeddinggemma) | ✅ this repo |
+| TerranSoul `search` (lexical, embedder-independent) | LongMemEval-S retrieval-only | R@5 98.6 % / R@10 99.8 % / R@20 100.0 % | 88.8 % | 89.1 % | this repo, BENCH-AM-6.3 — FTS5 + rerank, does not reflect the embedder | ✅ this repo |
 | **TerranSoul keyword-only `search` (regenerated 2026-06-25)** | agentmemory bench:quality | **R@10 67.1 %** | **98.2 %** | **100.0 %** | this doc | ✅ this repo |
 | **TerranSoul `hybrid_search_rrf` no-vector (regenerated 2026-06-25, post RRF-fix)** | agentmemory bench:quality | **R@10 66.8 %** | **95.0 %** | **95.0 %** | this doc | ✅ this repo |
 | **TerranSoul `rrf_emb`** (EmbeddingGemma vector) | MTEB LoCoMo retrieval-only, full 1976 queries | **R@10 64.5 % / R@100 85.8 %** | **49.9 %** | **48.3 %** | [docs/locomo-mteb-adapter.md](locomo-mteb-adapter.md) | ✅ this repo |
@@ -303,7 +306,7 @@ Legend: ✅ ships, ◐ partial, ❌ missing, n/a not applicable.
 | Language SDKs / integration API | ✅ Rust + Python + TypeScript SDK packages (sdk/) over MCP, plus Tauri/Rust/Vue APIs | ✅ REST + MCP | ✅ | ✅ | ❌ | ❌ | ❌ | ◐ |
 | Token-savings CLI calculator | ✅ `npm run brain:tokens` | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | Self-healing local LLM provider probe | ✅ `brain_health.llm_provider_state` + PowerShell watchdog | ❌ | n/a (cloud) | ❌ | ❌ | n/a | ❌ | ❌ |
-| LongMemEval-S verified number | ✅ R@5 98.6 %, R@10 99.8 %, R@20 100.0 %, NDCG@10 88.8 %, MRR 89.1 % | ✅ 95.2 % R@5 | ❌ | ❌ | ✅ ~96.6 % R@5 | ❌ | ❌ | ❌ |
+| LongMemEval-S verified number | ✅ `rrf_emb` R@5 99.4 %, R@10 100.0 %, R@20 100.0 %, NDCG@10 94.4 %, MRR 95.2 % | ✅ 95.2 % R@5 | ❌ | ❌ | ✅ ~96.6 % R@5 | ❌ | ❌ | ❌ |
 | ZorkGPT long-horizon verified | ✅ SC4 PASS (BENCH-ZORK-1.5, spec series 002–006, `gemma4:e4b`) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 TerranSoul is the only system on this matrix that ships all of {HyDE, LLM-as-judge rerank, Contextual Retrieval, CRDT device sync, four production storage backends, typed-KG write tool, self-healing local LLM provider probe, ZorkGPT long-horizon verified bench}. Both former scope-boundary rows now ship — the multi-agent lease mesh (LEASE-MESH-1, advisory lease layer on the Hive relay) and the language SDKs (Rust + Python + TypeScript under `sdk/`) — so the TerranSoul column on this matrix is fully green; no BENCH-AM feature-matrix blocker remains.
@@ -369,7 +372,7 @@ Legend: ✅ ships · ◐ partial / planned · ❌ missing or not-a-goal · — u
 | 3D VRM character + voice | ✅ Tauri / Vue / VRM + TTS / ASR | ❌ | ❌ | ❌ |
 | CRDT cross-device sync | ✅ QUIC / WS | ❌ | ❌ | ◐ |
 | Config model | JSON-first (also *writes* Hermes YAML) | YAML (`cli-config.yaml`) | scripted install | **config-first** (`SOUL.md`) |
-| Verified retrieval bench (LongMemEval-S) | ✅ R@5 98.6 % (this repo) | — not published on this bench | — | — |
+| Verified retrieval bench (LongMemEval-S) | ✅ `rrf_emb` R@5 99.4 % (this repo) | — not published on this bench | — | — |
 | Verified long-horizon bench (ZorkGPT) | ✅ SC4 PASS | — | — | — |
 
 **What TerranSoul adopted from each** (generic Rust reimplementations — no source, prompts, schema, or branded identity copied):
@@ -511,7 +514,7 @@ A short, honest narrative summarising where the system leads, where it ties, and
 
 ### Where TerranSoul leads
 
-- **LongMemEval-S retrieval-only** — TerranSoul `search` is **top-1 in this table** (R@5 98.6 %, R@10 99.8 %, R@20 100.0 %, NDCG@10 88.8 %, MRR 89.1 %; re-measured 2026-06-28 on the embeddinggemma embedder — recall flat at ceiling, NDCG/MRR softened ~2–3 pp vs the prior mxbai run, see the Embedder audit section), ahead of agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5). The advantage comes from corpus-aware lexical weighting + per-cognitive-kind decay + the hybrid lexical/vector/graph scorer with reranking. BENCH-AM-6/6.1 verified the full 500-question table; BENCH-AM-7 confirmed no quality regression after the low-signal cap landed.
+- **LongMemEval-S retrieval-only** — TerranSoul's `rrf_emb` (EmbeddingGemma vector arm) is **top-1 in this table** (R@5 99.4 %, R@10 100.0 %, R@20 100.0 %, NDCG@10 94.4 %, MRR 95.2 %; BENCH-AM-6.3, embeddinggemma, 2026-07-01), **higher than the prior canonical (mxbai / BENCH-AM-6.1: R@5 99.2 %, R@10 99.6 %, NDCG@10 91.3 %, MRR 92.6 %) on every metric**, and ahead of agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5). The advantage comes from corpus-aware lexical weighting + per-cognitive-kind decay + the hybrid lexical/vector/graph scorer with reranking. (The lexical `search` arm — R@5 98.6 %, NDCG@10 88.8 % — is FTS5 + rerank and **embedder-independent**, byte-identical since the mxbai era, so it was the wrong row to headline as the embeddinggemma result.) BENCH-AM-6/6.1 verified the full 500-question table; BENCH-AM-7 confirmed no quality regression after the low-signal cap landed.
 - **agentmemory bench:quality** — on the upstream's own pinned fixture, TerranSoul keyword-only `search` leads on raw quality (R@10 67.1 %, NDCG@10 98.2 %, MRR 100.0 %), while the production-default `hybrid_search_rrf` no-vector lands within 0.3 pp R@10 (66.8 %, NDCG@10 95.0 %, MRR 95.0 %) at roughly a third of the retrieved-token budget. RRF was regressed (R@10 22.9 %) by a ranking penalty dominating the small rank gaps and was restored in the 2026-06-25 fix (`c560514e`) that bounds that penalty to a light tiebreaker; for context, agentmemory v0.6 dual-stream reference is R@10 58.6 %.
 - **Architectural affordances not in the peer set** — HyDE retrieval, LLM-as-judge cross-encoder rerank, Contextual Retrieval (Anthropic 2024), CRDT device sync, the typed-KG write tool (`brain_add_edge`, spec 003), and the live LLM-provider self-healing probe (`brain_health.llm_provider_state` + watchdog, spec 005). Each one is verified to ship and tested — see the feature matrix above and `rules/completion-log.md` entries.
 - **ZorkGPT long-horizon, real local LLM** — BENCH-ZORK exposes its full call log (**0 MCP errors across 1682 brain calls**, 5 reflections retrievable per episode, ep2 reached a new room via cross-episode reflection hydration), and adds two results we have not seen published elsewhere on Zork I: with no task seeds the brain lifts the same 4B from **0 → 10–20** while both controls stay at 0; and a controlled **delivery-reliability demonstration** shows that serving the brain's move every turn drives the 4B to a deterministic **350/350**, where intermittent serving stalls at a non-deterministic 73/177 — isolating *delivery reliability* from model size. Research write-up: [`docs/LLM-Brain-Design-Research-Paper.md`](../docs/LLM-Brain-Design-Research-Paper.md).

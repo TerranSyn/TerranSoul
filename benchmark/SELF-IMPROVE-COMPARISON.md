@@ -61,12 +61,12 @@ The frozen actor is **swappable** — re-running the *same* loop (memory + itera
 
 > What TerranSoul measures and SIA cannot — SIA ships no memory / retrieval subsystem.
 
-<p align="center"><img src="charts/terransoul_memory_recall.png" alt="LongMemEval-S recall R@5 98.6%, R@10 99.8%, R@20 100%" width="720"><br>
+<p align="center"><img src="charts/terransoul_memory_recall.png" alt="LongMemEval-S recall R@5 99.4%, R@10 100%, R@20 100% (NDCG@10 94.4, MRR 95.2)" width="720"><br>
 <i>TerranSoul's LongMemEval-S retrieval recall — the memory axis SIA has no analog for.</i></p>
 
 | Benchmark | TerranSoul | SIA |
 |---|--:|---|
-| LongMemEval-S R@5 / R@10 / R@20 | **98.6 % / 99.8 % / 100 %** | — (no memory) |
+| LongMemEval-S R@5 / R@10 / R@20 | **99.4 % / 100 % / 100 %** (NDCG@10 94.4 · MRR 95.2) | — (no memory) |
 | Zork cross-episode (frozen 4B) | **0 → 10–20** | — |
 | Personal-AI parity (quality · latency · cost) | **9.8/10 · 1.0 s · $0** | — |
 

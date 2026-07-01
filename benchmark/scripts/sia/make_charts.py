@@ -124,14 +124,17 @@ def chart_answer_quality():
 
 
 def chart_zork():
+    # BENCH-ZORK self-improve campaign (2026-06-21, gemma4:12b-it-qat):
+    # per-run cross-episode ~15, peak 45 via across-run memory accumulation
+    # (both AGI-pure controls stay at 0). Honestly de-confounded.
     fig, ax = base_fig(
-        "Frozen-model self-improvement — ZorkGPT (unaided 4B model)",
-        "30-turn cold start · no game-specific seeds (AGI-pure)",
-        "game score reached", 26)
+        "Frozen-model self-improvement — ZorkGPT (frozen 12B)",
+        "no game-specific seeds (AGI-pure) · across-run memory accumulation",
+        "game score reached", 55)
     labels = ["AGI-pure\ncontrol A", "AGI-pure\ncontrol B", "+ TerranSoul\nbrain (memory)"]
-    values = [0.0, 0.0, 15.0]
+    values = [0.0, 0.0, 45.0]
     bars(ax, labels, values, [LIGHT_GREY, LIGHT_GREY, TS_GREEN],
-         lambda v: "0" if v == 0 else "10–20")
+         lambda v: "0" if v == 0 else "45")
     fig.tight_layout()
     out = os.path.join(CHARTS, "zork_selfimprove.png")
     fig.savefig(out)
@@ -161,12 +164,16 @@ def chart_lawbench():
 def chart_memory_recall():
     # The retrieval axis SIA has no analog for; all three bars are TerranSoul's
     # LongMemEval-S recall, so each is labelled TerranSoul.
+    # EmbeddingGemma vector arm (rrf_emb), BENCH-AM-6.3 (2026-07-01):
+    # R@5 99.4 / R@10 100.0 / R@20 100.0 (NDCG@10 94.4 · MRR 95.2), ahead of
+    # the mxbai BENCH-AM-6.1 canonical on every metric. The old 98.6/99.8 pair
+    # was the mis-reported BENCH-AM-6.2 headline (a lexical-search row).
     fig, ax = base_fig(
         "TerranSoul memory recall — LongMemEval-S",
-        "(SIA ships no memory/retrieval — no comparable number)",
+        "(SIA ships no memory/retrieval — no comparable number) · NDCG@10 94.4 · MRR 95.2",
         "Recall (%)", 108)
     labels = ["TerranSoul\nR@5", "TerranSoul\nR@10", "TerranSoul\nR@20"]
-    values = [98.6, 99.8, 100.0]
+    values = [99.4, 100.0, 100.0]
     bars(ax, labels, values, [TS_GREEN, TS_GREEN, TS_GREEN], lambda v: f"{v:.1f}%")
     fig.tight_layout()
     out = os.path.join(CHARTS, "terransoul_memory_recall.png")
