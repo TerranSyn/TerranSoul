@@ -175,20 +175,32 @@
     //    LongMemEval-S — honest "—" rather than invented NDCG/MRR/R@10.
     grid.appendChild(memoryGroupChart());
 
-    // 3. TerranSoul playing Zork 1 — the local 12B self-play (alone and with the
-    //    brain), plus a separate reliability demo: a smaller 4B taught a fixed
-    //    walkthrough distilled from a stronger model (Opus 4.8), then served that
-    //    taught move every turn (max 350; not the 12B, not autonomous learning).
+    // 3a. TerranSoul playing Zork 1 autonomously — local-12B self-play, alone
+    //     and with the brain. Both bars are the same protocol (genuine
+    //     autonomous decision-making), so the bar-length comparison is
+    //     apples-to-apples.
     grid.appendChild(barChart({
       span: 4,
-      title: 'TerranSoul on Zork 1',
-      sub: 'Zork score (max 350) · local-12B self-play, plus a taught-solution replay demo (4B)',
+      title: 'TerranSoul on Zork 1 — self-play',
+      sub: 'Zork score (max 350) · local 12B, autonomous decision-making',
       unit: '', max: 350,
       bars: [
-        { label: '4B, taught replay (Opus 4.8 demo)', value: 350, kind: 'ts', display: '350/350' },
         { label: '12B + brain (self-play peak)', value: 50, kind: 'ts', display: '50' },
         { label: '12B, no brain', value: 11.7, kind: 'other', display: '11.7' },
       ],
+    }));
+
+    // 3b. A separate reliability demo — NOT autonomous self-play, so it is
+    //     never drawn as a bar on the self-play axis above: a smaller 4B
+    //     model taught a fixed walkthrough distilled from a stronger model
+    //     (Opus 4.8), then served that taught move every turn. Rendered as a
+    //     distinct stat tile (dashed border + badge) so it can't be read as
+    //     "winning" the self-play comparison it isn't part of.
+    grid.appendChild(statTile({
+      span: 4,
+      title: 'Delivery-reliability demo',
+      value: '350/350',
+      caption: '4B, taught replay of an Opus 4.8-distilled walkthrough — scripted replay, not self-play or autonomous learning.',
     }));
 
     // 4. Self-improving agents — personal-AI head-to-head (answer quality 0–10).
@@ -276,7 +288,10 @@
       + '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Memory systems LongMemEval-S comparison">'
       + '<defs><linearGradient id="gradTSg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFC000"/><stop offset="100%" stop-color="#F4C77E"/></linearGradient></defs>'
       + legend + s + '</svg>'
-      + '<div class="mem-note">MemPalace publishes R@5 / R@10 only on this benchmark.</div>';
+      + '<div class="mem-note">MemPalace publishes R@5 / R@10 only on this benchmark.</div>'
+      + '<div class="mem-note mem-caveat">TerranSoul bars are the committed BENCH-AM-6.3 baseline (2026-07-01). '
+      + 'An open, tracked RRF-fusion regression currently reproduces lower — R@5 98.4% / R@10 99.6% / NDCG@10 91.1% / MRR 91.7% '
+      + '— see benchmark/results/longmemeval_s_terransoul.md.</div>';
     return wrap;
   }
 
@@ -326,6 +341,24 @@
     });
 
     wrap.appendChild(svg);
+    return wrap;
+  }
+
+  // Render a "stat tile" — a single big number + caption, for figures that
+  // must NOT be visually compared against the bar charts sitting next to
+  // them (e.g. a scripted/taught demo shown beside autonomous self-play
+  // results). It shares the .chart card shell for grid alignment but adds a
+  // distinct badge + dashed border and has no axis/bars of its own, so it
+  // can never read as "winning" a comparison it isn't part of.
+  function statTile(opts) {
+    const { title, value, caption, span = 4 } = opts;
+    const wrap = document.createElement('div');
+    wrap.className = 'chart chart--span-' + span + ' stat-tile';
+    wrap.innerHTML =
+      '<h3>' + esc(title) + '</h3>'
+      + '<span class="stat-tile-badge">scripted replay demo — not self-play</span>'
+      + '<div class="stat-tile-value">' + esc(value) + '</div>'
+      + '<div class="stat-tile-caption">' + esc(caption) + '</div>';
     return wrap;
   }
 

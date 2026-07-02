@@ -76,7 +76,17 @@ def chart_trimul():
 
 
 def chart_scrna():
-    d = load("scrna_denoising_terransoul.json")
+    # TerranSoul DID run a real frozen-actor denoiser here -- raw MSE 0.046
+    # (+35.0% vs no-denoise, DeepSeek-v4-pro actor; ladder 12B +23.2% ->
+    # Opus +34.6% -> DeepSeek +35.0%). See results/sia/scrna_deepseek.json
+    # and scrna_denoising_terransoul.json for the measured runs. That raw,
+    # lower-is-better MSE is intentionally NOT plotted on this axis: SIA's
+    # 0.289/0.220 are OpenProblems min-max NORMALIZED scores (higher =
+    # better) on a different scale, so plotting the raw number here would
+    # misleadingly imply a literal head-to-head. The TerranSoul bar stays an
+    # honest "n/a" placeholder -- the real, differently-scaled number is
+    # reported in SELF-IMPROVE-COMPARISON.md / README.md prose, not as a bar
+    # on this chart.
     fig, ax = base_fig(
         "scRNA-seq denoising — MSEnorm (higher = better)",
         "single-cell RNA expression imputation",
