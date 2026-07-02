@@ -191,22 +191,22 @@
       ],
     }));
 
-    // 4. RAG frameworks — agentmemory corpus, R@10. RAGFlow/LangChain/LlamaIndex
-    //    share the same corpus + embedder (nomic-embed-text); TerranSoul's hybrid
-    //    RRF, Obsidian's agentic-grep+LLM-rerank, and Hermes-Agent's FTS5+Jaccard
-    //    are non-vector retrieval, so they are not on the shared-embedder set.
+    // 4. RAG systems only — agentmemory corpus, R@10. RAGFlow/LangChain/
+    //    LlamaIndex/Mem0 share the same corpus + embedder (nomic-embed-text,
+    //    Mem0 measured verbatim infer=False over Chroma, commit b045eb03);
+    //    TerranSoul's hybrid RRF is non-vector retrieval on the same corpus.
+    //    Non-RAG retrievers (agentic grep, FTS5+Jaccard) are out of scope here.
     grid.appendChild(barChart({
       span: 4,
-      title: 'Retrieval — agentmemory corpus',
-      sub: 'Recall@10 · higher is better · mixed retrieval methods, not all share an embedder',
+      title: 'RAG retrieval — agentmemory corpus',
+      sub: 'Recall@10 · higher is better · same corpus; frameworks share nomic-embed-text, TerranSoul is hybrid RRF',
       unit: '%', max: 100,
       bars: [
-        { label: 'TerranSoul (hybrid)', value: 66.8, kind: 'ts' },
+        { label: 'TerranSoul (hybrid RRF)', value: 66.8, kind: 'ts' },
+        { label: 'Mem0', value: 61.0, kind: 'other' },
         { label: 'RAGFlow', value: 60.8, kind: 'other' },
         { label: 'LangChain', value: 60.8, kind: 'other' },
         { label: 'LlamaIndex', value: 57.8, kind: 'other' },
-        { label: 'Obsidian', value: 53.8, kind: 'other' },
-        { label: 'Hermes-Agent', value: 15.8, kind: 'other' },
       ],
     }));
 
