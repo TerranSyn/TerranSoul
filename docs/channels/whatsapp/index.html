@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WhatsApp Channel — TerranSoul</title>
+<meta name="description" content="Connect TerranSoul to WhatsApp via a Baileys sidecar and QR-code device pairing — no WhatsApp Business API account needed." />
+<link rel="canonical" href="https://terransyn.github.io/TerranSoul/channels/whatsapp/" />
+<style>
+  :root{--bg:#0d0d1a;--card:#16162a;--ink:#e8e6f0;--soft:#a9a6c0;--faint:#6f6c88;--accent:#8b7cff;--rule:#2a2942;--good:#5fd38d;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(160deg,#1a1028,#0d0d1a);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.6}
+  a{color:var(--accent)}
+  .topbar{position:sticky;top:0;background:rgba(13,13,26,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);z-index:10}
+  .topbar-in{max-width:960px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:14px;font-size:14px}
+  .brand{font-weight:600;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .brand .mark{width:10px;height:10px;border-radius:3px;background:var(--accent)}
+  .crumbs{color:var(--faint);font-family:var(--mono);font-size:12px}
+  .spacer{flex:1}
+  .topbar a.lnk{color:var(--soft);text-decoration:none;font-size:13px}.topbar a.lnk:hover{color:var(--ink)}
+  main{max-width:820px;margin:0 auto;padding:40px 24px 80px}
+  h1{font-size:32px;margin:0 0 6px;letter-spacing:-.01em}
+  h2{font-size:21px;margin:38px 0 10px;letter-spacing:-.01em}
+  .sub{color:var(--soft);margin:0 0 28px;max-width:70ch}
+  p{margin:0 0 14px;max-width:70ch}
+  ul,ol{margin:0 0 16px;padding-left:22px;max-width:70ch}
+  li{margin:0 0 6px}
+  code{font-family:var(--mono);background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px;font-size:.92em}
+  pre{background:#0a0a16;border:1px solid var(--rule);border-radius:8px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.55}
+  pre code{background:none;padding:0}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0 28px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule)}
+  th{color:var(--faint);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  .note{background:rgba(139,124,255,.08);border:1px solid rgba(139,124,255,.35);border-radius:10px;padding:14px 16px;margin:0 0 20px;font-size:13.5px;color:var(--soft);max-width:70ch}
+  .note b{color:var(--ink)}
+  footer{max-width:820px;margin:0 auto;padding:24px;border-top:1px solid var(--rule);color:var(--faint);font-size:13px;display:flex;gap:18px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<!-- ts-site-nav: shared docs-site dropdown. The SAME block lives on every
+     docs page (only the relative prefix differs) so every page can reach
+     every other page — keep the link list in sync across pages. -->
+<details class="ts-site-nav">
+  <summary>&#9776; Site</summary>
+  <nav>
+    <a href="../../">Docs home</a>
+    <a href="../../getting-started/">Getting started</a>
+    <a href="../../install/" class="sub">Installing TerranSoul</a>
+    <a href="../../brain-architecture/">Brain architecture</a>
+    <a href="../../brain-advanced-design/">Brain advanced design</a>
+    <a href="../../goals-automation/" class="sub">Goals &amp; automation</a>
+    <a href="../../LLM-Brain-Design-Research-Paper/">Research paper</a>
+    <a href="../../channels/">Channels</a>
+    <a href="../../channels/telegram/" class="sub">&mdash; Telegram</a>
+    <a href="../../channels/discord/" class="sub">&mdash; Discord</a>
+    <a href="../../channels/slack/" class="sub">&mdash; Slack</a>
+    <a href="../../channels/whatsapp/" class="sub">&mdash; WhatsApp</a>
+    <a href="../../marketplace/">Marketplace</a>
+    <a href="../../mcp-integration/">MCP integration</a>
+    <a href="../../agentic-coding/" class="sub">Agentic coding</a>
+    <a href="../../zorkgpt/">ZorkGPT bench</a>
+    <a href="../../zorkgpt/claude-opus-4.8/" class="sub">&mdash; Opus 4.8 run</a>
+    <a href="../../zorkgpt/taughtLocalLLM/" class="sub">&mdash; TaughtLocalLLM run</a>
+    <a href="../../help/faq.html">FAQ &amp; troubleshooting</a>
+    <a href="../../releases/">What's shipped</a>
+    <a href="https://github.com/TerranSyn/TerranSoul">GitHub &#8599;</a>
+  </nav>
+</details>
+<style>
+.ts-site-nav{position:fixed;top:10px;right:12px;z-index:2147483000;font:13px/1.45 system-ui,"Segoe UI",sans-serif}
+.ts-site-nav summary{list-style:none;cursor:pointer;user-select:none;background:rgba(17,19,28,.92);color:#e7e9f0;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px)}
+.ts-site-nav summary::-webkit-details-marker{display:none}
+.ts-site-nav[open] summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.ts-site-nav nav{position:absolute;right:0;min-width:230px;max-height:80vh;overflow-y:auto;display:flex;flex-direction:column;background:rgba(17,19,28,.96);border:1px solid rgba(255,255,255,.18);border-radius:10px 0 10px 10px;overflow-x:hidden;box-shadow:0 8px 28px rgba(0,0,0,.45)}
+.ts-site-nav nav a{color:#e7e9f0;text-decoration:none;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ts-site-nav nav a:last-child{border-bottom:0}
+.ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
+.ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+</style>
+
+<div class="topbar"><div class="topbar-in">
+  <a class="brand" href="../../"><span class="mark"></span> TerranSoul</a>
+  <span class="crumbs">/ Channels / WhatsApp</span>
+  <span class="spacer"></span>
+  <a class="lnk" href="../">← All channels</a>
+</div></div>
+
+<main>
+  <h1>WhatsApp</h1>
+  <p class="sub">The odd one out — instead of a REST/WebSocket API, WhatsApp is driven through a sidecar process speaking the Baileys/WhatsApp Web protocol, paired to your account by scanning a QR code. No WhatsApp Business API account required.</p>
+
+  <h2>Status &amp; capabilities</h2>
+  <p>Bidirectional, push-model, sidecar-process-backed. There's no bot token in the usual sense: WhatsApp Web pairing is per-device, so the "token" field in the credential vault is repurposed to carry a device label instead of a secret string — the actual pairing state (Baileys' multi-file auth) lives on disk under <code>&lt;data-dir&gt;/whatsapp-auth/&lt;label&gt;</code>, one directory per paired device. It's still routed through the same AES-256-GCM credential vault as every other channel, since losing that auth directory is equivalent to losing control of a bot token.</p>
+
+  <h2>Auth setup</h2>
+  <ol>
+    <li>Save a device label and default destination (a WhatsApp JID, not a phone number by itself) into the credential vault:</li>
+  </ol>
+  <pre><code>channel_save_credential(
+  channel: "whatsapp",
+  json_str: '{"token": "&lt;device label, e.g. my-terransoul&gt;", "chat_id": "&lt;jid, e.g. 15551234567@s.whatsapp.net&gt;"}'
+)</code></pre>
+  <ol start="2">
+    <li>Flip <code>channels.whatsapp.enabled</code> to <code>true</code>. The sidecar supervisor starts on the next host tick.</li>
+    <li>Watch the sidecar's log output for a QR code, and scan it from WhatsApp on your phone: <b>Settings → Linked Devices → Link a Device</b>. This is the same pairing flow WhatsApp Web itself uses.</li>
+    <li>Once paired, the auth state persists on disk — you shouldn't need to re-scan unless you unlink the device from your phone or delete the auth directory.</li>
+  </ol>
+
+  <h2>Config</h2>
+  <table>
+    <tr><th>Key</th><th>Meaning</th></tr>
+    <tr><td><code>channels.whatsapp.enabled</code></td><td>Must be <code>true</code> for the sidecar supervisor to start.</td></tr>
+  </table>
+
+  <h2>Troubleshooting</h2>
+  <ul>
+    <li><b>"channel not configured: pair a device first"</b> — no device label saved yet, or the channel isn't enabled.</li>
+    <li><b>QR code never appears</b> — check the sidecar process actually started (enable the channel, then watch the logs); it only prints a QR when it needs a fresh pairing.</li>
+    <li><b>Paired but sends fail</b> — the destination JID format matters (<code>&lt;number&gt;@s.whatsapp.net</code> for a person, <code>&lt;id&gt;@g.us</code> for a group); a bare phone number will not resolve.</li>
+  </ul>
+</main>
+
+<footer>
+  <a href="../">← All channels</a>
+  <a href="https://github.com/TerranSyn/TerranSoulApp/blob/main/src-tauri/src/channels/whatsapp.rs">Source (whatsapp.rs)</a>
+  <span class="spacer"></span><span>CP-3</span>
+</footer>
+</body>
+</html>
