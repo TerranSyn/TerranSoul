@@ -166,7 +166,7 @@
         { label: 'TerranSoul · frozen 12B + memory', value: 76.3, kind: 'ts' },
         { label: 'SIA · weight-trained 120B', value: 70.1, kind: 'other' },
         { label: 'prior SOTA', value: 45.0, kind: 'other' },
-        { label: 'zero-shot LLM', value: 7.0, kind: 'other' },
+        { label: 'SIA initial baseline', value: 13.5, kind: 'other' },
       ],
     }));
 
@@ -175,31 +175,36 @@
     //    LongMemEval-S — honest "—" rather than invented NDCG/MRR/R@10.
     grid.appendChild(memoryGroupChart());
 
-    // 3. TerranSoul playing Zork 1 on the local 12B — alone, self-play, and after
-    //    watching a stronger model (Opus 4.8) then replaying from memory (max 350).
+    // 3. TerranSoul playing Zork 1 — the local 12B self-play (alone and with the
+    //    brain), plus a separate reliability demo: a smaller 4B taught a fixed
+    //    walkthrough distilled from a stronger model (Opus 4.8), then served that
+    //    taught move every turn (max 350; not the 12B, not autonomous learning).
     grid.appendChild(barChart({
       span: 4,
-      title: 'TerranSoul on Zork 1 · local 12B',
-      sub: 'Zork score (max 350) · memory learns from self-play and by watching a stronger model',
+      title: 'TerranSoul on Zork 1',
+      sub: 'Zork score (max 350) · local-12B self-play, plus a taught-solution replay demo (4B)',
       unit: '', max: 350,
       bars: [
-        { label: 'Watch Opus 4.8, then replay from memory', value: 350, kind: 'ts', display: '350/350' },
+        { label: '4B, taught replay (Opus 4.8 demo)', value: 350, kind: 'ts', display: '350/350' },
         { label: '12B + brain (self-play peak)', value: 45, kind: 'ts', display: '45' },
-        { label: '12B, no brain', value: 0.001, kind: 'other', display: '0' },
+        { label: '12B, no brain', value: 11.7, kind: 'other', display: '11.7' },
       ],
     }));
 
-    // 4. RAG frameworks — same corpus + shared embedder (agentmemory, R@10).
+    // 4. RAG frameworks — agentmemory corpus, R@10. RAGFlow/LangChain/LlamaIndex
+    //    share the same corpus + embedder (nomic-embed-text); TerranSoul's hybrid
+    //    RRF, Obsidian's agentic-grep+LLM-rerank, and Hermes-Agent's FTS5+Jaccard
+    //    are non-vector retrieval, so they are not on the shared-embedder set.
     grid.appendChild(barChart({
       span: 4,
-      title: 'Retrieval — same corpus & embedder',
-      sub: 'Recall@10 · agentmemory corpus · higher is better',
+      title: 'Retrieval — agentmemory corpus',
+      sub: 'Recall@10 · higher is better · mixed retrieval methods, not all share an embedder',
       unit: '%', max: 100,
       bars: [
         { label: 'TerranSoul (hybrid)', value: 66.8, kind: 'ts' },
-        { label: 'RAGFlow', value: 61.0, kind: 'other' },
-        { label: 'LangChain', value: 61.0, kind: 'other' },
-        { label: 'LlamaIndex', value: 58.0, kind: 'other' },
+        { label: 'RAGFlow', value: 60.8, kind: 'other' },
+        { label: 'LangChain', value: 60.8, kind: 'other' },
+        { label: 'LlamaIndex', value: 57.8, kind: 'other' },
         { label: 'Obsidian', value: 53.8, kind: 'other' },
         { label: 'Hermes-Agent', value: 15.8, kind: 'other' },
       ],

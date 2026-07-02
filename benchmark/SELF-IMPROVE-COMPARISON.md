@@ -7,14 +7,14 @@
 > Predict the criminal charge from a Chinese court-case description across **191 charge classes** (n = 913). SIA's headline benchmark.
 
 <p align="center"><img src="charts/lawbench_headtohead.png" alt="LawBench Top-1 — TerranSoul 76.3% vs SIA 70.1%" width="720"><br>
-<i>TerranSoul (frozen 12B + memory-RAG) vs SIA (weight-trained 120B) on SIA's headline LawBench — plus prior SOTA (45%) and a zero-shot LLM (7%).</i></p>
+<i>TerranSoul (frozen 12B + memory-RAG) vs SIA (weight-trained 120B) on SIA's headline LawBench — plus prior SOTA (45%) and SIA's own initial (unimproved gpt-oss-120b, first-generation scaffold) baseline (13.5%).</i></p>
 
 | System | Top-1 | Model | Method |
 |---|--:|---|---|
 | **🧠 TerranSoul** | **76.3 %** | `gemma4:12b-it-qat` · **frozen** | frozen-model memory-RAG (k = 10) |
 | SIA-W+H | 70.1 % | `gpt-oss-120b` · **weight-trained** | harness + LoRA/RL weight updates † |
 | prior SOTA | 45.0 % | — | — |
-| zero-shot LLM | 7.0 % | — | — |
+| SIA initial baseline | 13.5 % | `gpt-oss-120b` · initial scaffold | SIA paper Table 3, un-improved first generation |
 
 > **TerranSoul's frozen 12B + memory scores 6.2 points above SIA's weight-trained 120B** on SIA's own headline benchmark — with a ~10× smaller model and zero weight training. (k-NN memory-only baseline: 58.9 %.) Measured: [`results/sia/lawbench_terransoul_full.json`](results/sia/lawbench_terransoul_full.json) — n = 913, 697 correct, 0 invalid, 2.35 s/case, seed 42. SIA figure is `SIA-W+H` from its README. A *stronger frozen actor widens the margin*: DeepSeek-v4-pro (still frozen, no training) scores **80.0 %** on SIA's exact data — the ride-the-curve ladder **SIA 70.1 % < 12B 73.3 %** (30-case split) **/ 76.3 %** (full-913) **< DeepSeek 80.0 %** ([`results/sia/lawbench_deepseek.json`](results/sia/lawbench_deepseek.json)).
 
@@ -30,7 +30,7 @@
 | **OpenAI MLE-Bench Hard** | #1 | not run | ⛔ infeasible: needs Kaggle harness/data + multi-hour Docker GPU runs |
 
 <p align="center"><img src="charts/lawbench_headtohead.png" alt="LawBench Top-1 — TerranSoul 76.3% vs SIA 70.1%" width="720"><br>
-<i><b>LawBench</b> — predict the criminal charge from a Chinese court-case description across 191 charge classes (n = 913). TerranSoul (frozen 12B + memory-RAG) <b>76.3 %</b> Top-1 vs SIA-W+H (weight-trained 120B) <b>70.1 %</b>; prior SOTA 45 %, zero-shot LLM 7 %. Measured: <a href="results/sia/lawbench_terransoul_full.json"><code>results/sia/lawbench_terransoul_full.json</code></a>.</i></p>
+<i><b>LawBench</b> — predict the criminal charge from a Chinese court-case description across 191 charge classes (n = 913). TerranSoul (frozen 12B + memory-RAG) <b>76.3 %</b> Top-1 vs SIA-W+H (weight-trained 120B) <b>70.1 %</b>; prior SOTA 45 %, SIA's own initial (unimproved) baseline 13.5 % (SIA paper Table 3). Measured: <a href="results/sia/lawbench_terransoul_full.json"><code>results/sia/lawbench_terransoul_full.json</code></a>.</i></p>
 
 <p align="center"><img src="charts/trimul_headtohead.png" alt="TriMul kernel — TerranSoul 3.87x measured (3080 Ti) → ~15x H100-est vs SIA 14x" width="720"><br>
 <i><b>AlphaFold-3 TriMul kernel</b> — implement + optimize the Triangle Multiplicative Update. A frozen coding agent (DeepSeek-v4-pro + TerranSoul memory) produced a correct kernel at <b>3.87×</b> over the fair fp32 baseline (RTX 3080 Ti, rel-err 7e-3) → <b>~14–15× H100-estimated</b> ≈ SIA-W+H's measured <b>14×</b> (H100). The frozen actor reaches correct fused Triton kernels but can't out-tune cuBLAS locally; the 12B's first attempt was 1.24×. Measured: <a href="results/sia/trimul_deepseek_push10.json"><code>trimul_deepseek_push10.json</code></a> + <a href="results/sia/trimul_fair_remeasure.json"><code>trimul_fair_remeasure.json</code></a>; the H100 figure is an estimate (re-bench is a TODO).</i></p>

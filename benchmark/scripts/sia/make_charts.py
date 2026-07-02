@@ -150,8 +150,8 @@ def chart_lawbench():
         "LawBench — Top-1 accuracy",
         "(Chinese criminal-charge prediction, 191 classes, n=913)",
         "Top-1 accuracy (%)", 100)
-    labels = ["TerranSoul\n(frozen 12B + memory)", "SIA\n120B trained", "prior\nSOTA", "zero-shot\nLLM"]
-    values = [76.3, 70.1, 45.0, 7.0]
+    labels = ["TerranSoul\n(frozen 12B + memory)", "SIA\n120B trained", "prior\nSOTA", "SIA initial\nbaseline"]
+    values = [76.3, 70.1, 45.0, 13.5]
     colors = [TS_GREEN, SIA_BLUE, SOTA_GREY, LIGHT_GREY]
     bars(ax, labels, values, colors, lambda v: f"{v:.1f}%")
     fig.tight_layout()

@@ -478,18 +478,18 @@
       <tr><td><strong>scRNA-seq denoising</strong></td><td class="num">0.289 MSE<sub>norm</sub> (vs 0.220 SOTA)</td><td class="num">raw MSE 0.046, +35.0% vs no-denoise</td><td>different (raw) metric scale &mdash; indicative, not a head-to-head</td></tr>
       <tr><td><strong>OpenAI MLE-Bench Hard</strong></td><td class="num">#1</td><td class="num">NOT RUN</td><td>infeasible on a single PC (blocker below)</td></tr>
     </table>
-    <p><strong>LawBench.</strong> On SIA's own headline benchmark &mdash; predict the criminal charge from a Chinese court-case description across 191 classes &mdash; the frozen 12B + memory-RAG (k&nbsp;=&nbsp;10) scores <strong>76.3%</strong> Top-1 on the full n&nbsp;=&nbsp;913 set (697 correct, 0 invalid, 2.35&nbsp;s/case, seed 42), versus SIA-W+H's <strong>70.1%</strong>, prior SOTA 45%, and a zero-shot LLM 7% [<a href="#ref-47">47</a>]. A k-NN memory-only baseline scores 58.9%. A <em>stronger frozen actor widens the margin</em>: on SIA's exact 191-class data with their official scorer (seed-42 30-case split), the ladder is SIA 70.1% &lt; gemma4-12b 73.3% &lt; DeepSeek-v4-pro <strong>80.0%</strong> &mdash; both still frozen, no training [<a href="#ref-47">47</a>]. The frozen lever scores higher here than the weight-trained 120B, with a ~10&times; smaller model.</p>
+    <p><strong>LawBench.</strong> On SIA's own headline benchmark &mdash; predict the criminal charge from a Chinese court-case description across 191 classes &mdash; the frozen 12B + memory-RAG (k&nbsp;=&nbsp;10) scores <strong>76.3%</strong> Top-1 on the full n&nbsp;=&nbsp;913 set (697 correct, 0 invalid, 2.35&nbsp;s/case, seed 42), versus SIA-W+H's <strong>70.1%</strong>, prior SOTA 45%, and SIA's own initial (unimproved gpt-oss-120b, first-generation scaffold) baseline of 13.5% (SIA paper Table 3) [<a href="#ref-47">47</a>]. A k-NN memory-only baseline scores 58.9%. A <em>stronger frozen actor widens the margin</em>: on SIA's exact 191-class data with their official scorer (seed-42 30-case split), the ladder is SIA 70.1% &lt; gemma4-12b 73.3% &lt; DeepSeek-v4-pro <strong>80.0%</strong> &mdash; both still frozen, no training [<a href="#ref-47">47</a>]. The frozen lever scores higher here than the weight-trained 120B, with a ~10&times; smaller model.</p>
     <figure class="chart">
-      <svg viewBox="0 0 720 366" role="img" aria-label="LawBench Top-1 accuracy ladder: zero-shot LLM 7 percent, prior SOTA 45 percent, k-NN memory-only 58.9 percent, SIA weight-and-harness 70.1 percent, frozen 12B plus memory 76.3 percent, DeepSeek-v4-pro frozen 80.0 percent.">
+      <svg viewBox="0 0 720 366" role="img" aria-label="LawBench Top-1 accuracy ladder: SIA initial baseline 13.5 percent, prior SOTA 45 percent, k-NN memory-only 58.9 percent, SIA weight-and-harness 70.1 percent, frozen 12B plus memory 76.3 percent, DeepSeek-v4-pro frozen 80.0 percent.">
         <line class="c-axis" x1="210" y1="10" x2="210" y2="330"/>
         <line class="c-grid" x1="300" y1="10" x2="300" y2="330"/>
         <line class="c-grid" x1="390" y1="10" x2="390" y2="330"/>
         <line class="c-grid" x1="480" y1="10" x2="480" y2="330"/>
         <line class="c-grid" x1="570" y1="10" x2="570" y2="330"/>
         <line class="c-grid" x1="660" y1="10" x2="660" y2="330"/>
-        <text class="c-cat" x="200" y="38" text-anchor="end">Zero-shot LLM</text>
-        <rect class="c-bar" x="210" y="17" width="32" height="34"/>
-        <text class="c-val" x="248" y="38">7%</text>
+        <text class="c-cat" x="200" y="38" text-anchor="end">SIA initial baseline</text>
+        <rect class="c-bar" x="210" y="17" width="61" height="34"/>
+        <text class="c-val" x="277" y="38">13.5%</text>
         <text class="c-cat" x="200" y="92" text-anchor="end">Prior SOTA</text>
         <rect class="c-bar" x="210" y="71" width="203" height="34"/>
         <text class="c-val" x="419" y="92">45%</text>
