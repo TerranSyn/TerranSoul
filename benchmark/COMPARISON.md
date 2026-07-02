@@ -59,6 +59,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 **Honesty notes** (full methodology + sources are in the detailed sections below):
 
 - A "—" marks a metric the system does not publish or was not run on — an honest blank, not a zero or a failure.
+- TerranSoul's `rrf`/`rrf_emb` LongMemEval-S rows are the committed 2026-06-28 baseline. A 2026-07-01 lower reproduction was root-caused on 2026-07-02 to the re-run harness omitting `LONGMEM_EMBED=1` — those re-runs measured the lexical-only path, not a code change. A correctly-configured, run-invariant re-run is tracked in `benchmark/results/longmemeval_s_terransoul.md`; the table updates from that run once it lands.
 - The "LoCoMo QA" figures in the Benchmark column are end-to-end answer accuracy (J-score), not retrieval recall, shown for context only.
 - The agentmemory-corpus rows share one nomic-embed-text embedder, so the pure-vector memory systems and RAG frameworks cluster around 41 / 61 / 74 / 88 / 92 % — the embedder sets that recall, independent of framework.
 - The graph systems (GraphRAG, Memary, HippoRAG) return entity subgraphs rather than ranked passages, so their low recall is a metric-shape mismatch on this single-doc corpus, not a like-for-like loss.
