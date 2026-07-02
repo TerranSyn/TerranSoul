@@ -19,26 +19,17 @@ TerranSoul keeps your language model **frozen** and makes the **memory around it
 
 ## The problem
 
-Today's AI doesn't really belong to you:
-
-- **It forgets you.** Most assistants lose everything the moment you close the tab — no memory, no continuity.
-- **It lives in the cloud.** Your data leaves your device every time you use it.
-- **It's behind a paywall.** Powerful AI is locked behind a monthly subscription.
+Most AI assistants forget everything when you close the tab, send your data to the cloud on every call, and charge a monthly subscription for it.
 
 ## Memory-first, by design
 
-TerranSoul is an AI companion that **remembers** — and runs on your own machine:
-
-- **Runs on your computer** — local models on your own hardware, no subscription, **$0**.
-- **Private by default** — your data never leaves your device.
-- **Remembers everything, offline** — persistent memory plus an offline core loop; it picks up where you left off.
-- **Plugs in anywhere** — it shares one brain over MCP, so your *other* AI tools (Claude Code, Copilot, Cursor, Codex, peer instances) get smarter too.
+TerranSoul runs on your own machine: local models on your own hardware for **$0**, data that never leaves your device, and persistent offline memory that picks up where you left off. It shares one brain over MCP, so your *other* AI tools (Claude Code, Copilot, Cursor, Codex, peer instances) get smarter too.
 
 ## A first-class memory you can plug in anywhere
 
-TerranSoul is a **first-class external memory** — built for knowledge **representation, retrieval, and updating**, the way a brain organizes and revises what it knows: a typed knowledge graph, three decaying memory tiers, hybrid retrieval, and a closed **write → manage → read** loop. The language model stays **frozen**; the memory does the learning — so every gain is **auditable, reversible, and portable** (it's *data, not weights*).
+TerranSoul is a **first-class external memory** — built for knowledge representation, retrieval, and updating, the way a brain organizes and revises what it knows: a typed knowledge graph, three decaying memory tiers, hybrid retrieval, and a closed write → manage → read loop. The language model stays **frozen**; the memory does the learning, so gains are auditable and reversible because they live in data, not model weights.
 
-That makes TerranSoul a **different kind of tool** than Claude Code, OpenClaw, or SIA — none of those are memory-first. They are coding agents and self-improvement loops; TerranSoul is the **memory substrate they plug into** over MCP. It is **complementary, not competitive**, and its sweet spot is **memory-heavy read + update**: long-lived, cross-session, cross-tool knowledge that has to stay correct as it changes. The benchmarks below show where a memory-first system lands — highest on the memory axis it was built for, and competitive even on tasks designed for the others.
+That makes TerranSoul a different kind of tool than Claude Code, OpenClaw, or SIA — none of those are memory-first. They are coding agents and self-improvement loops; TerranSoul is the memory substrate they plug into over MCP, and its sweet spot is memory-heavy read + update: long-lived, cross-session, cross-tool knowledge that has to stay correct as it changes. The benchmarks below show where a memory-first system lands — highest on the memory axis it was built for, and competitive even on tasks designed for the others.
 
 ---
 

@@ -3,7 +3,7 @@
 > **Phase:** PARITY-OJ-14
 > **Date:** 2026-05-26
 
-> **MCP Gateway Parity: ✅ LIVE** — All 22 prompts route through live MCP server (ports 7421/7423/7422). This benchmark *is* the gateway validation — 100 % success rate on all archetypes. See [parity-enforcement-rules.md](../parity-enforcement-rules.md).
+> **MCP Gateway Parity:** all 22 prompts route through the live MCP server (ports 7421/7423/7422) — that routing is what this benchmark validates. Current results (run 2026-06-07T03:23:30Z, judge `gemma3:4b`, see [results/parity_personal_ai.md](../results/parity_personal_ai.md)): 2/7 archetypes passing — `code-assistant` (3/3) and `chat-simple` (4/4). The other five (`daily-digest`, `deep-research`, `scheduled-monitor`, `voice-companion`, `vrm-overlay`) are 0/3. Quality scoring (LLM-judge 0–10) is not wired up for any archetype yet — every row reads N/A. See [parity-enforcement-rules.md](../parity-enforcement-rules.md).
 
 ## Overview
 
@@ -48,7 +48,7 @@ benchmark/parity-personal-ai/
 
 ## Usage
 
-The benchmark is measured with our internal harness: it runs all 7 archetypes through the live MCP server and scores each response with the LLM judge (Ollama), on the same prompts, model, and judge. The harness supports running a single archetype, skipping the judge for latency-only, a dry run, and overriding the judge model.
+The harness runs all 7 archetypes through the live MCP server and scores each response with the LLM judge (Ollama), on the same prompts, model, and judge. It supports running a single archetype, skipping the judge for latency-only, a dry run, and overriding the judge model.
 
 ## Output
 
@@ -67,9 +67,9 @@ Quality scoring uses an LLM-as-judge approach via Ollama:
 
 ## Head-to-Head: TerranSoul vs OpenJarvis
 
-Our internal harness runs a **real apples-to-apples comparison** against
+The harness runs TerranSoul against
 [OpenJarvis](https://github.com/open-jarvis/OpenJarvis) (Stanford, Apache-2.0),
-a local personal-AI stack with the same task archetypes. Each side runs its own
+a local personal-AI stack, on the same task archetypes. Each side runs its own
 real pipeline; the harness can run both stacks or one side only.
 
 **Protocol (controlled for fairness):**

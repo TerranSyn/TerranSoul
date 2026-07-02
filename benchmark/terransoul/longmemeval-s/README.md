@@ -2,7 +2,7 @@
 
 **Task:** xiaowu0162/longmemeval-cleaned (LongMemEval-S, cleaned 500-question retrieval slice).
 **Adapter shipped:** BENCH-AM-5 (2026-05-12).
-**Canonical TerranSoul result:** BENCH-AM-6/6.1 (2026-05-11) — **rank 1 on every measured metric vs published competition**.
+**Canonical TerranSoul result:** BENCH-AM-6/6.1 (2026-05-11) — R@5 99.2% vs agentmemory 95.2% / MemPalace ~96.6% (both published); NDCG@10 91.3% vs agentmemory 87.9%.
 
 > **MCP Gateway Parity: ✅ PASS** — 0/50 per-question mismatches between gateway and direct-store paths on the sampled subset (BENCH-MCP-PARITY-3). The apples-to-apples per-query test is exact parity. See [parity-enforcement-rules.md](../../parity-enforcement-rules.md).
 
@@ -15,8 +15,6 @@
 | R@20 | **100.0 %** | 99.4 % | — |
 | NDCG@10 | **91.3 %** | 87.9 % | — |
 | MRR | **92.6 %** | 88.2 % | — |
-
-TerranSoul leads agentmemory on all five published metrics and MemPalace on R@5.
 
 ## Round table
 
