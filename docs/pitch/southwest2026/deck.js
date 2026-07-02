@@ -186,7 +186,7 @@
       unit: '', max: 350,
       bars: [
         { label: '4B, taught replay (Opus 4.8 demo)', value: 350, kind: 'ts', display: '350/350' },
-        { label: '12B + brain (self-play peak)', value: 45, kind: 'ts', display: '45' },
+        { label: '12B + brain (self-play peak)', value: 50, kind: 'ts', display: '50' },
         { label: '12B, no brain', value: 11.7, kind: 'other', display: '11.7' },
       ],
     }));
