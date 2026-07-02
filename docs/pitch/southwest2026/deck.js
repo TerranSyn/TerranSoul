@@ -176,9 +176,12 @@
     grid.appendChild(memoryGroupChart());
 
     // 3a. TerranSoul playing Zork 1 autonomously — local-12B self-play, alone
-    //     and with the brain. Both bars are the same protocol (genuine
-    //     autonomous decision-making), so the bar-length comparison is
-    //     apples-to-apples.
+    //     and with the brain. Both bars are autonomous decision-making, but
+    //     the brain bar is a PERSISTENT-CAMPAIGN PEAK (across-run
+    //     accumulation) while the no-brain bar is the unaided per-run mean —
+    //     the caveat below states this on the slide (same disclosure
+    //     treatment as the memory chart), per the repo's own de-confounding
+    //     analysis (fresh per-run ≈15, peak 20).
     grid.appendChild(barChart({
       span: 4,
       title: 'TerranSoul on Zork 1 — self-play',
@@ -188,6 +191,9 @@
         { label: '12B + brain (self-play peak)', value: 50, kind: 'ts', display: '50' },
         { label: '12B, no brain', value: 11.7, kind: 'other', display: '11.7' },
       ],
+      note: 'Peak 50 is a persistent-brain campaign peak — memory accumulated ACROSS runs. '
+        + 'De-confounded fresh-brain per-run: mean ~15, peak 20, vs the unaided per-run mean 11.7 shown. '
+        + 'Full protocol: benchmark/terransoul/zorkgpt/README.md.',
     }));
 
     // 3b. A separate reliability demo — NOT autonomous self-play, so it is
@@ -300,7 +306,7 @@
   // "Claude Code + GENesis · 17.5 s") never collide with the bar or the value.
   // Layout is in user units; the SVG scales to its flex cell (meet).
   function barChart(opts) {
-    const { title, sub, unit = '', max = 100, bars = [], span = 6 } = opts;
+    const { title, sub, unit = '', max = 100, bars = [], span = 6, note = '' } = opts;
     const W = 340;
     const block = 42;       // per-bar block (label row + bar)
     const padTop = 4;
@@ -341,6 +347,12 @@
     });
 
     wrap.appendChild(svg);
+    if (note) {
+      const n = document.createElement('div');
+      n.className = 'mem-note mem-caveat';
+      n.textContent = note;
+      wrap.appendChild(n);
+    }
     return wrap;
   }
 
