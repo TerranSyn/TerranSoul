@@ -191,26 +191,12 @@
       ],
     }));
 
-    // 4. RAG systems only — agentmemory corpus, R@10. RAGFlow/LangChain/
-    //    LlamaIndex/Mem0 share the same corpus + embedder (nomic-embed-text,
-    //    Mem0 measured verbatim infer=False over Chroma, commit b045eb03);
-    //    TerranSoul's hybrid RRF is non-vector retrieval on the same corpus.
-    //    Non-RAG retrievers (agentic grep, FTS5+Jaccard) are out of scope here.
-    grid.appendChild(barChart({
-      span: 4,
-      title: 'RAG retrieval — agentmemory corpus',
-      sub: 'Recall@10 · higher is better · same corpus; frameworks share nomic-embed-text, TerranSoul is hybrid RRF',
-      unit: '%', max: 100,
-      bars: [
-        { label: 'TerranSoul (hybrid RRF)', value: 66.8, kind: 'ts' },
-        { label: 'Mem0', value: 61.0, kind: 'other' },
-        { label: 'RAGFlow', value: 60.8, kind: 'other' },
-        { label: 'LangChain', value: 60.8, kind: 'other' },
-        { label: 'LlamaIndex', value: 57.8, kind: 'other' },
-      ],
-    }));
-
-    // 5. Self-improving agents — personal-AI head-to-head (answer quality 0–10).
+    // 4. Self-improving agents — personal-AI head-to-head (answer quality 0–10).
+    //    (The RAG/retrieval comparison lives in the LongMemEval-S memory chart
+    //    above — a recognized 500-question benchmark with published baselines.
+    //    The former agentmemory-corpus framework chart was removed: a niche
+    //    self-run corpus is not pitch-grade evidence; see benchmark/COMPARISON.md
+    //    for those measurements in their proper research context.)
     grid.appendChild(barChart({
       span: 4,
       title: 'Self-improving agents — head-to-head',
