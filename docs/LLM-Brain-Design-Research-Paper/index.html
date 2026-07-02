@@ -165,7 +165,7 @@
     <div class="spacer"></div>
     <a class="lnk" href="../zorkgpt/">Zork bench &rarr;</a>
     <a class="lnk" href="https://github.com/TerranSyn/TerranSoul/blob/main/benchmark/COMPARISON.md">Results matrix</a>
-    <div class="meta">2026-06</div>
+    <div class="meta">2026-07</div>
   </div>
 </div>
 
@@ -191,7 +191,7 @@
     </div>
 
     <div class="byline">
-      <div class="who"><div class="avatar">T</div><div><strong>TerranSoul Research</strong><br /><span class="small">Position + measurement, June 2026.</span></div></div>
+      <div class="who"><div class="avatar">T</div><div><strong>TerranSoul Research</strong><br /><span class="small">Position + measurement, June&ndash;July 2026.</span></div></div>
       <div class="sep">&middot;</div>
       <div>Artifacts: <a href="../zorkgpt/taughtLocalLLM/">TaughtLocalLLM</a> &middot; <a href="../zorkgpt/claude-opus-4.8/">Opus&nbsp;4.8</a> &middot; <a href="https://github.com/TerranSyn/TerranSoul/blob/main/benchmark/COMPARISON.md">results matrix</a> &middot; <a href="https://github.com/TerranSyn/TerranSoul/blob/main/benchmark/SELF-IMPROVE-COMPARISON.md">SIA comparison</a>.</div>
     </div>
@@ -406,7 +406,7 @@
         <line class="c-grid" x1="480" y1="14" x2="480" y2="174"/>
         <line class="c-grid" x1="570" y1="14" x2="570" y2="174"/>
         <line class="c-grid" x1="660" y1="14" x2="660" y2="174"/>
-        <text class="c-cat" x="200" y="44" text-anchor="end">TerranSoul (search)</text>
+        <text class="c-cat" x="200" y="44" text-anchor="end">TerranSoul (rrf_emb)</text>
         <rect class="c-bar-hi" x="210" y="23" width="450" height="34"/>
         <text class="c-val-hi" x="660" y="44" text-anchor="end">100.0%</text>
         <text class="c-cat" x="200" y="99" text-anchor="end">agentmemory (published)</text>
@@ -423,7 +423,7 @@
         <text class="c-tick" x="660" y="190" text-anchor="middle">100</text>
         <text class="c-tick" x="450" y="208" text-anchor="middle">Recall@10 (%) &mdash; reference axis truncated at 90% to resolve the high-recall cluster</text>
       </svg>
-      <figcaption><span class="fignum">Fig 4</span>Retrieval axis (&sect;5.6), LongMemEval-S Recall@10 against published baselines. Companion depths: R@5 = 99.4 / 95.2 / 96.6; R@20 = 100.0 / 99.4 / &mdash;. The three systems are tightly clustered at the top of the recall scale; TerranSoul is highest at every measured depth. Source: [<a href="#ref-21">21</a>].</figcaption>
+      <figcaption><span class="fignum">Fig 3</span>Retrieval axis (&sect;5.6), LongMemEval-S Recall@10 against published baselines. Companion depths: R@5 = 99.4 / 95.2 / 96.6; R@20 = 100.0 / 99.4 / &mdash;. The three systems are tightly clustered at the top of the recall scale; TerranSoul is highest at every measured depth. Source: [<a href="#ref-21">21</a>].</figcaption>
     </figure>
     <p>The substrate is highest at every measured depth &mdash; R@5/R@10/R@20 &mdash; and ahead of agentmemory and MemoryPalace on NDCG@10 and MRR; it also clears the prior mxbai canonical (BENCH-AM-6.1: NDCG@10 91.3% / MRR 92.6%) on both ranking metrics while holding recall at ceiling. On the harder <strong>full 1,976-query MTEB LoCoMo slice</strong>, the EmbeddingGemma vector path (<code>rrf_emb</code>) scores <strong>R@10 64.5% / R@100 85.8%</strong> (NDCG@10 49.9%, MRR@100 48.3%), with the lexical <code>rrf</code> at R@10 57.2% / R@100 76.9% [<a href="#ref-21">21</a>]. Temporal reasoning is strong (R@10 ~90%); <strong>multi-hop and open-domain are documented gaps</strong> &mdash; an honest weakness, and notably exactly the compositional region the target paper predicts retrieval will struggle with. <strong>Token economy:</strong> <code>hybrid_search_rrf</code> no-vector reaches R@10 66.8% / NDCG@10 95.0% at <strong>~2,748 retrieved tokens/query</strong> versus a keyword-only quality leader at 67.1% / 8,245 tokens &mdash; ~3&times; fewer tokens at near-equal quality [<a href="#ref-21">21</a>].</p>
     <p>On a <strong>personal-AI head-to-head</strong>, both TerranSoul and four reference systems answer the <em>same</em> 22 prompts across seven archetypes with the <em>same</em> model on the <em>same</em> GPU, each scored 0&ndash;10 by the same judge [<a href="#ref-21">21</a>]:</p>
@@ -465,7 +465,7 @@
         <text class="c-tick" x="570" y="288" text-anchor="middle">8</text>
         <text class="c-tick" x="660" y="288" text-anchor="middle">10</text>
       </svg>
-      <figcaption><span class="fignum">Fig 3</span>Personal-AI head-to-head (&sect;5.6). 22 prompts across seven archetypes, the <em>same</em> model on the <em>same</em> GPU, each answer scored 0&ndash;10 by the same judge. TerranSoul answers at p50 ~1.0&nbsp;s for $0; the others at 3.2&ndash;38.1&nbsp;s. Source: [<a href="#ref-21">21</a>].</figcaption>
+      <figcaption><span class="fignum">Fig 4</span>Personal-AI head-to-head (&sect;5.6). 22 prompts across seven archetypes, the <em>same</em> model on the <em>same</em> GPU, each answer scored 0&ndash;10 by the same judge. TerranSoul answers at p50 ~1.0&nbsp;s for $0; the others at 3.2&ndash;38.1&nbsp;s. Source: [<a href="#ref-21">21</a>].</figcaption>
     </figure>
     <p>TerranSoul scores highest in its category on quality at the lowest latency and zero marginal cost. We flag the methodology honestly: an earlier pass had under-built the system's side and tied at 9.3/9.5; correcting it to the <em>actual</em> production pipeline (not tuning to the judge) is what surfaces the result. As an instructive contrast, run as an <em>agentic</em> retriever (grep/read &rarr; ranked top-20, cloud claude-haiku), Claude Code + GENesis-AGI lands only in the vector-cluster recall range at ~53&nbsp;s/query and non-local cost [<a href="#ref-21">21</a>] &mdash; frontier grep-and-read is not, on these numbers, a substitute for a structured store.</p>
 
@@ -644,7 +644,7 @@
     <a href="../zorkgpt/claude-opus-4.8/">Opus 4.8</a>
     <a href="https://github.com/TerranSyn/TerranSoul">GitHub</a>
   </div>
-  <div>Authoritative source (markdown, source of truth): <code>docs/LLM-Brain-Design-Research-Paper.md</code> &middot; 2026-06.</div>
+  <div>Authoritative source (markdown, source of truth): <code>docs/LLM-Brain-Design-Research-Paper.md</code> &middot; 2026-07.</div>
 </footer>
 </body>
 </html>
