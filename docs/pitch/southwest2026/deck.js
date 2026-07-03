@@ -295,9 +295,10 @@
       + '<defs><linearGradient id="gradTSg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFC000"/><stop offset="100%" stop-color="#F4C77E"/></linearGradient></defs>'
       + legend + s + '</svg>'
       + '<div class="mem-note">MemPalace publishes R@5 / R@10 only on this benchmark.</div>'
-      + '<div class="mem-note mem-caveat">TerranSoul bars are the committed BENCH-AM-6.3 baseline (2026-07-01). '
-      + 'An open, tracked RRF-fusion regression currently reproduces lower — R@5 98.4% / R@10 99.6% / NDCG@10 91.1% / MRR 91.7% '
-      + '— see benchmark/results/longmemeval_s_terransoul.md.</div>';
+      + '<div class="mem-note mem-caveat">TerranSoul bars are the committed BENCH-AM-6.3 baseline, independently '
+      + 'reproduced in full on 2026-07-03 (rrf_emb R@5 99.4% / NDCG@10 94.5% / MRR 95.3% with the documented '
+      + 'EmbeddingGemma embedder). The briefly-tracked "RRF regression" was an embedder-config mismatch between '
+      + 'runs, not a code change — resolution recorded in benchmark/results/longmemeval_s_terransoul.md.</div>';
     return wrap;
   }
 

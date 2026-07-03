@@ -419,6 +419,21 @@ function perType(systemResult) {
   }]));
 }
 
+// Env stamp (2026-07-03 RRF-archaeology guardrail): the entire "rrf
+// regression" episode came from unrecorded embedder configuration
+// differences between runs — every report must carry the exact LONGMEM_*
+// env so a future metric delta can never be misattributed to code again.
+function longmemEnvStamp() {
+  const keys = Object.keys(process.env)
+    .filter(k => k.startsWith('LONGMEM_'))
+    .sort();
+  const pairs = keys.map(k => `${k}=${process.env[k]}`);
+  const embedModel = process.env.LONGMEM_EMBED === '1'
+    ? (process.env.LONGMEM_EMBED_MODEL ?? 'mxbai-embed-large (harness default)')
+    : 'none (LONGMEM_EMBED unset — dense channel OFF)';
+  return `${pairs.length ? pairs.join(' ') : '(no LONGMEM_* vars set)'} | effective embed model: ${embedModel}`;
+}
+
 function markdownReport(report) {
   const lines = [];
   const w = line => lines.push(line);
@@ -428,6 +443,7 @@ function markdownReport(report) {
   w(`Dataset: ${report.dataset_source}`);
   w(`Questions: ${report.questions} (${report.excluded_abstention} abstention rows excluded)`);
   w(`Methodology: retrieval-only recall_any@K, matching agentmemory benchmark/longmemeval-bench.ts`);
+  w(`Env: ${longmemEnvStamp()}`);
   w('');
   w('| System | R@5 | R@10 | R@20 | NDCG@10 | MRR | Avg latency | Avg retrieved tokens |');
   w('|---|---:|---:|---:|---:|---:|---:|---:|');
@@ -541,6 +557,7 @@ async function run(rawEntries, options) {
   return {
     benchmark: 'LongMemEval-S retrieval-only',
     generated_at: new Date().toISOString(),
+    env: longmemEnvStamp(),
     dataset_source: options.datasetSource,
     dataset_url: DATASET_URL,
     methodology_source: 'https://github.com/rohitg00/agentmemory/blob/main/benchmark/longmemeval-bench.ts',
