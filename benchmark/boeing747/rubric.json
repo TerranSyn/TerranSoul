@@ -1,0 +1,164 @@
+{
+  "protocol": "boeing747-primitives-vision-bench",
+  "version": 1,
+  "provenance": "Loop Library benchmark protocol - signals.forwardfuture.com (build the most realistic Boeing 747 from Three.js primitives; screenshot fixed angles; vision-judge against references; critic steers; iterate)",
+  "judge_model": "gemma4:12b-it-qat",
+  "judge_options": { "temperature": 0, "num_ctx": 8192, "num_predict": 768 },
+  "judge_think": false,
+  "judge_format": "json",
+  "judge_seeds": [7, 8, 9],
+  "judge_timeout_ms": 180000,
+  "judge_parse_retries": 1,
+  "judge_retry_policy": "same-seed: a malformed or empty judge reply (empty content with the JSON stuck in message.thinking is first recovered by the thinking fallback; done_reason=length truncation and non-JSON text are retryable) is re-requested up to judge_parse_retries times with the IDENTICAL seed and options — never a fresh seed, so the seed set stays exactly judge_seeds. A seed that still fails is recorded and dropped, fail-open (DEAD-JUDGE-1). Transport errors are retried once inside the HTTP layer and are not parse retries.",
+  "baseline_builder_options": { "temperature": 0, "num_ctx": 8192, "num_predict": 4096 },
+  "baseline_builder_think": false,
+  "baseline_builder_seed": 7,
+  "baseline_builder_timeout_ms": 540000,
+  "view_threshold": 8.0,
+  "stall_patience": 3,
+  "iteration_budget": 12,
+  "criteria": [
+    {
+      "id": "engines_four_underwing",
+      "name": "Four engines under swept wings",
+      "weight": 1.5,
+      "anchors": {
+        "0": "no engines at all",
+        "3": "wrong engine count (two or three) or engines attached to the fuselage/tail",
+        "5": "four engine-like shapes but floating, misplaced, or not under the wings",
+        "8": "four nacelles hung under the swept wings on visible pylons, plausible inboard/outboard spacing",
+        "10": "four underslung pylon-mounted nacelles with correct relative size, spacing, and forward offset ahead of the wing leading edge, inlet visibly open/darker"
+      }
+    },
+    {
+      "id": "upper_deck_hump",
+      "name": "Partial-length upper-deck hump",
+      "weight": 1.5,
+      "anchors": {
+        "0": "no hump; fuselage is a plain tube",
+        "3": "a bump exists but in the wrong place (mid/rear) or absurd proportions",
+        "5": "hump present at the front but runs the full fuselage length (reads as an A380-style double deck) or is a crude floating block",
+        "8": "distinct partial-length upper deck starting at the nose and blending down within roughly the front third of the fuselage",
+        "10": "iconic 747 hump: starts at the cockpit, smoothly faired into the crown, ends around one-third of the length, with a visible cockpit region on the upper lobe"
+      }
+    },
+    {
+      "id": "fuselage_proportions",
+      "name": "Fuselage proportions (~70 m long, slender)",
+      "weight": 1.2,
+      "anchors": {
+        "0": "no recognizable fuselage",
+        "3": "stubby or balloon-like body; length under ~5x its diameter",
+        "5": "tube of roughly right length but blunt ends (no nose taper or tail cone)",
+        "8": "slender tube around 9-11x its diameter with a rounded tapering nose and an upswept tail cone",
+        "10": "convincing airliner body: continuous slender tube, smooth ogive nose, gradual upswept rear taper, no visible segment seams or steps"
+      }
+    },
+    {
+      "id": "wing_geometry",
+      "name": "Wing sweep (~37.5 deg), dihedral, taper",
+      "weight": 1.3,
+      "anchors": {
+        "0": "no wings",
+        "3": "straight unswept slabs at 90 degrees to the fuselage",
+        "5": "some sweep but no taper or no dihedral; wings look like flat boards",
+        "8": "clearly swept-back (~35-40 deg) tapering wings with visible upward dihedral, mounted at the lower mid-fuselage",
+        "10": "realistic planform: strong sweep, root-to-tip chord and thickness taper, dihedral, plausible span (~0.9x body length), wing roots faired into the belly"
+      }
+    },
+    {
+      "id": "empennage",
+      "name": "Empennage (tall vertical stabilizer + horizontal stabilizers)",
+      "weight": 1.0,
+      "anchors": {
+        "0": "no tail surfaces",
+        "3": "one tail surface missing, or surfaces unswept/misproportioned",
+        "5": "vertical fin and horizontal stabilizers present but crude slabs or oddly placed",
+        "8": "single tall swept vertical stabilizer plus swept horizontal stabilizers at the tail cone, plausible sizes",
+        "10": "correct 747 empennage: very tall swept fin, low-mounted swept tailplane pair with dihedral, all tapered and proportioned to the fuselage"
+      }
+    },
+    {
+      "id": "landing_gear",
+      "name": "Landing gear (nose gear + 4-truck main gear) when visible",
+      "weight": 0.8,
+      "anchors": {
+        "0": "no landing gear where the view should show it",
+        "3": "a few floating wheels or a single central strut",
+        "5": "nose gear plus some main gear but wrong count or placement",
+        "8": "nose gear plus four main-gear trucks under the wing/body junction with wheels",
+        "10": "recognizable 747 gear layout: two-wheel nose strut, four multi-wheel main bogies (two under the body, two under the wings), plausible strut lengths"
+      }
+    },
+    {
+      "id": "window_door_lines",
+      "name": "Window and door lines",
+      "weight": 0.7,
+      "anchors": {
+        "0": "no surface detail at all",
+        "3": "random specks or stripes that do not read as windows",
+        "5": "a window band exists but is misplaced or wildly oversized",
+        "8": "a consistent passenger-window line along the main deck plus cockpit windows, door hints",
+        "10": "clean main-deck window line, separate upper-deck windows on the hump, cockpit windshield shape, evenly spaced doors"
+      }
+    },
+    {
+      "id": "livery_coherence",
+      "name": "Color / livery coherence",
+      "weight": 0.6,
+      "anchors": {
+        "0": "chaotic random colors or all-black/unlit surfaces",
+        "3": "flat single color with clashing part colors (e.g. random rainbow parts)",
+        "5": "mostly coherent base color but engines/wings mismatched arbitrarily",
+        "8": "clean airliner scheme: light fuselage, grey/metal wings and engines, accent tail or stripe",
+        "10": "coherent believable livery: white/light upper fuselage, grey underside/wings, consistent nacelles, tasteful accent color on tail/stripe"
+      }
+    },
+    {
+      "id": "silhouette_747",
+      "name": "Silhouette reads specifically as a Boeing 747",
+      "weight": 1.4,
+      "anchors": {
+        "0": "not recognizable as an aircraft",
+        "3": "generic aircraft; could be any airliner or a toy plane",
+        "5": "four-engine airliner but silhouette suggests the wrong type (A380 full double deck, 707-era narrow body)",
+        "8": "reads as a 747: partial hump plus four engines plus proportions distinguish it from A380/737/767",
+        "10": "unmistakably a Boeing 747 at a glance from this angle"
+      }
+    },
+    {
+      "id": "craftsmanship",
+      "name": "Craftsmanship (no floating parts, z-fighting, holes)",
+      "weight": 1.0,
+      "anchors": {
+        "0": "model is broken: detached floating parts everywhere, giant holes",
+        "3": "several visibly floating/intersecting parts or flickering coplanar faces",
+        "5": "parts mostly connect but visible gaps, seams, or one floating piece",
+        "8": "solid assembly: parts join cleanly, no holes, no z-fighting patterns visible",
+        "10": "clean deliberate construction throughout; junctions look faired/intentional from this angle"
+      }
+    }
+  ],
+  "reference_keys": {
+    "threeview": "orthographic 3-view line drawing of a Boeing 747",
+    "side": "side-profile photo of a Boeing 747",
+    "front-quarter": "front-quarter photo showing the hump and the four engines",
+    "rear-quarter": "rear-quarter photo showing empennage and wing trailing edge",
+    "planform": "top/below planform photo showing swept wings and four engines",
+    "nose-hump": "close photo of the 747 nose and upper-deck hump"
+  },
+  "view_references": {
+    "1": ["side", "threeview"],
+    "2": ["side", "threeview"],
+    "3": ["front-quarter", "threeview"],
+    "4": ["rear-quarter", "threeview"],
+    "5": ["planform", "threeview"],
+    "6": ["front-quarter", "side"],
+    "7": ["rear-quarter", "planform"],
+    "8": ["front-quarter", "side"],
+    "9": ["nose-hump", "front-quarter"]
+  },
+  "judge_system_prompt": "You are a meticulous aircraft-model judge for a 3D modeling benchmark. IMAGE 1 is a screenshot of a candidate 3D model built only from geometric primitives. IMAGE 2 and IMAGE 3 are references showing a real Boeing 747. Judge ONLY the candidate in IMAGE 1 against how well it depicts a real Boeing 747; the references define ground truth, they are not scored. Be strict and literal: describe what is actually visible, never assume hidden parts exist. Score each criterion with an integer 0-10 using the given anchors. If a criterion genuinely cannot be assessed from this camera angle (e.g. landing gear in a top-down view), use null instead of guessing. Reply with STRICT JSON only, no markdown, exactly this shape: {\"scores\": {\"<criterion_id>\": <int 0-10 or null>, ... all 10 ids ...}, \"weakest_visible_feature\": \"<one criterion_id>\", \"notes\": \"<max 60 words of factual observations>\"}",
+  "critic_system_prompt": "You are the critic for a 3D modeling benchmark loop. You receive the per-criterion scores of a candidate Boeing 747 model (built only from Three.js primitives) across nine fixed camera views, plus a 3x3 contact sheet of those views (IMAGE 1). The weakest feature has already been computed deterministically from the scores. Your job: give ONE concrete, geometry-level fix suggestion for that weakest feature that a coder could implement with primitive geometries (positions, dimensions, counts, angles). Do not suggest textures, loaders, or new tooling. Reply with STRICT JSON only: {\"weakest_feature\": \"<criterion_id>\", \"fix_suggestion\": \"<max 120 words, concrete and geometric>\"}",
+  "baseline_builder_prompt": "You are given the Three.js library as the parameter THREE. Write a single self-contained JavaScript ES module that exports exactly one function: `export function buildPlane(THREE)` returning a THREE.Group containing the most realistic Boeing 747 airliner you can build. HARD CONSTRAINTS: use ONLY these geometry classes: BoxGeometry, CylinderGeometry, SphereGeometry, ConeGeometry, TorusGeometry, CapsuleGeometry, LatheGeometry, ExtrudeGeometry. No other geometry classes, no loaders, no textures/images, no imports, no network, no DOM, no eval. Use THREE.Mesh with MeshStandardMaterial colors for the livery. Orientation contract: the nose must point along +X, up is +Y (wings span the Z axis). Aim for: four engines under swept wings, the iconic partial-length upper-deck hump, slender ~70m-proportioned fuselage, ~37.5-degree wing sweep with dihedral, tall vertical stabilizer plus horizontal stabilizers, landing gear (two-wheel nose strut plus four main trucks), window/door lines, and a coherent livery. Every part must be attached (no floating pieces). Reply with ONLY the JavaScript module code inside a single ```javascript code fence."
+}

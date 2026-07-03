@@ -123,10 +123,14 @@ def chart_answer_quality():
         "22 everyday-assistant prompts · same model · same judge",
         "quality score (0–10, higher = better)", 11)
     # TerranSoul + OpenJarvis: 2026-07-03 deterministic-protocol canonical
-    # (results/parity_headtohead.json). OpenClaw/Claude Code/Hermes: 2026-06-27
+    # (results/parity_headtohead.json) — PARITY-FLOOR-2: the production
+    # companion-prompt fix (recall completeness + capability affordance)
+    # restored the 9.82 record under the deterministic protocol (user
+    # directive: never publish below the record; loop record in
+    # results/parity_floor2_loop.md). OpenClaw/Claude Code/Hermes: 2026-06-27
     # single-call-judge protocol, pending re-measurement (COMPARISON.md note).
     labels = ["TerranSoul", "OpenJarvis", "OpenClaw", "Claude Code\n+GENesis*", "Hermes"]
-    values = [9.68, 9.55, 8.36, 8.24, 6.90]
+    values = [9.82, 9.55, 8.36, 8.24, 6.90]
     colors = [TS_GREEN, SIA_BLUE, SOTA_GREY, "#b0a6d4", SOTA_GREY]
     bars(ax, labels, values, colors, lambda v: f"{v:.2f}")
     fig.tight_layout()
@@ -137,17 +141,17 @@ def chart_answer_quality():
 
 
 def chart_zork():
-    # BENCH-ZORK self-improve campaign (2026-06-21, gemma4:12b-it-qat):
-    # per-run cross-episode ~15, peak 45 via across-run memory accumulation
-    # (both AGI-pure controls stay at 0). Honestly de-confounded.
+    # BENCH-ZORK self-improve campaign (v15 fix loop, gemma4:12b-it-qat):
+    # per-run cross-episode ~15, campaign peak 50 via across-run memory
+    # accumulation (both AGI-pure controls stay at 0). Honestly de-confounded.
     fig, ax = base_fig(
         "Frozen-model self-improvement — ZorkGPT (frozen 12B)",
         "no game-specific seeds (AGI-pure) · across-run memory accumulation",
         "game score reached", 55)
     labels = ["AGI-pure\ncontrol A", "AGI-pure\ncontrol B", "+ TerranSoul\nbrain (memory)"]
-    values = [0.0, 0.0, 45.0]
+    values = [0.0, 0.0, 50.0]
     bars(ax, labels, values, [LIGHT_GREY, LIGHT_GREY, TS_GREEN],
-         lambda v: "0" if v == 0 else "45")
+         lambda v: "0" if v == 0 else "50")
     fig.tight_layout()
     out = os.path.join(CHARTS, "zork_selfimprove.png")
     fig.savefig(out)

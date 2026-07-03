@@ -221,8 +221,8 @@
       sub: 'Answer quality 0–10 · same harness, corpus & judge',
       unit: '/10', max: 10,
       bars: [
-        { label: 'TerranSoul · 1.0 s', value: 9.8, kind: 'ts' },
-        { label: 'OpenJarvis · 3.2 s', value: 9.6, kind: 'other' },
+        { label: 'TerranSoul · 1.1 s', value: 9.8, kind: 'ts' },
+        { label: 'OpenJarvis · 3.5 s', value: 9.6, kind: 'other' },
         { label: 'OpenClaw · 38.1 s', value: 8.4, kind: 'other' },
         { label: 'Claude Code+GENesis · 17.5 s', value: 8.2, kind: 'other' },
         { label: 'Hermes · 10.9 s', value: 6.9, kind: 'other' },

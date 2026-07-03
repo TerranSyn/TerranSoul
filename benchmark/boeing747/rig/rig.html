@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Boeing 747 primitives bench rig</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #eef2f7; }
+  #rig-canvas { display: block; width: 1024px; height: 768px; }
+</style>
+<!-- Three.js resolved from the repo's OWN node_modules over the local
+     static server. No CDN — the rig must run fully offline. -->
+<script type="importmap">
+  { "imports": { "three": "/node_modules/three/build/three.module.js" } }
+</script>
+</head>
+<body>
+<canvas id="rig-canvas" width="1024" height="768"></canvas>
+<script type="module">
+  import * as THREE from 'three';
+  import {
+    VIEWS,
+    computeCamera,
+    RENDER_WIDTH,
+    RENDER_HEIGHT,
+    SCENE_BACKGROUND,
+    HEMI_LIGHT,
+    DIR_LIGHT,
+    CAMERA_SPEC_VERSION,
+  } from '/benchmark/boeing747/lib/cameras.mjs';
+
+  // ── FROZEN neutral studio scene ──────────────────────────────────────
+  const canvas = document.getElementById('rig-canvas');
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    preserveDrawingBuffer: true,
+    powerPreference: 'high-performance',
+  });
+  renderer.setPixelRatio(1); // fixed pixel ratio — deterministic framing
+  renderer.setSize(RENDER_WIDTH, RENDER_HEIGHT, false);
+  renderer.toneMapping = THREE.NoToneMapping;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.shadowMap.enabled = false; // no shadows — frozen, deterministic
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(SCENE_BACKGROUND);
+  // Ground plane: OFF (frozen choice — silhouettes judged on neutral bg).
+
+  const hemi = new THREE.HemisphereLight(
+    new THREE.Color(HEMI_LIGHT.sky),
+    new THREE.Color(HEMI_LIGHT.ground),
+    HEMI_LIGHT.intensity,
+  );
+  hemi.position.set(0, 1, 0);
+  scene.add(hemi);
+
+  const dir = new THREE.DirectionalLight(0xffffff, DIR_LIGHT.intensity);
+  dir.position.set(...DIR_LIGHT.direction).normalize();
+  scene.add(dir);
+  scene.add(dir.target); // target stays at origin — light direction is fixed
+
+  const camera = new THREE.PerspectiveCamera(35, RENDER_WIDTH / RENDER_HEIGHT, 0.01, 1e7);
+
+  let bbox = null;
+
+  window.__rig = {
+    specVersion: CAMERA_SPEC_VERSION,
+    threeRevision: THREE.REVISION,
+    viewCount: VIEWS.length,
+
+    /** Load a candidate module source, build the plane, return its bbox. */
+    async loadPlane(source) {
+      const url = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
+      let mod;
+      try {
+        mod = await import(url);
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+      if (typeof mod.buildPlane !== 'function') {
+        throw new Error('candidate module does not export buildPlane');
+      }
+      const group = mod.buildPlane(THREE);
+      if (!group || !group.isObject3D) {
+        throw new Error('buildPlane(THREE) did not return a THREE.Object3D');
+      }
+      // Animations disabled by construction: the rig never starts a
+      // render loop and ignores any onBeforeRender mutation between
+      // explicit renders. One static render per view.
+      scene.add(group);
+      group.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(group);
+      if (box.isEmpty()) throw new Error('candidate produced an empty bounding box');
+      bbox = {
+        min: { x: box.min.x, y: box.min.y, z: box.min.z },
+        max: { x: box.max.x, y: box.max.y, z: box.max.z },
+      };
+      return bbox;
+    },
+
+    /** Position the frozen camera for view 1..9 and render one frame. */
+    setView(viewId) {
+      if (!bbox) throw new Error('no plane loaded');
+      const view = VIEWS.find((v) => v.id === viewId);
+      if (!view) throw new Error(`unknown view ${viewId}`);
+      const pose = computeCamera(view, bbox);
+      camera.fov = pose.fov;
+      camera.up.set(...pose.up);
+      camera.position.set(...pose.position);
+      camera.lookAt(...pose.target);
+      camera.updateProjectionMatrix();
+      renderer.render(scene, camera);
+      return { view: view.key, position: pose.position, target: pose.target };
+    },
+  };
+  window.__rigReady = true;
+</script>
+</body>
+</html>

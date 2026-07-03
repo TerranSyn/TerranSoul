@@ -294,7 +294,12 @@ the **lift to 20** where the bottleneck is memory; the deeper **climb is high-va
 paper §4.3c. (These are honest re-runs, not clean isolated replications — a fresh-brain per-game
 replication would tighten the variance estimate.)
 
-### De-confounding the 10→45 Zork I campaign (fresh task-naïve brain per run, 2026-06-25)
+### De-confounding the 10→45/50 Zork I campaign (fresh task-naïve brain per run, 2026-06-25)
+
+> Snapshot note: this experiment ran when the campaign peak stood at **45**; the
+> continued fix loop later lifted the persistent-brain peak to **50** via the same
+> across-run accumulation mechanism, so the conclusion below is unchanged — read
+> "peak-45" as "the persistent-brain peak (45 at experiment time, later 50)".
 
 The "10 → 45/50, floor 35" headline above was measured on a **persistent** brain across 9
 sequential runs, so it conflated *within-run* cross-episode learning (ep1 → ep3 of a single
@@ -305,7 +310,7 @@ run** (the canonical base seed, zero accumulated Zork rows).
 
 | Brain provenance | Cross-episode scores | Mean | Peak | Reach |
 |---|---|---:|---:|---|
-| Persistent (9 runs, accumulated) | up to 35–45 | best 36.7 | **45** | full rug→trap-door→lamp→cellar chain (descended) |
+| Persistent (9 runs, accumulated) | up to 35–45 | best 36.7 | **45** (at experiment time; later 50) | full rug→trap-door→lamp→cellar chain (descended) |
 | **Fresh task-naïve (per run)** | 10/10/15 then 10/20/15 | **11.7 → 15.0** | **20** | reaches the interior reliably; never re-discovers the descent chain |
 
 The agent reliably reaches the interior on a clean store — the saturated-brain scenic-dead-end
@@ -1278,5 +1283,5 @@ The iter12 result is **publishable** with the following honest framing:
    (500-700 ms per call after the latency fix).
 
 A longer sweep was subsequently superseded by the 12B self-improvement campaign
-(10 → 45 peak across 9 × 3-episode × 300-turn runs; see the research paper §4.3d),
+(10 → 50 peak across the 3-episode × 300-turn fix-loop runs; see the research paper §4.3d),
 which provides the fuller picture of how far the agent progresses independently.

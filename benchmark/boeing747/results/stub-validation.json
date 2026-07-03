@@ -1,0 +1,861 @@
+{
+  "protocol": "boeing747-primitives-vision-bench",
+  "rubric_version": 1,
+  "rubric_sha256": "a1e01f59f49707487d11881a254e50f424cf413e326c405d1f8bf6dff9b20b49",
+  "judge_model": "gemma4:12b-it-qat",
+  "judge_seeds": [
+    7,
+    8,
+    9
+  ],
+  "judge_options": {
+    "temperature": 0,
+    "num_ctx": 8192,
+    "num_predict": 768
+  },
+  "run_id": "stub-validation",
+  "plane_path": "benchmark/boeing747/candidates/stub/plane.js",
+  "plane_sha256": "17a7048a7c712182447268b992d35a518c98d8ad6bb15c1e24434ce95845fc97",
+  "camera_spec_version": 1,
+  "three_revision": "175",
+  "reference_sha256": {
+    "threeview": "dfdcda796acee7a53b9dae988b240f6ef296bade8c7291db0810839d3dfc8573",
+    "side": "429c4e2619c46c3c44999636f2066c1fdc40932ae7af9d5ee6d1dfb6265bb6fc",
+    "front-quarter": "2fb96b22a599fdd2faab4181933a9bfd4c1e91208b5bba2db99bf62cbe5b7fc6",
+    "rear-quarter": "271eb369c819fe59733ba6e2e1324fdda6afd230c508f5892f4d2f48b9d4f236",
+    "planform": "882468d505c324d86598becccfd54198a4a739a5c67682b87dfa23ef5c882ea7",
+    "nose-hump": "18284393e0630dc9bcd3c4f77ac7304f27b9084ef878883bb45e07f92e66fb22"
+  },
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "refs": [
+        "side",
+        "threeview"
+      ],
+      "score": 2.23,
+      "criteria_medians": {
+        "engines_four_underwing": 0,
+        "upper_deck_hump": 3,
+        "fuselage_proportions": 3,
+        "wing_geometry": 0,
+        "empennage": 5,
+        "landing_gear": null,
+        "window_door_lines": 0,
+        "livery_coherence": 3,
+        "silhouette_747": 2,
+        "craftsmanship": 5
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 9592,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 3,
+            "fuselage_proportions": 3,
+            "wing_geometry": 0,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 2,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is extremely primitive. It lacks wings and engines entirely. The fuselage is a simple elongated cylinder with blunt ends, lacking the characteristic nose taper and tail cone of a 747. The 'hump' is a crude blocky protrusion at the rear rather than the front. Only a basic vertical stabilizer is present."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 19721,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 3,
+            "fuselage_proportions": 3,
+            "wing_geometry": 0,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 2,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is extremely primitive. It lacks wings and engines entirely. The fuselage is a simple elongated cylinder with blunt ends, lacking the characteristic nose taper and tail cone of a 747. The 'hump' is a crude blocky protrusion at the rear rather than the front. Only a basic vertical stabilizer is present."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3092,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 3,
+            "fuselage_proportions": 3,
+            "wing_geometry": 0,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 2,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is extremely primitive. It lacks wings and engines entirely. The fuselage is a simple flat cylinder with blunt ends. A crude vertical block represents the tail, and a small protrusion on top attempts to represent the hump but lacks proper proportions or fairings."
+        }
+      ]
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "refs": [
+        "side",
+        "threeview"
+      ],
+      "score": 4.68,
+      "criteria_medians": {
+        "engines_four_underwing": 3,
+        "upper_deck_hump": 5,
+        "fuselage_proportions": 4,
+        "wing_geometry": 5,
+        "empennage": 8,
+        "landing_gear": null,
+        "window_door_lines": 0,
+        "livery_coherence": 5,
+        "silhouette_747": 6,
+        "craftsmanship": 5
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 4939,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 4,
+            "wing_geometry": 5,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 5,
+            "silhouette_747": 6,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model captures the basic 747 silhouette with a partial hump and four engines, though the engines appear as simple blocks. The fuselage is somewhat stubby compared to the reference. There are no window or door details visible on the surface. Craftsmanship shows some rough edges and lack of fine tapering."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3218,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 4,
+            "wing_geometry": 5,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 5,
+            "silhouette_747": 6,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model captures the basic 747 silhouette with a partial hump and four engines, though the engines appear as simple blocks. The fuselage is somewhat stubby compared to the reference. There are no window or door details visible on the surface. Craftsmanship shows some rough edges and lack of smooth fairings at junctions."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3185,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 4,
+            "wing_geometry": 5,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 5,
+            "silhouette_747": 6,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model captures the basic 747 silhouette with a partial hump and four engines, though the engines appear as simple blocks. The fuselage is somewhat stubby compared to the reference. There are no window or door details visible on the surface. Craftsmanship shows some rough edges and lack of smooth fairings at junctions."
+        }
+      ]
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "refs": [
+        "front-quarter",
+        "threeview"
+      ],
+      "score": 2.84,
+      "criteria_medians": {
+        "engines_four_underwing": 0,
+        "upper_deck_hump": 3,
+        "fuselage_proportions": 5,
+        "wing_geometry": 3,
+        "empennage": 5,
+        "landing_gear": null,
+        "window_door_lines": 0,
+        "livery_coherence": 3,
+        "silhouette_747": 2,
+        "craftsmanship": 5
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 4909,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 3,
+            "fuselage_proportions": 5,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 3,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is extremely primitive. It lacks engines entirely and the wings are straight slabs without taper or dihedral. The hump is a crude vertical protrusion rather than a faired upper deck. No windows or doors are present, and it resembles a basic toy plane rather than a Boeing 747."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3083,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 3,
+            "fuselage_proportions": 5,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 2,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is extremely primitive. It lacks engines entirely and the wings are straight slabs without taper or dihedral. The hump is a crude vertical cylinder rather than a faired upper deck. There are no window lines or surface details, making it look like a basic toy or placeholder."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3074,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 3,
+            "fuselage_proportions": 5,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 2,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is extremely primitive. It lacks engines entirely and the wings are straight slabs without taper or dihedral. The hump is a crude vertical cylinder rather than a faired upper deck. There are no window lines or surface details, making it look like a basic toy or placeholder."
+        }
+      ]
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "refs": [
+        "rear-quarter",
+        "threeview"
+      ],
+      "score": null,
+      "criteria_medians": {
+        "engines_four_underwing": null,
+        "upper_deck_hump": null,
+        "fuselage_proportions": null,
+        "wing_geometry": null,
+        "empennage": null,
+        "landing_gear": null,
+        "window_door_lines": null,
+        "livery_coherence": null,
+        "silhouette_747": null,
+        "craftsmanship": null
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 4560,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": null,
+            "upper_deck_hump": null,
+            "fuselage_proportions": null,
+            "wing_geometry": null,
+            "empennage": null,
+            "landing_gear": null,
+            "window_door_lines": null,
+            "livery_coherence": null,
+            "silhouette_747": null,
+            "craftsmanship": null
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The camera angle is a direct head-on rear view of the tail section. From this perspective, the engines, upper deck hump, fuselage proportions, wing geometry, and window lines are not visible or cannot be assessed."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 2797,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": null,
+            "upper_deck_hump": null,
+            "fuselage_proportions": null,
+            "wing_geometry": null,
+            "empennage": null,
+            "landing_gear": null,
+            "window_door_lines": null,
+            "livery_coherence": null,
+            "silhouette_747": null,
+            "craftsmanship": null
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The camera angle is a direct head-on rear view of the tail section. From this perspective, the engines, upper deck hump, fuselage proportions, wing geometry, and window lines are not visible or cannot be assessed."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 2802,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": null,
+            "upper_deck_hump": null,
+            "fuselage_proportions": null,
+            "wing_geometry": null,
+            "empennage": null,
+            "landing_gear": null,
+            "window_door_lines": null,
+            "livery_coherence": null,
+            "silhouette_747": null,
+            "craftsmanship": null
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The camera angle is a direct head-on rear view of the tail section. From this perspective, the engines, upper deck hump, fuselage proportions, wing geometry, and window lines are not visible or cannot be assessed."
+        }
+      ]
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "refs": [
+        "planform",
+        "threeview"
+      ],
+      "score": 1.52,
+      "criteria_medians": {
+        "engines_four_underwing": 0,
+        "upper_deck_hump": 0,
+        "fuselage_proportions": 3,
+        "wing_geometry": 3,
+        "empennage": 0,
+        "landing_gear": null,
+        "window_door_lines": 0,
+        "livery_coherence": 5,
+        "silhouette_747": 0,
+        "craftsmanship": 5
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 5054,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 0,
+            "fuselage_proportions": 3,
+            "wing_geometry": 3,
+            "empennage": 0,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 5,
+            "silhouette_747": 0,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is extremely primitive, consisting of a cylinder for the fuselage and two flat rectangles for wings. It lacks engines, an upper deck hump, tail surfaces (empennage), windows, and any recognizable 747 features. The silhouette is that of a generic, basic aircraft rather than a Boeing 747."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3137,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 0,
+            "fuselage_proportions": 3,
+            "wing_geometry": 3,
+            "empennage": 0,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 5,
+            "silhouette_747": 0,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is a primitive representation consisting of three basic shapes: a cylinder for the fuselage, a flat rectangle for the wings, and a small vertical line at the tail. It lacks engines, an upper deck hump, windows, and any recognizable 747 features."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3066,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 0,
+            "fuselage_proportions": 3,
+            "wing_geometry": 3,
+            "empennage": 0,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 5,
+            "silhouette_747": 0,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is a primitive representation consisting of three basic shapes: a cylinder for the fuselage, a flat rectangle for the wings, and a small vertical line at the tail. It lacks engines, an upper deck hump, windows, and any recognizable 747 features."
+        }
+      ]
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "refs": [
+        "front-quarter",
+        "side"
+      ],
+      "score": 3.44,
+      "criteria_medians": {
+        "engines_four_underwing": 3,
+        "upper_deck_hump": 5,
+        "fuselage_proportions": 4,
+        "wing_geometry": 3,
+        "empennage": 5,
+        "landing_gear": null,
+        "window_door_lines": 0,
+        "livery_coherence": 3,
+        "silhouette_747": 4,
+        "craftsmanship": 2
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 5095,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 4,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 4,
+            "craftsmanship": 2
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model is a very crude geometric approximation. It lacks windows and doors entirely. The wings are flat slabs with no taper or dihedral, the engines are incorrectly placed/shaped, and the fuselage proportions are stubby compared to a real 747. Significant gaps and floating-like intersections suggest poor craftsmanship."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3136,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 4,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 4,
+            "craftsmanship": 2
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model is a very crude geometric approximation. It lacks windows and doors entirely. The wings are flat slabs with no taper or dihedral, the engines are poorly placed shapes, and the fuselage proportions are stubby compared to a real 747. Significant gaps and floating parts indicate poor craftsmanship."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3162,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 4,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 4,
+            "craftsmanship": 2
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model is a very crude geometric approximation. It lacks windows and doors entirely. The wings are flat slabs with no taper or dihedral, the engines are poorly placed shapes, and the fuselage proportions are stubby compared to a real 747. Significant gaps and floating parts indicate poor craftsmanship."
+        }
+      ]
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "refs": [
+        "rear-quarter",
+        "planform"
+      ],
+      "score": 2.03,
+      "criteria_medians": {
+        "engines_four_underwing": 0,
+        "upper_deck_hump": 0,
+        "fuselage_proportions": 3,
+        "wing_geometry": 3,
+        "empennage": 5,
+        "landing_gear": null,
+        "window_door_lines": 0,
+        "livery_coherence": 3,
+        "silhouette_747": 1,
+        "craftsmanship": 5
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 5105,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 0,
+            "fuselage_proportions": 3,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 1,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is a very primitive representation. It lacks engines entirely and has no upper deck hump. The fuselage is a simple cylinder with blunt ends, the wings are flat unswept slabs, and the tail consists of basic rectangular prisms. It does not resemble a Boeing 747."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3255,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 0,
+            "fuselage_proportions": 3,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 1,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is a very crude representation of an aircraft. It lacks engines entirely, has no upper deck hump, and the wings are simple flat slabs without proper sweep or taper. The fuselage is a basic cylinder with blunt ends. It does not resemble a Boeing 747 in any significant way."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3424,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 0,
+            "fuselage_proportions": 3,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 1,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is a very crude representation of an aircraft. It lacks engines entirely, has no upper deck hump, and the wings are simple flat slabs without proper sweep or taper. The fuselage is a basic cylinder with blunt ends. It does not resemble a Boeing 747 in any significant way."
+        }
+      ]
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "refs": [
+        "front-quarter",
+        "side"
+      ],
+      "score": 3.54,
+      "criteria_medians": {
+        "engines_four_underwing": 3,
+        "upper_deck_hump": 5,
+        "fuselage_proportions": 4,
+        "wing_geometry": 3,
+        "empennage": 5,
+        "landing_gear": null,
+        "window_door_lines": 0,
+        "livery_coherence": 3,
+        "silhouette_747": 4,
+        "craftsmanship": 3
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 5119,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 4,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 4,
+            "craftsmanship": 3
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model is a very crude geometric approximation. It lacks windows and doors entirely. The wings are flat slabs with no taper or dihedral, the engines are missing/incorrectly placed, and the fuselage proportions are stubby compared to a real 747. The hump is present but poorly integrated into the body."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3240,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 4,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 4,
+            "craftsmanship": 3
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model is a very crude representation. It lacks windows and doors entirely. The wings are flat slabs with no taper or dihedral, the engines are missing/incorrectly placed, and the fuselage proportions are stubby compared to a real 747. The upper deck hump is present but poorly defined."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3212,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 4,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 4,
+            "craftsmanship": 3
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model is a very crude representation. It lacks windows and doors entirely. The wings are flat slabs with no taper or dihedral, the engines are missing/incorrectly placed, and the fuselage proportions are stubby compared to a real 747. The upper deck hump is present but poorly defined."
+        }
+      ]
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "refs": [
+        "nose-hump",
+        "front-quarter"
+      ],
+      "score": 2.32,
+      "criteria_medians": {
+        "engines_four_underwing": 0,
+        "upper_deck_hump": 0,
+        "fuselage_proportions": 3,
+        "wing_geometry": 3,
+        "empennage": 5,
+        "landing_gear": null,
+        "window_door_lines": 0,
+        "livery_coherence": 3,
+        "silhouette_747": 1,
+        "craftsmanship": 8
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 4965,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 0,
+            "fuselage_proportions": 3,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 2,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is a primitive representation lacking almost all defining 747 characteristics. It features a plain cylindrical fuselage with no hump, no engines, and flat, unswept wings. The tail consists of basic slabs. It resembles a generic toy plane rather than a Boeing 747."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3274,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 0,
+            "fuselage_proportions": 3,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 1,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is a primitive representation lacking almost all defining 747 characteristics. It features no engines, no upper-deck hump (plain tube fuselage), and lacks windows or doors. The wings are straight slabs without taper or dihedral. Only the basic presence of a vertical stabilizer and horizontal surfaces provides any aircraft context."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3235,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 0,
+            "upper_deck_hump": 0,
+            "fuselage_proportions": 3,
+            "wing_geometry": 3,
+            "empennage": 5,
+            "landing_gear": null,
+            "window_door_lines": 0,
+            "livery_coherence": 3,
+            "silhouette_747": 1,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model is a primitive representation lacking almost all defining 747 characteristics. It features no engines, no upper-deck hump (plain tube fuselage), and lacks windows or doors. The wings are straight slabs without taper or dihedral. Only the basic presence of a vertical stabilizer and horizontal surfaces provides any aircraft context."
+        }
+      ]
+    }
+  ],
+  "total_0_100": 28.25,
+  "scored_views": 8,
+  "missing_views": 1,
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 0,
+    "perCriterion": {
+      "engines_four_underwing": 1.13,
+      "upper_deck_hump": 2.63,
+      "fuselage_proportions": 3.63,
+      "wing_geometry": 2.88,
+      "empennage": 4.75,
+      "landing_gear": null,
+      "window_door_lines": 0,
+      "livery_coherence": 3.5,
+      "silhouette_747": 2.5,
+      "craftsmanship": 4.75
+    }
+  },
+  "created_at": "2026-07-03T08:56:41.496Z"
+}

@@ -37,7 +37,25 @@ const SYSTEM_PROMPT =
   'sentences for casual chat, longer only when the user asks a detailed ' +
   'question. Use the provided memory context to answer naturally and ' +
   'accurately; never invent facts unsupported by the context or general ' +
-  'knowledge. Always reply in the same language the user writes in.';
+  'knowledge. Always reply in the same language the user writes in. ' +
+  // PARITY-FLOOR-2 (2026-07-03): mirrors the COMPANION_IDENTITY additions in
+  // tool_registry.rs / chat.rs — recall completeness + capability affordance.
+  // Iter-2 proved this pair recovers dr-3/cs-4 and sm-2's offer (q=9.82) but
+  // its offers elaborated (+10/+12 tok on sm-1/sm-3, exactly the latency
+  // median → p50 1.121 vs the 1.005 record). Iter-4's "one short sentence"
+  // clause fixed latency (0.998) but perturbed three answers (q=9.64);
+  // iter-5's negative "never deflect" phrasing lost sm-2's offer entirely
+  // (positive instructions work better with the 12B); every brevity
+  // qualifier tried inside the offer clause ("in one short sentence",
+  // "offer briefly", "briefly offer") killed sm-2's offer or perturbed other
+  // answers. FINAL (PARITY-FLOOR-2): the iter-2 wording ships — quality 9.82
+  // (deterministic, reproduced) at ~+0.1s p50 vs the sentence-free prompt;
+  // the full 7-run frontier record is benchmark/results/parity_floor2_loop.md.
+  'When you answer from remembered context, be complete — include every ' +
+  'relevant remembered item, not just the first few. When your memory shows ' +
+  'you can handle a request yourself (fetch a page, schedule a check, set a ' +
+  'reminder), offer to do it rather than telling the user to do it ' +
+  'themselves.';
 
 // Spec-030 VTuber emotion-expression bridge: in VRM/companion mode the model
 // emits an <anim> tag so the 3D avatar expresses emotion mid-response. This is

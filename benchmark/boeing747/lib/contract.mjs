@@ -1,0 +1,91 @@
+// FROZEN candidate contract check for the Boeing 747 primitives vision
+// benchmark. Pure functions only — covered by vitest (contract.test.mjs).
+//
+// Candidate contract:
+//   - a single ES module exporting `export function buildPlane(THREE)` that
+//     returns a THREE.Group;
+//   - PRIMITIVES ONLY: Box/Cylinder/Sphere/Cone/Torus/Capsule/Lathe/Extrude
+//     geometries (no loaders, no hand-rolled BufferGeometry);
+//   - self-contained: no imports, no network, no DOM, no dynamic code —
+//     the module executes inside the rig page (same class of source gating
+//     as the repo's execute_code checks).
+//   - orientation: nose along +X, up +Y (see cameras.mjs).
+
+export const ALLOWED_GEOMETRIES = [
+  'BoxGeometry',
+  'CylinderGeometry',
+  'SphereGeometry',
+  'ConeGeometry',
+  'TorusGeometry',
+  'CapsuleGeometry',
+  'LatheGeometry',
+  'ExtrudeGeometry',
+];
+
+export const MAX_SOURCE_BYTES = 512 * 1024;
+
+/** [regex, human-readable reason] — any match is a contract violation. */
+const FORBIDDEN_PATTERNS = [
+  [/^\s*import\b/m, 'static import (candidate must be self-contained)'],
+  [/\bimport\s*\(/, 'dynamic import()'],
+  [/\brequire\s*\(/, 'require()'],
+  [/\bfetch\s*\(/, 'fetch() network call'],
+  [/\bXMLHttpRequest\b/, 'XMLHttpRequest network call'],
+  [/\bWebSocket\b/, 'WebSocket network call'],
+  [/\bEventSource\b/, 'EventSource network call'],
+  [/\bnavigator\b/, 'navigator access'],
+  [/\bdocument\b/, 'DOM access (document)'],
+  [/\bwindow\b/, 'DOM access (window)'],
+  [/\bglobalThis\b/, 'globalThis access'],
+  [/\blocalStorage\b|\bsessionStorage\b|\bindexedDB\b/, 'storage access'],
+  [/\beval\s*\(/, 'eval()'],
+  [/\bnew\s+Function\b|\bFunction\s*\(/, 'Function constructor'],
+  [/\bWorker\b/, 'Worker'],
+  [/\bprocess\b/, 'process access'],
+  [/\w*Loader\b/, 'asset loader (GLTF/OBJ/texture/file loaders are banned)'],
+  [/\bhttps?:\/\//, 'http(s) URL'],
+  [/\bwss?:\/\//, 'websocket URL'],
+  [/\bdata:\s*[a-z]+\//i, 'data: URI payload'],
+];
+
+/**
+ * Validate a candidate plane.js source string against the frozen contract.
+ * @returns {{ok: boolean, violations: string[]}}
+ */
+export function validatePlaneSource(source) {
+  const violations = [];
+  if (typeof source !== 'string' || source.trim().length === 0) {
+    return { ok: false, violations: ['empty source'] };
+  }
+  const bytes = new TextEncoder().encode(source).length;
+  if (bytes > MAX_SOURCE_BYTES) {
+    violations.push(`source too large: ${bytes} bytes > ${MAX_SOURCE_BYTES}`);
+  }
+
+  const exportsBuildPlane =
+    /export\s+(?:async\s+)?function\s+buildPlane\s*\(/.test(source) ||
+    /export\s*\{[^}]*\bbuildPlane\b[^}]*\}/.test(source) ||
+    /export\s+const\s+buildPlane\s*=/.test(source);
+  if (!exportsBuildPlane) {
+    violations.push('missing `export function buildPlane(THREE)`');
+  }
+
+  for (const [pattern, reason] of FORBIDDEN_PATTERNS) {
+    const match = source.match(pattern);
+    if (match) violations.push(`forbidden token \`${match[0].trim()}\`: ${reason}`);
+  }
+
+  // Geometry whitelist: every *Geometry identifier used must be a primitive.
+  // This bans PlaneGeometry, TorusKnotGeometry, raw BufferGeometry, etc.
+  const geometryIds = new Set();
+  for (const m of source.matchAll(/\b(\w+Geometry)\b/g)) geometryIds.add(m[1]);
+  for (const id of geometryIds) {
+    if (!ALLOWED_GEOMETRIES.includes(id)) {
+      violations.push(
+        `non-primitive geometry \`${id}\` (allowed: ${ALLOWED_GEOMETRIES.join(', ')})`,
+      );
+    }
+  }
+
+  return { ok: violations.length === 0, violations };
+}

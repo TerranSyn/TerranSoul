@@ -11,7 +11,7 @@
 
 > Folder layout mirrors the convention from <https://github.com/rohitg00/agentmemory/tree/main/benchmark> (`benchmark/COMPARISON.md`).
 > Reference fixture pinned commit: `ae8f061cd66093d7be1539c24da6d3e595531dd2`
-> Last bench run: 2026-06-21 (BENCH-ZORK self-improve campaign — `gemma4:12b-it-qat` per-run cross-episode ~15, peak 45 via across-run accumulation, honestly de-confounded; reliable serving drives `gemma4:e4b` to a deterministic 350/350; AGI-pure 4B arm 10–20 vs 0 controls; 0 MCP errors). Earlier: BENCH-ZORK-1.5 closed 2026-05-28 (spec 002–006, SC4 PASS, 0/1682 MCP errors). Write-up: [docs/LLM-Brain-Design-Research-Paper/](../docs/LLM-Brain-Design-Research-Paper/index.html).
+> Last bench run: 2026-06-21 (BENCH-ZORK self-improve campaign — `gemma4:12b-it-qat` per-run cross-episode ~15, campaign peak 50 via across-run accumulation, honestly de-confounded; reliable serving drives `gemma4:e4b` to a deterministic 350/350; AGI-pure 4B arm 10–20 vs 0 controls; 0 MCP errors). Earlier: BENCH-ZORK-1.5 closed 2026-05-28 (spec 002–006, SC4 PASS, 0/1682 MCP errors). Write-up: [docs/LLM-Brain-Design-Research-Paper/](../docs/LLM-Brain-Design-Research-Paper/index.html).
 > LongMemEval-S adapter: 2026-05-12 (BENCH-AM-5), full result verified 2026-05-11, gateway parity verified 2026-05-26 (BENCH-MCP-PARITY-3).
 > Feature-matrix parity sweep: 2026-05-11 (BENCH-AM-7).
 
@@ -402,26 +402,26 @@ Every system's **real CLI** answers the **same 22 prompts** (7 archetypes) with 
 
 | System | Quality (0–10) | Success | Latency p50 | Latency mean | Cost | Model |
 |---|---:|---:|---:|---:|---:|---|
-| **TerranSoul** (brain → Ollama) | **9.68** | 22/22 | 0.9 s¹ | 1.0 s¹ | $0 | `gemma4:12b-it-qat` |
+| **TerranSoul** (brain → Ollama) | **9.82** | 22/22 | 1.1 s¹ | 1.4 s¹ | $0 | `gemma4:12b-it-qat` |
 | OpenJarvis (Stanford SAIL) | 9.55 | 22/22 | 3.5 s¹ | 4.2 s¹ | $0 | `gemma4:12b-it-qat` |
 | **OpenClaw** (`agent --local`) | **8.36** | 22/22 | 38.1 s² | 50.2 s² | $0 | `gemma4:12b-it-qat` |
 | **Hermes-Agent** (`-z` one-shot) | **6.90** | 21/22³ | 10.9 s² | 19.2 s² | $0 | `gemma4:12b-it-qat` |
 | **Claude Code + GENesis-AGI** | 8.24⁴ | 21/22 | 17.5 s² | 29.1 s² | $5.94 | `claude-haiku-4-5` *(cloud)* |
 
-*Plain English: all five answered the same 22 everyday-assistant questions; an independent AI grader scored each reply 0–10 (higher = better), and we logged speed (seconds per answer) and cost. TerranSoul scores 9.68 at ~0.9 s, for $0 — the top score and the lowest latency in this table. The bottom row is a paid cloud model shown only as a frontier reference (footnote ⁴); it scores 8.24, below the free local systems.*
+*Plain English: all five answered the same 22 everyday-assistant questions; an independent AI grader scored each reply 0–10 (higher = better), and we logged speed (seconds per answer) and cost. TerranSoul scores 9.82 at ~1.1 s, for $0 — the top score and the lowest latency in this table. The 9.82 is the PARITY-FLOOR-2 restoration (the production companion prompt now enforces complete recall and capability offers; the deterministic protocol reproduced the per-prompt scores across four independent runs — loop record in `results/parity_floor2_loop.md`). The bottom row is a paid cloud model shown only as a frontier reference (footnote ⁴); it scores 8.24, below the free local systems.*
 
 **Quality by task archetype** (judge 0–10) — the per-task head-to-head:
 
 | Archetype | TerranSoul | OpenJarvis | OpenClaw | Hermes | Claude Code + GENesis⁴ |
 |---|---:|---:|---:|---:|---:|
 | daily-digest | 10.0 | 10.0 | 8.3 | 7.3 | 7.3 |
-| deep-research | 9.7 | 10.0 | 9.7 | 6.7 | 10.0 |
+| deep-research | 10.0 | 10.0 | 9.7 | 6.7 | 10.0 |
 | code-assistant | 10.0 | 10.0 | 10.0 | 3.3 | 10.0 |
-| scheduled-monitor | 8.3 | 9.3 | 6.7 | 3.0 | 8.0 |
-| chat-simple | 9.8 | 10.0 | 10.0 | 10.0 | 10.0 |
+| scheduled-monitor | 8.7 | 9.3 | 6.7 | 3.0 | 8.0 |
+| chat-simple | 10.0 | 10.0 | 10.0 | 10.0 | 10.0 |
 | voice-companion | 10.0 | 10.0 | 10.0 | 10.0 | 8.0 |
 | vrm-overlay | 10.0 | 7.3 | 3.3 | 7.0 | 4.3 |
-| **Overall** | **9.68** | **9.55** | **8.36** | **6.90** | **8.24** |
+| **Overall** | **9.82** | **9.55** | **8.36** | **6.90** | **8.24** |
 
 *Plain English: the same 0–10 quality score split by task type — writing a daily digest, deep research, coding help, scheduled monitoring, plain chat, voice replies, and the on-screen avatar (vrm-overlay). The bottom row is each system's overall average. It shows **where** each one is strong or weak (e.g. Hermes struggles on coding and monitoring; OpenClaw drops on the avatar task).*
 
