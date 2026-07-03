@@ -1,0 +1,155 @@
+{
+  "benchmark": "MILLION-RESUME-BENCH sample-300 (claude-sonnet5)",
+  "generated_at": "2026-07-03T03:21:49.358Z",
+  "sample_dir": "D:\\Git\\ts-jdbench-wt\\target-copilot-bench\\jdbench\\sample-300",
+  "label": "claude-sonnet5",
+  "wall_seconds_total": 148.7,
+  "notes": "In-context pass: read all 300 resumes (6 Read batches), no index; ranked top-20 per JD by JD criteria extracted from resume text. Gold/meta files not consulted.",
+  "results": [
+    {
+      "system": "claude-sonnet5",
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "gold_size": 12,
+      "ranked": 20,
+      "recall_at_10": {
+        "capped": 1,
+        "raw": 0.8333333333333334,
+        "hits": 10
+      },
+      "recall_at_20": {
+        "capped": 1,
+        "raw": 1,
+        "hits": 12
+      },
+      "precision_at_10": 1,
+      "ndcg_at_10": 1,
+      "gold_hits_by_lang": {
+        "en": 7,
+        "zh": 1,
+        "ko": 1,
+        "vi": 2,
+        "es": 1
+      },
+      "retrieved_top_20": [
+        "res-309595",
+        "res-567987",
+        "res-276142",
+        "res-677806",
+        "res-303215",
+        "res-919782",
+        "res-231080",
+        "res-228003",
+        "res-567975",
+        "res-200299",
+        "res-306543",
+        "res-174542",
+        "res-421673",
+        "res-446744",
+        "res-523448",
+        "res-366786",
+        "res-875428",
+        "res-261415",
+        "res-649255",
+        "res-801407"
+      ]
+    },
+    {
+      "system": "claude-sonnet5",
+      "jd_id": "jd-vi-data-engineering",
+      "jd_lang": "vi",
+      "gold_size": 10,
+      "ranked": 20,
+      "recall_at_10": {
+        "capped": 1,
+        "raw": 1,
+        "hits": 10
+      },
+      "recall_at_20": {
+        "capped": 1,
+        "raw": 1,
+        "hits": 10
+      },
+      "precision_at_10": 1,
+      "ndcg_at_10": 1,
+      "gold_hits_by_lang": {
+        "ko": 1,
+        "en": 3,
+        "vi": 2,
+        "zh": 1,
+        "fr": 2,
+        "es": 1
+      },
+      "retrieved_top_20": [
+        "res-595885",
+        "res-80196",
+        "res-347576",
+        "res-701573",
+        "res-320407",
+        "res-838996",
+        "res-935621",
+        "res-748261",
+        "res-637825",
+        "res-274057",
+        "res-95855",
+        "res-546757",
+        "res-6",
+        "res-948089",
+        "res-471404",
+        "res-667020",
+        "res-665940",
+        "res-17878",
+        "res-496350",
+        "res-909856"
+      ]
+    },
+    {
+      "system": "claude-sonnet5",
+      "jd_id": "jd-ja-mobile",
+      "jd_lang": "ja",
+      "gold_size": 10,
+      "ranked": 20,
+      "recall_at_10": {
+        "capped": 1,
+        "raw": 1,
+        "hits": 10
+      },
+      "recall_at_20": {
+        "capped": 1,
+        "raw": 1,
+        "hits": 10
+      },
+      "precision_at_10": 1,
+      "ndcg_at_10": 1,
+      "gold_hits_by_lang": {
+        "ja": 3,
+        "en": 3,
+        "vi": 1,
+        "ko": 2,
+        "fr": 1
+      },
+      "retrieved_top_20": [
+        "res-90891",
+        "res-515062",
+        "res-60641",
+        "res-576886",
+        "res-130906",
+        "res-50306",
+        "res-845731",
+        "res-30389",
+        "res-739116",
+        "res-404103",
+        "res-747782",
+        "res-380557",
+        "res-152529",
+        "res-496349",
+        "res-243313",
+        "res-952788",
+        "res-50002",
+        "res-333575",
+        "res-759987",
+        "res-314891"
+      ]
+    }
+  ]
+}

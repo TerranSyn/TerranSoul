@@ -1,0 +1,190 @@
+{
+  "benchmark": "MILLION-RESUME-BENCH sample-300 (TerranSoul)",
+  "generated_at": "2026-07-03T03:18:41.542Z",
+  "sample_dir": "D:\\Git\\ts-jdbench-wt\\target-copilot-bench\\jdbench\\sample-300",
+  "sample_size": 300,
+  "systems": [
+    "rrf"
+  ],
+  "top_k": 100,
+  "query_runs": 5,
+  "ingest": {
+    "rows": 300,
+    "seconds": 0.047
+  },
+  "wall_seconds_total": 3.042,
+  "results": [
+    {
+      "system": "rrf",
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "gold_size": 12,
+      "latency_ms": {
+        "p50": 0.92,
+        "p95": 691.69,
+        "all": [
+          864.35,
+          0.92,
+          0.8,
+          1.06,
+          0.81
+        ]
+      },
+      "recall_at_10": {
+        "capped": 0.7,
+        "raw": 0.5833333333333334,
+        "hits": 7
+      },
+      "recall_at_20": {
+        "capped": 0.5833333333333334,
+        "raw": 0.5833333333333334,
+        "hits": 7
+      },
+      "precision_at_10": 0.7,
+      "ndcg_at_10": 0.800693766409882,
+      "gold_hits_by_lang": {
+        "en": 7,
+        "vi": 2,
+        "es": 1
+      },
+      "retrieved_top_20": [
+        "res-228003",
+        "res-567975",
+        "res-306543",
+        "res-309595",
+        "res-231080",
+        "res-567987",
+        "res-919782",
+        "res-161634",
+        "res-523448",
+        "res-98505",
+        "res-288538",
+        "res-720987",
+        "res-604276",
+        "res-685083",
+        "res-541120",
+        "res-207119",
+        "res-945854",
+        "res-909856",
+        "res-35631",
+        "res-649255"
+      ]
+    },
+    {
+      "system": "rrf",
+      "jd_id": "jd-vi-data-engineering",
+      "jd_lang": "vi",
+      "gold_size": 10,
+      "latency_ms": {
+        "p50": 0.99,
+        "p95": 827.72,
+        "all": [
+          1034.37,
+          1.11,
+          0.98,
+          0.86,
+          0.99
+        ]
+      },
+      "recall_at_10": {
+        "capped": 0.1,
+        "raw": 0.1,
+        "hits": 1
+      },
+      "recall_at_20": {
+        "capped": 0.2,
+        "raw": 0.2,
+        "hits": 2
+      },
+      "precision_at_10": 0.1,
+      "ndcg_at_10": 0.08514311764162098,
+      "gold_hits_by_lang": {
+        "vi": 2,
+        "en": 3,
+        "ko": 1,
+        "fr": 2,
+        "zh": 1,
+        "es": 1
+      },
+      "retrieved_top_20": [
+        "res-471404",
+        "res-849685",
+        "res-274093",
+        "res-299408",
+        "res-701573",
+        "res-174542",
+        "res-224403",
+        "res-899452",
+        "res-774513",
+        "res-824774",
+        "res-546757",
+        "res-698473",
+        "res-496349",
+        "res-647490",
+        "res-748261",
+        "res-372760",
+        "res-6",
+        "res-446744",
+        "res-324171",
+        "res-622524"
+      ]
+    },
+    {
+      "system": "rrf",
+      "jd_id": "jd-ja-mobile",
+      "jd_lang": "ja",
+      "gold_size": 10,
+      "latency_ms": {
+        "p50": 0.55,
+        "p95": 111.54,
+        "all": [
+          139.26,
+          0.68,
+          0.55,
+          0.47,
+          0.47
+        ]
+      },
+      "recall_at_10": {
+        "capped": 0.3,
+        "raw": 0.3,
+        "hits": 3
+      },
+      "recall_at_20": {
+        "capped": 0.4,
+        "raw": 0.4,
+        "hits": 4
+      },
+      "precision_at_10": 0.3,
+      "ndcg_at_10": 0.30701473034246535,
+      "gold_hits_by_lang": {
+        "vi": 1,
+        "ja": 1,
+        "en": 2,
+        "ko": 1
+      },
+      "retrieved_top_20": [
+        "res-44684",
+        "res-60641",
+        "res-75015",
+        "res-90891",
+        "res-16",
+        "res-125459",
+        "res-130906",
+        "res-143519",
+        "res-105345",
+        "res-351989",
+        "res-144728",
+        "res-238705",
+        "res-515062",
+        "res-286545",
+        "res-855233",
+        "res-640312",
+        "res-675947",
+        "res-375750",
+        "res-747782",
+        "res-401341"
+      ]
+    }
+  ]
+}
