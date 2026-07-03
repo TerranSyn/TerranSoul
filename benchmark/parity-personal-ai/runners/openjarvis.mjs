@@ -81,6 +81,9 @@ function jarvisAsk(query) {
   const args = [
     'run', '--project', OJ, 'jarvis', 'ask', query,
     '-m', MODEL,
+    '-t', '0',           // GEN-DETERMINISM-1: greedy decoding, same policy as
+                         // the TerranSoul side (temperature 0) — deterministic
+                         // answers so the canonical gate is reproducible.
     '--no-stream',
     '--no-context',      // OJ memory is empty; context is injected inline
     '--agent', '',       // direct-to-engine: single inference pass

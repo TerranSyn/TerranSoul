@@ -4,16 +4,18 @@
  * Unlike runners/terransoul.mjs (retrieval-only — returns raw brain_search
  * snippets), this runner exercises TerranSoul's REAL assistant pipeline:
  *   1. brain_search over the live brain (hybrid RAG, 6-signal + RRF)  ← timed
- *   2. assemble context: the fixture's ground-truth context_seed + the
- *      top brain snippets TerranSoul actually retrieved
+ *      (latency metric only — see EQUAL-CONTEXT-1 in buildContext)
+ *   2. assemble context: the fixture's ground-truth context_seed —
+ *      identical to what the OpenJarvis side receives
  *   3. generate the answer with gemma4:12b-it-qat via Ollama /api/chat
  *      (think:false — thinking models otherwise burn the budget and return
- *      empty)                                                         ← timed
+ *      empty; temperature 0 per GEN-DETERMINISM-1)                    ← timed
  *
  * Same model + same injected context_seed as the OpenJarvis side, so the
- * quality comparison is apples-to-apples; TerranSoul additionally leverages
- * its populated brain (an honestly-earned advantage). Latency is reported
- * as retrieve + generate (TerranSoul's real end-to-end).
+ * quality comparison is apples-to-apples. Latency is reported as
+ * retrieve + generate (TerranSoul's real end-to-end). Native
+ * retrieval-in-the-loop quality is measured by the separate
+ * PARITY-RETRIEVAL-LOOP bench against an isolated, fixture-seeded brain.
  */
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
@@ -111,9 +113,16 @@ async function ollamaGenerate(context, input, systemPrompt = SYSTEM_PROMPT) {
         ],
         stream: false,
         think: false,
-        // 0.7 matches TerranSoul's real streaming default (was 0.0, which
-        // under-represented the assistant's natural style vs OpenJarvis).
-        options: { temperature: 0.7, num_predict: 512 },
+        // GEN-DETERMINISM-1 (2026-07-03): temperature 0 (greedy), matching the
+        // OpenJarvis side's `-t 0` — the SAME generation policy for both
+        // stacks. The earlier 0.7 (TerranSoul's streaming default, chosen by
+        // PARITY-RUNNER-FAIR 2026-06-08) made every run a dice roll: measured
+        // across the 07-01/07-03 reruns, sampled draws randomly dropped
+        // context facts (ca-1 lost WAL+pooling twice; one sm-1 draw denied a
+        // capability the context grants), while greedy decoding reproducibly
+        // includes them. A never-regress canonical gate requires deterministic
+        // generation; style is unchanged in kind, only un-randomized.
+        options: { temperature: 0.0, num_predict: 512 },
       }),
       signal: AbortSignal.timeout(GEN_TIMEOUT),
     });
@@ -135,15 +144,29 @@ async function ollamaGenerate(context, input, systemPrompt = SYSTEM_PROMPT) {
   }
 }
 
-function buildContext(prompt, snippets) {
-  // Mirror TerranSoul's real context-pack format (context_pack.rs:
-  // [RETRIEVED CONTEXT] / [LONG-TERM MEMORY] blocks) so the model sees memory
-  // the way the production pipeline injects it.
+function buildContext(prompt) {
+  // Mirror TerranSoul's real context-pack format (context_pack.rs
+  // [LONG-TERM MEMORY] block) so the model sees memory the way the
+  // production pipeline injects it.
+  //
+  // EQUAL-CONTEXT-1 (2026-07-03): live-brain snippets are NO LONGER appended
+  // to the generation context. The OpenJarvis side already runs
+  // `--no-context` because "OJ memory is empty; context is injected inline" —
+  // the identical argument applies here: the live companion brain contains
+  // the DEVELOPER's memories, not the fixture user's, so its top-k for
+  // fixture queries is corpus-state-dependent noise (measured 2026-07-03:
+  // a "bioluminescent fungi" fixture query returned prospective-memory /
+  // pet-mode dev lessons at rank-score 1.0, and those distractors pulled
+  // greedy decoding away from seeded facts — ca-1 lost WAL+pooling).
+  // Both stacks now generate from the SAME injected context_seed and
+  // nothing else, which also matches the canonical 2026-06-07 artifact's
+  // effective behaviour (its answers reproduce seed-only greedy output).
+  // brain_search is still called and timed — retrieval_p50_s remains a real,
+  // reported metric of TerranSoul's live retrieval; native
+  // retrieval-in-the-loop quality is the separate PARITY-RETRIEVAL-LOOP
+  // bench (ingest-fixtures.mjs + run-retrieval-bench.mjs, isolated brain).
   const seed = prompt.context_seed ? `[LONG-TERM MEMORY]\n${prompt.context_seed}` : '';
-  const extra = snippets.length
-    ? `\n[RETRIEVED CONTEXT]\n- ${snippets.join('\n- ')}`
-    : '';
-  return `${seed}${extra}`.trim() || '[LONG-TERM MEMORY]\n(none)';
+  return seed || '[LONG-TERM MEMORY]\n(none)';
 }
 
 export async function warmup() {
@@ -167,8 +190,10 @@ export async function runFixture(fixturePath) {
 
   const results = [];
   for (const prompt of fixture.prompts) {
+    // Timed for the retrieval_p50_s metric; snippets intentionally unused in
+    // the generation context (EQUAL-CONTEXT-1 — see buildContext).
     const search = await brainSearch(baseUrl, token, prompt.input, topK);
-    const ctx = buildContext(prompt, search.snippets);
+    const ctx = buildContext(prompt);
     const gen = await ollamaGenerate(ctx, prompt.input, systemPrompt);
     results.push({
       id: prompt.id,

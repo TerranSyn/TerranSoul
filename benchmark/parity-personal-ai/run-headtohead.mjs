@@ -82,7 +82,7 @@ async function runSystem(name, judgeModel, judgeOn) {
 
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i];
-      let score = -1, reason = 'judge off';
+      let score = -1, reason = 'judge off', judgeScores = [];
       if (judgeOn && r.success) {
         const jr = await judgeResponse({
           prompt: fixture.prompts[i].input,
@@ -91,9 +91,9 @@ async function runSystem(name, judgeModel, judgeOn) {
           model: judgeModel,
           context: fixture.prompts[i].context_seed,
         });
-        score = jr.score; reason = jr.reason;
+        score = jr.score; reason = jr.reason; judgeScores = jr.scores ?? [];
       }
-      perPrompt.push({ ...r, score, reason });
+      perPrompt.push({ ...r, score, reason, judge_scores: judgeScores });
       console.log(`    ${r.success ? '✓' : '✗'} ${r.id}: ${r.latency != null ? r.latency.toFixed(2) + 's' : 'n/a'}  ${score >= 0 ? 'q=' + score : '—'}`);
     }
   }
@@ -137,6 +137,7 @@ async function main() {
     judge_model: judgeOn ? opts.judgeModel : null,
     notes: {
       protocol: 'Both stacks answer the same 22 prompts (7 archetypes) with the same model + same injected context_seed; single generation pass; judged 0–10 by gemma4:12b-it-qat.',
+      protocol_notes: 'DETERMINISTIC PROTOCOL (2026-07-03). GEN-DETERMINISM-1: both stacks generate at temperature 0 (TerranSoul Ollama options, OpenJarvis `-t 0`) — forensics across the 2026-06-07/07-01/07-03 runs showed unseeded temperature-0.7 sampling was the dominant run-to-run variance (draws randomly dropped context facts; one draw denied a capability the context grants), and greedy decoding reproducibly includes them. EQUAL-CONTEXT-1: both stacks generate from the SAME injected context_seed and nothing else — the TerranSoul side no longer appends live-brain snippets (the live corpus holds developer memories, not the fixture user memories; its top-k for fixture queries is corpus-state-dependent noise — the same reason the OpenJarvis side runs --no-context); brain_search is still timed for retrieval_p50_s. JUDGE-STABILITY-1: each answer is scored by 3 judge repeats (temperature 0.3, per-repeat seeds 7/8/9) reduced by MEDIAN (recorded as judge_scores), plus a rubric-calibration line (criteria apply only to what the prompt asked). Identical treatment for every system. The MCP-RERANK-1 rerank bound was exonerated: ground-truth context_seed is always injected; the 07-01 run had all 22 retrieval calls pinned at ~4.2s (budget exhausted + fallback) with no quality effect distinguishable from the 07-03 rerank-off run.',
       latency: 'Inference latency (excludes uv subprocess cold-start for OpenJarvis CLI invocation).',
       energy: 'n/a — RTX 3080 Ti does not expose power.draw via NVML/nvidia-smi; not fabricated.',
       usd: '$0 — both fully local.',

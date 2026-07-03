@@ -32,7 +32,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 
 | System | Category | R@5 | R@10 | R@20 | NDCG@10 | MRR | Quality 0–10 | Success | Latency p50 | Cost | Benchmark |
 |---|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|---|
-| **🧠 TerranSoul** (this repo) | Memory + RAG + agent | **98.6 %** | **99.8 %** | **100.0 %** | **88.8 %** | **89.1 %** | **9.8** | 100.0 % | **1.0 s** | $0 | LongMemEval-S + parity |
+| **🧠 TerranSoul** (this repo) | Memory + RAG + agent | **98.6 %** | **99.8 %** | **100.0 %** | **88.8 %** | **89.1 %** | **9.7** | 100.0 % | **0.9 s** | $0 | LongMemEval-S + parity |
 | *— Memory systems —* | | | | | | | | | | | |
 | agentmemory | Memory | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | — | — | — | — | LongMemEval-S |
 | MemPalace | Memory | ~96.6 % | ~97.6 % | — | — | — | — | — | — | — | LongMemEval-S |
@@ -398,36 +398,38 @@ Legend: ✅ ships · ◐ partial / planned · ❌ missing or not-a-goal · — u
 
 #### Measured head-to-head (parity-personal-ai)
 
-Every system's **real CLI** answers the **same 22 prompts** (7 archetypes) with the **same injected context** and the **same 0–10 LLM judge** (`gemma4:12b-it-qat`), measured with our internal benchmark harness. The **Model** column is the key: the four `gemma4:12b-it-qat` rows are a like-for-like *pipeline* comparison; **Claude Code + GENesis-AGI** runs a different (cloud) model and is a **frontier reference — not directly comparable** (see ⁴).
+Every system's **real CLI** answers the **same 22 prompts** (7 archetypes) with the **same injected context** and the **same 0–10 LLM judge** (`gemma4:12b-it-qat`), measured with our internal benchmark harness. The TerranSoul and OpenJarvis rows are the **2026-07-03 deterministic-protocol canonical** (generation temperature 0 for both stacks; judge = median of 3 repeats at temperature 0.3, seeds 7/8/9, rubric-calibration line — see `protocol_notes` in `results/parity_headtohead.json`); the OpenClaw / Hermes / Claude Code rows were measured 2026-06-27 under the earlier single-call-judge protocol and are pending re-measurement. The **Model** column is the key: the four `gemma4:12b-it-qat` rows are a like-for-like *pipeline* comparison; **Claude Code + GENesis-AGI** runs a different (cloud) model and is a **frontier reference — not directly comparable** (see ⁴).
 
 | System | Quality (0–10) | Success | Latency p50 | Latency mean | Cost | Model |
 |---|---:|---:|---:|---:|---:|---|
-| **TerranSoul** (brain → Ollama) | **9.82** | 22/22 | 1.0 s¹ | 1.0 s¹ | $0 | `gemma4:12b-it-qat` |
-| OpenJarvis (Stanford SAIL) | 9.55 | 22/22 | 3.2 s¹ | 4.2 s¹ | $0 | `gemma4:12b-it-qat` |
+| **TerranSoul** (brain → Ollama) | **9.68** | 22/22 | 0.9 s¹ | 1.0 s¹ | $0 | `gemma4:12b-it-qat` |
+| OpenJarvis (Stanford SAIL) | 9.55 | 22/22 | 3.5 s¹ | 4.2 s¹ | $0 | `gemma4:12b-it-qat` |
 | **OpenClaw** (`agent --local`) | **8.36** | 22/22 | 38.1 s² | 50.2 s² | $0 | `gemma4:12b-it-qat` |
 | **Hermes-Agent** (`-z` one-shot) | **6.90** | 21/22³ | 10.9 s² | 19.2 s² | $0 | `gemma4:12b-it-qat` |
 | **Claude Code + GENesis-AGI** | 8.24⁴ | 21/22 | 17.5 s² | 29.1 s² | $5.94 | `claude-haiku-4-5` *(cloud)* |
 
-*Plain English: all five answered the same 22 everyday-assistant questions; an independent AI grader scored each reply 0–10 (higher = better), and we logged speed (seconds per answer) and cost. TerranSoul scores 9.82 at ~1 s, for $0 — the top score and the lowest latency in this table. The bottom row is a paid cloud model shown only as a frontier reference (footnote ⁴); it scores 8.24, below the free local systems.*
+*Plain English: all five answered the same 22 everyday-assistant questions; an independent AI grader scored each reply 0–10 (higher = better), and we logged speed (seconds per answer) and cost. TerranSoul scores 9.68 at ~0.9 s, for $0 — the top score and the lowest latency in this table. The bottom row is a paid cloud model shown only as a frontier reference (footnote ⁴); it scores 8.24, below the free local systems.*
 
 **Quality by task archetype** (judge 0–10) — the per-task head-to-head:
 
 | Archetype | TerranSoul | OpenJarvis | OpenClaw | Hermes | Claude Code + GENesis⁴ |
 |---|---:|---:|---:|---:|---:|
 | daily-digest | 10.0 | 10.0 | 8.3 | 7.3 | 7.3 |
-| deep-research | 10.0 | 10.0 | 9.7 | 6.7 | 10.0 |
+| deep-research | 9.7 | 10.0 | 9.7 | 6.7 | 10.0 |
 | code-assistant | 10.0 | 10.0 | 10.0 | 3.3 | 10.0 |
-| scheduled-monitor | 9.0 | 9.3 | 6.7 | 3.0 | 8.0 |
+| scheduled-monitor | 8.3 | 9.3 | 6.7 | 3.0 | 8.0 |
 | chat-simple | 9.8 | 10.0 | 10.0 | 10.0 | 10.0 |
 | voice-companion | 10.0 | 10.0 | 10.0 | 10.0 | 8.0 |
 | vrm-overlay | 10.0 | 7.3 | 3.3 | 7.0 | 4.3 |
-| **Overall** | **9.82** | **9.55** | **8.36** | **6.90** | **8.24** |
+| **Overall** | **9.68** | **9.55** | **8.36** | **6.90** | **8.24** |
 
 *Plain English: the same 0–10 quality score split by task type — writing a daily digest, deep research, coding help, scheduled monitoring, plain chat, voice replies, and the on-screen avatar (vrm-overlay). The bottom row is each system's overall average. It shows **where** each one is strong or weak (e.g. Hermes struggles on coding and monitoring; OpenClaw drops on the avatar task).*
 
 ¹ Inference-only latency (excludes CLI cold-start). ² Wall-clock **including** the per-call CLI cold-start (process spawn) — *not* comparable to ¹; **quality is the apples-to-apples metric** (OpenClaw also runs a full agent loop each turn). ³ Hermes: 1/22 (`vrm-overlay/vo-3`) hit the 240 s timeout, excluded from its means. ⁴ **Claude Code + GENesis-AGI = a different (cloud) model — a frontier reference, *not* like-for-like with the gemma-12B rows.** Claude Code (`claude -p`, Haiku 4.5) **is** GENesis-AGI's reasoning engine; the full GENesis-AGI stack (Linux Incus container + Qdrant + months of accumulated memory + autonomous ego loop) isn't reproducible in a single-session bench, so this is the engine GENesis-AGI runs on (its memory layer would only add). It cost **$5.94 cloud** vs $0-local for the others and — tellingly — does **not** score above the local TerranSoul/OpenJarvis: this bench rewards targeted, context-grounded answers, not raw model scale.
 
-**Provenance.** TerranSoul + OpenJarvis are the **2026-06-07** canonical run (git `08676f10`); OpenClaw, Hermes, and Claude Code were measured **2026-06-27** — identical harness, judge, and prompts. Each runs its *real* pipeline at equal injected context (TerranSoul retrieves via its brain; OpenClaw runs its agent; the rest single-pass). Raw per-prompt data is committed alongside our internal harness (the four gemma rows and the Claude Code frontier row, with the canonical 2-system set feeding the public leaderboard). Measured with our internal benchmark harness on the same prompts, model, and judge; reproducible from the committed result files.
+**Provenance.** TerranSoul + OpenJarvis are the **2026-07-03 deterministic-protocol canonical run** (`results/parity_headtohead.json`); OpenClaw, Hermes, and Claude Code were measured **2026-06-27** under the earlier single-call-judge protocol — same harness, prompts, and judge model. Each runs its *real* pipeline at equal injected context (OpenClaw runs its agent; the rest single-pass). Raw per-prompt data — including every per-repeat judge score — is committed alongside our internal harness; reproducible from the committed result files.
+
+**Protocol resolution note (2026-07-03).** The earlier canonical (2026-06-07, TerranSoul 9.82 / OpenJarvis 9.55) was measured with unseeded temperature-0.7 generation and a single judge call per answer. Per-prompt forensics across the 2026-06-07 / 07-01 / 07-03 runs (dated artifacts `parity_headtohead_rerank_latency_check_20260701.json`, `parity_headtohead_rebench_20260703.json`, `parity_headtohead_judgefix_v1..v4_20260703.json`) showed both layers were nondeterministic: generation draws randomly dropped context facts, and the judge scored materially equivalent answers 8 vs 6 vs 5 across runs. The MCP-RERANK-1 `brain_search` rerank bound was investigated and exonerated (the 07-01 run had all 22 retrieval calls pinned at ~4.2 s — budget exhausted with fallback — with no quality effect distinguishable from a rerank-off run). Under the deterministic protocol the **2026-06-07 canonical answers themselves re-score 9.68 — identical to the fresh 2026-07-03 run's 9.68** — i.e. TerranSoul answer quality did not regress; the 9.82 → 9.68 headline delta is the retired protocol's measurement noise, and OpenJarvis reproduces its 9.55 exactly. 9.68 on this protocol is therefore the same answer-quality class as the retired 9.82, and it is the new never-regress floor.
 
 Sources: [openclaw/openclaw](https://github.com/openclaw/openclaw) (MIT) · [NousResearch/hermes-agent](https://github.com/nousresearch/hermes-agent) (MIT) · [WingedGuardian/GENesis-AGI](https://github.com/WingedGuardian/GENesis-AGI) · plus the in-repo adoption studies cited above.
 

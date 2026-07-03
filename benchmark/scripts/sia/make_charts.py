@@ -122,8 +122,11 @@ def chart_answer_quality():
         "Personal-assistant answer quality — independent 0–10 judge",
         "22 everyday-assistant prompts · same model · same judge",
         "quality score (0–10, higher = better)", 11)
+    # TerranSoul + OpenJarvis: 2026-07-03 deterministic-protocol canonical
+    # (results/parity_headtohead.json). OpenClaw/Claude Code/Hermes: 2026-06-27
+    # single-call-judge protocol, pending re-measurement (COMPARISON.md note).
     labels = ["TerranSoul", "OpenJarvis", "OpenClaw", "Claude Code\n+GENesis*", "Hermes"]
-    values = [9.82, 9.55, 8.36, 8.24, 6.90]
+    values = [9.68, 9.55, 8.36, 8.24, 6.90]
     colors = [TS_GREEN, SIA_BLUE, SOTA_GREY, "#b0a6d4", SOTA_GREY]
     bars(ax, labels, values, colors, lambda v: f"{v:.2f}")
     fig.tight_layout()
