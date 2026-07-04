@@ -1,0 +1,79 @@
+{
+  "actor": "terransoul-opus48",
+  "iter": 4,
+  "run_id": "terransoul-opus48-iter-4",
+  "plane_sha256": "3b3bff679b94a3852f900603f769b92a9d5c48495a7d415f6670ad3aef70e750",
+  "rubric_sha256": "23ac79fd6fe0b9541bcae3ca48364cf6c17f1ea4e1d1a78e1295bf1287e8f2b8",
+  "total_0_100": 54.5,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.96
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 3.74
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": null
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 8.46
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5.39
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.82
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.77
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.82
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 3.64
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 1,
+    "perCriterion": {
+      "engines_four_underwing": 3,
+      "upper_deck_hump": 4.88,
+      "fuselage_proportions": 6.25,
+      "wing_geometry": 6.71,
+      "empennage": 7.71,
+      "landing_gear": null,
+      "window_door_lines": 1,
+      "livery_coherence": 4.75,
+      "silhouette_747": 5.75,
+      "craftsmanship": 6.88
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Instead of a flat fuselage, use a series of thin, elongated BoxGeometries to represent the window rows. For the main deck, create 40 small cubes (e.g., 0.2x0.1x0.1 units) spaced at 0.5-unit intervals along the side of the fuselage cylinder. For the upper deck hump, place a second row of 15 smaller cubes following the curvature of the top section. Ensure all window primitives are slightly inset from the main fuselage surface to create depth and distinct shadows.",
+    "source": "llm"
+  },
+  "regressed": true,
+  "best_total_after": 55.58,
+  "created_at": "2026-07-04T16:38:27.068Z"
+}

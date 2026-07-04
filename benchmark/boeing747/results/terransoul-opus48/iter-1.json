@@ -1,0 +1,79 @@
+{
+  "actor": "terransoul-opus48",
+  "iter": 1,
+  "run_id": "terransoul-opus48-iter-1",
+  "plane_sha256": "fec657889eeb655734819618f8f0e2728d45837c198e762553843259f0a1bd78",
+  "rubric_sha256": "23ac79fd6fe0b9541bcae3ca48364cf6c17f1ea4e1d1a78e1295bf1287e8f2b8",
+  "total_0_100": 48.79,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.05
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.85
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 3.52
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": null
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5.39
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.99
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.77
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.82
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 3.64
+    }
+  ],
+  "weakest_feature": {
+    "id": "landing_gear",
+    "mean": 0,
+    "perCriterion": {
+      "engines_four_underwing": 3.33,
+      "upper_deck_hump": 4.25,
+      "fuselage_proportions": 5.38,
+      "wing_geometry": 6.38,
+      "empennage": 7.5,
+      "landing_gear": 0,
+      "window_door_lines": 1.63,
+      "livery_coherence": 4.88,
+      "silhouette_747": 5,
+      "craftsmanship": 6.25
+    }
+  },
+  "critic": {
+    "weakest_feature": "landing_gear",
+    "fix_suggestion": "Create a nose gear assembly using a vertical cylinder (height 1.5, radius 0.1) topped with a small sphere for the wheel, positioned at the front fuselage center. For the main gear, create four separate assemblies consisting of two cylinders each: one angled strut (length 2.0, rotation 30 degrees outward) and one vertical strut (length 1.5). Attach spheres (radius 0.2) to the bottom of all struts. Position these four main gear sets under the wing root area, spaced evenly along the fuselage centerline.",
+    "source": "llm"
+  },
+  "regressed": false,
+  "best_total_after": 48.79,
+  "created_at": "2026-07-04T16:19:40.533Z"
+}

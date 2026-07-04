@@ -62,11 +62,15 @@ export function buildPlane(THREE) {
     add(new THREE.Mesh(new THREE.BoxGeometry(BODY_LEN + noseLen, 0.5, 0.06), BLUE), 2, 0.7, z);
   }
 
-  // cabin-pane line: a row of small dark cabin-panes each side
+  // continuous dark cabin-pane band (reads as the passenger-cabin line at
+  // distance) + individual panes protruding on top so the row stays legible
+  for (const z of [R + 0.01, -(R + 0.01)]) {
+    add(new THREE.Mesh(new THREE.BoxGeometry(BODY_LEN - 2, 0.5, 0.05), DARK), 1, 1.2, z);
+  }
   for (let i = 0; i < 34; i++) {
     const x = BODY_LEN / 2 - 3 - i * 1.35;
-    for (const z of [R - 0.03, -(R - 0.03)]) {
-      add(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.42, 0.04), DARK), x, 1.15, z);
+    for (const z of [R + 0.03, -(R + 0.03)]) {
+      add(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.05), DARK), x, 1.2, z);
     }
   }
   // a couple of doors (slightly larger dark panels)
@@ -120,22 +124,23 @@ export function buildPlane(THREE) {
 
   // ── engines: four underwing nacelles on pylons, forward of the leading edge ──
   const nacelle = (z) => {
-    // z is spanwise position; nacelles sit below + ahead of the wing
+    // z is spanwise position; nacelles hang clearly BELOW and AHEAD of the wing
+    // so all four read as distinct underwing pods from the front/quarter views.
     const wingYAt = -0.4 + Math.tan(DIHED) * Math.abs(z); // follow dihedral rise
     const x = 3.5 - Math.tan(SWEEP) * (Math.abs(z) - R) * 0.18; // forward of the swept LE
-    const y = wingYAt - 2.1;
-    // pylon
-    add(new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.6, 0.5), ALU), x - 0.4, y + 1.3, z);
-    // nacelle cowl
-    add(tubeX(1.05, 1.15, 4.2, ALU), x, y, z, 0, 0, -Math.PI / 2);
-    // dark inlet ring + fan face at the front
-    add(new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.16, 12, 24), DARK), x + 2.2, y, z, 0, Math.PI / 2, 0);
-    add(new THREE.Mesh(new THREE.SphereGeometry(0.95, 16, 12), DARK), x + 2.0, y, z)
+    const y = wingYAt - 2.4;
+    // pylon connecting the nacelle up to the wing leading edge
+    add(new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.0, 0.55), ALU), x - 0.5, y + 1.5, z);
+    // nacelle cowl (clearly pod-like)
+    add(tubeX(1.32, 1.42, 4.8, ALU), x, y, z, 0, 0, -Math.PI / 2);
+    // prominent dark inlet ring + fan face at the front
+    add(new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.22, 14, 26), DARK), x + 2.5, y, z, 0, Math.PI / 2, 0);
+    add(new THREE.Mesh(new THREE.SphereGeometry(1.25, 18, 14), DARK), x + 2.3, y, z)
       .scale.set(0.3, 1, 1);
-    // exhaust cone
-    add(tubeX(0.4, 0.9, 1.2, HUB), x - 2.4, y, z, 0, 0, -Math.PI / 2);
+    // exhaust cone at the rear
+    add(tubeX(0.5, 1.1, 1.4, HUB), x - 2.4, y, z, 0, 0, -Math.PI / 2);
   };
-  // inboard + outboard on each wing
+  // inboard + outboard on each wing (four distinct underwing pods)
   nacelle(9); nacelle(17);
   nacelle(-9); nacelle(-17);
 
@@ -163,26 +168,31 @@ export function buildPlane(THREE) {
   hsL.scale.z = -1;
   add(hsL, tailX - 1, 2.4, -0.3, Math.PI / 2 + 0.08, 0, 0);
 
-  // ── landing gear: two-wheel nose strut + four main bogies ────────────────────
-  const wheel = (x, y, z) => {
-    const w = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.5, 20), TIRE);
-    add(w, x, y, z, Math.PI / 2, 0, 0); // roll axis along Z
-    add(new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.52, 12), HUB), x, y, z, Math.PI / 2, 0, 0);
+  // ── landing gear: prominent two-wheel nose strut + four main bogies ──────────
+  // Deliberately substantial (thick struts + big paired wheels + truck beams,
+  // hung well below the belly) so the gear reads clearly in the side/low/top views.
+  const BELLY_Y = -R; // fuselage underside
+  const wheel = (x, y, z, rad) => {
+    add(new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, 0.72, 22), TIRE), x, y, z, Math.PI / 2, 0, 0);
+    add(new THREE.Mesh(new THREE.CylinderGeometry(rad * 0.42, rad * 0.42, 0.76, 14), HUB), x, y, z, Math.PI / 2, 0, 0);
   };
-  const strut = (x, z, len) => add(new THREE.Mesh(new THREE.BoxGeometry(0.4, len, 0.4), ALU), x, -R - len / 2 + 0.3, z);
-  // nose gear (two wheels), retract-down under the forward fuselage
-  strut(BODY_LEN / 2 - 4, 0, 2.2);
-  wheel(BODY_LEN / 2 - 4, -R - 1.6, 0.5);
-  wheel(BODY_LEN / 2 - 4, -R - 1.6, -0.5);
-  // main gear: two body bogies + two wing bogies, each a 4-wheel truck
+  const legStrut = (x, z, botY, r) => {
+    const topY = BELLY_Y + 0.5;
+    add(new THREE.Mesh(new THREE.CylinderGeometry(r, r, topY - botY, 12), ALU), x, (topY + botY) / 2, z);
+  };
+  // nose gear: forward strut, two side-by-side wheels
+  const noseGx = BODY_LEN / 2 - 5;
+  legStrut(noseGx, 0, BELLY_Y - 2.6, 0.3);
+  wheel(noseGx, BELLY_Y - 2.8, 0.75, 0.9);
+  wheel(noseGx, BELLY_Y - 2.8, -0.75, 0.9);
+  // main gear: four four-wheel bogies (two body, two wing-root)
   const bogie = (x, z) => {
-    strut(x, z, 3.2);
-    for (const dx of [-0.9, 0.9]) {
-      for (const dz of [-0.6, 0.6]) wheel(x + dx, -R - 2.9, z + dz);
-    }
+    legStrut(x, z, BELLY_Y - 3.0, 0.36);
+    add(new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.5, 1.7), ALU), x, BELLY_Y - 3.05, z); // truck beam
+    for (const dx of [-1.0, 1.0]) for (const dz of [-0.75, 0.75]) wheel(x + dx, BELLY_Y - 3.25, z + dz, 1.02);
   };
-  bogie(-6, 2.4); bogie(-6, -2.4);   // body gear
-  bogie(-2, 7.5); bogie(-2, -7.5);   // wing gear
+  bogie(-5, 2.7); bogie(-5, -2.7);   // body gear (under the wing box)
+  bogie(-1, 6.8); bogie(-1, -6.8);   // wing gear
 
   return group;
 }
