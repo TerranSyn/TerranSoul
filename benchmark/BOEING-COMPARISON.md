@@ -29,23 +29,27 @@ local, reproducible, sha256-stamped) so every row is scored by the same yardstic
 > original (un-scored) test — cited, not a number on this rubric. No value here
 > is fabricated, and no "beat/win" framing is used (factual policy).
 
-| # | System / actor | Self-improve loop | Human intervention | Boeing-747 /100 (this harness) | Published 747 result (qualitative, cited) |
-|---|---|---|---|---|---|
-| 1 | **TerranSoul + Claude Opus 4.8** (Opus actor inside TerranSoul) | ✅ yes | **none (autonomous)** | _pending — target: maximum_ | — (new: first autonomous scored run) |
-| 2 | Claude Opus 4.8 — single-shot | ❌ no | n/a | _pending_ | "barely completed after ~25 min & 7 iterations, **with human guidance**" [BigGo, 2026-06-10] |
-| 3 | Claude Fable 5 — its own agentic loop (reference) | ✅ (own) | none (autonomous) | not run on this harness | "~30 min, zero human intervention, near-perfect / 'AGI-level'" — subjective [Mustar/HF, 2026-06-09] |
-| 4 | gemma4:12b-it-qat — single-shot (local) | ❌ no | n/a | _pending_ | — |
-| 5 | Stub (rig validation) | — | — | **28.25** (measured) | — |
-| 6 | GPT-5.x / Gemini 3 / Grok 4.3 / DeepSeek V4 (frontier) | — | — | not run | no published **747** result found; the 63/62/91 figures are a **different** "Senior-Engineer" bench, not this one [BigGo; KuCoin] |
+The one result that matters here is **Claude Opus 4.8 + TerranSoul** on this
+frozen harness, set against the **existing published benchmark landscape** (the
+§ Existing online benchmarks audit below carries the full cited catalogue —
+SWE-bench, ARC-AGI-2, LiveCodeBench, the qualitative 747 history, the pelican
+SVG). The 747-specific context:
 
-**Reading it.** The comparison is designed around one question TerranSoul answers:
-the published history says Claude Opus 4.8 **needed human guidance** to finish the
-747 solo, while the fully-autonomous near-perfect run came from a larger model
-(Fable 5). TerranSoul's self-improve loop supplies exactly the automated
-self-verification ("loop until 100% satisfied") that Opus 4.8 lacked on its own —
-so row 1 measures whether **Opus 4.8 + TerranSoul reaches the target autonomously**
-where Opus 4.8 alone (row 2) did not. Rows fill with real numbers when the run
-completes.
+| System | Self-improve loop | Autonomy | Boeing-747 /100 (this harness) | Existing published standing (cited) |
+|---|---|---|---|---|
+| **Claude Opus 4.8 + TerranSoul** | ✅ yes | **none (autonomous)** | _pending — target: maximum_ | flagship: the first autonomous **scored** 747 run |
+| Claude Fable 5 (published reference) | ✅ own loop | none (autonomous) | — (not run here) | 747: "~30 min, zero human intervention, near-perfect / 'AGI-level'" — subjective [Mustar/HF, 2026-06-09] |
+| Claude Opus 4.8 alone (published) | ❌ no | needed human | — (not run here) | 747: "~25 min, 7 iterations, **with human guidance**" [BigGo, 2026-06-10]; SWE-bench Pro 69.2% |
+| GPT-5.x / Gemini 3.x / DeepSeek V4 / Grok 4.3 | — | — | — (not run here) | no published **747** number (the 63/62/91 figures are a **different** Senior-Engineer bench [BigGo; KuCoin]); their standing on the standard evals is in § Existing online benchmarks |
+
+**Reading it.** The published history says Claude Opus 4.8 **needed human
+guidance** to finish the 747 solo, while the fully-autonomous near-perfect run
+came from a larger model (Fable 5). TerranSoul's self-improve loop supplies exactly
+the automated self-verification ("loop until 100% satisfied") that Opus 4.8 lacked
+on its own — so the flagship row measures whether **Opus 4.8 + TerranSoul reaches
+the target autonomously** where Opus 4.8 alone did not. The score fills in when the
+run completes; single-shot local baselines were dropped per the project owner's
+direction.
 
 > **Actor configuration (per user directive 2026-07-04).** Primary: Claude Opus
 > 4.8 **inside TerranSoul** (Claude CLI brain) as the builder/fixer actor. If
@@ -90,18 +94,45 @@ framing in any published benchmark content.
 
 ## Comparison table
 
-| System / model | Approach | Boeing-747 score /100 | Iterations | Source |
+| System | Approach | Boeing-747 score /100 | Iterations | Source |
 |---|---|---|---|---|
-| Stub (rig validation) | fixed source | **28.25** | — | `results/stub-validation.json` (measured) |
-| gemma4:12b-it-qat | single-shot | _pending_ | 1 | BOEING-747-BENCH |
-| Claude Opus 4.8 | single-shot | _pending_ | 1 | BOEING-747-BENCH |
-| **TerranSoul + Claude Opus 4.8** | self-improve loop | _pending_ | ≤ 12 | BOEING-747-BENCH |
-| _frontier models (context)_ | see below | _see § Related published results_ | — | cited |
+| **Claude Opus 4.8 + TerranSoul** | self-improve loop (Opus actor inside TerranSoul) | _pending — target: maximum_ | ≤ 12 | BOEING-747-BENCH |
+| Stub (rig validation) | fixed source | 28.25 | — | `results/stub-validation.json` (measured, methodology check only) |
 
-_(This table records scores on **this frozen harness**. A frontier model's number
-appears here only if it was run through this exact rig + rubric; scores taken from
-other benchmarks are kept separate in the context section below, because a
-different scene/rubric/judge is not directly comparable.)_
+_(This table records the single figure that matters: **Opus 4.8 + TerranSoul** on
+this frozen harness — the flagship autonomous run. The stub is a rig/judge
+methodology check, not a competitor. Single-shot local baselines were dropped per
+the project owner's direction — the comparison of interest is the best
+Opus 4.8 + TerranSoul result against the **existing published benchmark
+landscape**, catalogued in § Existing online benchmarks below.)_
+
+## Existing online benchmarks (audit)
+
+> The comparison the project owner asked for: **Claude Opus 4.8 + TerranSoul**
+> against the existing published benchmark landscape. This section is a cited
+> audit of the major current LLM benchmarks and the frontier models' latest
+> published scores — so the flagship 747 result (above) is read in context. It is
+> populated from an online research sweep; every figure carries a source and an
+> access date, official leaderboards are distinguished from informal blog
+> aggregates, and version numbers are quoted as each source states them (they vary
+> across sources). No number is invented; factual language only.
+
+_Citation audit in progress (research sweep running) — this table fills with, per
+benchmark: what it measures, the top-model scores with source + date, and an
+official-vs-informal flag. Benchmarks in scope: the Loop Library Boeing 747
+(qualitative — the flagship's own protocol), SWE-bench Verified / SWE-bench Pro,
+Terminal-Bench / agentic-coding leaderboards (the closest existing analog to an
+autonomous self-improve loop), LiveCodeBench / Codeforces, ARC-AGI-2, the pelican
+SVG (2D genre context), and the "Senior-Engineer" bench that the 63/62/91 figures
+actually belong to._
+
+**Note on comparability.** TerranSoul's differentiator is an **autonomous
+self-improvement loop** (iterate-until-satisfied), which most standard benchmarks
+do not measure — they score a single attempt. Where an existing benchmark does
+reward agentic/iterative behaviour (e.g. SWE-bench-style agent runs,
+Terminal-Bench), that is flagged as the closest analog; a single-attempt score
+(ARC-AGI, LiveCodeBench) is a different measurement and is labelled as such rather
+than presented as an apples-to-apples number against the 747 loop.
 
 ## Published history of this test (qualitative — no numeric leaderboard exists)
 
