@@ -117,14 +117,54 @@ landscape**, catalogued in § Existing online benchmarks below.)_
 > aggregates, and version numbers are quoted as each source states them (they vary
 > across sources). No number is invented; factual language only.
 
-_Citation audit in progress (research sweep running) — this table fills with, per
-benchmark: what it measures, the top-model scores with source + date, and an
-official-vs-informal flag. Benchmarks in scope: the Loop Library Boeing 747
-(qualitative — the flagship's own protocol), SWE-bench Verified / SWE-bench Pro,
-Terminal-Bench / agentic-coding leaderboards (the closest existing analog to an
-autonomous self-improve loop), LiveCodeBench / Codeforces, ARC-AGI-2, the pelican
-SVG (2D genre context), and the "Senior-Engineer" bench that the 63/62/91 figures
-actually belong to._
+> **Provenance discipline.** Official first-party / verified leaderboards are cited
+> first and marked **[official]**; SEO "leaderboard" blogs report inflated numbers
+> and newer version strings, so blog figures are marked **[informal]** and used
+> only where no primary source was reachable. Where they disagree the official
+> figure leads. Numbers accessed 2026-07-05. Version strings are quoted as each
+> source states them (they vary across sources).
+
+**Agentic software engineering (the closest genre to a coding self-improve loop)**
+
+| Benchmark | What it measures | Reported standing (version as stated by source) | Source |
+|---|---|---|---|
+| **SWE-bench Pro** (public set) | Harder, contamination-resistant agentic bug-fixing | gpt-5.4 (xHigh) **59.1 ±3.6**; claude-opus-4-6 (thinking) 51.9; gemini-3.1-pro 46.1; gpt-5 41.8; kimi-k2 27.7; deepseek-v3p2 15.6 | Scale, `labs.scale.com/leaderboard/swe_bench_pro_public` **[official]** |
+| SWE-bench Pro (blog) | same, vendor/blog splits | "Opus 4.8 69.2%"; "Mythos 5 80.3 / Fable 5 80" | morphllm.com, benchlm.ai **[informal]** — not on the official public set |
+| SWE-bench Verified | Agentic bug-fix, resolve hidden test | "Mythos 5 95.5 / Fable 5 95 / Opus 4.8 88.6"; DeepSeek V4-Pro 80.6 | blog aggregates **[informal]**; official `swebench.com` (top numbers now compress ~90%+) |
+| **Terminal-Bench 2.1** | Coding agent driving a terminal in a loop | Fable 5 88.0; GPT-5.5 (Codex) 83.4; Sonnet 5 80.4; Opus 4.8 (Claude Code) 78.9 | codingfleet aggregate **[informal]**; official `tbench.ai/leaderboard` |
+| **LiveCodeBench** Pass@1 | Contamination-free competitive coding + self-repair | Gemini 3 Pro 91.7; Gemini 3 Flash 90.8; DeepSeek V3.2 89.6 | `livecodebench.github.io` **[semi-official]** |
+| **WebDev / Code Arena** | Human-voted head-to-head web-app builds | claude-opus-4-7-thinking 1567 Elo (top), then opus-4-7 / opus-4-6-thinking / qwen3.7-max | LMArena `arena.ai/leaderboard/code/webdev` **[official]** |
+
+**General capability (single-attempt evals — a different measurement)**
+
+| Benchmark | What it measures | Reported standing | Source |
+|---|---|---|---|
+| **ARC-AGI-2** (verified) | Novel abstract visual reasoning | Poetiq-over-Grok-4-Fast **54%** ($30.6/task); Gemini 3 Deep Think **45%**; Gemini 3 Pro 31.1% | ARC-Prize-verified: `poetiq.ai/posts/arcagi_verified`, `arcprize.org/leaderboard` **[official]** — the blog "85%" figures are **unsupported**; do not use |
+| **"Senior Engineer" bench** (Every) | One-task senior-level repo redesign, 6-dim human rubric | **Fable 5 91**; human seniors 89 & 96; **Opus 4.8 63**; GPT-5.5 62.5; Opus 4.7 33.5 | `every.to/benchmarks/senior-engineer-benchmark` **[first-party]** — this is the real source of the 63/62/91 figures (NOT the 747) |
+| Boeing 747 (Loop Library) | 3D-from-primitives with a vision self-verification loop | qualitative only (see § Published history) — no numeric board | `signals.forwardfuture.com` **[qualitative]** |
+| Pelican-on-a-bicycle SVG | Single-shot 2D SVG drawing | qualitative; Gemini 3 Deep Think named strongest (2026) | `simonwillison.net` **[first-party qualitative]** |
+
+**Closest quantified prior art to TerranSoul's differentiator.** No mainstream
+leaderboard publishes an *autonomous, iterate-until-satisfied loop* as its headline
+metric — every board above scores a model or agent on a single attempt or a fixed
+scaffold. The nearest **quantified** analog is the **Darwin Gödel Machine (DGM,
+ICLR 2026)** — a self-modifying agent that rewrites its own code and empirically
+validates each change, reporting **SWE-bench 20.0% → 50.0%** and **Polyglot 14.2%
+→ 30.7%** over its evolution (`arxiv.org/abs/2505.22954`). The DGM number of
+interest is the **delta the loop adds over the base agent**, not an absolute score —
+which is exactly how the flagship row here should be read: **the improvement
+Opus 4.8 + TerranSoul's loop earns over bare Opus 4.8** on the 747 (bare Opus 4.8
+needed human guidance to finish; the loop supplies the automated self-verification).
+The qualitative analogs are the 747 vision loop itself and the "Agentic Pelican"
+critique loop (`robert-glaser.de/agentic-pelican-on-a-bicycle`).
+
+**Cautions carried into this doc.** (1) SWE-bench Pro reads ~59% (official public)
+vs ~69% (vendor blog) vs ~47% (private) — the split is always named. (2) The
+ARC-AGI-2 "85%" blog figure contradicts the ~45–54% verified record and is not
+used. (3) "Opus 4.8" appears mostly in aggregators; on Scale's official public set
+the top verified Claude is opus-4-6 (51.9%) — Opus 4.8 figures are labelled by
+provenance. (4) All figures are transcribed neutrally (no "beat/lead/dominate"),
+per the factual-language policy.
 
 **Note on comparability.** TerranSoul's differentiator is an **autonomous
 self-improvement loop** (iterate-until-satisfied), which most standard benchmarks
