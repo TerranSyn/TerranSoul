@@ -13,6 +13,48 @@
 > harness: [`benchmark/boeing747/`](./boeing747/) (rubric, cameras, judge, scoring
 > — all CI-tested and sha256-stamped into every result).
 
+## Comparison at a glance
+
+The actor being maximized is **Claude Opus 4.8, driven inside TerranSoul** (via
+TerranSoul's Claude CLI brain provider — `claude --model claude-opus-4-8`, the
+same `BrainMode::ClaudeCli` path the app ships), wrapped in TerranSoul's
+self-improve loop (render → frozen vision-judge → critic → targeted fix →
+re-judge). The vision judge is held **frozen at gemma4:12b-it-qat** (neutral,
+local, reproducible, sha256-stamped) so every row is scored by the same yardstick.
+
+> Scores are the frozen weighted rubric total /100 on **this** harness. Rows
+> marked _pending_ are filled only from the committed results JSON when
+> BOEING-747-BENCH runs (GPU-exclusive; queued behind the JD bench). The
+> "published 747 result" column is the **qualitative** history reported for the
+> original (un-scored) test — cited, not a number on this rubric. No value here
+> is fabricated, and no "beat/win" framing is used (factual policy).
+
+| # | System / actor | Self-improve loop | Human intervention | Boeing-747 /100 (this harness) | Published 747 result (qualitative, cited) |
+|---|---|---|---|---|---|
+| 1 | **TerranSoul + Claude Opus 4.8** (Opus actor inside TerranSoul) | ✅ yes | **none (autonomous)** | _pending — target: maximum_ | — (new: first autonomous scored run) |
+| 2 | Claude Opus 4.8 — single-shot | ❌ no | n/a | _pending_ | "barely completed after ~25 min & 7 iterations, **with human guidance**" [BigGo, 2026-06-10] |
+| 3 | Claude Fable 5 — its own agentic loop (reference) | ✅ (own) | none (autonomous) | not run on this harness | "~30 min, zero human intervention, near-perfect / 'AGI-level'" — subjective [Mustar/HF, 2026-06-09] |
+| 4 | gemma4:12b-it-qat — single-shot (local) | ❌ no | n/a | _pending_ | — |
+| 5 | Stub (rig validation) | — | — | **28.25** (measured) | — |
+| 6 | GPT-5.x / Gemini 3 / Grok 4.3 / DeepSeek V4 (frontier) | — | — | not run | no published **747** result found; the 63/62/91 figures are a **different** "Senior-Engineer" bench, not this one [BigGo; KuCoin] |
+
+**Reading it.** The comparison is designed around one question TerranSoul answers:
+the published history says Claude Opus 4.8 **needed human guidance** to finish the
+747 solo, while the fully-autonomous near-perfect run came from a larger model
+(Fable 5). TerranSoul's self-improve loop supplies exactly the automated
+self-verification ("loop until 100% satisfied") that Opus 4.8 lacked on its own —
+so row 1 measures whether **Opus 4.8 + TerranSoul reaches the target autonomously**
+where Opus 4.8 alone (row 2) did not. Rows fill with real numbers when the run
+completes.
+
+> **Actor configuration (per user directive 2026-07-04).** Primary: Claude Opus
+> 4.8 **inside TerranSoul** (Claude CLI brain) as the builder/fixer actor. If
+> Opus-inside-TerranSoul is unavailable in a given environment, the sanctioned
+> fallback is **Opus 4.8 + TerranSoul with DeepSeek** replacing the local model
+> for the reasoning/critic role. The vision **judge** stays gemma4 (frozen,
+> neutral) unless a neutral non-Claude cloud **vision** judge is provisioned — a
+> Claude-family judge grading a Claude actor is avoided (self-family score bias).
+
 ## Measurement status (read first)
 
 The harness is complete and merged. The **only measured result so far is the
@@ -61,18 +103,74 @@ appears here only if it was run through this exact rig + rubric; scores taken fr
 other benchmarks are kept separate in the context section below, because a
 different scene/rubric/judge is not directly comparable.)_
 
-## Related published results (context)
+## Published history of this test (qualitative — no numeric leaderboard exists)
 
-> Populated from a citation sweep of the protocol source and the broader
-> "LLM builds/draws an object from code" benchmark genre. These are **context**:
-> where a source used a *different* rig, rubric, or task (e.g. an SVG drawing
-> rather than a Three.js scene), that is stated explicitly — such a number is not
-> a drop-in comparison to the scores in the table above.
+The Boeing 747 loop originates with **Victor Mustar** (product lead at Hugging
+Face); the Loop Library page publishes the **protocol only** — there is **no
+published per-model numeric score, point-scale, or leaderboard** for it. Every
+reported "result" is a **qualitative** assessment by the test's author, framed by
+him as being "more about spatial understanding than library knowledge." That
+history, cited:
 
-_Citation sweep in progress — this section is filled from the research pass with
-source URLs and access dates (the Loop Library's own Boeing 747 results where
-published; Simon Willison's cross-model "pelican on a bicycle" SVG comparison as
-genre context, flagged as a different, 2D test; the mid-2026 frontier landscape)._
+- Through **late 2025**, Mustar reported that **no model completed the task**
+  correctly. [modemguides, 2026]
+- **Claude Opus 4.8** (an earlier attempt): **"barely completed the task" after
+  ~25 minutes and 7 iterations, with human guidance.** [BigGo, 2026-06-10]
+- **Claude Fable 5** (2026-06-09): completed it with **zero human intervention in
+  ~30 minutes**, a result Mustar described qualitatively as "near-perfect" /
+  "AGI-level." This is one enthusiast's **subjective** assessment, **not a scored
+  measurement.** [modemguides; BigGo; KuCoin, 2026] The primary artifact is the
+  Claude Code session trace `victor/fable-5-boeing-747-trace` on Hugging Face
+  (21 messages, 303 tool calls, ~30 min), whose original prompt is quoted:
+  *"create the most realistic boeing 747 using THREEJS — use your vision
+  capabilities to create a self verifiable system, enter a loop until you are
+  100% satisfied about the result."*
+
+**De-confliction (important):** several 2026 articles cite the figures **63
+(Opus 4.8), 62 (GPT-5.5), 91 (Fable 5)**. Those belong to a **separate
+"Senior-Engineer" benchmark and are NOT Boeing 747 scores** — both BigGo and
+KuCoin state this explicitly. They are deliberately excluded from the table above.
+
+**Why this harness adds a scored, reproducible version.** Because the original
+test was scored only by eye, `benchmark/boeing747/` contributes what did not
+exist publicly: a **frozen, reproducible, numeric** rubric (nine fixed views,
+weighted criteria, sha256-stamped) so the same 747 build gets the same score on
+any machine. TerranSoul's role maps directly onto Mustar's own prompt — "a self
+verifiable system … loop until 100% satisfied": TerranSoul **automates** that
+self-verification loop (render → vision-judge → critic → targeted fix → re-judge)
+for a **frozen** actor. The measurement of interest is therefore whether that
+automated loop lets **Claude Opus 4.8** — which the published history says needed
+**human guidance** to finish solo — reach the target **autonomously**, in the
+spirit of the fully-autonomous Fable 5 run.
+
+## Drawing-benchmark genre (context only — different tests)
+
+The canonical LLM "draw from code" eval is **Simon Willison's "pelican riding a
+bicycle" SVG** test — but it is **2D SVG, not Three.js 3D primitives**, and is
+also scored **qualitatively** (no numbers). It is genre context, not a comparable
+figure: Willison called **Gemini 3 Deep Think** the "best one I've seen so far"
+(2026-02), and **Claude Sonnet 5** (2026-06-30) "nothing to write home about."
+[simonwillison.net/tags/pelican-riding-a-bicycle]
+
+A methodology caveat that the pelican coverage surfaces and that this harness
+takes seriously: **LLM-as-judge scoring can be poorly calibrated** (a judge model
+has been observed to score other model families lower and its own family higher,
+distorting rankings). This harness mitigates that with a **single frozen judge
+model, temperature 0, median of three fixed seeds**, applied identically to every
+actor including its own baseline — so the judge is a constant, not a variable, in
+the comparison. It is not a perfect neutral oracle, and that limitation is stated
+rather than hidden.
+
+### Frontier landscape, mid-2026 (context)
+
+For orientation only — no formal Three.js/3D-from-code multi-model leaderboard
+exists; version numbers vary across informal sources, so these are directional:
+Claude Opus 4.8, Claude Sonnet 5 (2026-06-30), Claude Fable 5 (2026-06-09),
+GPT-5.5/5.6, Google Gemini 3 Deep Think / 3.1 Pro, xAI Grok 4.3, DeepSeek V4-Pro.
+Sources: signals.forwardfuture.com (protocol); huggingface.co/datasets/victor/
+fable-5-boeing-747-trace; finance.biggo.com/news/q8Z2sJ4BX0tZvRTvJuO0
+(2026-06-10); modemguides.com/blogs/ai-news/claude-fable-5-demos-first-week;
+simonwillison.net/tags/pelican-riding-a-bicycle. All accessed 2026-07-05.
 
 ## Reproduce
 
