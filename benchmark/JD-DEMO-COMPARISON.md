@@ -24,7 +24,7 @@ that scale at all (its ceiling is ≈ 3,800 résumés — § 2), so every Sonnet
 
 | | **Chat** — no thinking | **Think** — with thinking | **Max** — highest thinking | **Claude Sonnet 5** |
 |---|---|---|---|---|
-| Runs the 1,000,000-résumé job? | ✅ yes | ✅ yes | ✅ yes | ❌ no |
+| Runs the 1,000,000-résumé job? | ✅ yes | ✅ yes | ✅ yes | ❌ no (capped 3,800) |
 | NDCG@10 — English | 92.7 % | **100 %** | **100 %** | ❌ no |
 | NDCG@10 — Vietnamese | 40.0 % | 42.8 % | **100 %** | ❌ no |
 | NDCG@10 — Japanese | 78.3 % | 93.4 % | **100 %** | ❌ no |
@@ -59,6 +59,29 @@ chars/token), so the 1M-token window holds ~3,800 — not the "~300" dense-gold
 floor an earlier pass reported, and not the ~6–8k an English-only estimate would
 give. Method: the `claude` CLI (`--model claude-sonnet-5`), exact token counts from
 the CLI's usage, gold scored after.
+
+### Can the 24.9-min learn be ~1 second (≈1M ingests/sec)? — durable vs. searchable
+
+The **669/sec (24.9 min)** above is the *fully-text-searchable* ingest: every row is
+FTS5-tokenized **synchronously by AFTER-INSERT triggers on one connection/one core**
+(the V62 CJK trigram mirror dominates — a full-string `GLOB` scan on all 1M rows plus
+~one posting per CJK character). It is **not** the durable write; the same machine's
+sharded durable-append layer is measured at **1.42–2.65 M docs/sec**. So the honest,
+grounded answer (design INGEST-1M-PER-SEC — analysis in `benchmark/results/jd-million/`):
+
+- **Durable "learned" (persistent, crash-safe, read-your-writes by id): ≈ 1–2 s for
+  1M (~500k–1M/sec)** — route `learn` through the `ShardedWriteEngine` with FTS
+  **deferred** (`add_many_buffered` → `put_batch`, the seam already present). This is
+  the truthful ~1M/sec.
+- **Fully FTS/RRF-searchable: eventually consistent, ~10–15 s for 1M (~70–100k/sec)**
+  via a parallel per-shard index rebuild + a sharded search path. A **live** FTS5 index
+  physically cannot reach 1M/sec (one tokenizer, one b-tree, 250M+ token events) — so
+  the report will never claim "instantly searchable at 1M/sec."
+
+The optimization changes **when/where the index is built, never what is stored** (AGI-pure,
+all CRUD via the gateway, brain-seeded tunables). It is **not yet implemented** — the
+669/sec above remains the current *measured* fully-searchable number; the ~1–2 s durable
+figure is the grounded design target, to be published only once measured.
 
 ## 3. Honest note on the 100 %
 
