@@ -547,7 +547,7 @@
     <p class="lede">Choosing the <em>mind</em> is one axis; choosing how hard it should think is another. A greeting should answer instantly; a multi-step build deserves an agent loop; an open-ended question may need a full evidence sweep. TerranSoul has seven real thinking modes, and on every turn the brain reads the message and shifts into the one that fits — automatically, unless you pin a mode yourself.</p>
 
     <figure>
-      <svg viewBox="0 0 720 250" role="img" aria-label="An incoming turn routed by a per-turn classifier into one of seven thinking modes: chat, think, deep, agent, research, code and digest.">
+      <svg viewBox="0 0 720 250" role="img" aria-label="An incoming turn routed by a per-turn classifier into one of four thinking modes: chat, think, research and max.">
         <defs><marker id="tm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7de4ff"/></marker></defs>
         <rect x="30" y="104" width="120" height="42" rx="10" fill="#0c1a27" stroke="#7de4ff" stroke-width="1.6"/>
         <text x="90" y="123" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#bfe6f5">this turn</text>
@@ -555,22 +555,16 @@
         <polygon points="178,104 214,125 178,146" fill="#0c1a27" stroke="#22d3ee" stroke-width="1.5"/>
         <text x="196" y="98" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" fill="#9fe9f5">pick</text>
         <g font-family="'JetBrains Mono',monospace" font-size="10">
-          <rect x="250" y="14" width="170" height="26" rx="6" fill="#0c1a27" stroke="#34d399"/><text x="264" y="31" fill="#a9eccf">Chat — instant</text>
-          <rect x="250" y="46" width="170" height="26" rx="6" fill="#0c1a27" stroke="#818cf8"/><text x="264" y="63" fill="#bcc6ff">Think — light reasoning</text>
-          <rect x="250" y="78" width="170" height="26" rx="6" fill="#0c1a27" stroke="#a78bfa"/><text x="264" y="95" fill="#d7c4ff">Deep — extended reasoning</text>
-          <rect x="250" y="110" width="170" height="26" rx="6" fill="#0c1a27" stroke="#22d3ee"/><text x="264" y="127" fill="#9fe9f5">Agent — reason · act · loop</text>
-          <rect x="250" y="142" width="170" height="26" rx="6" fill="#0c1a27" stroke="#fbbf24"/><text x="264" y="159" fill="#ffe1a3">Research — evidence sweep</text>
-          <rect x="250" y="174" width="170" height="26" rx="6" fill="#0c1a27" stroke="#f472b6"/><text x="264" y="191" fill="#ffbfe8">Code — plan · run · verify</text>
-          <rect x="250" y="206" width="170" height="26" rx="6" fill="#0c1a27" stroke="#7de4ff"/><text x="264" y="223" fill="#bfe6f5">Digest — chunk · summarise</text>
+          <rect x="250" y="40" width="184" height="28" rx="6" fill="#0c1a27" stroke="#34d399"/><text x="264" y="58" fill="#a9eccf">Chat — grounded, instant</text>
+          <rect x="250" y="88" width="184" height="28" rx="6" fill="#0c1a27" stroke="#818cf8"/><text x="264" y="106" fill="#bcc6ff">Think — extended reasoning</text>
+          <rect x="250" y="136" width="184" height="28" rx="6" fill="#0c1a27" stroke="#fbbf24"/><text x="264" y="154" fill="#ffe1a3">Research — agentic search</text>
+          <rect x="250" y="184" width="184" height="28" rx="6" fill="#0c1a27" stroke="#7de4ff"/><text x="264" y="202" fill="#bfe6f5">Max — verify everything</text>
         </g>
         <g stroke="#5b8cff" stroke-width="1.2" fill="none" opacity="0.55">
-          <path d="M214,125 C234,110 234,33 248,27" marker-end="url(#tm)"/>
-          <path d="M214,125 C234,118 234,65 248,59" marker-end="url(#tm)"/>
-          <path d="M214,125 L248,91" marker-end="url(#tm)"/>
-          <path d="M214,125 L248,123" marker-end="url(#tm)"/>
-          <path d="M214,125 C234,132 234,155 248,155" marker-end="url(#tm)"/>
-          <path d="M214,125 C234,140 234,187 248,187" marker-end="url(#tm)"/>
-          <path d="M214,125 C234,148 234,219 248,219" marker-end="url(#tm)"/>
+          <path d="M214,125 C234,110 234,58 248,54" marker-end="url(#tm)"/>
+          <path d="M214,125 L248,102" marker-end="url(#tm)"/>
+          <path d="M214,125 C234,132 234,152 248,150" marker-end="url(#tm)"/>
+          <path d="M214,125 C234,140 234,200 248,198" marker-end="url(#tm)"/>
         </g>
         <text x="438" y="121" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#9fc7dd">one mode wins,</text>
         <text x="438" y="135" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#9fc7dd">setting depth + harness</text>
@@ -580,13 +574,10 @@
 
     <p>Each mode sets two dials at once — how much the model deliberates, and which behavioural harness wraps the reply:</p>
     <ul class="clean">
-      <li><strong>Chat</strong> — fast, direct answers with no chain-of-thought, for greetings and quick questions.</li>
-      <li><strong>Think</strong> — light reasoning before answering; the balanced default for everyday tasks and recall.</li>
-      <li><strong>Deep</strong> — full extended chain-of-thought for hard questions, analysis and edge cases.</li>
-      <li><strong>Agent</strong> — a reason → act → observe loop for tool use and multi-step autonomous tasks.</li>
-      <li><strong>Research</strong> — a hypothesis → evidence → contradiction-sweep → conclusion harness for fact-checking.</li>
-      <li><strong>Code</strong> — an intent → plan → runnable-code → verify harness, every reply with an explicit plan.</li>
-      <li><strong>Digest</strong> — a chunk → extract → summarise pass for long papers, reports and references.</li>
+      <li><strong>Chat</strong> — fast, grounded answers straight from the knowledge graph (one hybrid + graph-edge pass, no chain-of-thought), for greetings and quick questions.</li>
+      <li><strong>Think</strong> — extended step-by-step reasoning in a single pass, for analysis and hard questions that don’t need to go out and search.</li>
+      <li><strong>Research</strong> — an agentic multi-step search: memory + knowledge-graph walk → self-critique for coverage gaps → re-query → cited answer, for fact-checking and open-ended questions.</li>
+      <li><strong>Max</strong> — the most thorough gear: retrieve a wide candidate pool, verify every item against the request from its own source text, and loop until the result is complete and fully ranked.</li>
     </ul>
     <div class="callout"><strong>Auto by default, yours to pin.</strong> Left on <em>auto</em>, a per-turn router reads the request and the recent conversation and resolves the mode — so effort and harness scale with the task instead of being fixed. Choose any mode by hand and it stays put. This is the same executive sizing the brain map shows in the <em>Focus</em> region, now choosing not just <em>how much</em> to think but <em>how</em>.</div>
   </section>
