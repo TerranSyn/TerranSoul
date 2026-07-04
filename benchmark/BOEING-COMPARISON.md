@@ -41,7 +41,7 @@ benchmarks; every figure there carries a source URL + access date).
 
 | Model | Score | Benchmark (what the score is on) | Source |
 |---|---|---|---|
-| **Claude Opus 4.8 + TerranSoul** | **55.58 / 100** | **Boeing-747** primitives — autonomous self-improve loop | this harness (local) ● |
+| **Claude Opus 4.8 + TerranSoul** | **55.58 %** | **Boeing-747** primitives — autonomous self-improve loop | this harness (local) ● |
 | Claude Fable 5 | 88.0 % | Terminal-Bench 2.1 (agentic coding, in a loop) | aggregate ○ |
 | GPT-5.5 (Codex CLI) | 83.4 % | Terminal-Bench 2.1 | aggregate ○ |
 | Claude Sonnet 5 | 80.4 % | Terminal-Bench 2.1 | aggregate ○ |
@@ -50,14 +50,15 @@ benchmarks; every figure there carries a source URL + access date).
 | Kimi K2.6 | 66.7 % | Terminal-Bench 2.1 | aggregate ○ |
 | Gemini 3.1 Pro | 46.1 % | SWE-bench Pro (Scale public set) | Scale ● |
 | xAI Grok 4-Fast (+ Poetiq) | 54 % | ARC-AGI-2 (verified) | ARC Prize ● |
-| Human senior engineers | 89 – 96 / 100 | Every "Senior-Engineer" bench | Every ● |
-| _stub (rig floor)_ | 28.25 / 100 | Boeing-747 (rig validation) | this harness ● |
+| Human senior engineers | 89 – 96 % | Every "Senior-Engineer" bench | Every ● |
+| _stub (rig floor)_ | 28.25 % | Boeing-747 (rig validation) | this harness ● |
 
-**● official / first-party · ○ informal aggregate.** The **Score column deliberately
-mixes benchmarks** — each row names its own test on its own scale (Boeing /100,
-Terminal-Bench %, SWE-Pro %, ARC %, Senior-Eng /100), so it is **not** a like-for-like
-ranking; it places each system on the benchmark most representative of *agentic
-coding* (Terminal-Bench 2.1 — "coding agent in a loop" — is used wherever published,
+**● official / first-party · ○ informal aggregate.** All scores are shown as **%**,
+but the **Score column deliberately mixes benchmarks** — each row names its own test,
+and the percentages are not the same *kind*: Boeing-747 and Senior-Eng are rubric
+scores out of 100 (shown as %), while Terminal-Bench / SWE-Pro / ARC are benchmark
+pass-rates. So it is **not** a like-for-like ranking; it places each system on the
+benchmark most representative of *agentic coding* (Terminal-Bench 2.1 — "coding agent in a loop" — is used wherever published,
 as the closest analog to TerranSoul's self-improve loop). Full per-benchmark numbers
 (SWE-bench Verified/Pro, LiveCodeBench, ARC-AGI-2, Senior-Eng) with source URLs +
 access dates are in § Existing online benchmarks. Notes carried there: Boeing-747 has
