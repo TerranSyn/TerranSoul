@@ -51,7 +51,7 @@ benchmarks; every figure there carries a source URL + access date).
 | Gemini 3.1 Pro | 46.1 % | SWE-bench Pro (Scale public set) | Scale ● |
 | xAI Grok 4-Fast (+ Poetiq) | 54 % | ARC-AGI-2 (verified) | ARC Prize ● |
 | Human senior engineers | 89 – 96 % | Every "Senior-Engineer" bench | Every ● |
-| _stub (rig floor)_ | 28.25 % | Boeing-747 (rig validation) | this harness ● |
+| _rig floor — fixed hand-authored stub (**not a model**)_ | 28.25 % | Boeing-747 — harness sanity check | this harness ● |
 
 **● official / first-party · ○ informal aggregate.** All scores are shown as **%**,
 but the **Score column deliberately mixes benchmarks** — each row names its own test,
