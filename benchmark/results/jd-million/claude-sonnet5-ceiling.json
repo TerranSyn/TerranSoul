@@ -1,0 +1,247 @@
+{
+  "benchmark": "JD-DEMO-COMPARISON — Claude Sonnet 5 in-context ceiling",
+  "model": "claude-sonnet-5",
+  "method": "cli",
+  "transport": "claude --model claude-sonnet-5 --output-format json --tools \"\" -p (prompt on stdin; user Pro/Max subscription, no API key)",
+  "tools_disabled": true,
+  "context_window": 1000000,
+  "seed": 20260703,
+  "jd_id": "jd-en-backend",
+  "gold_predicate": "area==jd.area AND >=2 requiredSkills present AND years>=minYears (matchesJd; computed after the call, never in the prompt)",
+  "corpus_note": "FIRST-N deterministic résumés (buildResume(i, seed)); first-N gold density for jd-en-backend is sparse (0@300, 0@1000, 1@3000, 3@3700, 6@6000, 13@10000).",
+  "analysis": {
+    "tokens_per_resume_measured": 258,
+    "tokens_per_resume_method": "linear fit through exact CLI usage: (N=300, 98336 tok), (N=3000, 794989 tok), (N=3700, 973307 tok) => ~258 tok/résumé + ~21k fixed overhead; ~1.85 chars/token because the corpus is 31% CJK + 15% Vietnamese (dense), NOT the 40-120 tok/résumé an English-only assumption predicts",
+    "prompt_tokens_are_exact": "prompt_tokens = usage.input_tokens + cache_creation_input_tokens + cache_read_input_tokens from the claude CLI JSON (real tokenizer, not an estimate)",
+    "claude_code_overhead_tokens_approx": 21000,
+    "context_ceiling_confirmed_fit_N": 3700,
+    "context_ceiling_confirmed_fit_tokens": 973307,
+    "context_ceiling_first_refusal_N": 3800,
+    "context_ceiling_modeled_N": 3790,
+    "context_ceiling_modeled_method": "largest N with 258*N + 21000 <= 1,000,000 => N ≈ 3,790; empirically fits at 3,700 (97.3% of window), hard-refuses at 3,800 with API 400 'Prompt is too long ... limit 1000000'",
+    "context_ceiling_is_jd_independent": "the JD queryText is ~100 tokens, so the context ceiling is essentially identical for jd-vi-data-engineering and jd-ja-mobile; only accuracy would differ",
+    "overflow_behavior": "Claude Code hard-refuses over-window prompts in ~2-3s with a 400 'Prompt is too long' and total_cost_usd=0 (single-exchange prompts cannot be compacted); no silent truncation observed (returned IDs were always in-range)",
+    "accuracy_note": "Within the fittable range (N<=~3790) the first-N strict gold set is tiny (<=3), so a clean NDCG-vs-N accuracy-degradation curve is NOT measurable under first-N sampling. NDCG@10 = 0 (N=3000, 1 gold) and 0.469 (N=3700, 3 gold) reflect a GOLD-PREDICATE-vs-MODEL-JUDGMENT mismatch on rare needles, not a haystack-capacity failure: the model read and ranked the whole haystack (every returned ID was an in-range backend résumé carrying the JD's headline skills; e.g. its N=3000 #1 res-1592 had rust+kubernetes but 3 years, just failing the >=5yr gate, while the lone strict-gold res-1829 was a Rust-less/gRPC-less postgres+k8s backend eng that the model reasonably ranked lower). The context window, not accuracy, is the binding constraint.",
+    "comparison_to_old_300": "The earlier claude-sonnet5-300.json (NDCG@10=1.0) used a CURATED sample-300 with 12 dense gold rows (4% density) — a floor, not a ceiling. The true single-pass in-context ceiling via the subscription CLI is ~3,700-3,800 résumés, bounded by the 1M-token window at ~258 tok per multilingual résumé.",
+    "raw_api_note": "Via the raw Anthropic API (no Claude Code ~21k system/tool overhead) the ceiling would be only ~80 résumés higher (~3,870) — the dominant factor is the 258 tok/résumé density, not the CLI overhead. No ANTHROPIC_API_KEY was set, so the raw-API path was not exercised."
+  },
+  "per_n": [
+    {
+      "N": 300,
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "seed": 20260703,
+      "gold_size": 0,
+      "gold_by_lang": {},
+      "fit": true,
+      "refusal_or_error": null,
+      "prompt_chars": 144017,
+      "prompt_tokens": 98336,
+      "prompt_tokens_estimate": 46457,
+      "context_window": 1000000,
+      "context_used_frac": 0.0983,
+      "cli_model": "claude-sonnet-5",
+      "returned_ids": 10,
+      "out_of_range_ids": 0,
+      "ndcg_at_10": 0,
+      "recall_at_10": {
+        "hits": 0,
+        "capped": 0,
+        "raw": 0
+      },
+      "recall_at_20": {
+        "hits": 0,
+        "capped": 0,
+        "raw": 0
+      },
+      "precision_at_10": 0,
+      "latency_seconds": 28.7,
+      "ranked_top": [
+        "res-91",
+        "res-196",
+        "res-125",
+        "res-278",
+        "res-83",
+        "res-27",
+        "res-104",
+        "res-257",
+        "res-295",
+        "res-147"
+      ],
+      "measured_at": "2026-07-04T15:05:40.987Z"
+    },
+    {
+      "N": 3000,
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "seed": 20260703,
+      "gold_size": 1,
+      "gold_by_lang": {
+        "en": 1
+      },
+      "fit": true,
+      "refusal_or_error": null,
+      "prompt_chars": 1424130,
+      "prompt_tokens": 794989,
+      "prompt_tokens_estimate": 459397,
+      "context_window": 1000000,
+      "context_used_frac": 0.795,
+      "cli_model": "claude-sonnet-5",
+      "returned_ids": 10,
+      "out_of_range_ids": 0,
+      "ndcg_at_10": 0,
+      "recall_at_10": {
+        "hits": 0,
+        "capped": 0,
+        "raw": 0
+      },
+      "recall_at_20": {
+        "hits": 0,
+        "capped": 0,
+        "raw": 0
+      },
+      "precision_at_10": 0,
+      "latency_seconds": 66.4,
+      "ranked_top": [
+        "res-1592",
+        "res-1856",
+        "res-2469",
+        "res-2455",
+        "res-415",
+        "res-1057",
+        "res-2822",
+        "res-2858",
+        "res-605",
+        "res-2166"
+      ],
+      "measured_at": "2026-07-04T15:07:18.208Z"
+    },
+    {
+      "N": 3700,
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "seed": 20260703,
+      "gold_size": 3,
+      "gold_by_lang": {
+        "en": 2,
+        "vi": 1
+      },
+      "fit": true,
+      "refusal_or_error": null,
+      "prompt_chars": 1757104,
+      "prompt_tokens": 973307,
+      "prompt_tokens_estimate": 566808,
+      "context_window": 1000000,
+      "context_used_frac": 0.9733,
+      "cli_model": "claude-sonnet-5",
+      "returned_ids": 10,
+      "out_of_range_ids": 0,
+      "ndcg_at_10": 0.46927872602275644,
+      "recall_at_10": {
+        "hits": 1,
+        "capped": 0.3333333333333333,
+        "raw": 0.3333333333333333
+      },
+      "recall_at_20": {
+        "hits": 1,
+        "capped": 0.3333333333333333,
+        "raw": 0.3333333333333333
+      },
+      "precision_at_10": 0.1,
+      "latency_seconds": 72.8,
+      "ranked_top": [
+        "res-3006",
+        "res-2455",
+        "res-1057",
+        "res-2469",
+        "res-3577",
+        "res-2769",
+        "res-3525",
+        "res-3360",
+        "res-2822",
+        "res-605"
+      ],
+      "measured_at": "2026-07-04T15:12:53.989Z"
+    },
+    {
+      "N": 3800,
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "seed": 20260703,
+      "gold_size": 3,
+      "gold_by_lang": {
+        "en": 2,
+        "vi": 1
+      },
+      "fit": false,
+      "refusal_or_error": "exit 1: ",
+      "prompt_chars": 1804444,
+      "prompt_tokens": null,
+      "prompt_tokens_estimate": 582079,
+      "context_window": 1000000,
+      "context_used_frac": null,
+      "cli_model": null,
+      "returned_ids": 0,
+      "out_of_range_ids": 0,
+      "ndcg_at_10": 0,
+      "recall_at_10": {
+        "hits": 0,
+        "capped": 0,
+        "raw": 0
+      },
+      "recall_at_20": {
+        "hits": 0,
+        "capped": 0,
+        "raw": 0
+      },
+      "precision_at_10": 0,
+      "latency_seconds": 2.4,
+      "ranked_top": [],
+      "measured_at": "2026-07-04T15:11:27.010Z"
+    },
+    {
+      "N": 5000,
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "seed": 20260703,
+      "gold_size": 6,
+      "gold_by_lang": {
+        "en": 4,
+        "vi": 2
+      },
+      "fit": false,
+      "refusal_or_error": "exit 1: ",
+      "prompt_chars": 2374864,
+      "prompt_tokens": null,
+      "prompt_tokens_estimate": 766085,
+      "context_window": 1000000,
+      "context_used_frac": null,
+      "cli_model": null,
+      "returned_ids": 0,
+      "out_of_range_ids": 0,
+      "ndcg_at_10": 0,
+      "recall_at_10": {
+        "hits": 0,
+        "capped": 0,
+        "raw": 0
+      },
+      "recall_at_20": {
+        "hits": 0,
+        "capped": 0,
+        "raw": 0
+      },
+      "precision_at_10": 0,
+      "latency_seconds": 2.9,
+      "ranked_top": [],
+      "measured_at": "2026-07-04T15:10:12.754Z"
+    }
+  ],
+  "context_ceiling": 3790,
+  "context_ceiling_confirmed_fit": 3700,
+  "context_ceiling_first_refusal": 3800,
+  "accuracy_ceiling": "not-cleanly-measurable-under-first-N (gold too sparse within the window; context window is the binding constraint) — see analysis.accuracy_note",
+  "max_resumes": 3790,
+  "max_resumes_headline": "~3,800 résumés in one in-context pass (context-window-bound); confirmed fit at 3,700 (973,307 tok = 97.3% of 1M), hard refusal at 3,800",
+  "method": "cli",
+  "updated_at": "2026-07-04T15:12:53.990Z"
+}
