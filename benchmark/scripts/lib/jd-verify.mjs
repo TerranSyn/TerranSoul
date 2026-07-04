@@ -15,6 +15,22 @@
 // Everything is pure so vitest can lock the mechanics (jd-verify.test.mjs).
 
 /**
+ * Strip the bench IPC store envelope the shim prepends to each memory
+ * (`Session: <id>` / `Date: <YYYY-MM-DD>` / `Turns: <n>` header lines) so
+ * verification reads the résumé text a human would see. This matters for
+ * parseYears: an un-stripped `Date: 2024-05-13` injects spurious year
+ * candidates (05 -> 5, 13 -> 13) and `Turns: 1` injects 1. Generic — removes
+ * the store's own metadata envelope, names no domain concept.
+ */
+export function stripStoreEnvelope(content) {
+  if (typeof content !== 'string') return '';
+  const lines = content.split('\n');
+  let i = 0;
+  while (i < lines.length && /^(Session|Date|Turns):\s/.test(lines[i])) i += 1;
+  return lines.slice(i).join('\n');
+}
+
+/**
  * Parse the candidate's years-of-experience from its resume text.
  *
  * The corpus renders `{years}` as an ASCII integer (1..15). In CJK
@@ -31,7 +47,13 @@
 export function parseYears(text) {
   if (typeof text !== 'string' || text.length === 0) return null;
   const re = /\d{1,2}/g;
+  // A standalone year value is flanked by whitespace/CJK/punctuation-that-is-
+  // not-a-number-separator. Reject digits fused into a Latin token (OAuth2)
+  // AND digits joined by date/version/decimal separators (2024-05-13, 3.5,
+  // 12:30) so a leftover envelope date can't masquerade as years.
   const isLatinAlnum = c => (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
+  const isNumSep = c => c === '-' || c === '/' || c === '.' || c === ':' || c === ',';
+  const disqualifies = c => isLatinAlnum(c) || isNumSep(c);
   const counts = new Map();
   let m;
   while ((m = re.exec(text)) !== null) {
@@ -39,7 +61,7 @@ export function parseYears(text) {
     const s = m[0];
     const before = i > 0 ? text[i - 1] : ' ';
     const after = i + s.length < text.length ? text[i + s.length] : ' ';
-    if (isLatinAlnum(before) || isLatinAlnum(after)) continue;
+    if (disqualifies(before) || disqualifies(after)) continue;
     const v = Number(s);
     if (v >= 1 && v <= 15) counts.set(v, (counts.get(v) ?? 0) + 1);
   }
@@ -115,13 +137,15 @@ export function deterministicVerify(text, requiredSurfaces, minYears) {
  * resume store. Batched: one line per candidate in the reply.
  */
 export function buildDomainJudgePrompt(jdText, candidates) {
-  return 'You are screening candidates for the role in the JOB DESCRIPTION below.\n\n'
+  return 'You are screening candidates for the specific role in the JOB DESCRIPTION below.\n\n'
     + `JOB DESCRIPTION:\n${jdText.trim()}\n\n`
-    + 'For EACH candidate resume, decide if the candidate PRIMARILY works in the same '
-    + 'professional role / job function as the job description. Judge by the overall '
-    + 'profile and the stated job title / role, NOT by individual tools or technologies '
-    + 'that many different roles happen to share. Resumes may be written in any language; '
-    + 'all languages count equally.\n\n'
+    + 'For EACH candidate resume, answer yes ONLY if their PRIMARY profession / '
+    + 'specialization is the SAME as the job\'s — judged by their stated job title and the '
+    + 'main focus of their experience. Many technical roles share the same programming '
+    + 'languages and tools, so shared tools are NOT enough. If the candidate\'s primary role '
+    + 'or specialization differs from the job\'s — even if it is an adjacent field using '
+    + 'similar technologies — answer no. Resumes may be written in any language; all '
+    + 'languages count equally.\n\n'
     + 'CANDIDATES (each starts with its ID in square brackets):\n'
     + candidates.map(c => `[${c.id}] ${c.text.trim()}\n`).join('')
     + '\nRespond with ONLY one line per candidate, no other text, exactly:\n'
@@ -163,6 +187,7 @@ export function rankVerified(candidates) {
 }
 
 export default {
+  stripStoreEnvelope,
   parseYears,
   surfacePresent,
   countRequiredSurfaces,

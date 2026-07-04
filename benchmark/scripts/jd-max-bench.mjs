@@ -188,7 +188,7 @@ async function domainJudge(model, jdText, candidates, { batch, numCtx, numPredic
   return keep;
 }
 
-function metricsFor(ranked, goldSet, langOf, k) {
+function metricsFor(ranked, goldSet) {
   const r10 = recallAtK(ranked, goldSet, 10);
   return {
     recall_at_10: { capped: r10.capped, raw: r10.raw, hits: r10.hits },
@@ -352,7 +352,7 @@ async function run() {
       const goldInPool = [...pool.keys()].filter(id => goldSet.has(id));
       const byLangPool = {};
       for (const id of goldInPool) { const l = goldDoc.langOf[id] ?? '?'; byLangPool[l] = (byLangPool[l] ?? 0) + 1; }
-      const m = metricsFor(rankedIds, goldSet, goldDoc.langOf, 10);
+      const m = metricsFor(rankedIds, goldSet);
 
       results.push({
         jd_id: jd.id,

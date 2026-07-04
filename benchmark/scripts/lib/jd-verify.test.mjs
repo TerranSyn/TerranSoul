@@ -2,6 +2,7 @@
 // Unit coverage for the MILLION-RESUME MAX verify helpers (jd-verify.mjs).
 import { describe, it, expect } from 'vitest';
 import {
+  stripStoreEnvelope,
   parseYears,
   surfacePresent,
   countRequiredSurfaces,
@@ -10,6 +11,28 @@ import {
   parseDomainVerdicts,
   rankVerified,
 } from './jd-verify.mjs';
+
+describe('stripStoreEnvelope', () => {
+  it('removes the Session/Date/Turns header the shim prepends', () => {
+    const wrapped = 'Session: res-201177\nDate: 2024-05-13\nTurns: 1\nMatthew Davis\nJunior Data Engineer\n2 years';
+    const clean = stripStoreEnvelope(wrapped);
+    expect(clean.startsWith('Matthew Davis')).toBe(true);
+    expect(clean).not.toContain('2024-05-13');
+  });
+  it('is a no-op on résumé text without an envelope', () => {
+    expect(stripStoreEnvelope('Jane Doe\nBackend Engineer')).toBe('Jane Doe\nBackend Engineer');
+  });
+});
+
+describe('parseYears envelope-date robustness', () => {
+  it('does not read a date month/day or Turns count as years (the res-201177 bug)', () => {
+    // Even WITHOUT stripping, the date/version-separator guard must reject
+    // 2024-05-13 and read the real "2 years".
+    const wrapped = 'Session: res-201177\nDate: 2024-05-13\nTurns: 1\nData Engineer with 2 years experience.';
+    expect(parseYears(stripStoreEnvelope(wrapped))).toBe(2);
+    expect(parseYears('track record of 2 years, hired 2024-05-13')).toBe(2);
+  });
+});
 
 describe('parseYears', () => {
   it('reads a standalone Latin year value', () => {
@@ -73,7 +96,7 @@ describe('domain judge prompt + parse', () => {
   it('prompt is generic — no area names or skill lists leak in', () => {
     const p = buildDomainJudgePrompt('Hiring a data engineer.', [{ id: 'res-1', text: 'x' }]);
     expect(p).toContain('[res-1]');
-    expect(p).toContain('same');
+    expect(p).toContain('specialization');
     expect(p).not.toMatch(/data-engineering|backend|mobile/);
   });
   it('parses bracketed and bare id verdicts, case-insensitively', () => {
