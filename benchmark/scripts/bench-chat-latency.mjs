@@ -3,7 +3,7 @@
 // against Ollama with the SAME options our streaming.rs uses, so we
 // measure exactly the latency the user sees.
 //
-// Usage: node scripts/bench-chat-latency.mjs [--turns=20] [--model=gemma4:e4b]
+// Usage: node scripts/bench-chat-latency.mjs [--turns=20] [--model=gemma4:12b-it-qat]
 
 const args = Object.fromEntries(
   process.argv.slice(2).map((a) => {
@@ -12,7 +12,7 @@ const args = Object.fromEntries(
   }),
 );
 
-const MODEL = args.model || 'gemma4:e4b';
+const MODEL = args.model || 'gemma4:12b-it-qat';
 const TURNS = Number.parseInt(args.turns || '20', 10);
 const BASE_URL = args.url || 'http://localhost:11434';
 

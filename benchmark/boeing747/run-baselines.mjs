@@ -24,7 +24,10 @@ import { judgeShots, loadRubric, ollamaChat } from './judge/judge.mjs';
 import { runRig, sha256 } from './rig/render-rig.mjs';
 
 const BENCH_DIR = path.dirname(fileURLToPath(import.meta.url));
-const DEFAULT_MODELS = ['gemma4:12b-it-qat', 'qwen2.5:7b'];
+// Standardized on the two blessed local models (user directive 2026-07-04):
+// gemma4:12b-it-qat is the sole local baseline. The hero configuration is
+// Claude Opus 4.8 + TerranSoul self-improve (see run-loop), not a local model.
+const DEFAULT_MODELS = ['gemma4:12b-it-qat'];
 
 const sanitize = (model) => model.replace(/[^a-z0-9._-]+/gi, '_');
 
