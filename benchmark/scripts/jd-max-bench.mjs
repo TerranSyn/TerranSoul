@@ -46,6 +46,7 @@ import { SKILL_SURFACES } from './jd-corpus.mjs';
 import { recallAtK, precisionAtK, ndcgAtK } from './lib/jd-metrics.mjs';
 import { JsonlClient } from './lib/jd-ipc.mjs';
 import {
+  stripStoreEnvelope,
   deterministicVerify,
   buildDomainJudgePrompt,
   parseDomainVerdicts,
@@ -145,13 +146,14 @@ async function retrieve(client, { query, mode, limit }, pool) {
   let added = 0;
   hits.forEach((h, rank) => {
     if (!h.session_id) return;
+    const text = stripStoreEnvelope(h.content ?? '');
     const prev = pool.get(h.session_id);
     if (!prev) {
-      pool.set(h.session_id, { id: h.session_id, text: h.content ?? '', rank });
+      pool.set(h.session_id, { id: h.session_id, text, rank });
       added += 1;
-    } else if (rank < prev.rank) {
-      prev.rank = rank;
-      if (!prev.text && h.content) prev.text = h.content;
+    } else {
+      if (rank < prev.rank) prev.rank = rank;
+      if (!prev.text && text) prev.text = text;
     }
   });
   return added;
@@ -326,8 +328,8 @@ async function run() {
       const verifyMs = performance.now() - tVerify;
 
       const judgeAcc = { ms: 0, calls: 0, promptTokens: 0, evalTokens: 0 };
-      let head = rankedPassers.slice(0, judgeHead);
-      let tail = rankedPassers.slice(judgeHead);
+      const head = rankedPassers.slice(0, judgeHead);
+      const tail = rankedPassers.slice(judgeHead);
       let kept;
       if (noJudge) {
         kept = rankedPassers; // diagnostics path
