@@ -39,29 +39,33 @@ benchmarks; every figure there carries a source URL + access date).
 > by source — see the detailed tables). "—" = no published figure found. Numbers
 > accessed 2026-07-05; factual reporting, no "beat/win" framing.
 
-| Model | Boeing-747 /100¹ (this harness) | SWE-bench Verified | SWE-bench Pro² | Terminal-Bench 2.1 | LiveCodeBench Pass@1 | ARC-AGI-2 (verified) | Senior-Eng /100³ |
-|---|---|---|---|---|---|---|---|
-| **Claude Opus 4.8 + TerranSoul** | **55.58 ●** | ⟵ actor = Opus 4.8 (row below) | | | | | |
-| Claude Opus 4.8 | *human-assisted (qual.)* | 88.6 ○ | 51.9 ● (as 4.6) · 69.2 ○ | 78.9 ○ | — | — | 63 ● |
-| Claude Fable 5 | *autonomous (qual.)* | 95 ○ | 80 ○ | 88.0 ○ | — | — | 91 ● |
-| Claude Sonnet 5 | — | — | — | 80.4 ○ | — | — | — |
-| GPT-5.5 / 5.4 | — | 88.7 ○ | 59.1 ● (5.4) | 83.4 ○ | — | — | 62.5 ● |
-| Gemini 3.1 Pro / 3 Deep Think | — | — | 46.1 ● | — | 91.7 ○ (3 Pro) | 45 ● (Deep Think) · 31.1 ● (Pro) | — |
-| DeepSeek V4-Pro / V3.2 | — | 80.6 ○ | 15.6 ● (V3.2) | 67.9 ○ | 89.6 ○ (V3.2) | — | — |
-| xAI Grok 4 / 4-Fast | — | 69.1 ○ | — | — | — | 54 ● (4-Fast + Poetiq) | — |
-| Kimi K2.x | — | 80.2 ○ | 27.7 ● (K2) | 66.7 ○ | — | — | — |
-| Human senior engineers | — | — | — | — | — | — | 89 · 96 ● |
-| _stub (rig floor)_ | 28.25 ● | — | — | — | — | — | — |
+| Model | Score | Benchmark (what the score is on) | Source |
+|---|---|---|---|
+| **Claude Opus 4.8 + TerranSoul** | **55.58 / 100** | **Boeing-747** primitives — autonomous self-improve loop | this harness (local) ● |
+| Claude Fable 5 | 88.0 % | Terminal-Bench 2.1 (agentic coding, in a loop) | aggregate ○ |
+| GPT-5.5 (Codex CLI) | 83.4 % | Terminal-Bench 2.1 | aggregate ○ |
+| Claude Sonnet 5 | 80.4 % | Terminal-Bench 2.1 | aggregate ○ |
+| Claude Opus 4.8 (bare actor) | 78.9 % | Terminal-Bench 2.1 | aggregate ○ |
+| DeepSeek V4 Pro Max | 67.9 % | Terminal-Bench 2.1 | aggregate ○ |
+| Kimi K2.6 | 66.7 % | Terminal-Bench 2.1 | aggregate ○ |
+| Gemini 3.1 Pro | 46.1 % | SWE-bench Pro (Scale public set) | Scale ● |
+| xAI Grok 4-Fast (+ Poetiq) | 54 % | ARC-AGI-2 (verified) | ARC Prize ● |
+| Human senior engineers | 89 – 96 / 100 | Every "Senior-Engineer" bench | Every ● |
+| _stub (rig floor)_ | 28.25 / 100 | Boeing-747 (rig validation) | this harness ● |
 
-¹ **Boeing-747** has **no numeric online leaderboard** — the original test is scored
-by eye. Only this harness produces a number; the frontier cells are the *qualitative*
-published history (Opus 4.8 solo needed **human guidance**; Fable 5 finished
-**autonomously**, ~30 min — [Mustar/HF, BigGo, 2026-06]). ² **SWE-bench Pro** reads
-~59% (official Scale public set) vs ~69–80% (vendor/blog) depending on split — the
-split is named in § Existing online benchmarks; do not mix them. ³ **Senior-Eng** is
-Every's single-repo redesign bench — the true source of the **63 / 62.5 / 91**
-figures (NOT the 747). The ARC-AGI-2 blog "85%" is unsupported by the verified record
-and excluded.
+**● official / first-party · ○ informal aggregate.** The **Score column deliberately
+mixes benchmarks** — each row names its own test on its own scale (Boeing /100,
+Terminal-Bench %, SWE-Pro %, ARC %, Senior-Eng /100), so it is **not** a like-for-like
+ranking; it places each system on the benchmark most representative of *agentic
+coding* (Terminal-Bench 2.1 — "coding agent in a loop" — is used wherever published,
+as the closest analog to TerranSoul's self-improve loop). Full per-benchmark numbers
+(SWE-bench Verified/Pro, LiveCodeBench, ARC-AGI-2, Senior-Eng) with source URLs +
+access dates are in § Existing online benchmarks. Notes carried there: Boeing-747 has
+**no numeric online leaderboard** (the frontier models' 747 history is qualitative —
+Opus 4.8 solo needed human guidance, Fable 5 finished autonomously); SWE-bench Pro
+reads ~59% official vs ~69–80% blog depending on split; the **63/62.5/91** figures are
+the Every Senior-Eng bench, **not** the 747; the ARC "85%" blog figure is excluded as
+unsupported.
 
 **Reading it.** The published 747 history says Claude Opus 4.8 **needed human
 guidance** to finish the model solo, while the fully-autonomous near-perfect run
