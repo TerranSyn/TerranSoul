@@ -203,7 +203,7 @@ async function run() {
   const rrfMode = option('rrf-mode', 'rrf'); // 'rrf' (lexical+dense) — 'rrf_kg' if edges present
   const perQ = numOpt('per-q', 1000);
   const discoverN = numOpt('discover', 14);
-  const maxRounds = numOpt('max-rounds', 4);
+  const maxRounds = numOpt('max-rounds', 2);
   const epsilon = numOpt('epsilon', 0.004); // saturation: stop when marginal new < 0.4% of pool
   const denseQuery = !process.argv.includes('--no-dense') && process.env.LONGMEM_EMBED === '1';
   const judgeModel = option('judge-model', 'gemma4:12b-it-qat');
