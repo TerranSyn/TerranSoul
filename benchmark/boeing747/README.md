@@ -129,7 +129,7 @@ npm run bench:747:rig -- --plane <plane.js> [--run-id <id>]
 npm run bench:747:smoke -- [--shots <dir>] [--view 1] [--seed 7]
 npm run bench:747:judge -- --shots benchmark/boeing747/shots/<run-id> [--views 1,2,3]
 npm run bench:747:judge -- --critic --results <results.json> --shots <dir>
-npm run bench:747:baseline -- [--models gemma4:12b-it-qat,qwen2.5:7b]
+npm run bench:747:baseline -- [--models gemma4:12b-it-qat]
 npm run bench:747:loop -- --plane <iter-k plane.js> [--iter k]
 ```
 

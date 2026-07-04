@@ -1,0 +1,295 @@
+{
+  "benchmark": "MILLION-RESUME-BENCH",
+  "generated_at": "2026-07-03T17:00:06.564Z",
+  "config": {
+    "count": 100000,
+    "seed": 20260703,
+    "systems": [
+      "rrf"
+    ],
+    "top_k": 100,
+    "resume": true,
+    "query_runs": 5,
+    "corpus_dir": "D:\\Git\\ts-jdbench-wt\\target-copilot-bench\\jdbench-100k",
+    "hybrid_weights": null
+  },
+  "env": {
+    "longmem_vars": {
+      "LONGMEM_DATA_DIR": "D:/Git/ts-jdbench-wt/target-copilot-bench/jdbench-100k/store-dense",
+      "LONGMEM_EMBED": "1",
+      "LONGMEM_EMBED_MODEL": "embeddinggemma",
+      "LONGMEM_SHIM_EXE": "D:/Git/ts-jdbench-wt/target-copilot-bench/debug/longmemeval-ipc.exe"
+    },
+    "effective_data_dir": "D:/Git/ts-jdbench-wt/target-copilot-bench/jdbench-100k/store-dense",
+    "node": "v24.3.0",
+    "platform": "win32 x64"
+  },
+  "ingest": {
+    "rows": 0,
+    "elapsedSeconds": 0,
+    "rowsPerSecond": 0,
+    "checkpoints": [],
+    "path": "skipped (resume complete)",
+    "start_index": 100000
+  },
+  "gold_summary": [
+    {
+      "id": "jd-en-backend",
+      "lang": "en",
+      "title": "Senior Backend Engineer",
+      "area": "backend",
+      "requiredSkills": [
+        "skill:rust",
+        "skill:postgresql",
+        "skill:kubernetes",
+        "skill:grpc"
+      ],
+      "minYears": 5,
+      "goldSize": 146,
+      "byLang": {
+        "en": 67,
+        "vi": 18,
+        "zh": 9,
+        "es": 10,
+        "ko": 9,
+        "ja": 25,
+        "fr": 8
+      }
+    },
+    {
+      "id": "jd-vi-data-engineering",
+      "lang": "vi",
+      "title": "Kỹ sư Dữ liệu",
+      "area": "data-engineering",
+      "requiredSkills": [
+        "skill:python",
+        "skill:spark",
+        "skill:airflow",
+        "skill:sql"
+      ],
+      "minYears": 3,
+      "goldSize": 131,
+      "byLang": {
+        "en": 54,
+        "zh": 13,
+        "fr": 9,
+        "vi": 17,
+        "ko": 10,
+        "es": 7,
+        "ja": 21
+      }
+    },
+    {
+      "id": "jd-ja-mobile",
+      "lang": "ja",
+      "title": "モバイルアプリエンジニア",
+      "area": "mobile",
+      "requiredSkills": [
+        "skill:swift",
+        "skill:kotlin",
+        "skill:react-native"
+      ],
+      "minYears": 3,
+      "goldSize": 107,
+      "byLang": {
+        "zh": 9,
+        "en": 42,
+        "ja": 18,
+        "ko": 10,
+        "vi": 13,
+        "fr": 9,
+        "es": 6
+      }
+    }
+  ],
+  "results": [
+    {
+      "system": "rrf",
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "jd_title": "Senior Backend Engineer",
+      "gold_size": 146,
+      "runs": 5,
+      "latency_ms": {
+        "p50": 87.68,
+        "p95": 7054.82,
+        "all": [
+          8754.18,
+          257.38,
+          87.68,
+          81.13,
+          81.58
+        ]
+      },
+      "recall_at_10": {
+        "capped": 0.6,
+        "raw": 0.0410958904109589,
+        "hits": 6
+      },
+      "recall_at_50": {
+        "capped": 0.68,
+        "raw": 0.2328767123287671,
+        "hits": 34
+      },
+      "recall_at_100": {
+        "capped": 0.44,
+        "raw": 0.3013698630136986,
+        "hits": 44
+      },
+      "precision_at_10": 0.6,
+      "ndcg_at_10": 0.5658245193320782,
+      "gold_hits_by_lang": {
+        "en": 35,
+        "ja": 7,
+        "fr": 2
+      },
+      "retrieved_top_20": [
+        "res-97168",
+        "res-61660",
+        "res-69950",
+        "res-74608",
+        "res-61786",
+        "res-72186",
+        "res-25307",
+        "res-31611",
+        "res-38280",
+        "res-43352",
+        "res-23725",
+        "res-47770",
+        "res-36842",
+        "res-62418",
+        "res-63908",
+        "res-23005",
+        "res-12236",
+        "res-77464",
+        "res-44293",
+        "res-8202"
+      ]
+    },
+    {
+      "system": "rrf",
+      "jd_id": "jd-vi-data-engineering",
+      "jd_lang": "vi",
+      "jd_title": "Kỹ sư Dữ liệu",
+      "gold_size": 131,
+      "runs": 5,
+      "latency_ms": {
+        "p50": 83.76,
+        "p95": 7943.29,
+        "all": [
+          9858.36,
+          282.97,
+          83.76,
+          78.45,
+          81.45
+        ]
+      },
+      "recall_at_10": {
+        "capped": 0.2,
+        "raw": 0.015267175572519083,
+        "hits": 2
+      },
+      "recall_at_50": {
+        "capped": 0.1,
+        "raw": 0.03816793893129771,
+        "hits": 5
+      },
+      "recall_at_100": {
+        "capped": 0.08,
+        "raw": 0.061068702290076333,
+        "hits": 8
+      },
+      "precision_at_10": 0.2,
+      "ndcg_at_10": 0.3589542101716347,
+      "gold_hits_by_lang": {
+        "vi": 8
+      },
+      "retrieved_top_20": [
+        "res-39528",
+        "res-67616",
+        "res-46702",
+        "res-80541",
+        "res-7897",
+        "res-37675",
+        "res-55947",
+        "res-19714",
+        "res-62734",
+        "res-53285",
+        "res-25232",
+        "res-45292",
+        "res-91243",
+        "res-38791",
+        "res-88206",
+        "res-79958",
+        "res-48119",
+        "res-12235",
+        "res-11282",
+        "res-82709"
+      ]
+    },
+    {
+      "system": "rrf",
+      "jd_id": "jd-ja-mobile",
+      "jd_lang": "ja",
+      "jd_title": "モバイルアプリエンジニア",
+      "gold_size": 107,
+      "runs": 5,
+      "latency_ms": {
+        "p50": 98.9,
+        "p95": 2124.4,
+        "all": [
+          2629.95,
+          98.9,
+          93.33,
+          98.63,
+          102.21
+        ]
+      },
+      "recall_at_10": {
+        "capped": 0.6,
+        "raw": 0.056074766355140186,
+        "hits": 6
+      },
+      "recall_at_50": {
+        "capped": 0.22,
+        "raw": 0.102803738317757,
+        "hits": 11
+      },
+      "recall_at_100": {
+        "capped": 0.17,
+        "raw": 0.1588785046728972,
+        "hits": 17
+      },
+      "precision_at_10": 0.6,
+      "ndcg_at_10": 0.6431211415940209,
+      "gold_hits_by_lang": {
+        "ja": 12,
+        "en": 1,
+        "zh": 3,
+        "ko": 1
+      },
+      "retrieved_top_20": [
+        "res-90891",
+        "res-18235",
+        "res-62677",
+        "res-32970",
+        "res-2049",
+        "res-60236",
+        "res-38182",
+        "res-50306",
+        "res-73510",
+        "res-99434",
+        "res-33714",
+        "res-29746",
+        "res-17730",
+        "res-4167",
+        "res-41694",
+        "res-906",
+        "res-90373",
+        "res-48043",
+        "res-31713",
+        "res-39185"
+      ]
+    }
+  ]
+}

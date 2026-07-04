@@ -1,6 +1,6 @@
 // Iteration protocol runner for the Boeing 747 primitives vision benchmark.
 //
-// The coordinator (running the TerranSoul+Fable improvement loop) calls this
+// The coordinator (running the TerranSoul + Claude Opus 4.8 improvement loop) calls this
 // once per iteration with the iteration-k candidate plane.js:
 //   rig -> judge (median-of-3, frozen rubric) -> critic (weakest feature)
 //   -> results/<actor>/iter-<k>.json + best-so-far tracking.
@@ -14,7 +14,7 @@
 //
 // CLI:
 //   node benchmark/boeing747/loop-runner.mjs --plane <plane.js> [--iter <k>]
-//     [--actor terransoul-fable5] [--skip-critic]
+//     [--actor terransoul-opus48] [--skip-critic]
 //   --from-scored <results.json>  (test utility: replay an already-judged
 //     results file through best/stop bookkeeping without LLM calls)
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -25,7 +25,9 @@ import { criticPass, judgeShots, loadRubric } from './judge/judge.mjs';
 import { evaluateStopConditions } from './lib/stop-conditions.mjs';
 
 const BENCH_DIR = path.dirname(fileURLToPath(import.meta.url));
-const DEFAULT_ACTOR = 'terransoul-fable5';
+// Hero configuration (user directive 2026-07-04): Claude Opus 4.8 coordinates
+// the TerranSoul self-improve loop; the actor label names its results dir.
+const DEFAULT_ACTOR = 'terransoul-opus48';
 
 function loadHistory(actorDir) {
   if (!existsSync(actorDir)) return [];

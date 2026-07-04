@@ -1,0 +1,126 @@
+{
+  "benchmark": "MILLION-RESUME-2 chat-pipeline (sample)",
+  "generated_at": "2026-07-03T18:09:22.490Z",
+  "mode": "sample",
+  "config": {
+    "k": 50,
+    "system": "rrf",
+    "reader_model": "gemma4:12b-it-qat",
+    "batch_tokens": 1300,
+    "working_size": 12,
+    "num_ctx": 6144,
+    "num_predict": 600,
+    "strategy": "streaming-top-n-tournament"
+  },
+  "env": {
+    "longmem_vars": {
+      "LONGMEM_DATA_DIR": "D:\\Git\\ts-jdbench-wt\\target-copilot-bench\\jdbench\\sample-300\\store",
+      "LONGMEM_EMBED": "1",
+      "LONGMEM_EMBED_MODEL": "embeddinggemma",
+      "LONGMEM_SHIM_EXE": "D:/Git/ts-jdbench-wt/target-copilot-bench/debug/longmemeval-ipc.exe"
+    },
+    "ollama_host": "http://127.0.0.1:11434",
+    "node": "v24.3.0",
+    "platform": "win32 x64"
+  },
+  "wall_seconds_total": 43.818,
+  "results": [
+    {
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "gold_size": 12,
+      "k": 50,
+      "retrieval": {
+        "system": "rrf",
+        "latency_ms": {
+          "cold": 3024.13,
+          "warm": 1725.66
+        },
+        "gold_in_pool": 12,
+        "recall_at_10": {
+          "capped": 0.7,
+          "raw": 0.5833333333333334,
+          "hits": 7
+        },
+        "precision_at_10": 0.7,
+        "ndcg_at_10": 0.7967610662472993,
+        "gold_hits_by_lang": {
+          "en": 7,
+          "es": 1,
+          "vi": 2,
+          "zh": 1,
+          "ko": 1
+        },
+        "top_20": [
+          "res-228003",
+          "res-567987",
+          "res-309595",
+          "res-306543",
+          "res-231080",
+          "res-919782",
+          "res-523448",
+          "res-567975",
+          "res-161634",
+          "res-98505",
+          "res-604276",
+          "res-179693",
+          "res-649255",
+          "res-200299",
+          "res-174542",
+          "res-276142",
+          "res-297557",
+          "res-303215",
+          "res-541120",
+          "res-89650"
+        ]
+      },
+      "chat_pipeline": {
+        "reader_model": "gemma4:12b-it-qat",
+        "reader_calls": 7,
+        "reader_ms": 34964,
+        "reader_tokens": {
+          "prompt": 20184,
+          "eval": 1228
+        },
+        "reader_truncations": 0,
+        "total_ms": 36689,
+        "recall_at_10": {
+          "capped": 0.8,
+          "raw": 0.6666666666666666,
+          "hits": 8
+        },
+        "precision_at_10": 0.8,
+        "ndcg_at_10": 0.7975167679274937,
+        "gold_hits_by_lang": {
+          "es": 1,
+          "zh": 1,
+          "ko": 1,
+          "en": 7,
+          "vi": 2
+        },
+        "top_20": [
+          "res-200299",
+          "res-421673",
+          "res-276142",
+          "res-677806",
+          "res-567987",
+          "res-228003",
+          "res-303215",
+          "res-919782",
+          "res-309595",
+          "res-446744",
+          "res-174542",
+          "res-366786",
+          "res-306543",
+          "res-231080",
+          "res-523448",
+          "res-567975",
+          "res-161634",
+          "res-98505",
+          "res-604276",
+          "res-179693"
+        ]
+      }
+    }
+  ]
+}

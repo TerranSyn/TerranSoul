@@ -221,6 +221,11 @@ async function run() {
   const outDir = resolve(REPO_ROOT, option('out-dir', DEFAULT_OUT_DIR));
   const systems = option('systems', 'rrf').split(',').map(s => s.trim()).filter(Boolean);
   const topK = numberOption('top-k', 100);
+  // Optional label suffixes the output file (terransoul-<label>-300.json) so
+  // config ladder legs (e.g. dense+CJK) never clobber an earlier leg's
+  // artifact — equal-or-better updates happen in the scoreboard, not by
+  // overwriting measurements.
+  const label = option('label', null);
 
   const goldDoc = JSON.parse(readFileSync(resolve(sampleDir, 'sample-gold.json'), 'utf8'));
   const resumesPath = resolve(sampleDir, 'resumes.jsonl');
@@ -275,6 +280,13 @@ async function run() {
       }
     }
 
+    // Env stamp (2026-07-02 RRF archaeology guardrail): a metric delta
+    // without an env diff is the tell — record every LONGMEM_* variable so
+    // lexical-only and dense legs can never be confused.
+    const longmemVars = {};
+    for (const [key, value] of Object.entries(process.env)) {
+      if (key.startsWith('LONGMEM_') || key === 'LCM_CONV_AWARE') longmemVars[key] = value;
+    }
     report = {
       benchmark: 'MILLION-RESUME-BENCH sample-300 (TerranSoul)',
       generated_at: new Date().toISOString(),
@@ -283,6 +295,7 @@ async function run() {
       systems,
       top_k: topK,
       query_runs: QUERY_RUNS,
+      env: { longmem_vars: longmemVars, node: process.version, platform: `${process.platform} ${process.arch}` },
       ingest: { rows: added.added, seconds: Number(ingestSeconds.toFixed(3)) },
       wall_seconds_total: Number(((performance.now() - tWall) / 1000).toFixed(3)),
       results,
@@ -293,7 +306,7 @@ async function run() {
   report.wall_seconds_total = Number(((performance.now() - tWall) / 1000).toFixed(3));
 
   mkdirSync(outDir, { recursive: true });
-  const outPath = resolve(outDir, 'terransoul-300.json');
+  const outPath = resolve(outDir, label ? `terransoul-${label}-300.json` : 'terransoul-300.json');
   writeFileSync(outPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
   console.log(`[jd-sample] wrote ${outPath} (wall ${report.wall_seconds_total}s incl. shim spawn + ingest)`);
 }
@@ -354,7 +367,7 @@ async function main() {
   if (cmd === 'score') return score();
   console.log('Usage: node benchmark/scripts/jd-sample-bench.mjs <sample|run|score> [options]');
   console.log('  sample  --corpus-dir --sample-dir --size 300 --gold-per-jd 10 --seed');
-  console.log('  run     --sample-dir --out-dir --systems rrf --top-k 100');
+  console.log('  run     --sample-dir --out-dir --systems rrf --top-k 100 --label <leg>');
   console.log('  score   --sample-dir --out-dir --ranking <file> --label <name> --wall-seconds <n> --notes <text>');
   if (cmd) process.exitCode = 1;
 }

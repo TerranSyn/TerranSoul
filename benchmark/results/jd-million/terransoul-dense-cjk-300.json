@@ -1,0 +1,203 @@
+{
+  "benchmark": "MILLION-RESUME-BENCH sample-300 (TerranSoul)",
+  "generated_at": "2026-07-03T17:45:55.713Z",
+  "sample_dir": "D:\\Git\\ts-jdbench-wt\\target-copilot-bench\\jdbench\\sample-300",
+  "sample_size": 300,
+  "systems": [
+    "rrf"
+  ],
+  "top_k": 100,
+  "query_runs": 5,
+  "env": {
+    "longmem_vars": {
+      "LONGMEM_DATA_DIR": "D:\\Git\\ts-jdbench-wt\\target-copilot-bench\\jdbench\\sample-300\\store",
+      "LONGMEM_EMBED": "1",
+      "LONGMEM_EMBED_MODEL": "embeddinggemma",
+      "LONGMEM_SHIM_EXE": "D:/Git/ts-jdbench-wt/target-copilot-bench/debug/longmemeval-ipc.exe"
+    },
+    "node": "v24.3.0",
+    "platform": "win32 x64"
+  },
+  "ingest": {
+    "rows": 300,
+    "seconds": 70.349
+  },
+  "wall_seconds_total": 204.225,
+  "results": [
+    {
+      "system": "rrf",
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "gold_size": 12,
+      "latency_ms": {
+        "p50": 148.21,
+        "p95": 33846.91,
+        "all": [
+          34296.08,
+          32050.2,
+          145.96,
+          148.21,
+          141.2
+        ]
+      },
+      "recall_at_10": {
+        "capped": 0.7,
+        "raw": 0.5833333333333334,
+        "hits": 7
+      },
+      "recall_at_20": {
+        "capped": 0.9166666666666666,
+        "raw": 0.9166666666666666,
+        "hits": 11
+      },
+      "precision_at_10": 0.7,
+      "ndcg_at_10": 0.7967610662472993,
+      "gold_hits_by_lang": {
+        "en": 7,
+        "es": 1,
+        "vi": 2,
+        "zh": 1,
+        "ko": 1
+      },
+      "retrieved_top_20": [
+        "res-228003",
+        "res-567987",
+        "res-309595",
+        "res-306543",
+        "res-231080",
+        "res-919782",
+        "res-523448",
+        "res-567975",
+        "res-161634",
+        "res-98505",
+        "res-604276",
+        "res-179693",
+        "res-649255",
+        "res-200299",
+        "res-174542",
+        "res-276142",
+        "res-297557",
+        "res-303215",
+        "res-541120",
+        "res-89650"
+      ]
+    },
+    {
+      "system": "rrf",
+      "jd_id": "jd-vi-data-engineering",
+      "jd_lang": "vi",
+      "gold_size": 10,
+      "latency_ms": {
+        "p50": 158.77,
+        "p95": 24543.24,
+        "all": [
+          2018.65,
+          30174.38,
+          158.77,
+          153.7,
+          152.84
+        ]
+      },
+      "recall_at_10": {
+        "capped": 0.1,
+        "raw": 0.1,
+        "hits": 1
+      },
+      "recall_at_20": {
+        "capped": 0.2,
+        "raw": 0.2,
+        "hits": 2
+      },
+      "precision_at_10": 0.1,
+      "ndcg_at_10": 0.13886244387355454,
+      "gold_hits_by_lang": {
+        "vi": 2,
+        "en": 3,
+        "fr": 2,
+        "ko": 1,
+        "es": 1,
+        "zh": 1
+      },
+      "retrieved_top_20": [
+        "res-471404",
+        "res-701573",
+        "res-174542",
+        "res-546757",
+        "res-299408",
+        "res-372760",
+        "res-647490",
+        "res-274093",
+        "res-224403",
+        "res-6",
+        "res-748261",
+        "res-446744",
+        "res-597102",
+        "res-303215",
+        "res-824774",
+        "res-723589",
+        "res-849685",
+        "res-396913",
+        "res-748991",
+        "res-622524"
+      ]
+    },
+    {
+      "system": "rrf",
+      "jd_id": "jd-ja-mobile",
+      "jd_lang": "ja",
+      "gold_size": 10,
+      "latency_ms": {
+        "p50": 144.32,
+        "p95": 25881.6,
+        "all": [
+          443.7,
+          32241.07,
+          142.27,
+          144.32,
+          140.57
+        ]
+      },
+      "recall_at_10": {
+        "capped": 0.6,
+        "raw": 0.6,
+        "hits": 6
+      },
+      "recall_at_20": {
+        "capped": 0.8,
+        "raw": 0.8,
+        "hits": 8
+      },
+      "precision_at_10": 0.6,
+      "ndcg_at_10": 0.6620158551732016,
+      "gold_hits_by_lang": {
+        "ja": 3,
+        "ko": 2,
+        "vi": 1,
+        "en": 3,
+        "fr": 1
+      },
+      "retrieved_top_20": [
+        "res-90891",
+        "res-404103",
+        "res-375750",
+        "res-845731",
+        "res-401341",
+        "res-60641",
+        "res-576583",
+        "res-903581",
+        "res-50306",
+        "res-515062",
+        "res-380557",
+        "res-226035",
+        "res-676685",
+        "res-250912",
+        "res-130906",
+        "res-125459",
+        "res-47766",
+        "res-576886",
+        "res-807876",
+        "res-75015"
+      ]
+    }
+  ]
+}

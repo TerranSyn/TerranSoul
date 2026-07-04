@@ -1,0 +1,318 @@
+{
+  "benchmark": "MILLION-RESUME-2 chat-pipeline (sample)",
+  "generated_at": "2026-07-03T18:12:18.705Z",
+  "mode": "sample",
+  "config": {
+    "k": 50,
+    "system": "rrf",
+    "reader_model": "gemma4:12b-it-qat",
+    "batch_tokens": 1300,
+    "working_size": 12,
+    "num_ctx": 6144,
+    "num_predict": 600,
+    "strategy": "streaming-top-n-tournament"
+  },
+  "env": {
+    "longmem_vars": {
+      "LONGMEM_DATA_DIR": "D:\\Git\\ts-jdbench-wt\\target-copilot-bench\\jdbench\\sample-300\\store",
+      "LONGMEM_EMBED": "1",
+      "LONGMEM_EMBED_MODEL": "embeddinggemma",
+      "LONGMEM_SHIM_EXE": "D:/Git/ts-jdbench-wt/target-copilot-bench/debug/longmemeval-ipc.exe"
+    },
+    "ollama_host": "http://127.0.0.1:11434",
+    "node": "v24.3.0",
+    "platform": "win32 x64"
+  },
+  "wall_seconds_total": 152.859,
+  "results": [
+    {
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "gold_size": 12,
+      "k": 50,
+      "retrieval": {
+        "system": "rrf",
+        "latency_ms": {
+          "cold": 2981.6,
+          "warm": 1883.98
+        },
+        "gold_in_pool": 12,
+        "recall_at_10": {
+          "capped": 0.7,
+          "raw": 0.5833333333333334,
+          "hits": 7
+        },
+        "precision_at_10": 0.7,
+        "ndcg_at_10": 0.7967610662472993,
+        "gold_hits_by_lang": {
+          "en": 7,
+          "es": 1,
+          "vi": 2,
+          "zh": 1,
+          "ko": 1
+        },
+        "top_20": [
+          "res-228003",
+          "res-567987",
+          "res-309595",
+          "res-306543",
+          "res-231080",
+          "res-919782",
+          "res-523448",
+          "res-567975",
+          "res-161634",
+          "res-98505",
+          "res-604276",
+          "res-179693",
+          "res-649255",
+          "res-200299",
+          "res-174542",
+          "res-276142",
+          "res-297557",
+          "res-303215",
+          "res-541120",
+          "res-89650"
+        ]
+      },
+      "chat_pipeline": {
+        "reader_model": "gemma4:12b-it-qat",
+        "reader_calls": 7,
+        "reader_ms": 34907,
+        "reader_tokens": {
+          "prompt": 19655,
+          "eval": 1228
+        },
+        "reader_truncations": 0,
+        "total_ms": 36791,
+        "recall_at_10": {
+          "capped": 0.9,
+          "raw": 0.75,
+          "hits": 9
+        },
+        "precision_at_10": 0.9,
+        "ndcg_at_10": 0.8611375561264454,
+        "gold_hits_by_lang": {
+          "es": 1,
+          "zh": 1,
+          "en": 7,
+          "vi": 2,
+          "ko": 1
+        },
+        "top_20": [
+          "res-200299",
+          "res-421673",
+          "res-276142",
+          "res-567987",
+          "res-231080",
+          "res-306543",
+          "res-303215",
+          "res-919782",
+          "res-228003",
+          "res-174542",
+          "res-309595",
+          "res-677806",
+          "res-523448",
+          "res-567975",
+          "res-161634",
+          "res-98505",
+          "res-604276",
+          "res-179693",
+          "res-649255",
+          "res-297557"
+        ]
+      }
+    },
+    {
+      "jd_id": "jd-vi-data-engineering",
+      "jd_lang": "vi",
+      "gold_size": 10,
+      "k": 50,
+      "retrieval": {
+        "system": "rrf",
+        "latency_ms": {
+          "cold": 2474.45,
+          "warm": 2018.05
+        },
+        "gold_in_pool": 8,
+        "recall_at_10": {
+          "capped": 0.2,
+          "raw": 0.2,
+          "hits": 2
+        },
+        "precision_at_10": 0.2,
+        "ndcg_at_10": 0.20248323207250624,
+        "gold_hits_by_lang": {
+          "vi": 2,
+          "en": 3,
+          "fr": 1,
+          "ko": 1,
+          "es": 1
+        },
+        "top_20": [
+          "res-471404",
+          "res-701573",
+          "res-174542",
+          "res-546757",
+          "res-299408",
+          "res-372760",
+          "res-274093",
+          "res-6",
+          "res-224403",
+          "res-748261",
+          "res-446744",
+          "res-597102",
+          "res-303215",
+          "res-647490",
+          "res-824774",
+          "res-723589",
+          "res-849685",
+          "res-396913",
+          "res-748991",
+          "res-622524"
+        ]
+      },
+      "chat_pipeline": {
+        "reader_model": "gemma4:12b-it-qat",
+        "reader_calls": 7,
+        "reader_ms": 35788,
+        "reader_tokens": {
+          "prompt": 21297,
+          "eval": 1192
+        },
+        "reader_truncations": 0,
+        "total_ms": 37806,
+        "recall_at_10": {
+          "capped": 0.6,
+          "raw": 0.6,
+          "hits": 6
+        },
+        "precision_at_10": 0.6,
+        "ndcg_at_10": 0.7125523635307982,
+        "gold_hits_by_lang": {
+          "vi": 2,
+          "ko": 1,
+          "fr": 1,
+          "en": 3,
+          "es": 1
+        },
+        "top_20": [
+          "res-748261",
+          "res-595885",
+          "res-935621",
+          "res-347576",
+          "res-80196",
+          "res-95855",
+          "res-342846",
+          "res-299408",
+          "res-909856",
+          "res-637825",
+          "res-274057",
+          "res-2",
+          "res-471404",
+          "res-701573",
+          "res-174542",
+          "res-546757",
+          "res-372760",
+          "res-274093",
+          "res-6",
+          "res-224403"
+        ]
+      }
+    },
+    {
+      "jd_id": "jd-ja-mobile",
+      "jd_lang": "ja",
+      "gold_size": 10,
+      "k": 50,
+      "retrieval": {
+        "system": "rrf",
+        "latency_ms": {
+          "cold": 1227.11,
+          "warm": 85.04
+        },
+        "gold_in_pool": 8,
+        "recall_at_10": {
+          "capped": 0.5,
+          "raw": 0.5,
+          "hits": 5
+        },
+        "precision_at_10": 0.5,
+        "ndcg_at_10": 0.568003577662161,
+        "gold_hits_by_lang": {
+          "ja": 3,
+          "ko": 2,
+          "en": 2,
+          "vi": 1
+        },
+        "top_20": [
+          "res-90891",
+          "res-404103",
+          "res-375750",
+          "res-401341",
+          "res-576583",
+          "res-903581",
+          "res-50306",
+          "res-845731",
+          "res-515062",
+          "res-380557",
+          "res-60641",
+          "res-226035",
+          "res-676685",
+          "res-250912",
+          "res-125459",
+          "res-47766",
+          "res-576886",
+          "res-807876",
+          "res-130906",
+          "res-75015"
+        ]
+      },
+      "chat_pipeline": {
+        "reader_model": "gemma4:12b-it-qat",
+        "reader_calls": 11,
+        "reader_ms": 67501,
+        "reader_tokens": {
+          "prompt": 35456,
+          "eval": 2547
+        },
+        "reader_truncations": 2,
+        "total_ms": 67586,
+        "recall_at_10": {
+          "capped": 0.6,
+          "raw": 0.6,
+          "hits": 6
+        },
+        "precision_at_10": 0.6,
+        "ndcg_at_10": 0.727329844310522,
+        "gold_hits_by_lang": {
+          "ja": 3,
+          "en": 2,
+          "ko": 2,
+          "vi": 1
+        },
+        "top_20": [
+          "res-845731",
+          "res-90891",
+          "res-515062",
+          "res-404103",
+          "res-130906",
+          "res-576886",
+          "res-676685",
+          "res-807876",
+          "res-226035",
+          "res-952788",
+          "res-747782",
+          "res-380557",
+          "res-375750",
+          "res-401341",
+          "res-576583",
+          "res-903581",
+          "res-50306",
+          "res-60641",
+          "res-250912",
+          "res-125459"
+        ]
+      }
+    }
+  ]
+}

@@ -21,19 +21,27 @@ export class JsonlClient {
     this.nextId = 1;
     this.pending = new Map();
     this.buffer = '';
-    this.proc = spawn('cargo', [
-      'run',
-      '--quiet',
-      '--manifest-path',
-      resolve(repoRoot, 'src-tauri', 'Cargo.toml'),
-      '--bin',
-      'longmemeval-ipc',
-      '--target-dir',
-      targetDir,
-    ], {
-      cwd: repoRoot,
-      stdio: ['pipe', 'pipe', 'pipe'],
-    });
+    // LONGMEM_SHIM_EXE (MILLION-RESUME-2): spawn a specific prebuilt shim
+    // binary directly instead of `cargo run`. Two bench needs: (a) config
+    // ladders that must A/B an OLDER binary generation (cargo run would
+    // silently rebuild to HEAD and destroy the baseline leg), and (b) no
+    // cargo lock/rebuild contention while a bench owns the machine.
+    const shimExe = process.env.LONGMEM_SHIM_EXE;
+    this.proc = shimExe
+      ? spawn(shimExe, [], { cwd: repoRoot, stdio: ['pipe', 'pipe', 'pipe'] })
+      : spawn('cargo', [
+        'run',
+        '--quiet',
+        '--manifest-path',
+        resolve(repoRoot, 'src-tauri', 'Cargo.toml'),
+        '--bin',
+        'longmemeval-ipc',
+        '--target-dir',
+        targetDir,
+      ], {
+        cwd: repoRoot,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
 
     this.proc.stdout.setEncoding('utf8');
     this.proc.stdout.on('data', chunk => this.onStdout(chunk));
