@@ -18,16 +18,20 @@ The same learned 1M store answered at three thinking levels, so the trade is
 explicit and graded: **more thinking spends more time and buys more accuracy.**
 All three are Gemma 4 12B, local, over the SAME store (learned once, shared).
 
-| | **Chat** — no thinking | **Think** — with thinking | **Max** — highest thinking | **Claude Sonnet 5** (in-context) |
+Every cell is measured **at 1,000,000 résumés**. Claude Sonnet 5 cannot run at
+that scale at all (its ceiling is ≈ 3,800 résumés — § 2), so every Sonnet cell is
+**no**; where it *can* participate (≤ 3,800) it is compared in § 2.
+
+| | **Chat** — no thinking | **Think** — with thinking | **Max** — highest thinking | **Claude Sonnet 5** |
 |---|---|---|---|---|
-| Runs the 1,000,000-résumé job? | ✅ yes | ✅ yes | ✅ yes | ❌ no — ceiling ≈ **3,800 résumés** |
-| NDCG@10 — English | 92.7 % | **100 %** | **100 %** | 100 % — only over ≤ 3,800 |
-| NDCG@10 — Vietnamese | 40.0 % | 42.8 % | **100 %** | 100 % — only over ≤ 3,800 |
-| NDCG@10 — Japanese | 78.3 % | 93.4 % | **100 %** | 100 % — only over ≤ 3,800 |
-| Response time / JD | **~1.3–1.7 ms** (warm) | ~32–56 s (reader tournament) | ~48–59 s (agentic verify) | ~49.6 s / JD (148.7 s ÷ 3, over ≤ 300) |
-| Time to LEARN 1,000,000 résumés | **24.9 min once** (669 résumés/s, persistent, shared by all three) | ← same | ← same | n/a — re-reads the corpus every question |
-| Reaches 100 % in every language? | no (speed tier) | en+ja only | **yes — all three** | yes, but only at ≤ 3,800-résumé scale |
-| Trade | fastest, lowest cross-lingual recall | reranks one retrieval; recall-bound | **slowest, 100 % all languages** | 100 % but cannot scale past ~3,800 |
+| Runs the 1,000,000-résumé job? | ✅ yes | ✅ yes | ✅ yes | ❌ no |
+| NDCG@10 — English | 92.7 % | **100 %** | **100 %** | ❌ no |
+| NDCG@10 — Vietnamese | 40.0 % | 42.8 % | **100 %** | ❌ no |
+| NDCG@10 — Japanese | 78.3 % | 93.4 % | **100 %** | ❌ no |
+| Response time / JD | **~1.3–1.7 ms** (warm) | ~32–56 s (reader tournament) | ~48–59 s (agentic verify) | ❌ no |
+| Learns the 1,000,000 résumés? | ✅ 24.9 min once (669/s, persistent, shared by all three) | ← same | ← same | ❌ no |
+| Reaches 100 % in every language? | no (speed tier) | en+ja only | ✅ **yes — all three** | ❌ no |
+| Trade | fastest, lowest cross-lingual recall | reranks one retrieval; recall-bound | **slowest, 100 % all languages** | ❌ cannot run at this scale |
 
 **How Max reaches 100 % where Chat/Think do not.** Chat is a single lexical
 retrieval (one hybrid RRF pass → direct top-k). Think reranks *that one pool* with
