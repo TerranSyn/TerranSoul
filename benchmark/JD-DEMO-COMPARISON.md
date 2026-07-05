@@ -62,26 +62,47 @@ the CLI's usage, gold scored after.
 
 ### Can the 24.9-min learn be ~1 second (≈1M ingests/sec)? — durable vs. searchable
 
-The **669/sec (24.9 min)** above is the *fully-text-searchable* ingest: every row is
-FTS5-tokenized **synchronously by AFTER-INSERT triggers on one connection/one core**
-(the V62 CJK trigram mirror dominates — a full-string `GLOB` scan on all 1M rows plus
-~one posting per CJK character). It is **not** the durable write; the same machine's
-sharded durable-append layer is measured at **1.42–2.65 M docs/sec**. So the honest,
-grounded answer (design INGEST-1M-PER-SEC — analysis in `benchmark/results/jd-million/`):
+A reproduce-first micro-bench (2026-07-05) pinned exactly why 669/sec is that slow and
+how far it can move — and answered the "would an SSD help?" question directly.
 
-- **Durable "learned" (persistent, crash-safe, read-your-writes by id): ≈ 1–2 s for
-  1M (~500k–1M/sec)** — route `learn` through the `ShardedWriteEngine` with FTS
-  **deferred** (`add_many_buffered` → `put_batch`, the seam already present). This is
-  the truthful ~1M/sec.
+**Root cause (measured, not guessed).** The wall is **single-core synchronous FTS5
+tokenization** fired by two AFTER-INSERT triggers on one connection — *not* fsync,
+*not* embeddings (dense channel off here), *not* the base insert. Micro-bench on the
+C: NVMe through the full production schema: turning FTS **off** = 6–7× faster
+(~16.6k rows/s); the sharded base append with FTS **deferred** = **183k–206k rows/s,
+60–89×**. The V62 CJK trigram mirror (a full-string `GLOB` scan on every row) is a
+real, *growing* +27→57 % slice on top.
+
+**Does an SSD help? Partly — and the 669/s was actually on an HDD.** Verified with
+`Get-PhysicalDisk`: the published 669/s **ran on the D: spinning HDD** (Seagate
+ST2000DX002); C: is a Samsung 980 PRO NVMe, and the million runner defaulted to D:.
+Moving to the NVMe is a **real but partial ~2–3× win** on the b-tree-spill tail (the
+measured 2,285→388 rows/s decay as the ~1.2 GB FTS index spills past the 16 MiB page
+cache into random-seek platter I/O). It **cannot** break the single-core tokenization
+floor — the 25× lever is algorithmic (defer_fts); the SSD is a genuine bonus on top.
+
+So the honest, now **micro-bench-backed** split (design INGEST-1M-PER-SEC):
+
+- **Durable "learned" (persistent, crash-safe, read-your-writes by id): projected
+  ≈ 1–2 s for 1M (~500k–1M/sec)** — route `learn` through the `ShardedWriteEngine`
+  with FTS **deferred** (`add_many_buffered` → `put_batch`). Grounded by the 60–89×
+  micro-bench, no longer just design.
 - **Fully FTS/RRF-searchable: eventually consistent, ~10–15 s for 1M (~70–100k/sec)**
-  via a parallel per-shard index rebuild + a sharded search path. A **live** FTS5 index
-  physically cannot reach 1M/sec (one tokenizer, one b-tree, 250M+ token events) — so
-  the report will never claim "instantly searchable at 1M/sec."
+  via a parallel per-shard rebuild. A **live** single-connection FTS5 index physically
+  cannot reach 1M/sec (one tokenizer, one b-tree, 250M+ token events); immediate
+  single-pass full-searchability is ~2–8 min. So we never claim "instantly searchable
+  at 1M/sec."
 
-The optimization changes **when/where the index is built, never what is stored** (AGI-pure,
-all CRUD via the gateway, brain-seeded tunables). It is **not yet implemented** — the
-669/sec above remains the current *measured* fully-searchable number; the ~1–2 s durable
-figure is the grounded design target, to be published only once measured.
+**Status (2026-07-05).** Step 1+2 of this path (defer_fts sharded route + brain-seeded
+pragmas + the reproduce-first micro-bench) is **implemented and merged DEFAULT-OFF**
+(cargo-green, 6034 tests pass; byte-identical behaviour until the flag flips, so the
+published 669/s floor cannot regress). The optimization changes **when/where the index
+is built, never what is stored** (AGI-pure, gateway CRUD, brain-seeded tunables). The
+**669/sec remains the current *measured* fully-searchable number**; the ≈1–2 s durable
+figure is a **micro-bench-backed projection, NOT yet confirmed at 1M** — the full 1M
+rebench (which also re-clears the en NDCG@10 ≥ 93.4 retrieval floor before the flag
+flips ON) is **deferred behind the one-bench GPU slot** and will be published here only
+once measured end-to-end.
 
 ## 3. Honest note on the 100 %
 
