@@ -60,28 +60,6 @@ floor an earlier pass reported, and not the ~6–8k an English-only estimate wou
 give. Method: the `claude` CLI (`--model claude-sonnet-5`), exact token counts from
 the CLI's usage, gold scored after.
 
-### Can the 24.9-min learn be ~1 second? — measured at 1M: no
-
-Measured end-to-end at the real 1,000,000-row scale on the C: NVMe SSD
-(`benchmark/results/jd-million/ssd-defer/`, `ssd-baseline/`, 2026-07-05). Routing `learn`
-through the `defer_fts` sharded write engine (`LONGMEM_WRITE_ENGINE=1`, `add_many_buffered`
-→ `put_batch`, FTS deferred) lands at **602 rows/s (27.68 min)** and **tracks the
-synchronous-FTS baseline slice-for-slice (within ~1–3 %)** — not the ~1–2 s (~500k–1M/sec)
-an earlier design note projected. Finalize is a no-op here (flush 0.00 s, reconcile 0.70 s,
-materialize 0.21 s / 0 pending), so durable and fully-searchable coincide. The 60–89× that
-fed the projection was a cache-resident micro-bench (20k–50k rows); at 1M on disk the
-sharded engine's own b-tree/op-log spill costs about what the FTS spill it defers did.
-
-An NVMe does not beat the D: HDD either — the wall is single-core per-row CPU work, not
-disk: the SSD helps only the ~7 % disk-spill tail (final slice 417 vs 388 rows/s) and the
-full baseline run came back at **581 rows/s**, no faster than the HDD. **So 669/s (24.9 min)
-stands as the measured fully-searchable floor.** FTS was not the lever the micro-bench made
-it look; the real bottleneck is the per-row `add_sessions` / `put_batch` path, and reaching
-~1 min would require optimizing that wrapper — the next target. (Retrieval quality is
-unchanged: the defer_fts store answers the 3 JDs identically to the baseline, en NDCG@10
-93.4 % / vi 45.4 % / ja 65.0 %; the en NDCG@10 ≥ 93.4 % floor re-clear with GPU embeddings
-remains the deferred gate before any default-ON flip.)
-
 ## 3. Honest note on the 100 %
 
 Max's 100 % is real **on this synthetic corpus**, and it is earned fairly: the
