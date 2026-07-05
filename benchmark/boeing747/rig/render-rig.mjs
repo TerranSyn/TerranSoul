@@ -27,6 +27,16 @@ import { startStaticServer } from './static-server.mjs';
 const BENCH_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const REPO_ROOT = path.resolve(BENCH_DIR, '..', '..');
 
+// Supersample (SSAA) factor: the drawing buffer is rendered at SUPERSAMPLE x the
+// frozen 1024x768 and downscaled (Lanczos) to the judged size. SwiftShader (the
+// pinned software-GL path) ignores the WebGL `antialias:true` MSAA flag, so the
+// raw 1x frame is stair-stepped along every diagonal edge (wings, fin, nacelle
+// cowls, fuselage taper) — which reads to the vision judge as rough craftsmanship
+// and a jagged silhouette. SSAA is the honest fix: identical geometry, camera,
+// lighting and scene; only edge sampling is anti-aliased. Overridable via
+// BOEING_SUPERSAMPLE for cost/quality tuning; recorded in meta.json.
+const SUPERSAMPLE = Math.max(1, Math.floor(Number(process.env.BOEING_SUPERSAMPLE) || 3));
+
 export function sha256(buf) {
   return createHash('sha256').update(buf).digest('hex');
 }
@@ -107,6 +117,8 @@ export async function runRig(opts) {
       (src) => window.__rig.loadPlane(src),
       source,
     );
+    // Enable SSAA: render the drawing buffer at SUPERSAMPLE x, downscale below.
+    const ssInfo = await page.evaluate((s) => window.__rig.setSupersample(s), SUPERSAMPLE);
 
     const viewFiles = [];
     const poses = [];
@@ -152,7 +164,19 @@ export async function runRig(opts) {
       if (png === null) throw new Error(`view ${view.id} readback stayed empty after retries`);
       poses.push({ id: view.id, key: view.key, ...pose });
       const file = path.join(outDir, `view-${view.id}.png`);
-      writeFileSync(file, Buffer.from(png.split(',')[1], 'base64'));
+      // Downscale the SUPERSAMPLE x drawing-buffer readback to the frozen judged
+      // size with a Lanczos3 kernel — this is the anti-aliasing resolve step. At
+      // ss=1 it is a no-op passthrough (source already 1024x768).
+      const rawBuf = Buffer.from(png.split(',')[1], 'base64');
+      if (SUPERSAMPLE > 1) {
+        const down = await sharp(rawBuf)
+          .resize(RENDER_WIDTH, RENDER_HEIGHT, { kernel: 'lanczos3' })
+          .png()
+          .toBuffer();
+        writeFileSync(file, down);
+      } else {
+        writeFileSync(file, rawBuf);
+      }
       viewFiles.push(file);
     }
     if (pageErrors.length > 0) {
@@ -174,6 +198,8 @@ export async function runRig(opts) {
       cameraSpecVersion: CAMERA_SPEC_VERSION,
       threeRevision: rigInfo.threeRevision,
       renderSize: [RENDER_WIDTH, RENDER_HEIGHT],
+      supersample: ssInfo.ss,
+      renderBufferSize: [ssInfo.width, ssInfo.height],
       bbox,
       views: poses,
       viewFiles: viewFiles.map((f) => path.basename(f)),

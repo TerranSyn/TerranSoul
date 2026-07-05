@@ -59,6 +59,34 @@ export function viewScore(criteriaMedians, criteria) {
 }
 
 /**
+ * VIEW-VISIBILITY MASK (measurement-correctness fix, rubric v2).
+ *
+ * Force a criterion to `null` on views where the feature is STRUCTURALLY
+ * invisible (the fuselage side is edge-on, the feature is occluded, or a
+ * vertical feature is seen from directly above), so the aggregate reflects the
+ * geometry rather than an impossible ask. This is the deterministic enforcement
+ * of the rubric's own "use null if a criterion genuinely cannot be assessed from
+ * this angle" instruction — vision judges (both gemma4 and Opus) frequently
+ * return a low integer instead of null there (e.g. window_door_lines=2 on the
+ * head-on rear view, with the judge's own note "no windows visible from this
+ * angle"), which silently penalises a feature that no geometry could show.
+ *
+ * `viewVisibility` maps criterion id -> array of view ids on which it IS
+ * assessable. A criterion absent from the map is assessable on ALL views.
+ * When `viewVisibility` is falsy (rubric v1 / unmasked callers) the medians are
+ * returned unchanged — backward compatible.
+ */
+export function maskViewMedians(criteriaMedians, viewId, viewVisibility) {
+  if (!viewVisibility || !criteriaMedians) return criteriaMedians;
+  const out = {};
+  for (const id of Object.keys(criteriaMedians)) {
+    const allowed = viewVisibility[id];
+    out[id] = Array.isArray(allowed) && !allowed.includes(viewId) ? null : criteriaMedians[id];
+  }
+  return out;
+}
+
+/**
  * TOTAL: mean of the (non-null) per-view scores, scaled from /10 to /100.
  * Returns { total, scoredViews, missingViews }.
  */

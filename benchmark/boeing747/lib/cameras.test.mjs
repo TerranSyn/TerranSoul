@@ -6,6 +6,7 @@ import {
   computeCamera,
   FOV_DEG,
   FRAME_MARGIN,
+  projectedFrameDistance,
   RENDER_HEIGHT,
   RENDER_WIDTH,
   VIEWS,
@@ -17,7 +18,7 @@ const BBOX = { min: { x: -35, y: -10, z: -32 }, max: { x: 35, y: 10, z: 32 } };
 
 describe('frozen camera spec', () => {
   it('freezes the spec version, render size, and nine views', () => {
-    expect(CAMERA_SPEC_VERSION).toBe(1);
+    expect(CAMERA_SPEC_VERSION).toBe(2);
     expect(RENDER_WIDTH).toBe(1024);
     expect(RENDER_HEIGHT).toBe(768);
     expect(VIEWS).toHaveLength(9);
@@ -70,12 +71,43 @@ describe('frozen camera spec', () => {
     expect(low.position[1]).toBeLessThan(0);
   });
 
-  it('the nose close-up targets the front-upper fuselage at reduced distance', () => {
+  it('the nose close-up targets the front-upper fuselage and keeps the v1 sphere frame', () => {
     const closeup = computeCamera(VIEWS[8], BBOX);
-    const full = computeCamera(VIEWS[5], BBOX);
+    const { radius } = bboxMetrics(BBOX);
     expect(closeup.target[0]).toBeCloseTo(0.3 * 70, 8);
     expect(closeup.target[1]).toBeCloseTo(0.1 * 20, 8);
-    expect(closeup.distance).toBeCloseTo(full.distance * 0.42, 8);
+    // View 9 (the only view with a distanceFactor) is preserved EXACTLY on the
+    // version-1 bounding-sphere framing.
+    expect(closeup.distance).toBeCloseTo(autoFrameDistance(radius) * 0.42, 8);
+  });
+
+  it('v2 projected framing: full views fill the frame tighter than the v1 sphere', () => {
+    const { radius } = bboxMetrics(BBOX);
+    const sphere = autoFrameDistance(radius);
+    for (const idx of [0, 2, 4, 5]) {
+      // side, front, top-down, front-3/4 — all should be strictly closer than
+      // the worst-case bounding-sphere frame (the span no longer inflates them).
+      expect(computeCamera(VIEWS[idx], BBOX).distance).toBeLessThan(sphere);
+    }
+  });
+
+  it('projectedFrameDistance frames a side view by length+height, not wingspan', () => {
+    // Left profile: camera on -Z, so the wingspan (Z) is depth, not width.
+    const dir = [0, 0, -1];
+    const d = projectedFrameDistance(BBOX, [0, 0, 0], dir, [0, 1, 0]);
+    const vHalf = Math.tan((FOV_DEG / 2) * (Math.PI / 180));
+    const hHalf = (RENDER_WIDTH / RENDER_HEIGHT) * vHalf;
+    // halfW = length/2 = 35 (along X), halfH = height/2 = 10 (along Y),
+    // halfDepth = span/2 = 32 (along Z, into screen).
+    const expected = Math.max(10 / vHalf, 35 / hHalf) * FRAME_MARGIN + 32;
+    expect(d).toBeCloseTo(expected, 6);
+  });
+
+  it('projected framing is scale-invariant', () => {
+    const big = { min: { x: -350, y: -100, z: -320 }, max: { x: 350, y: 100, z: 320 } };
+    const a = projectedFrameDistance(BBOX, [0, 0, 0], [0, 0, -1], [0, 1, 0]);
+    const b = projectedFrameDistance(big, [0, 0, 0], [0, 0, -1], [0, 1, 0]);
+    expect(b / a).toBeCloseTo(10, 6);
   });
 
   it('is scale-invariant: a 100x model frames identically (relative)', () => {

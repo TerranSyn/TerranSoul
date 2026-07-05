@@ -29,7 +29,7 @@ import {
   parseJudgeBody,
   parseJudgeReply,
 } from '../lib/judge-parse.mjs';
-import { seedMedian, totalScore, viewScore, weakestCriterion } from '../lib/scoring.mjs';
+import { maskViewMedians, seedMedian, totalScore, viewScore, weakestCriterion } from '../lib/scoring.mjs';
 
 // Re-exported for API stability; the implementation (plus extractReplyText /
 // parseJudgeBody / callWithParseRetry) lives in lib/judge-parse.mjs so the
@@ -189,12 +189,21 @@ async function judgeOneView({ rubric, refs, model, shotsDir, view }) {
   for (const id of criteriaIds) {
     medians[id] = seedMedian(seeds.filter((s) => s.ok).map((s) => s.scores[id]));
   }
-  const score = viewScore(medians, rubric.criteria);
+  // View-visibility mask (rubric v2): score only on views where each feature is
+  // structurally assessable. criteria_medians stays RAW (what the judge said) for
+  // audit; score is computed from the masked medians; score_unmasked is kept so
+  // the mask's effect is transparent in every result.
+  const masked = maskViewMedians(medians, view.id, rubric.view_visibility);
+  const score = viewScore(masked, rubric.criteria);
+  const scoreUnmasked = viewScore(medians, rubric.criteria);
+  const maskedOut = criteriaIds.filter((id) => masked[id] === null && medians[id] !== null);
   return {
     view: view.id,
     key: view.key,
     refs: refKeys,
     score: score === null ? null : Math.round(score * 100) / 100,
+    score_unmasked: scoreUnmasked === null ? null : Math.round(scoreUnmasked * 100) / 100,
+    masked_out: maskedOut,
     criteria_medians: medians,
     judge_errors: seeds.filter((s) => !s.ok).length,
     seeds,
@@ -278,7 +287,14 @@ export async function judgeShots({ shotsDir, views, out, force, model: modelOver
     perView.push(JSON.parse(readFileSync(partial, 'utf8')));
   }
   const { total, scoredViews, missingViews } = totalScore(perView.map((v) => v.score));
-  const weakest = weakestCriterion(perView.map((v) => v.criteria_medians), rubric.criteria);
+  // Weakest feature is computed on the MASKED medians so the critic never steers
+  // the loop toward a feature that is only "weak" because it was graded on views
+  // where it cannot be seen.
+  const weakest = weakestCriterion(
+    perView.map((v) => maskViewMedians(v.criteria_medians, v.view, rubric.view_visibility)),
+    rubric.criteria,
+  );
+  const { total: totalUnmasked } = totalScore(perView.map((v) => v.score_unmasked ?? v.score));
   const results = {
     protocol: rubric.protocol,
     rubric_version: rubric.version,
@@ -286,6 +302,7 @@ export async function judgeShots({ shotsDir, views, out, force, model: modelOver
     judge_model: model,
     judge_seeds: rubric.judge_seeds,
     judge_options: rubric.judge_options,
+    supersample: meta.supersample ?? 1,
     run_id: meta.runId,
     plane_path: meta.planePath,
     plane_sha256: meta.planeSha256,
@@ -294,6 +311,7 @@ export async function judgeShots({ shotsDir, views, out, force, model: modelOver
     reference_sha256: Object.fromEntries(Object.values(refs).map((r) => [r.key, r.sha256])),
     per_view: perView,
     total_0_100: total,
+    total_0_100_unmasked: totalUnmasked,
     scored_views: scoredViews,
     missing_views: missingViews,
     weakest_feature: weakest,

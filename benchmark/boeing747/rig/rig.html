@@ -68,6 +68,23 @@
     threeRevision: THREE.REVISION,
     viewCount: VIEWS.length,
 
+    /**
+     * Set the SUPERSAMPLE factor: render the drawing buffer at s x the frozen
+     * 1024x768 and let the node side downscale (Lanczos) to the judged size.
+     * This is pure SSAA anti-aliasing — the camera ASPECT is unchanged
+     * (RENDER_WIDTH/RENDER_HEIGHT cancels s), so framing, FOV, lighting, scene
+     * and geometry are identical; only edge sampling improves. SwiftShader does
+     * NOT honour the WebGL `antialias:true` MSAA flag on this software GL stack
+     * (measured: raw 1x edges are visibly stair-stepped), so SSAA is the only
+     * anti-aliasing path available for a faithful, clean render of the SAME model.
+     */
+    setSupersample(s) {
+      const ss = Math.max(1, Math.floor(Number(s) || 1));
+      renderer.setSize(RENDER_WIDTH * ss, RENDER_HEIGHT * ss, false);
+      // camera.aspect is (RENDER_WIDTH/RENDER_HEIGHT) — unchanged by ss.
+      return { width: RENDER_WIDTH * ss, height: RENDER_HEIGHT * ss, ss };
+    },
+
     /** Load a candidate module source, build the plane, return its bbox. */
     async loadPlane(source) {
       const url = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));

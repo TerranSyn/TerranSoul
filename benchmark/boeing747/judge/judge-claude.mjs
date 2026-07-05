@@ -35,7 +35,7 @@ import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { VIEWS } from '../lib/cameras.mjs';
 import { parseJudgeReply } from '../lib/judge-parse.mjs';
-import { seedMedian, totalScore, viewScore, weakestCriterion } from '../lib/scoring.mjs';
+import { maskViewMedians, seedMedian, totalScore, viewScore, weakestCriterion } from '../lib/scoring.mjs';
 import { loadRubric } from './judge.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -171,13 +171,19 @@ async function judgeOneViewClaude({ rubric, refs, model, shotsDir, view, samples
   for (const id of criteriaIds) {
     medians[id] = seedMedian(runs.filter((r) => r.ok).map((r) => r.scores[id]));
   }
-  const score = viewScore(medians, rubric.criteria);
+  // View-visibility mask (rubric v2) — see judge.mjs / lib/scoring.mjs.
+  const masked = maskViewMedians(medians, view.id, rubric.view_visibility);
+  const score = viewScore(masked, rubric.criteria);
+  const scoreUnmasked = viewScore(medians, rubric.criteria);
+  const maskedOut = criteriaIds.filter((id) => masked[id] === null && medians[id] !== null);
   const notes = runs.filter((r) => r.ok).map((r) => r.notes).filter(Boolean);
   return {
     view: view.id,
     key: view.key,
     refs: refKeys,
     score: score === null ? null : Math.round(score * 100) / 100,
+    score_unmasked: scoreUnmasked === null ? null : Math.round(scoreUnmasked * 100) / 100,
+    masked_out: maskedOut,
     criteria_medians: medians,
     notes: notes[0] || '',
     all_notes: notes,
@@ -222,7 +228,11 @@ export async function judgeShotsClaude({ shotsDir, views, out, force, samples, m
     perView.push(JSON.parse(readFileSync(partial, 'utf8')));
   }
   const { total, scoredViews, missingViews } = totalScore(perView.map((v) => v.score));
-  const weakest = weakestCriterion(perView.map((v) => v.criteria_medians), rubric.criteria);
+  const weakest = weakestCriterion(
+    perView.map((v) => maskViewMedians(v.criteria_medians, v.view, rubric.view_visibility)),
+    rubric.criteria,
+  );
+  const { total: totalUnmasked } = totalScore(perView.map((v) => v.score_unmasked ?? v.score));
   const totalCost = Math.round(perView.reduce((a, v) => a + (v.cost_usd || 0), 0) * 1e6) / 1e6;
   const results = {
     protocol: rubric.protocol,
@@ -231,6 +241,7 @@ export async function judgeShotsClaude({ shotsDir, views, out, force, samples, m
     rubric_sha256: rubricSha256,
     judge_model: modelLabel,
     judge_samples: nSamples,
+    supersample: meta.supersample ?? 1,
     run_id: meta.runId,
     plane_path: meta.planePath,
     plane_sha256: meta.planeSha256,
@@ -241,10 +252,13 @@ export async function judgeShotsClaude({ shotsDir, views, out, force, samples, m
       view: v.view,
       key: v.key,
       score: v.score,
+      score_unmasked: v.score_unmasked,
+      masked_out: v.masked_out,
       criteria_medians: v.criteria_medians,
       notes: v.notes,
     })),
     total_0_100: total,
+    total_0_100_unmasked: totalUnmasked,
     scored_views: scoredViews,
     missing_views: missingViews,
     weakest_feature: weakest,

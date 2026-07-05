@@ -12,6 +12,36 @@ rubric, weights, judge prompts, seeds, references — is **FROZEN** across all
 actors and iterations. The sha256 of `rubric.json` is printed into every
 result; changing any frozen artifact invalidates cross-run comparability.
 
+### Version 2 re-baseline (measurement-fidelity corrections, 2026-07-05)
+
+Three measurement bugs were root-caused and fixed as harness corrections (the
+geometry judged is unchanged; the fixes let the judge see it faithfully). They
+re-baseline the harness — **version-2 numbers are NOT comparable to version-1**:
+
+1. **SSAA render** (`rig/render-rig.mjs`, `BOEING_SUPERSAMPLE`, default 3×). The
+   pinned SwiftShader software-GL path ignores the WebGL `antialias:true` flag,
+   so v1 frames were stair-stepped along every diagonal edge (wings, fin,
+   nacelles, fuselage taper), which read to the vision judge as rough
+   craftsmanship / jagged silhouette. The drawing buffer is now rendered at N×
+   and Lanczos-downscaled to the frozen 1024×768. Same geometry, camera,
+   lighting, scene — only edge sampling. Measured effect: **≈ +3.6** on the
+   gemma track for the identical plane.
+2. **View-visibility mask** (`rubric.json` `view_visibility`, rubric **version
+   2**). A criterion is scored ONLY on views where the feature is structurally
+   visible; on masked views its median is forced to `null` and excluded (weight
+   renormalized). This deterministically enforces the rubric's own "null if not
+   assessable from this angle" instruction, which the judges violated (e.g.
+   `window_door_lines` = 2 on the head-on rear view, with the judge's own note
+   "no windows visible from this angle"). Measured effect: **≈ +1.0–1.4** on
+   Opus, **≈ +0.7** on gemma.
+3. **Projected per-view framing** (`lib/cameras.mjs`, `CAMERA_SPEC_VERSION` 2).
+   Full views (1–8) are framed by the aircraft's projected silhouette instead of
+   its worst-case 3D bounding sphere — the sphere reserved room for the full
+   wingspan even in a side view, rendering the candidate as a ~25%-of-frame
+   thumbnail while the reference photos fill the frame. Fills the frame (~1.5×)
+   at the same angle/target; view 9 (the tuned close-up) is preserved exactly on
+   the v1 sphere frame.
+
 ## Layout
 
 ```
@@ -54,11 +84,16 @@ export function buildPlane(THREE) { /* ... */ return group; }
 - **Orientation**: nose along **+X**, up **+Y** (wings span Z). Position and
   scale are free — the rig auto-frames from the bounding box.
 
-## The nine frozen views (`lib/cameras.mjs`, CAMERA_SPEC_VERSION 1)
+## The nine frozen views (`lib/cameras.mjs`, CAMERA_SPEC_VERSION 2)
 
-1024x768, vertical FOV 35 deg, pixel ratio 1, distance auto-framed so the
-bbox bounding sphere (x1.05 margin) fits the vertical FOV: `d = 1.05r /
-sin(17.5 deg)`; view 9 uses 0.42x that distance targeted at the nose/hump.
+1024x768, vertical FOV 35 deg, pixel ratio 1. **Full views (1–8) are framed by
+the aircraft's projected silhouette** (bbox corners projected onto the camera's
+right/up axes, filled to the vertical/horizontal FOV with a 1.05 margin, backed
+off by the near-depth half-extent so nothing clips). **View 9** (the nose/hump
+close-up — the only view with an explicit `distanceFactor`) is preserved exactly
+on the version-1 bounding-sphere frame `d = 1.05r / sin(17.5 deg) × 0.42`,
+targeted at the nose/hump. Angles/targets are unchanged from version 1; only the
+full-view distances tighten (see the Version 2 re-baseline note above).
 
 | # | view | azimuth | elevation |
 |---|------|---------|-----------|
@@ -74,8 +109,10 @@ sin(17.5 deg)`; view 9 uses 0.42x that distance targeted at the nose/hump.
 
 Scene (frozen): background `#eef2f7`, hemisphere light (white/`#b0b8c0`,
 0.9) + directional (2.2, direction `[1, 1.2, 0.8]` normalized), no ground
-plane, no shadows, no tone mapping, no animation loop. Three.js is served
-from the repo's own `node_modules` over a local static server — **no CDN,
+plane, no shadows, no tone mapping, no animation loop. The drawing buffer is
+rendered at `BOEING_SUPERSAMPLE`× (default 3) and Lanczos-downscaled to
+1024×768 (SSAA — SwiftShader ignores MSAA; see the Version 2 note). Three.js is
+served from the repo's own `node_modules` over a local static server — **no CDN,
 fully offline**.
 
 ## Judge (frozen)
@@ -88,7 +125,12 @@ medians, **TOTAL = mean of 9 views scaled to /100**.
 
 - A criterion the judge cannot see from an angle is `null` — excluded with
   weight renormalization, never zeroed. Failed judge calls are recorded and
-  dropped (fail-open; a dead judge must not destroy the signal).
+  dropped (fail-open; a dead judge must not destroy the signal). Because the
+  judges frequently return a low integer instead of `null` on structurally
+  invisible views, the `view_visibility` mask (rubric v2) enforces this
+  deterministically in aggregation: `criteria_medians` stays RAW for audit, but
+  `score` is computed from the masked medians and `score_unmasked` is recorded
+  alongside so the mask's effect is transparent in every result.
 - `think:false` is load-bearing and frozen: gemma4 under Ollama otherwise
   burns the whole `num_predict` budget inside `message.thinking` and returns
   empty content (`done_reason=length`) on this prompt shape (measured

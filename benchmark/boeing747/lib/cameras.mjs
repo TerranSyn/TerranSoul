@@ -14,7 +14,19 @@
 // references CAMERA_SPEC_VERSION. Changing anything here invalidates
 // cross-iteration comparability.
 
-export const CAMERA_SPEC_VERSION = 1;
+// VERSION 2 (measurement-fidelity re-baseline): full views (1-8) are framed by
+// the aircraft's actual PROJECTED silhouette per view instead of its worst-case
+// 3D bounding sphere. The sphere frame reserved room for the full wingspan even
+// in a side view (where the span points into the screen), rendering the
+// candidate as a ~25%-of-frame thumbnail while the reference photos fill the
+// frame — an unfair detail handicap on window/craftsmanship/engine-separation
+// criteria of the same class as the SwiftShader aliasing bug. Projected framing
+// fills the frame with the same geometry at the same angle/target (only the
+// distance tightens, ~1.5x), matching how the references are shot. The
+// specially-tuned nose close-up (view 9, the only view with a distanceFactor) is
+// preserved EXACTLY on the version-1 sphere framing. This bump re-baselines the
+// harness: version-2 renders are NOT pixel-comparable to version-1.
+export const CAMERA_SPEC_VERSION = 2;
 
 /** Render size (pixels), fixed for every view. */
 export const RENDER_WIDTH = 1024;
@@ -87,6 +99,56 @@ export function autoFrameDistance(radius, fovDeg = FOV_DEG, margin = FRAME_MARGI
   return (radius * margin) / Math.sin((fovDeg / 2) * DEG);
 }
 
+const v3sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const v3cross = (a, b) => [
+  a[1] * b[2] - a[2] * b[1],
+  a[2] * b[0] - a[0] * b[2],
+  a[0] * b[1] - a[1] * b[0],
+];
+const v3dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const v3norm = (a) => {
+  const l = Math.hypot(a[0], a[1], a[2]) || 1;
+  return [a[0] / l, a[1] / l, a[2] / l];
+};
+
+/**
+ * Per-view PROJECTED-bbox framing distance (camera-spec v2). Frames the
+ * aircraft's actual projected silhouette from this view — the bbox corners are
+ * projected onto the camera's right/up axes and the distance is set so that
+ * rectangle fills the vertical/horizontal FOV (with FRAME_MARGIN), pushed back
+ * by the near-depth half-extent so nothing clips. `dir` is the (unit) direction
+ * from the look-at target toward the camera; `up0` is the camera up hint.
+ *
+ * Unlike the bounding-sphere frame this uses only the extent PERPENDICULAR to
+ * the view, so a side view is framed by length x height (not by the wingspan
+ * that points into the screen). Same camera angle and target — only the
+ * distance changes. Scale-invariant (linear in bbox size).
+ */
+export function projectedFrameDistance(bbox, target, dir, up0, fovDeg = FOV_DEG, margin = FRAME_MARGIN) {
+  const f = [-dir[0], -dir[1], -dir[2]]; // view direction (camera -> target)
+  let right = v3cross(f, up0);
+  if (Math.hypot(right[0], right[1], right[2]) < 1e-9) right = v3cross(f, [1, 0, 0]);
+  right = v3norm(right);
+  const up = v3norm(v3cross(right, f));
+  const corners = [];
+  for (const x of [bbox.min.x, bbox.max.x])
+    for (const y of [bbox.min.y, bbox.max.y])
+      for (const z of [bbox.min.z, bbox.max.z]) corners.push([x, y, z]);
+  let halfW = 0;
+  let halfH = 0;
+  let halfDepth = 0;
+  for (const c of corners) {
+    const rel = v3sub(c, target);
+    halfW = Math.max(halfW, Math.abs(v3dot(rel, right)));
+    halfH = Math.max(halfH, Math.abs(v3dot(rel, up)));
+    halfDepth = Math.max(halfDepth, Math.abs(v3dot(rel, dir)));
+  }
+  const vHalf = Math.tan((fovDeg / 2) * DEG);
+  const hHalf = (RENDER_WIDTH / RENDER_HEIGHT) * vHalf;
+  const framing = Math.max(halfH / vHalf, halfW / hHalf);
+  return framing * margin + halfDepth;
+}
+
 /**
  * Compute the frozen camera pose for one view given the candidate bbox.
  * Returns plain arrays so the result is usable from both node and browser.
@@ -102,7 +164,6 @@ export function computeCamera(view, bbox) {
     center.y + off[1] * size.y,
     center.z + off[2] * size.z,
   ];
-  const dist = autoFrameDistance(radius) * (view.distanceFactor ?? 1);
   const az = view.azimuthDeg * DEG;
   const el = view.elevationDeg * DEG;
   const dir = [
@@ -110,6 +171,14 @@ export function computeCamera(view, bbox) {
     Math.sin(el),
     Math.cos(el) * Math.sin(az),
   ];
+  // Framing (camera-spec v2): specially-tuned closeup views (the only ones with
+  // an explicit distanceFactor — view 9) keep the version-1 bounding-sphere
+  // frame EXACTLY; all full views are framed by their projected silhouette so
+  // the aircraft fills the frame like the reference photos.
+  const dist =
+    view.distanceFactor != null
+      ? autoFrameDistance(radius) * view.distanceFactor
+      : projectedFrameDistance(bbox, target, dir, view.up || [0, 1, 0]);
   const position = [
     target[0] + dist * dir[0],
     target[1] + dist * dir[1],

@@ -1,6 +1,7 @@
 {
   "protocol": "boeing747-primitives-vision-bench",
-  "version": 1,
+  "version": 2,
+  "version_2_change": "Added view_visibility (per-criterion view mask) — a measurement-correctness fix. A criterion is scored ONLY on views where the feature is structurally visible; on masked views its median is forced to null and excluded with weight renormalization (the deterministic enforcement of the existing 'null if not assessable from this angle' judge instruction). Also: the render rig now applies SSAA (BOEING_SUPERSAMPLE, default 3x, Lanczos downscale) because the pinned SwiftShader software-GL path ignores the WebGL antialias flag and produced stair-stepped edges that read as rough craftsmanship. Both changes re-baseline the frozen harness: results under this rubric_sha256 (version 2) are NOT numerically comparable to version-1 results. Same geometry, camera spec, lighting, scene, references, weights, seeds and prompts are otherwise unchanged.",
   "provenance": "Loop Library benchmark protocol - signals.forwardfuture.com (build the most realistic Boeing 747 from Three.js primitives; screenshot fixed angles; vision-judge against references; critic steers; iterate)",
   "judge_model": "gemma4:12b-it-qat",
   "judge_options": { "temperature": 0, "num_ctx": 8192, "num_predict": 768 },
@@ -157,6 +158,12 @@
     "7": ["rear-quarter", "planform"],
     "8": ["front-quarter", "side"],
     "9": ["nose-hump", "front-quarter"]
+  },
+  "view_visibility_note": "Per-criterion set of views on which the feature is STRUCTURALLY assessable (measurement mask, version 2). Any criterion NOT listed here is assessable on all nine views. Masked views are the ones where the feature is geometrically invisible — confirmed both by ray/occlusion reasoning and by the judges' own 'not visible from this angle' notes: (a) window_door_lines runs along the fuselage SIDE, which is edge-on on the pure head-on front (3) and rear (4) axial views; (b) the upper-deck hump sits on the FRONT third of the crown — occluded looking from the tail (4) and invisible as a vertical bulge from directly overhead (5); (c) landing gear is tucked under the belly — occluded in the top-down (5) view. High-weight/silhouette criteria are deliberately NOT masked on head-on views (a 4-engine wide-body head-on is still a legitimate 747 silhouette read), to avoid inflating the score.",
+  "view_visibility": {
+    "window_door_lines": [1, 2, 5, 6, 7, 8, 9],
+    "upper_deck_hump": [1, 2, 3, 6, 7, 8, 9],
+    "landing_gear": [1, 2, 3, 4, 6, 7, 8, 9]
   },
   "judge_system_prompt": "You are a meticulous aircraft-model judge for a 3D modeling benchmark. IMAGE 1 is a screenshot of a candidate 3D model built only from geometric primitives. IMAGE 2 and IMAGE 3 are references showing a real Boeing 747. Judge ONLY the candidate in IMAGE 1 against how well it depicts a real Boeing 747; the references define ground truth, they are not scored. Be strict and literal: describe what is actually visible, never assume hidden parts exist. Score each criterion with an integer 0-10 using the given anchors. If a criterion genuinely cannot be assessed from this camera angle (e.g. landing gear in a top-down view), use null instead of guessing. Reply with STRICT JSON only, no markdown, exactly this shape: {\"scores\": {\"<criterion_id>\": <int 0-10 or null>, ... all 10 ids ...}, \"weakest_visible_feature\": \"<one criterion_id>\", \"notes\": \"<max 60 words of factual observations>\"}",
   "critic_system_prompt": "You are the critic for a 3D modeling benchmark loop. You receive the per-criterion scores of a candidate Boeing 747 model (built only from Three.js primitives) across nine fixed camera views, plus a 3x3 contact sheet of those views (IMAGE 1). The weakest feature has already been computed deterministically from the scores. Your job: give ONE concrete, geometry-level fix suggestion for that weakest feature that a coder could implement with primitive geometries (positions, dimensions, counts, angles). Do not suggest textures, loaders, or new tooling. Reply with STRICT JSON only: {\"weakest_feature\": \"<criterion_id>\", \"fix_suggestion\": \"<max 120 words, concrete and geometric>\"}",

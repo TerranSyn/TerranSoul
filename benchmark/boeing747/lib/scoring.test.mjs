@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  maskViewMedians,
   median,
   normalizeScore,
   seedMedian,
@@ -80,6 +81,49 @@ describe('totalScore', () => {
   });
   it('is null with zero scored views', () => {
     expect(totalScore([null, null]).total).toBeNull();
+  });
+});
+
+describe('maskViewMedians (view-visibility mask, rubric v2)', () => {
+  const viewVisibility = {
+    window_door_lines: [1, 2, 5, 6, 7, 8, 9],
+    upper_deck_hump: [1, 2, 3, 6, 7, 8, 9],
+    landing_gear: [1, 2, 3, 4, 6, 7, 8, 9],
+  };
+  it('forces a criterion to null on a view where it is not assessable', () => {
+    // view 4 (rear head-on): windows AND hump are both masked out.
+    const m = { window_door_lines: 2, upper_deck_hump: 5, engines_four_underwing: 8 };
+    const out = maskViewMedians(m, 4, viewVisibility);
+    expect(out.window_door_lines).toBeNull();
+    expect(out.upper_deck_hump).toBeNull();
+    expect(out.engines_four_underwing).toBe(8); // unmasked criteria pass through
+  });
+  it('keeps a criterion on the views where it IS assessable', () => {
+    const m = { window_door_lines: 7, upper_deck_hump: 8 };
+    const out = maskViewMedians(m, 1, viewVisibility); // left profile: both visible
+    expect(out.window_door_lines).toBe(7);
+    expect(out.upper_deck_hump).toBe(8);
+  });
+  it('masks landing_gear only on the top-down view (5)', () => {
+    expect(maskViewMedians({ landing_gear: 6 }, 5, viewVisibility).landing_gear).toBeNull();
+    expect(maskViewMedians({ landing_gear: 6 }, 8, viewVisibility).landing_gear).toBe(6);
+  });
+  it('is a passthrough when no viewVisibility is supplied (rubric v1 / unmasked)', () => {
+    const m = { window_door_lines: 2, upper_deck_hump: 5 };
+    expect(maskViewMedians(m, 4, undefined)).toBe(m);
+    expect(maskViewMedians(m, 4, null)).toBe(m);
+  });
+  it('raises the view score by dropping an unfair invisible-view penalty', () => {
+    const criteria = [
+      { id: 'window_door_lines', weight: 0.7 },
+      { id: 'engines_four_underwing', weight: 1.5 },
+    ];
+    // head-on rear: judge (wrongly) scored windows 2 where they cannot be seen.
+    const raw = { window_door_lines: 2, engines_four_underwing: 8 };
+    const unmasked = viewScore(raw, criteria);
+    const masked = viewScore(maskViewMedians(raw, 4, viewVisibility), criteria);
+    expect(masked).toBeGreaterThan(unmasked);
+    expect(masked).toBe(8); // only engines remain
   });
 });
 

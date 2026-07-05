@@ -1,0 +1,86 @@
+{
+  "what": "Boeing 747 primitives bench — v2 measurement-fidelity re-baseline decomposition",
+  "created_at": "2026-07-05T07:45:39.585Z",
+  "note": "Identical-plane (same plane_sha256) before/after proof that the ~68 cap was substantially a MEASUREMENT artifact on the gemma track, and a genuine geometry assessment on the stronger Opus track. Three harness fixes: (1) SSAA render (SwiftShader ignores antialias), (2) view_visibility mask (rubric v2), (3) projected per-view framing (camera spec v2). NOT numerically comparable to v1 results.",
+  "provenance": {
+    "original_plane_sha256": "f751ce61945b33a19f9e3b0d496157ab22a70eed983496b243fc871d0e7f1782",
+    "hump_plane_sha256": "d96bd0146097ae580aa53c22802ddc3d4d26010ef0f899b09c33a2ea8f173591",
+    "rubric_sha256_v2": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+    "camera_spec_version": 2,
+    "supersample": 3,
+    "gemma_seeds_median_of": 3,
+    "opus_samples": {
+      "framed": 3,
+      "intermediate_1x_ss3": 1
+    }
+  },
+  "gemma_track_identical_original_plane": {
+    "1x_render_v1cam (old harness equiv)": {
+      "masked": 64.54,
+      "unmasked": 63.59,
+      "weakest": "window_door_lines",
+      "samples": 3
+    },
+    "SSAA_render_v1cam": {
+      "masked": 67.92,
+      "unmasked": 67.22,
+      "weakest": "engines_four_underwing",
+      "samples": 3
+    },
+    "framed_SSAA_v2cam (fully corrected)": {
+      "masked": 72.23,
+      "unmasked": 71.62,
+      "weakest": "engines_four_underwing",
+      "samples": 3
+    },
+    "render_SSAA_effect_unmasked": 3.63,
+    "framing_effect_masked": 4.31,
+    "mask_effect_on_framed": 0.61,
+    "TOTAL_measurement_lift_identical_plane": 8.64
+  },
+  "opus_track_identical_original_plane": {
+    "1x_render_v1cam (samples=1, noisy)": {
+      "masked": 64.58,
+      "unmasked": 63.94,
+      "weakest": "silhouette_747",
+      "samples": 1
+    },
+    "SSAA_render_v1cam (samples=1, noisy)": {
+      "masked": 64.96,
+      "unmasked": 63.58,
+      "weakest": "upper_deck_hump",
+      "samples": 1
+    },
+    "framed_SSAA_v2cam (samples=3, robust)": {
+      "masked": 68,
+      "unmasked": 67.52,
+      "weakest": "craftsmanship",
+      "samples": 3
+    },
+    "mask_effect_on_framed_s3": 0.48,
+    "note": "Opus lands ~68 both under old harness (claimed 67.84 samples=3) and corrected harness (68.0 samples=3): the render fixes barely move the strong judge — it already saw through the aliasing/thumbnail. So on Opus the ~68 is a genuine geometry assessment, not a measurement cap. Only the mask nudged it (+~0.5)."
+  },
+  "geometry_candidate_more_prominent_hump": {
+    "gemma_original_framed": 72.23,
+    "gemma_hump_framed": 73.68,
+    "gemma_delta": 1.45,
+    "opus_original_framed": 68,
+    "opus_hump_framed": 68.26,
+    "opus_delta": 0.26,
+    "caveat": "Both judges are noisy (gemma ~±1.5/view, Opus samples=1 ~±1/view); the hump edit mainly targets the 3/4-front views where the original scored hump=3/silhouette=5."
+  },
+  "headline": {
+    "old_harness_v1": {
+      "gemma_claimed": 67.41,
+      "opus_claimed": 67.84
+    },
+    "corrected_harness_v2_original_plane": {
+      "gemma": 72.23,
+      "opus": 68
+    },
+    "corrected_harness_v2_hump_plane": {
+      "gemma": 73.68,
+      "opus": 68.26
+    }
+  }
+}
