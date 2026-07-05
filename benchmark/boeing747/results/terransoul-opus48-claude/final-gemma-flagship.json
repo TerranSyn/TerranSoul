@@ -1,0 +1,861 @@
+{
+  "protocol": "boeing747-primitives-vision-bench",
+  "rubric_version": 1,
+  "rubric_sha256": "23ac79fd6fe0b9541bcae3ca48364cf6c17f1ea4e1d1a78e1295bf1287e8f2b8",
+  "judge_model": "gemma4:12b-it-qat",
+  "judge_seeds": [
+    7,
+    8,
+    9
+  ],
+  "judge_options": {
+    "temperature": 0,
+    "num_ctx": 8192,
+    "num_predict": 768
+  },
+  "run_id": "opus48-final",
+  "plane_path": "benchmark/boeing747/candidates/terransoul-opus48/plane.js",
+  "plane_sha256": "fb60cd1b1cd82685f247f60bdd6e496eb380bf9d2543fdeab31139c05fa0ff53",
+  "camera_spec_version": 1,
+  "three_revision": "175",
+  "reference_sha256": {
+    "threeview": "dfdcda796acee7a53b9dae988b240f6ef296bade8c7291db0810839d3dfc8573",
+    "side": "429c4e2619c46c3c44999636f2066c1fdc40932ae7af9d5ee6d1dfb6265bb6fc",
+    "front-quarter": "2fb96b22a599fdd2faab4181933a9bfd4c1e91208b5bba2db99bf62cbe5b7fc6",
+    "rear-quarter": "271eb369c819fe59733ba6e2e1324fdda6afd230c508f5892f4d2f48b9d4f236",
+    "planform": "882468d505c324d86598becccfd54198a4a739a5c67682b87dfa23ef5c882ea7",
+    "nose-hump": "18284393e0630dc9bcd3c4f77ac7304f27b9084ef878883bb45e07f92e66fb22"
+  },
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "refs": [
+        "side",
+        "threeview"
+      ],
+      "score": 6.59,
+      "criteria_medians": {
+        "engines_four_underwing": 3,
+        "upper_deck_hump": 5,
+        "fuselage_proportions": 8,
+        "wing_geometry": 8,
+        "empennage": 8,
+        "landing_gear": 8,
+        "window_door_lines": 5,
+        "livery_coherence": 8,
+        "silhouette_747": 7,
+        "craftsmanship": 8
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 5226,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 8,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": 8,
+            "window_door_lines": 5,
+            "livery_coherence": 8,
+            "silhouette_747": 7,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model captures the general silhouette of a 747 well, including the partial hump and swept wings. However, it only depicts two engines instead of four. The upper deck hump is present but lacks smooth fairing into the crown, appearing somewhat blocky. Landing gear and fuselage proportions are reasonably accurate for a primitive-based model."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 2950,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 8,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": 8,
+            "window_door_lines": 5,
+            "livery_coherence": 8,
+            "silhouette_747": 7,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model captures the general silhouette of a 747 well, including the partial hump and swept wings. However, it only depicts two engines instead of four. The fuselage proportions are good, but window details are somewhat simplified into basic lines rather than distinct shapes."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 2927,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 8,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": 8,
+            "window_door_lines": 5,
+            "livery_coherence": 8,
+            "silhouette_747": 7,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model captures the general silhouette of a 747 well, including the partial hump and swept wings. However, it only depicts two engines instead of four. The fuselage proportions are good, but window details are somewhat simplified into basic lines rather than distinct shapes."
+        }
+      ]
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "refs": [
+        "side",
+        "threeview"
+      ],
+      "score": 4.94,
+      "criteria_medians": {
+        "engines_four_underwing": 3,
+        "upper_deck_hump": 5,
+        "fuselage_proportions": 4,
+        "wing_geometry": 5,
+        "empennage": 8,
+        "landing_gear": null,
+        "window_door_lines": 3,
+        "livery_coherence": 6,
+        "silhouette_747": 6,
+        "craftsmanship": 5
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 4629,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 4,
+            "wing_geometry": 5,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 3,
+            "livery_coherence": 6,
+            "silhouette_747": 6,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model captures the basic 747 silhouette but lacks engine detail; only two nacelles are visible instead of four. The upper deck hump is present but appears somewhat blocky and runs too far back. Fuselage proportions are slightly stubby, and window lines are represented by simple, inconsistent markings."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3081,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 4,
+            "wing_geometry": 5,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 3,
+            "livery_coherence": 6,
+            "silhouette_747": 6,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model captures the basic 747 silhouette but lacks engine detail; only two nacelles are visible. The upper deck hump is present but appears as a crude blocky addition rather than a smooth fairing. Fuselage proportions are slightly stubby, and window lines are represented by simple, inconsistent markings."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3047,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 4,
+            "wing_geometry": 5,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 3,
+            "livery_coherence": 6,
+            "silhouette_747": 6,
+            "craftsmanship": 5
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model captures the basic 747 silhouette but lacks engine detail; only two nacelles are visible. The upper deck hump is present but appears as a crude blocky addition rather than a smooth fairing. Fuselage proportions are slightly stubby, and window lines are represented by simple, inconsistent markings."
+        }
+      ]
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "refs": [
+        "front-quarter",
+        "threeview"
+      ],
+      "score": 6.52,
+      "criteria_medians": {
+        "engines_four_underwing": 8,
+        "upper_deck_hump": 5,
+        "fuselage_proportions": 5,
+        "wing_geometry": 8,
+        "empennage": null,
+        "landing_gear": 8,
+        "window_door_lines": 3,
+        "livery_coherence": 5,
+        "silhouette_747": 7,
+        "craftsmanship": 8
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 4648,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 8,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 5,
+            "wing_geometry": 7,
+            "empennage": null,
+            "landing_gear": 8,
+            "window_door_lines": 3,
+            "livery_coherence": 5,
+            "silhouette_747": 6,
+            "craftsmanship": 7
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model captures the basic four-engine layout and nose gear. However, the upper deck hump appears to run too far back, making it look more like a generic double-decker than a specific 747. Window details are minimal, appearing as simple dark spots rather than defined lines."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3167,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 8,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 5,
+            "wing_geometry": 8,
+            "empennage": null,
+            "landing_gear": 8,
+            "window_door_lines": 3,
+            "livery_coherence": 5,
+            "silhouette_747": 7,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model captures the basic four-engine layout and wing sweep well. However, the upper deck hump appears to run too far back or lacks distinct tapering, making it look more like a generic double-decker than a 747. Window details are minimal, appearing as simple dark dots without proper spacing or cockpit definition."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3135,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 8,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 5,
+            "wing_geometry": 8,
+            "empennage": null,
+            "landing_gear": 8,
+            "window_door_lines": 3,
+            "livery_coherence": 5,
+            "silhouette_747": 7,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model captures the basic four-engine layout and wing sweep well. However, the upper deck hump appears to run too far back or lacks distinct tapering, making it look more like a generic double-decker than a 747. Window details are minimal, appearing as simple dark dots without proper spacing or cockpit definition."
+        }
+      ]
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "refs": [
+        "rear-quarter",
+        "threeview"
+      ],
+      "score": 6.4,
+      "criteria_medians": {
+        "engines_four_underwing": 3,
+        "upper_deck_hump": null,
+        "fuselage_proportions": 5,
+        "wing_geometry": 8,
+        "empennage": 8,
+        "landing_gear": null,
+        "window_door_lines": 8,
+        "livery_coherence": 8,
+        "silhouette_747": 6,
+        "craftsmanship": 8
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 4710,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": null,
+            "fuselage_proportions": 5,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 8,
+            "livery_coherence": 8,
+            "silhouette_747": 6,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model shows a clear window line and a coherent livery. From this rear angle, the upper deck hump is not visible. The engines are missing or poorly represented as only two large shapes appear under the wings rather than four distinct nacelles. The fuselage has blunt ends but maintains a reasonable length."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3126,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": null,
+            "fuselage_proportions": 5,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 8,
+            "livery_coherence": 8,
+            "silhouette_747": 6,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "upper_deck_hump",
+          "notes": "The model is viewed from the rear, making the iconic upper-deck hump invisible. The fuselage appears as a simple tube without nose taper. Four engines are not visible from this angle; only two wing-mounted nacelles are seen. The tail and wings show good sweep and proportions for a 747."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3096,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": null,
+            "fuselage_proportions": 5,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 8,
+            "livery_coherence": 8,
+            "silhouette_747": 6,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "upper_deck_hump",
+          "notes": "The model is viewed from the rear, making the iconic upper-deck hump invisible. The fuselage appears as a simple tube without nose taper. Four engines are not visible from this angle; only two wing-mounted nacelles are seen. The tail and wings show good sweep and proportions for a 747."
+        }
+      ]
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "refs": [
+        "planform",
+        "threeview"
+      ],
+      "score": 6.28,
+      "criteria_medians": {
+        "engines_four_underwing": 5,
+        "upper_deck_hump": 8,
+        "fuselage_proportions": 7,
+        "wing_geometry": 6,
+        "empennage": 6,
+        "landing_gear": null,
+        "window_door_lines": 4,
+        "livery_coherence": 3,
+        "silhouette_747": 7,
+        "craftsmanship": 8
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 4621,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 5,
+            "upper_deck_hump": 8,
+            "fuselage_proportions": 7,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 3,
+            "livery_coherence": 6,
+            "silhouette_747": 8,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model captures the iconic 747 hump and four-engine layout well. The fuselage is slightly blunt at the nose compared to a real 747. Window lines are very basic, appearing as simple dots rather than distinct cockpit or deck shapes. Engines appear somewhat floating without clear pylon detail."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3062,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 5,
+            "upper_deck_hump": 8,
+            "fuselage_proportions": 7,
+            "wing_geometry": 6,
+            "empennage": 6,
+            "landing_gear": null,
+            "window_door_lines": 4,
+            "livery_coherence": 3,
+            "silhouette_747": 7,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "livery_coherence",
+          "notes": "The model captures the iconic 747 hump and four-engine layout well. However, the livery is a flat grey with an odd blue stripe on the tail. Wings lack significant taper and dihedral. Window lines are present but simplified, and engines appear as basic cylinders without distinct pylon mounting or intake detail."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3070,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 5,
+            "upper_deck_hump": 8,
+            "fuselage_proportions": 7,
+            "wing_geometry": 6,
+            "empennage": 6,
+            "landing_gear": null,
+            "window_door_lines": 4,
+            "livery_coherence": 3,
+            "silhouette_747": 7,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "livery_coherence",
+          "notes": "The model captures the iconic 747 hump and four-engine layout well. However, the livery is a flat grey with an odd blue stripe on the tail. Wings lack significant taper and dihedral. Window lines are present but simplified, and engines appear as basic cylinders without distinct pylon mounting or intake detail."
+        }
+      ]
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "refs": [
+        "front-quarter",
+        "side"
+      ],
+      "score": 7.02,
+      "criteria_medians": {
+        "engines_four_underwing": 5,
+        "upper_deck_hump": 8,
+        "fuselage_proportions": 7,
+        "wing_geometry": 8,
+        "empennage": 8,
+        "landing_gear": null,
+        "window_door_lines": 3,
+        "livery_coherence": 6,
+        "silhouette_747": 9,
+        "craftsmanship": 7
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 4737,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 5,
+            "upper_deck_hump": 8,
+            "fuselage_proportions": 7,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 3,
+            "livery_coherence": 6,
+            "silhouette_747": 9,
+            "craftsmanship": 7
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model captures the iconic 747 silhouette well, including the partial hump and four engines. However, window details are very rudimentary, appearing as simple dark dots without proper spacing or cockpit definition. The fuselage proportions are slightly short but acceptable for a primitive build."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 2984,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 5,
+            "upper_deck_hump": 8,
+            "fuselage_proportions": 7,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 3,
+            "livery_coherence": 6,
+            "silhouette_747": 9,
+            "craftsmanship": 7
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model captures the iconic 747 silhouette well, including the partial hump and four engines. However, window details are very rudimentary, appearing as simple dark dots without proper spacing or cockpit definition. The fuselage proportions are slightly short but acceptable for a primitive-based build."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3022,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 5,
+            "upper_deck_hump": 8,
+            "fuselage_proportions": 7,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 3,
+            "livery_coherence": 6,
+            "silhouette_747": 9,
+            "craftsmanship": 7
+          },
+          "weakestVisible": "window_door_lines",
+          "notes": "The model captures the iconic 747 silhouette well, including the partial hump and four engines. However, window details are very rudimentary, appearing as simple dark dots without proper spacing or cockpit definition. The fuselage proportions are slightly short but acceptable for a primitive-based build."
+        }
+      ]
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "refs": [
+        "rear-quarter",
+        "planform"
+      ],
+      "score": 6.33,
+      "criteria_medians": {
+        "engines_four_underwing": 3,
+        "upper_deck_hump": 5,
+        "fuselage_proportions": 5,
+        "wing_geometry": 8,
+        "empennage": 8,
+        "landing_gear": 8,
+        "window_door_lines": 8,
+        "livery_coherence": 8,
+        "silhouette_747": 6,
+        "craftsmanship": 8
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 4720,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 5,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": 8,
+            "window_door_lines": 8,
+            "livery_coherence": 8,
+            "silhouette_747": 6,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model captures the basic 747 silhouette with a partial hump and swept wings. However, it only shows two engines instead of four. The fuselage is somewhat blunt at the nose and tail. Landing gear and window lines are well-represented for a primitive build."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3106,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 5,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": 8,
+            "window_door_lines": 8,
+            "livery_coherence": 8,
+            "silhouette_747": 6,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model captures the basic 747 silhouette with a partial hump and swept wings. However, it only shows two engines instead of four. The fuselage is somewhat blunt at the nose and tail. Landing gear and window lines are present but simplified. Livery is coherent but lacks specific detail."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3075,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 5,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": 8,
+            "window_door_lines": 8,
+            "livery_coherence": 8,
+            "silhouette_747": 6,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model captures the basic 747 silhouette with a partial hump and swept wings. However, it only shows two engines instead of four. The fuselage is somewhat blunt at the nose and tail. Landing gear and window lines are present but simplified. Livery is coherent but lacks specific detail."
+        }
+      ]
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "refs": [
+        "front-quarter",
+        "side"
+      ],
+      "score": 8.84,
+      "criteria_medians": {
+        "engines_four_underwing": 8,
+        "upper_deck_hump": 10,
+        "fuselage_proportions": 9,
+        "wing_geometry": 8,
+        "empennage": 8,
+        "landing_gear": null,
+        "window_door_lines": 8,
+        "livery_coherence": 9,
+        "silhouette_747": 10,
+        "craftsmanship": 9
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 4639,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 8,
+            "upper_deck_hump": 10,
+            "fuselage_proportions": 9,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 8,
+            "livery_coherence": 9,
+            "silhouette_747": 10,
+            "craftsmanship": 9
+          },
+          "weakestVisible": "landing_gear",
+          "notes": "The model is an excellent representation of a Boeing 747. It captures the iconic partial-length hump and four underwing engines accurately. The fuselage proportions are slender and realistic. Livery is coherent with a white body and purple tail accents. Landing gear is not visible from this specific camera angle."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3021,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 8,
+            "upper_deck_hump": 10,
+            "fuselage_proportions": 9,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 8,
+            "livery_coherence": 9,
+            "silhouette_747": 10,
+            "craftsmanship": 9
+          },
+          "weakestVisible": "landing_gear",
+          "notes": "The model is an excellent representation of a Boeing 747. It captures the iconic partial-length hump, four underwing engines, and correct fuselage proportions accurately. The livery is coherent with a white body and purple tail accents. Landing gear is not visible from this specific camera angle."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3030,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 8,
+            "upper_deck_hump": 10,
+            "fuselage_proportions": 9,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": null,
+            "window_door_lines": 8,
+            "livery_coherence": 9,
+            "silhouette_747": 10,
+            "craftsmanship": 9
+          },
+          "weakestVisible": "landing_gear",
+          "notes": "The model is an excellent representation of a Boeing 747. It captures the iconic partial-length hump, four underwing engines, and correct fuselage proportions accurately. The livery is coherent with a white body and purple tail accents. Landing gear is not visible from this specific camera angle."
+        }
+      ]
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "refs": [
+        "nose-hump",
+        "front-quarter"
+      ],
+      "score": 6.54,
+      "criteria_medians": {
+        "engines_four_underwing": 3,
+        "upper_deck_hump": 5,
+        "fuselage_proportions": 8,
+        "wing_geometry": 7,
+        "empennage": 8,
+        "landing_gear": 8,
+        "window_door_lines": 6,
+        "livery_coherence": 8,
+        "silhouette_747": 7,
+        "craftsmanship": 8
+      },
+      "judge_errors": 0,
+      "seeds": [
+        {
+          "seed": 7,
+          "ok": true,
+          "ms": 4778,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 8,
+            "wing_geometry": 8,
+            "empennage": 8,
+            "landing_gear": 8,
+            "window_door_lines": 5,
+            "livery_coherence": 8,
+            "silhouette_747": 6,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model captures the general 747 silhouette but fails on engine count; only three engines are visible under the wings. The upper deck hump is present but lacks proper tapering and cockpit detail, appearing more like a crude block. Window lines are simplified stripes rather than distinct apertures."
+        },
+        {
+          "seed": 8,
+          "ok": true,
+          "ms": 3184,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 8,
+            "wing_geometry": 7,
+            "empennage": 8,
+            "landing_gear": 8,
+            "window_door_lines": 6,
+            "livery_coherence": 8,
+            "silhouette_747": 7,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model captures the general 747 silhouette but fails on engine count; only three engines are visible under the wings. The upper deck hump is present but lacks proper tapering and detail, appearing somewhat blocky. Landing gear and fuselage proportions are well-represented for a primitive-based model."
+        },
+        {
+          "seed": 9,
+          "ok": true,
+          "ms": 3122,
+          "parse_retries": 0,
+          "reply_source": "content",
+          "done_reason": "stop",
+          "scores": {
+            "engines_four_underwing": 3,
+            "upper_deck_hump": 5,
+            "fuselage_proportions": 8,
+            "wing_geometry": 7,
+            "empennage": 8,
+            "landing_gear": 8,
+            "window_door_lines": 6,
+            "livery_coherence": 8,
+            "silhouette_747": 7,
+            "craftsmanship": 8
+          },
+          "weakestVisible": "engines_four_underwing",
+          "notes": "The model captures the general 747 silhouette but fails on engine count; only three engines are visible under the wings. The upper deck hump is present but lacks proper tapering and detail, appearing somewhat blocky. Landing gear and fuselage proportions are well-represented for a primitive-based model."
+        }
+      ]
+    }
+  ],
+  "total_0_100": 66.07,
+  "scored_views": 9,
+  "missing_views": 0,
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.56,
+    "perCriterion": {
+      "engines_four_underwing": 4.56,
+      "upper_deck_hump": 6.38,
+      "fuselage_proportions": 6.44,
+      "wing_geometry": 7.33,
+      "empennage": 7.75,
+      "landing_gear": 8,
+      "window_door_lines": 5.33,
+      "livery_coherence": 6.78,
+      "silhouette_747": 7.22,
+      "craftsmanship": 7.67
+    }
+  },
+  "created_at": "2026-07-05T01:22:29.611Z"
+}

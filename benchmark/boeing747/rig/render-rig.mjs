@@ -85,7 +85,14 @@ export async function runRig(opts) {
 
   mkdirSync(outDir, { recursive: true });
   const server = await startStaticServer(REPO_ROOT);
-  const browser = await chromium.launch({ headless: true });
+  // Force ANGLE-over-SwiftShader WebGL. The default headless GL stack renders
+  // the WebGL canvas intermittently (whole runs come back transparent — a
+  // per-context race, measured OK/BLANK/BLANK vs OK/OK/OK with these flags), so
+  // pin the reliable software-GL path for deterministic, reproducible captures.
+  const browser = await chromium.launch({
+    headless: true,
+    args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
+  });
   try {
     const page = await browser.newPage({
       viewport: { width: RENDER_WIDTH + 64, height: RENDER_HEIGHT + 64 },
@@ -101,14 +108,51 @@ export async function runRig(opts) {
       source,
     );
 
-    const canvas = page.locator('#rig-canvas');
     const viewFiles = [];
     const poses = [];
     for (const view of VIEWS) {
-      const pose = await page.evaluate((id) => window.__rig.setView(id), view.id);
+      // Capture the WebGL frame reliably under headless Chromium/SwiftShader.
+      // Two capture paths are broken in this stack: Playwright's element
+      // screenshot() returns a blank white frame (the compositor never picks up
+      // the software-rasterized WebGL layer), and the WebGL canvas's own
+      // toDataURL() returns a transparent buffer. What DOES work is
+      // gl.readPixels() — BUT it must run in the SAME evaluate as the render:
+      // splitting render and readback across two CDP round-trips races the
+      // SwiftShader command queue and intermittently yields a transparent
+      // buffer. So we re-render the view and read it back atomically, flip
+      // (WebGL origin is bottom-left), blit into a plain 2D canvas, and use the
+      // 2D canvas's toDataURL(). The retry re-renders if the readback is empty.
+      let pose = null;
+      let png = null;
+      for (let attempt = 0; attempt < 4 && png === null; attempt++) {
+        const cap = await page.evaluate((id) => {
+          const p = window.__rig.setView(id); // renders this view
+          const c = document.getElementById('rig-canvas');
+          const gl = c.getContext('webgl2') || c.getContext('webgl');
+          const w = c.width;
+          const h = c.height;
+          gl.finish();
+          const buf = new Uint8ClampedArray(w * h * 4);
+          gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, buf);
+          let nonZero = 0;
+          for (let i = 3; i < buf.length; i += 4) if (buf[i] !== 0) { nonZero++; if (nonZero > 32) break; }
+          if (nonZero === 0) return { pose: p, png: null };
+          const flipped = new Uint8ClampedArray(w * h * 4);
+          const row = w * 4;
+          for (let y = 0; y < h; y++) flipped.set(buf.subarray((h - 1 - y) * row, (h - y) * row), y * row);
+          const c2 = document.createElement('canvas');
+          c2.width = w;
+          c2.height = h;
+          c2.getContext('2d').putImageData(new ImageData(flipped, w, h), 0, 0);
+          return { pose: p, png: c2.toDataURL('image/png') };
+        }, view.id);
+        pose = cap.pose;
+        png = cap.png;
+      }
+      if (png === null) throw new Error(`view ${view.id} readback stayed empty after retries`);
       poses.push({ id: view.id, key: view.key, ...pose });
       const file = path.join(outDir, `view-${view.id}.png`);
-      await canvas.screenshot({ path: file });
+      writeFileSync(file, Buffer.from(png.split(',')[1], 'base64'));
       viewFiles.push(file);
     }
     if (pageErrors.length > 0) {

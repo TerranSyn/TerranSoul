@@ -1,0 +1,90 @@
+{
+  "actor": "terransoul-opus48-claude",
+  "judge_track": "claude-opus-4-8-vision",
+  "iter": 9,
+  "run_id": "terransoul-opus48-claude-iter-9-mr72u6qd",
+  "plane_sha256": "1fff229b3bf0641c48bd0d2b92b89c6281d7fabf3cb6ef2fe015bdbb76c5c18d",
+  "rubric_sha256": "23ac79fd6fe0b9541bcae3ca48364cf6c17f1ea4e1d1a78e1295bf1287e8f2b8",
+  "total_0_100": 64.54,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.47,
+      "notes": "Slender fuselage with front hump blending in the front third, tapered nose/tail. Tall swept dark-blue fin reads as 747. Main-deck window band plus upper-deck windows present. Nose and main gear visible. Engines are clustered blocky boxes near the belly/wing root, not clearly four underslung pylon nacelles; wing planform hard to read side-on."
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.57,
+      "notes": "White fuselage with blue cheatline and dark-blue swept fin; distinct raised hump but sits mid-forward as a block, not faired from cockpit. Underwing engines read as clustered blocky nacelles, hard to resolve four with pylons. Nose/main gear and window line present; overall clearly airliner, plausibly 747."
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.83,
+      "notes": "Four dark nacelles hang under wide wings with slight dihedral; blue vertical fin and horizontal stabilizers visible. Rounded white fuselage with a crown bump; hump barely readable head-on. Central landing-gear cluster present. Cockpit windows faint; a stray horizontal bar sits near the nose. Engines look slightly blocky."
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.95,
+      "notes": "Rear head-on: four dark nacelles hang under the wings with plausible spacing. Tall thin navy fin plus horizontal stabilizers present. Wings droop with slight anhedral instead of 747 dihedral, and read as flat boards. Central gear cluster visible. Fuselage is a plain grey oval; hump and window lines not assessable from behind. Horizontal stabilizer sits with a small gap above the body."
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.7,
+      "notes": "Four engine nacelles sit near the wing leading edges with plausible inboard/outboard spacing but little forward offset. Swept tapered wings, slender tapered fuselage, swept horizontal stabilizers and a blue fin. Window band and upper-deck oval visible. Hump barely reads from top. Clean white/grey livery."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 7.3,
+      "notes": "Four underslung nacelles under swept, dihedral wings with taper. Slender tapered fuselage, tall blue swept fin plus horizontal stabilizers. Window band and blue cabin stripe present, cockpit hint. Nose and main gear deployed. Hump exists at front but shallow, reading closer to generic widebody than iconic 747."
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.43,
+      "notes": "White fuselage with blue cheatline and cockpit windows; distinct front upper-deck hump reads as a capsule on the crown. Tall blue swept fin plus grey horizontal stabilizers. Wings are thin flat grey slabs with slight sweep, minimal taper/dihedral, and no visible underwing engines or pylons at all. Clustered main-gear wheels under the belly. Absence of engines badly hurts the 747 read."
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.33,
+      "notes": "Grey slender fuselage with forward upper-deck hump and navy swept fin. Nose gear plus multi-wheel main bogies clearly visible under belly. Engine nacelles cluster near wing root and fuselage; count reads as two-three blobby pods rather than four cleanly pylon-mounted underwing. Navy cheatline and window dots present. Wings swept with slight dihedral."
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 7.51,
+      "notes": "Front-left close view shows a slender white fuselage with tapering nose, a modest front upper-deck hump behind the cockpit, four grey underwing nacelles on pylons, swept dihedral wings, tall swept fin, nose plus main gear bogies, blue cheatline and window band with cockpit windows. Hump is subtle and short; reads as 747 but not iconic."
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 5.56,
+    "perCriterion": {
+      "engines_four_underwing": 5.56,
+      "upper_deck_hump": 6.38,
+      "fuselage_proportions": 7.11,
+      "wing_geometry": 6.44,
+      "empennage": 7,
+      "landing_gear": 6.5,
+      "window_door_lines": 6.25,
+      "livery_coherence": 7.67,
+      "silhouette_747": 6.33,
+      "craftsmanship": 6.22
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Improve 'Four engines under swept wings' (mean 5.56/10). Target the 8 anchor: four nacelles hung under the swept wings on visible pylons, plausible inboard/outboard spacing; then the 10 anchor: four underslung pylon-mounted nacelles with correct relative size, spacing, and forward offset ahead of the wing leading edge, inlet visibly open/darker.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 2.898868,
+  "regressed": true,
+  "best_total_after": 66.29,
+  "created_at": "2026-07-05T00:57:07.569Z"
+}

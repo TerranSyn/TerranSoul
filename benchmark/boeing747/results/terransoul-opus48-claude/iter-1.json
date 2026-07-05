@@ -1,0 +1,90 @@
+{
+  "actor": "terransoul-opus48-claude",
+  "judge_track": "claude-opus-4-8-vision",
+  "iter": 1,
+  "run_id": "terransoul-opus48-claude-iter-1-mr70pkiy",
+  "plane_sha256": "3e03f15c727a874f2fb3298634009c88df089f8264ecff0b8603bac8991f5238",
+  "rubric_sha256": "23ac79fd6fe0b9541bcae3ca48364cf6c17f1ea4e1d1a78e1295bf1287e8f2b8",
+  "total_0_100": 60.38,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.79,
+      "notes": "Slender grey fuselage with rounded nose and upswept tail cone; partial front hump with four upper-deck window dots. Tall swept navy fin present. Engine shapes cluster ambiguously under the belly rather than clearly hung on pylons under swept wings. Nose gear plus a main-gear wheel cluster visible. Faint window band; some blocky segment seams and step joints."
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.55,
+      "notes": "Slender light fuselage with dark-blue swept fin and blue stripe reads as an airliner. But the raised upper-deck block sits mid/rear rather than faired from the nose. Engines are an ambiguous cluster under the wing, not four clear nacelles. Nose gear plus a bunched main-gear wheel group visible. Body shows seams and a jumbled engine/gear region."
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.47,
+      "notes": "Head-on: four grey nacelles under wings, correct count and roughly plausible spacing. Wings nearly flat with slight dihedral, good span. Vertical fin is a thin blue blade, horizontal stabilizer a faint bar. Central gear cluster with multiple wheels present. Coherent grey/white livery. Hump, fuselage length, and window lines not assessable from this angle."
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.63,
+      "notes": "Head-on tail view: rounded grey fuselage blob, four dark nacelles slung under long wings with slight dihedral, a very thin stick-like dark vertical fin, a thin horizontal stabilizer line, and nose+main gear wheels below the body. No window or door detail. Coherent grey/dark palette. Hump and length not assessable from this angle."
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.38,
+      "notes": "Four dark nacelles, two per swept tapering wing, plausibly spaced. Slender tapered fuselage with visible banding/segment seams. Nose bump hints at hump. Swept tailplane and fin present. A blue rod protrudes past the tail (floating artifact). No clear window/door line; only faint cockpit hints."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 6.67,
+      "notes": "Slender white fuselage with tapering nose/tail and a small front hump. Swept grey wings with dihedral and taper; tall dark-blue swept fin plus horizontal stabs. Engine nacelles are few and clustered near the fuselage/belly rather than four clearly underslung on pylons. Nose and main-gear bogies visible. Thin blue cheatline, faint windows. Coherent white/grey/blue livery."
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.65,
+      "notes": "Slender white fuselage with blue window stripe and swept grey wings with dihedral. Tall dark-blue fin present. A raised lobe on the crown reads as a partial hump. Cylindrical nacelles cluster near the wing root/gear, ambiguous count and placement, some appear floating close to belly. Multiple gear bogies visible."
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.65,
+      "notes": "Grey fuselage with a distinct front hump reads as a 747. Nose gear plus multiple dark main-gear trucks visible under the belly. Nacelles cluster near the wing roots making four-engine count ambiguous. Dark-blue cheatline present but no discrete windows; tall blue fin and swept wings with dihedral. Some boxy junctions near wing root."
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 6.55,
+      "notes": "Slender white fuselage with rounded nose, swept tapering wings with dihedral, tall blue swept fin and horizontal stabilizers. Nose gear plus multiple main trucks visible. Four underwing nacelles present. The upper structure reads as an overly long raised tube, not a faired front-third 747 hump, and it intersects the crown awkwardly with z-fighting window bands."
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 4.5,
+    "perCriterion": {
+      "engines_four_underwing": 5.44,
+      "upper_deck_hump": 5.71,
+      "fuselage_proportions": 7.14,
+      "wing_geometry": 6.44,
+      "empennage": 6.56,
+      "landing_gear": 6.38,
+      "window_door_lines": 4.5,
+      "livery_coherence": 7.11,
+      "silhouette_747": 5.89,
+      "craftsmanship": 5.44
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Improve 'Window and door lines' (mean 4.5/10). Target the 8 anchor: a consistent passenger-window line along the main deck plus cockpit windows, door hints; then the 10 anchor: clean main-deck window line, separate upper-deck windows on the hump, cockpit windshield shape, evenly spaced doors.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 2.923886,
+  "regressed": false,
+  "best_total_after": 60.38,
+  "created_at": "2026-07-04T23:58:07.738Z"
+}
