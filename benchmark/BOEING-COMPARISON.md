@@ -15,12 +15,25 @@
 
 ## Comparison at a glance
 
-The actor being maximized is **Claude Opus 4.8, driven inside TerranSoul** (via
-TerranSoul's Claude CLI brain provider — `claude --model claude-opus-4-8`, the
-same `BrainMode::ClaudeCli` path the app ships), wrapped in TerranSoul's
-self-improve loop (render → frozen vision-judge → critic → targeted fix →
-re-judge). The vision judge is held **frozen at gemma4:12b-it-qat** (neutral,
-local, reproducible, sha256-stamped) so every row is scored by the same yardstick.
+> **⚠️ ACTOR-FIDELITY CORRECTION (2026-07-05).** All Boeing numbers published to
+> date (v1 55.58 → v2 73.68/68.26) were produced by a **benchmark-side loop
+> (`loop-runner-claude.mjs`) that shells out to the bare `claude --model
+> claude-opus-4-8` CLI** — i.e. the raw Opus 4.8 model, NOT TerranSoul's own LLM
+> Agent. They are therefore honestly a **"bare Opus 4.8 self-improve"** series, and
+> the "+ TerranSoul" attribution below overclaims until re-measured. A faithful
+> re-measurement is **in progress**, driven by **TerranSoul's own LLM Agent
+> configured to Opus 4.8 + MAX thinking** (the app's coding/brain agent doing the
+> vision inspection and the edits through its own machinery). Those forthcoming
+> numbers will be the definitive **"Opus 4.8 + TerranSoul"** result; the numbers in
+> this doc are relabeled as the bare-model series until then.
+
+The actor being maximized is **Claude Opus 4.8**. In the numbers below to date it was
+driven by the benchmark's own loop calling the bare `claude` CLI (the raw model); the
+in-progress re-measurement moves the driver to **TerranSoul's LLM Agent (Opus 4.8 +
+MAX thinking)** — the app's agent, with its planning/memory/self-improve loop, doing
+render → vision inspection → targeted fix → re-judge itself. The vision judge is held
+**frozen at gemma4:12b-it-qat** (neutral, local, reproducible, sha256-stamped) so every
+row is scored by the same yardstick regardless of which actor produced the plane.
 
 > The **Boeing-747** column is this harness's frozen weighted rubric total /100
 > (median-of-3 gemma4 judge, sha256-stamped); every other column is the frontier
