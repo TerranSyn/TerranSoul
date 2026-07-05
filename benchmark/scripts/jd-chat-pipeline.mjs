@@ -54,7 +54,8 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
 const DEFAULT_TARGET_DIR = resolve(REPO_ROOT, 'target-copilot-bench');
-const DEFAULT_CORPUS_DIR = resolve(DEFAULT_TARGET_DIR, 'jdbench');
+// Prefer C:\TerranSoul (SSD) for the JD corpus/store when present; fall back to the repo dir.
+const DEFAULT_CORPUS_DIR = existsSync('C:/TerranSoul/jdbench') ? 'C:/TerranSoul/jdbench' : resolve(DEFAULT_TARGET_DIR, 'jdbench');
 const DEFAULT_SAMPLE_DIR = resolve(DEFAULT_CORPUS_DIR, 'sample-300');
 const DEFAULT_OUT_DIR = resolve(REPO_ROOT, 'benchmark', 'results', 'jd-million');
 const OLLAMA_HOST = (process.env.OLLAMA_HOST || 'http://127.0.0.1:11434').replace(/\/$/, '');

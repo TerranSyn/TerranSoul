@@ -28,6 +28,10 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
 const TARGET_DIR = resolve(REPO_ROOT, 'target-copilot-bench');
+// JD bench store + gold prefer C:\TerranSoul (a fast SSD) for the FTS5 random-I/O-bound
+// ingest/query; the build-artifact shim stays under TARGET_DIR. Portable — falls back to
+// the repo dir on CI / machines without C:\TerranSoul.
+const JDBENCH_DIR = existsSync('C:/TerranSoul/jdbench') ? 'C:/TerranSoul/jdbench' : resolve(TARGET_DIR, 'jdbench');
 const OLLAMA_HOST = (process.env.OLLAMA_HOST || 'http://127.0.0.1:11434').replace(/\/$/, '');
 
 async function ollamaUp() {
@@ -42,7 +46,7 @@ async function main() {
 
   // Default store + prebuilt shim (avoid cargo build contention).
   if (!process.env.LONGMEM_DATA_DIR) {
-    process.env.LONGMEM_DATA_DIR = resolve(TARGET_DIR, 'jdbench', 'store');
+    process.env.LONGMEM_DATA_DIR = resolve(JDBENCH_DIR, 'store');
   }
   const storeDir = process.env.LONGMEM_DATA_DIR;
   const prebuilt = resolve(TARGET_DIR, 'debug', 'longmemeval-ipc.exe');
@@ -55,7 +59,7 @@ async function main() {
     console.log(`[jd-chat] SKIP: memory.db not found under ${storeDir}. Local-only bench (run bench:jd:million ingest first).`);
     return;
   }
-  if (!existsSync(resolve(TARGET_DIR, 'jdbench', 'gold.json'))) {
+  if (!existsSync(resolve(JDBENCH_DIR, 'gold.json'))) {
     console.log('[jd-chat] SKIP: gold.json not found. Local-only bench.');
     return;
   }
