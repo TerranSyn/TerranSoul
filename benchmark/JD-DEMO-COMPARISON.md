@@ -78,8 +78,8 @@ config is reported unsmoothed. Evidence: `chat-pipeline-demo-40000-million.json`
 
 | Stat | TerranSoul (Gemma 4 12B, local) | Claude Sonnet 5 (in-context) |
 |---|---|---|
-| Scale ceiling (measured) | **1,000,000 résumés** (24.9-min one-time ingest) | **≈ 3,800 résumés** — 973,307 tokens at 3,700 = 97.3 % of the 1M-token window; hard refusal at 3,800 (`claude-sonnet5-ceiling.json`) |
-| Résumés learned per second | **669/s** sustained to 1M (production SQLite + FTS5 path) | n/a — no persistent learning; re-reads the corpus every pass (~2.0 résumés/s) |
+| Scale ceiling (measured) | **1,000,000 résumés** (21.1-min one-time ingest) | **≈ 3,800 résumés** — 973,307 tokens at 3,700 = 97.3 % of the 1M-token window; hard refusal at 3,800 (`claude-sonnet5-ceiling.json`) |
+| Résumés learned per second | **791/s** sustained to 1M (production SQLite + FTS5 path, release build) | n/a — no persistent learning; re-reads the corpus every pass (~2.0 résumés/s) |
 | JD queries answered per second (warm, over 1M) | **~300–385/s** (Chat; p50 ~1.3–1.7 ms) | ~0.02 JD/s (one ~49.6 s pass per JD, over ≤ 3,800) |
 | Marginal cost of the NEXT query | milliseconds, $0 — the index persists | a full re-read of the corpus + API tokens |
 | Privacy / locality | fully local, $0, nothing leaves the machine | cloud API |
