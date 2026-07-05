@@ -27,10 +27,11 @@ local, reproducible, sha256-stamped) so every row is scored by the same yardstic
 > models' **published** figure on that standard existing benchmark, filled from the
 > online citation sweep below. No value is fabricated.
 
-The flagship result — **Claude Opus 4.8 + TerranSoul, Boeing-747 = 55.58/100** —
-set against the frontier models' latest **published** standing across the major
-existing benchmarks (filled from the online citation sweep in § Existing online
-benchmarks; every figure there carries a source URL + access date).
+The flagship result — **Claude Opus 4.8 + TerranSoul, Boeing-747 = 66.07/100**
+(frozen gemma4 judge, median-of-3) / **63.5/100** (Claude Opus 4.8 vision judge,
+median-of-3) — set against the frontier models' latest **published** standing across
+the major existing benchmarks (filled from the online citation sweep in § Existing
+online benchmarks; every figure there carries a source URL + access date).
 
 > **Each column is a DIFFERENT benchmark on its own scale** — a SWE-bench % is not
 > a Boeing /100 is not an ARC %. Read *down* each column (how models rank on that
@@ -41,7 +42,7 @@ benchmarks; every figure there carries a source URL + access date).
 
 | Model | Score | Benchmark (what the score is on) | Source |
 |---|---|---|---|
-| **Claude Opus 4.8 + TerranSoul** | **55.58 %** | **Boeing-747** primitives — autonomous self-improve loop | this harness (local) ● |
+| **Claude Opus 4.8 + TerranSoul** | **66.07 %** (gemma4) · **63.5 %** (Opus 4.8 vision) | **Boeing-747** primitives — autonomous self-improve loop | this harness (local) ● |
 | Claude Fable 5 | 88.0 % | Terminal-Bench 2.1 (agentic coding, in a loop) | aggregate ○ |
 | GPT-5.5 (Codex CLI) | 83.4 % | Terminal-Bench 2.1 | aggregate ○ |
 | Claude Sonnet 5 | 80.4 % | Terminal-Bench 2.1 | aggregate ○ |
@@ -73,7 +74,7 @@ guidance** to finish the model solo, while the fully-autonomous near-perfect run
 came from a larger model (Fable 5). TerranSoul's self-improve loop supplies the
 automated self-verification ("loop until 100% satisfied") that Opus 4.8 lacked on
 its own — so the flagship measures **Opus 4.8 + TerranSoul reaching the target
-autonomously (55.58)** where Opus 4.8 alone did not. On the *other* columns the
+autonomously (66.07 gemma4 · 63.5 Opus vision)** where Opus 4.8 alone did not. On the *other* columns the
 underlying actor is bare Opus 4.8 (its own row); TerranSoul adds the loop, measured
 here on the 747.
 
@@ -88,12 +89,17 @@ here on the 747.
 ## Measurement status (read first)
 
 The flagship run is **measured** (2026-07-05): **Claude Opus 4.8 + TerranSoul**,
-self-improve loop, best **55.58 / 100** over 4 iterations (48.79 → 55.58) —
-committed under `benchmark/boeing747/results/terransoul-opus48/` (`iter-1..4.json`
-+ `best.json`). The stub rig-validation floor is 28.25 / 100. Single-shot local
-baselines were dropped per the project owner's direction — the comparison of
-interest is the best Opus 4.8 + TerranSoul result against the existing published
-benchmark landscape (§ Existing online benchmarks).
+self-improve loop, best **66.07 / 100** (frozen gemma4:12b judge, median-of-3) and
+**63.5 / 100** (Claude Opus 4.8 vision judge, median-of-3) — committed under
+`benchmark/boeing747/results/terransoul-opus48*/`. **Render-fix caveat:** the earlier
+55.58 used the pre-fix rig, which returned blank frames on some GL stacks; a
+robustness fix to `render-rig.mjs` (`gl.readPixels` capture + pinned ANGLE/SwiftShader
+flags) shifts the absolute scale, so ~6 of the gemma points vs 55.58 are the *render*,
+not the plane. On the **same render**, the plane's genuine gain over its own baseline
+is **+4.06 gemma (62.01 → 66.07)** and **+25.6 Opus vision (37.9 → 63.5)** — the Opus
+judge gives the clean gradient the 12B cannot (gemma barely separates the broken dart
+at 62.01 from the finished 747 at 66.07). The stub rig floor is 28.25 (pre-fix render).
+Single-shot local baselines were dropped per the project owner's direction.
 
 Every figure here is from a committed results JSON — **no number is written that
 has not been measured** — and reported factually; the project does not use
@@ -117,21 +123,25 @@ has not been measured** — and reported factually; the project does not use
 
 | System | Approach | Boeing-747 score /100 | Iterations | Source |
 |---|---|---|---|---|
-| **Claude Opus 4.8 + TerranSoul** | self-improve loop (Opus actor inside TerranSoul) | **55.58** (best; 48.79 → 55.58) | 4 (stalled, non-improving 2/3) | measured — `results/terransoul-opus48/` |
-| Stub (rig validation) | fixed source | 28.25 | — | `results/stub-validation.json` (measured, methodology check only) |
+| **Claude Opus 4.8 + TerranSoul** | self-improve loop (Opus actor inside TerranSoul) | **66.07** gemma4 · **63.5** Opus vision (median-of-3) | 9+ (both judge tracks) | measured — `results/terransoul-opus48*/` |
+| Stub (rig validation) | fixed source | 28.25 | — | `results/stub-validation.json` (pre-render-fix; methodology check only) |
 
-**The loop trajectory (measured, frozen gemma4 judge, rubric sha256-stamped).**
-iter-1 **48.79** (Opus 4.8's from-scratch build) → the critic named `landing_gear`
-(scored 0 — the judge did not see the thin gear); the applied fix (prominent gear:
-big paired wheels, cylinder struts, truck beams, hung below the belly) drove
-`landing_gear` 0 → 8 and a continuous cabin-pane band lifted `window_door_lines`
-1.6 → 3.8, for iter-2 **55.58** (best). iter-3 (engine reposition) 46.94 and iter-4
-(hump) 54.5 both fell back within the 12B judge's variance (the `window` criterion
-swings 0–3.8 on near-identical renders), so the loop kept best and stalled at
-55.58. That is a **+27.3 (~2×) delta over the stub floor** — read like the Darwin
-Gödel Machine's before→after (§ Existing online benchmarks), the improvement the
-autonomous loop earns over the bare actor. The residual ceiling is the
-`engines_four_underwing` (3–3.7) criterion and the noisy judge, not the loop.
+**The loop trajectory (measured).** Judged by Claude Opus 4.8 vision, the loop climbed
+**37.9 → 60.4 → 61.0 → 62.6 → 63.7 → 64.4 → 66.3 (peak) → 63.5 (median-of-3)** as the
+actor — via its own visual inspection of the nine views plus the critic — fixed real
+defects the 12B judge had missed since iteration 1: a **mis-mirrored left wing/tailplane**
+(the −Z engines had no wing above them), **missing `ExtrudeGeometry` caps** (fin/wings
+rendered as thin outlines), and a reshape from a "supersonic dart" into a wide-body 747
+(blunt nose, faired `Capsule` hump, four distinct light-cowl/dark-inlet underwing pods,
+skin-seated windows). On the same render the frozen gemma4 judge reads **62.01 → 66.07**.
+**Honest ceiling:** 100 is unreachable with primitives + these judges — the weak criteria
+(windows 5.7, hump 5.8, engines 6.0, silhouette 6.1, craftsmanship 6.1) cap in the mid-60s
+because the rubric's 8–10 anchors demand near-photorealistic detail (open inlets, faired
+junctions, panel lines) that Box/Cylinder/Sphere cannot render; four genuinely-different
+post-peak attempts all landed within ±1.5 run-noise. Raising it further would **change the
+benchmark** — a stronger vision judge (Opus already gives the cleaner gradient; self-family
+bias is minimal — it scored the baseline *harder* than gemma, 37.9 vs 55.58), or relaxing
+the primitives-only contract to allow meshes/textures.
 
 _(This table records the single figure that matters: **Opus 4.8 + TerranSoul** on
 this frozen harness — the flagship autonomous run. The stub is a rig/judge
