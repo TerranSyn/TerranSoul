@@ -29,7 +29,9 @@ local, reproducible, sha256-stamped) so every row is scored by the same yardstic
 
 The flagship result — **Claude Opus 4.8 + TerranSoul, Boeing-747 = 73.68/100**
 (frozen gemma4 judge, median-of-3) / **68.26/100** (Claude Opus 4.8 vision judge,
-samples-of-3), on the **v2 corrected harness** — set against the frontier models'
+samples-of-3), on the **v2 corrected harness** _(provisional — v1 66.07/63.5 remains the
+signed-off floor pending owner sign-off on the camera-spec re-baseline; see caveat below)_ —
+set against the frontier models'
 latest **published** standing across the major existing benchmarks (filled from the
 online citation sweep in § Existing online benchmarks; every figure there carries a
 source URL + access date).
@@ -44,9 +46,13 @@ source URL + access date).
 > judge** (Opus already saw through the aliasing → its ~68 is *genuine geometry*, the
 > real primitives ceiling). That split is the honest proof the fix is a *measurement*
 > correction, not gaming (a gaming trick would inflate both judges). **v2 numbers are
-> NOT comparable to v1.** The camera-framing change re-baselines the frozen camera
-> spec and is flagged for explicit owner sign-off before any *external* publishing
-> (pitch deck / research paper / wiki).
+> NOT comparable to v1.** Because the camera-framing fix re-baselines the *frozen* camera
+> spec, **v1 (66.07 gemma / 63.5 Opus) remains the officially-signed-off published floor**
+> and the **v2 figures here are provisional** until the project owner explicitly signs off
+> on the camera-spec re-baseline — at which point v2 becomes the official record. The
+> honest v2 decomposition is published now (rather than withheld) so the correction is
+> transparent; the *status* (provisional vs. official) is what awaits sign-off, not the
+> analysis.
 
 > **Each column is a DIFFERENT benchmark on its own scale** — a SWE-bench % is not
 > a Boeing /100 is not an ARC %. Read *down* each column (how models rank on that
