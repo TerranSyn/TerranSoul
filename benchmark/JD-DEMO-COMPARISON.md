@@ -43,6 +43,37 @@ the JD predicate from the candidate's own résumé text** — lifting Vietnamese
 round-1 recall 84 % → 100 % and closing en/vi/ja to a perfect ranked set. That is
 the explicit accuracy-for-latency trade: ~48–59 s to earn 100 %.
 
+## 1b. Three thinking levels — the accuracy-for-speed trade at 40,000 résumés
+
+Same corpus generator/seed as § 1, sliced to the first 40,000 rows (deterministic:
+résumé N is a pure function of `(seed, N)`). Same store, same three JDs, same gold
+predicate. Claude Sonnet 5's ceiling (≈ 3,800 résumés) is still below 40,000, so
+every Sonnet cell is **no**.
+
+| | **Chat** — no thinking | **Think** — with thinking | **Max** — highest thinking | **Claude Sonnet 5** |
+|---|---|---|---|---|
+| Runs the 40,000-résumé job? | ✅ yes | ✅ yes | ✅ yes | ❌ no (capped 3,800) |
+| NDCG@10 — English | 86.4 % | 34.4 %\* | **100 %** | ❌ no |
+| NDCG@10 — Vietnamese | 22.0 % | 54.2 % | **100 %** | ❌ no |
+| NDCG@10 — Japanese | 37.2 % | 46.0 % | **100 %** | ❌ no |
+| Response time / JD | **~1.2–4.7 ms** (warm) | ~28.8–44.0 s (reader tournament) | ~77.1–215.2 s (agentic verify) | ❌ no |
+| Learns the 40,000 résumés? | ⏳ pending (ingest-wrapper workflow measuring separately) | ← same | ← same | ❌ no |
+| Reaches 100 % in every language? | no | no | ✅ **yes — all three** | ❌ no |
+
+\* Think-English **regressed** vs Chat (86.4 % → 34.4 %): 2/6 reader calls hit
+`done_reason=length` — gemma4's `think:false` does not fully suppress deliberation;
+it interleaves per-candidate commentary mid-array, and at this pool composition
+(~21 candidates) the array got cut before completing, corrupting the rank order.
+Root-caused with 3 mitigations tested, none safe to ship: (1) `num_predict`
+600→1200 — WORSE (24.9 %, the model fills whatever budget it gets rather than
+converging); (2) prompt instructed "JSON array first, no preamble" — no
+improvement (still interleaves commentary); (3) smaller pool (`batch-tokens`
+1300→700, `working-size` 12→8) — improved en to 67.7 % but REGRESSED ja
+46.0 %→22.0 % when applied uniformly. No single reader-parameter setting helps
+English without regressing Japanese at this scale, so the original shared
+config is reported unsmoothed. Evidence: `chat-pipeline-demo-40000-million.json`
+(`reader_truncations: 2`).
+
 ## 2. Scale, throughput, and cost (measured)
 
 | Stat | TerranSoul (Gemma 4 12B, local) | Claude Sonnet 5 (in-context) |
@@ -89,7 +120,9 @@ the old capability. The cross-lingual accuracy the earlier loop was chasing
 | `benchmark/results/jd-million/jd-demo-comparison.json` | the consolidated 3-level run (Chat/Think/Max, per-JD, per-language, latency, recall) |
 | `benchmark/results/jd-million/chat-pipeline-levels-million.json` | the per-level pipeline detail at 1M |
 | `benchmark/results/jd-million/claude-sonnet5-ceiling.json` | the measured Sonnet-5 in-context ceiling (per-N tokens, fit/refusal, method) |
+| `benchmark/results/jd-40000/jd-demo-40000.json` | the 40,000-résumé run (§ 1b): consolidated Chat/Think/Max, per-JD, per-language, latency, the Think-en truncation root-cause note |
 | `benchmark/scripts/jd-corpus.mjs`, `jd-queries.mjs`, `jd-chat-pipeline.mjs`, `jd-max-bench.mjs`, `jd-sonnet-ceiling.mjs` | deterministic corpus, the 3 JDs, the Chat/Think pipeline, the Max agentic pipeline, the Sonnet-ceiling harness |
+| `benchmark/scripts/jd-demo-run.mjs` | the scaled runner behind `/demo jd [1-3] [count]` (thin sequencer over the above stages at an arbitrary résumé count) |
 
 Retrieval substrate: purely lexical RRF (FTS5 + freshness fusion; dense channel
 and KG edges off) — cross-lingual recall comes from the universal Latin skills line

@@ -34,7 +34,7 @@
 //     --out-dir <dir>           default benchmark/results/jd-million
 //     --label chat              output file suffix
 
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { JD_QUERIES } from './jd-queries.mjs';
