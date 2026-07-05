@@ -57,7 +57,7 @@ every Sonnet cell is **no**.
 | NDCG@10 — Vietnamese | 22.0 % | 54.2 % | **100 %** | ❌ no |
 | NDCG@10 — Japanese | 37.2 % | 46.0 % | **100 %** | ❌ no |
 | Response time / JD | **~1.2–4.7 ms** (warm) | ~28.8–44.0 s (reader tournament) | ~77.1–215.2 s (agentic verify) | ❌ no |
-| Learns the 40,000 résumés? | ⏳ pending (ingest-wrapper workflow measuring separately) | ← same | ← same | ❌ no |
+| Learns the 40,000 résumés? | ✅ 15.1s once (2,652/s) | ← same | ← same | ❌ no |
 | Reaches 100 % in every language? | no | no | ✅ **yes — all three** | ❌ no |
 
 \* Think-English **regressed** vs Chat (86.4 % → 34.4 %): 2/6 reader calls hit
