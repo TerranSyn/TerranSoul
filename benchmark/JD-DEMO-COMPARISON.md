@@ -29,7 +29,7 @@ that scale at all (its ceiling is ≈ 3,800 résumés — § 2), so every Sonnet
 | NDCG@10 — Vietnamese | 40.0 % | 42.8 % | **100 %** | ❌ no |
 | NDCG@10 — Japanese | 78.3 % | 93.4 % | **100 %** | ❌ no |
 | Response time / JD | **~1.3–1.7 ms** (warm) | ~32–56 s (reader tournament) | ~48–59 s (agentic verify) | ❌ no |
-| Learns the 1,000,000 résumés? | ✅ 24.9 min once (669/s, persistent, shared by all three) | ← same | ← same | ❌ no |
+| Learns the 1,000,000 résumés? | ✅ 24.9 min fully-searchable (669/s, measured on D: HDD); **durable-append ≈1–2 s projected** (defer_fts micro-bench, § 2) | ← same | ← same | ❌ no |
 | Reaches 100 % in every language? | no (speed tier) | en+ja only | ✅ **yes — all three** | ❌ no |
 | Trade | fastest, lowest cross-lingual recall | reranks one retrieval; recall-bound | **slowest, 100 % all languages** | ❌ cannot run at this scale |
 
@@ -48,7 +48,7 @@ the explicit accuracy-for-latency trade: ~48–59 s to earn 100 %.
 | Stat | TerranSoul (Gemma 4 12B, local) | Claude Sonnet 5 (in-context) |
 |---|---|---|
 | Scale ceiling (measured) | **1,000,000 résumés** (24.9-min one-time ingest) | **≈ 3,800 résumés** — 973,307 tokens at 3,700 = 97.3 % of the 1M-token window; hard refusal at 3,800 (`claude-sonnet5-ceiling.json`) |
-| Résumés learned per second | **669/s** sustained to 1M (production SQLite + FTS5 path) | n/a — no persistent learning; re-reads the corpus every pass (~2.0 résumés/s) |
+| Résumés learned per second | **669/s** fully-searchable to 1M (measured, D: HDD, production FTS5 path); **durable-append ~500k–1M/s projected**, fully-searchable rebuild ~70–100k/s (defer_fts micro-bench 60–89×, § 2) | n/a — no persistent learning; re-reads the corpus every pass (~2.0 résumés/s) |
 | JD queries answered per second (warm, over 1M) | **~300–385/s** (Chat; p50 ~1.3–1.7 ms) | ~0.02 JD/s (one ~49.6 s pass per JD, over ≤ 3,800) |
 | Marginal cost of the NEXT query | milliseconds, $0 — the index persists | a full re-read of the corpus + API tokens |
 | Privacy / locality | fully local, $0, nothing leaves the machine | cloud API |
