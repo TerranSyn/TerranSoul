@@ -1,0 +1,67 @@
+{
+  "benchmark": "INGEST-1M-PER-SEC defer_fts (LONGMEM_WRITE_ENGINE=1)",
+  "generated_at": "2026-07-05T17:46:00.150Z",
+  "count": 1000000,
+  "rows_added": 1000000,
+  "store_dir": "C:\\TerranSoul\\jdbench-release-defer\\store",
+  "corpus_dir": "C:\\TerranSoul\\jdbench",
+  "platform": "win32 x64",
+  "disk": "C: Samsung 980 PRO NVMe",
+  "shim_exe": "D:\\Git\\TerranSoulApp\\src-tauri\\target\\release\\longmemeval-ipc.exe",
+  "profile": "release (cargo build --release -j 1, CARGO_INCREMENTAL=0; corrects a stale label in the tmp/ driver script — this run used the release shim, not debug)",
+  "env": {
+    "LONGMEM_DATA_DIR": "C:\\TerranSoul\\jdbench-release-defer\\store",
+    "LONGMEM_SHIM_EXE": "D:\\Git\\TerranSoulApp\\src-tauri\\target\\release\\longmemeval-ipc.exe",
+    "LONGMEM_WRITE_ENGINE": "1"
+  },
+  "metrics": {
+    "ring_push_s": 1219.366,
+    "ring_push_rows_per_s": 820,
+    "durable_append_flush_s": 0,
+    "reconcile_searchable_s": 0.716,
+    "materialize_query_visible_s": 0.133,
+    "durable_learned_s": 1219.366,
+    "durable_learned_rows_per_s": 820,
+    "fully_searchable_shard_s": 1220.082,
+    "fully_searchable_shard_rows_per_s": 820,
+    "fully_query_visible_s": 1220.215,
+    "fully_query_visible_rows_per_s": 820
+  },
+  "finalize_raw": {
+    "applied_lsn": 0,
+    "committed_lsn": 0,
+    "count": 1000000,
+    "durable_append_flush_s": 0.0000048,
+    "enabled": true,
+    "materialize_query_visible_s": 0.1327168,
+    "materialized_rows": 0,
+    "reconcile_searchable_s": 0.7160539,
+    "rows_applied": 0
+  },
+  "sanity_queries": [
+    {
+      "jd_id": "jd-en-backend",
+      "lang": "en",
+      "gold": 1441,
+      "r_at_10": 0.9,
+      "r_at_100": 0.83,
+      "ndcg_at_10": 0.933745776545611
+    },
+    {
+      "jd_id": "jd-vi-data-engineering",
+      "lang": "vi",
+      "gold": 1166,
+      "r_at_10": 0.3,
+      "r_at_100": 0.16,
+      "ndcg_at_10": 0.4537425745411855
+    },
+    {
+      "jd_id": "jd-ja-mobile",
+      "lang": "ja",
+      "gold": 925,
+      "r_at_10": 0.6,
+      "r_at_100": 0.34,
+      "ndcg_at_10": 0.6496872770120411
+    }
+  ]
+}
