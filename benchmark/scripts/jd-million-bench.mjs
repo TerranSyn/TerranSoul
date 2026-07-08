@@ -40,11 +40,22 @@ import { generateCorpus, writeGold, DEFAULT_SEED } from './jd-corpus.mjs';
 import { JD_QUERIES } from './jd-queries.mjs';
 import { recallAtK, precisionAtK, ndcgAtK, percentile } from './lib/jd-metrics.mjs';
 import { JsonlClient } from './lib/jd-ipc.mjs';
+import { chooseDrive } from '../../scripts/build/pick-build-cache-root.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
 const DEFAULT_TARGET_DIR = resolve(REPO_ROOT, 'target-copilot-bench');
 const DEFAULT_CORPUS_DIR = resolve(DEFAULT_TARGET_DIR, 'jdbench');
+// Historical fallback: same drive as the git checkout. JD-MILLION-HDD-ROOTCAUSE-1
+// (2026-07-08) found the checkout's drive on this dev box (D:) is a spinning
+// Seagate ST2000DX002 HDD (8.8 MB/s fsync'd-write probe) vs the Samsung 980
+// PRO SSD on C: (242.4 MB/s, 27x) — SQLite's random-write-heavy ingest is
+// disk-latency-bound, so a store dir that silently lands on the HDD produces
+// a low ingest-rate reading indistinguishable from a real regression (this is
+// exactly what happened across JD-MILLION-REBENCH-2026-07-07). See
+// `resolveDefaultStoreDir` below for the SSD-preferring default that replaces
+// this as the actual default; kept as the last-resort fallback when drive
+// detection is inconclusive.
 const DEFAULT_STORE_DIR = resolve(DEFAULT_CORPUS_DIR, 'store');
 const DEFAULT_OUT_DIR = resolve(REPO_ROOT, 'benchmark', 'results', 'jd-million');
 const DEFAULT_SYSTEMS = ['search', 'rrf'];
@@ -53,6 +64,66 @@ const DEFAULT_COUNT = 1000000;
 const QUERY_RUNS = 5;
 const FALLBACK_BATCH = 2000; // piped add_sessions batch when the jsonl op is missing
 const JSONL_SLICE = 100000; // per-call slice for add_sessions_jsonl -> per-100K checkpoints
+const BENCH_CACHE_ROOT_NAME = 'ts-bench-cache'; // sibling of ts-build-cache, own namespace on the chosen drive
+
+// ---------------------------------------------------------------------------
+// Store-dir placement (JD-MILLION-HDD-ROOTCAUSE-1, 2026-07-08)
+// ---------------------------------------------------------------------------
+//
+// Reuses pick-build-cache-root.mjs's `Get-PhysicalDisk` drive probe, but with
+// the OPPOSITE preference from that tool's own default: a build cache wants
+// the roomiest drive (byte-for-byte builds don't care about seek latency);
+// SQLite ingest is random-write-heavy and DOES care, so this passes
+// `prefer: 'ssd'`. If detection finds no SSD (or the scan fails for any
+// reason — no admin rights, non-Windows, WMI unavailable), it falls back to
+// the historical `target-copilot-bench/jdbench/store` location so the bench
+// never breaks over a placement heuristic; `LONGMEM_DATA_DIR` always wins
+// over both.
+function resolveDefaultStoreDir() {
+  try {
+    const { chosen } = chooseDrive({ rootName: BENCH_CACHE_ROOT_NAME, prefer: 'ssd', floor: 20 });
+    if (chosen.media === 'SSD' && Number.isFinite(chosen.freeGB)) {
+      const dir = resolve(chosen.root, 'jdbench', 'store');
+      console.log(`[jd-bench] fast-drive probe picked ${chosen.label} (SSD, ${Math.round(chosen.freeGB)} GB free) -> ${dir}`);
+      return dir;
+    }
+    console.log('[jd-bench] fast-drive probe found no eligible SSD; using the default store dir');
+  } catch (err) {
+    console.warn(`[jd-bench] fast-drive probe failed (${err.message}); using the default store dir`);
+  }
+  return DEFAULT_STORE_DIR;
+}
+
+/**
+ * Loud one-time warning when the effective store dir (default OR an explicit
+ * `LONGMEM_DATA_DIR` override) resolves onto a spinning disk. This is a
+ * safety net on top of `resolveDefaultStoreDir` above — it fires even when
+ * the caller overrides the default, so a future manual override can't
+ * silently reproduce the same multi-day investigation.
+ */
+function warnIfSpinningDisk(storeDir) {
+  const driveLetter = /^([A-Za-z]):[\\/]/.exec(resolve(storeDir));
+  if (!driveLetter) return; // non-Windows or unrecognized path shape — best-effort only
+  const label = `${driveLetter[1].toUpperCase()}:`;
+  try {
+    const { drives } = chooseDrive({ rootName: BENCH_CACHE_ROOT_NAME, floor: 0 });
+    const match = drives.find(d => d.label === label);
+    if (match && match.media === 'HDD') {
+      console.warn('');
+      console.warn('!'.repeat(78));
+      console.warn(`[jd-bench] WARNING: store dir resolves onto ${label} — a spinning HDD, not`);
+      console.warn('an SSD. SQLite ingest throughput is disk-latency-bound (measured 27x');
+      console.warn('slower on HDD vs SSD on comparable hardware, JD-MILLION-HDD-ROOTCAUSE-1) —');
+      console.warn('a low ingest-rate reading from here can look like a code regression when');
+      console.warn('it is actually disk placement. Set LONGMEM_DATA_DIR to an SSD-backed path');
+      console.warn('to get a representative number.');
+      console.warn('!'.repeat(78));
+      console.warn('');
+    }
+  } catch {
+    // Best-effort — never fail the bench over a warning.
+  }
+}
 
 // ---------------------------------------------------------------------------
 // CLI plumbing (longmemeval-s.mjs conventions + `--name value` form)
@@ -115,6 +186,15 @@ Options for run:
                          Send set_hybrid_weights (vector, keyword, recency,
                          importance, decay, tier_priority) before the query
                          phase — affects the \`hybrid\` system (MEMORY-CFG-AUDIT-5)
+
+Store dir (LONGMEM_DATA_DIR):
+  Unset -> probes fixed drives for the fastest one with an SSD (JD-MILLION-
+  HDD-ROOTCAUSE-1, 2026-07-08 — SQLite ingest is disk-latency-bound; a
+  spinning-HDD-backed store measured 27x slower than SSD on this class of
+  hardware) and uses \`<ssd-drive>/${BENCH_CACHE_ROOT_NAME}/jdbench/store\`; falls
+  back to \`target-copilot-bench/jdbench/store\` if no SSD is detected. Set
+  LONGMEM_DATA_DIR explicitly to override either way; a loud warning prints
+  if the effective store dir (default or override) resolves onto an HDD.
 `);
 }
 
@@ -460,7 +540,7 @@ async function run(options) {
   // delete the store dir BEFORE spawning cargo. `--resume` keeps it
   // (BENCH-SCALE-3: corpus row N is deterministic, so the tail can be
   // re-derived from the shim's `count`).
-  const storeDir = process.env.LONGMEM_DATA_DIR || DEFAULT_STORE_DIR;
+  const storeDir = process.env.LONGMEM_DATA_DIR || resolveDefaultStoreDir();
   if (!resume) {
     rmSync(storeDir, { recursive: true, force: true });
   }
@@ -468,6 +548,7 @@ async function run(options) {
     process.env.LONGMEM_DATA_DIR = storeDir;
     console.log(`[jd-bench] LONGMEM_DATA_DIR not set; defaulting to ${storeDir}`);
   }
+  warnIfSpinningDisk(storeDir);
 
   const client = new JsonlClient({ repoRoot: REPO_ROOT, targetDir: DEFAULT_TARGET_DIR });
   process.on('SIGINT', () => {
