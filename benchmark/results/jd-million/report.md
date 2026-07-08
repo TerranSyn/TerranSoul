@@ -1,6 +1,6 @@
 # MILLION-RESUME-BENCH Report
 
-Date: 2026-07-08T01:38:42.231Z
+Date: 2026-07-08T21:26:28.557Z
 Corpus: 1,000,000 synthetic resumes, seed 20260703
 Systems: rrf | top-k: 100
 
@@ -21,28 +21,28 @@ Systems: rrf | top-k: 100
 
 | Variable | Value |
 |---|---|
-| LONGMEM_DATA_DIR | C:/Users/DevStar/AppData/Local/Temp/jdbench-million-ssd/store |
-| LONGMEM_DATA_DIR (effective) | C:/Users/DevStar/AppData/Local/Temp/jdbench-million-ssd/store |
+| LONGMEM_DATA_DIR | C:\ts-bench-cache\jdbench\store |
+| LONGMEM_DATA_DIR (effective) | C:\ts-bench-cache\jdbench\store |
 | node | v24.3.0 |
 | platform | win32 x64 |
 
 ## Ingest
 
 Path: add_sessions_jsonl
-Rows: 1,000,000 in 552.9s (**1,808 rows/s** overall)
+Rows: 1,000,000 in 544.2s (**1,838 rows/s** overall)
 
 | Checkpoint rows | Slice rows/s | Overall rows/s | Elapsed s |
 |---:|---:|---:|---:|
-| 100,000 | 2,774 | 2,774 | 36.1 |
-| 200,000 | 2,324 | 2,529 | 79.1 |
-| 300,000 | 2,059 | 2,350 | 127.7 |
-| 400,000 | 2,047 | 2,266 | 176.5 |
-| 500,000 | 1,892 | 2,180 | 229.4 |
-| 600,000 | 1,748 | 2,094 | 286.5 |
-| 700,000 | 1,632 | 2,013 | 347.8 |
-| 800,000 | 1,602 | 1,950 | 410.3 |
-| 900,000 | 1,410 | 1,870 | 481.2 |
-| 1,000,000 | 1,393 | 1,808 | 552.9 |
+| 100,000 | 2,608 | 2,608 | 38.3 |
+| 200,000 | 2,463 | 2,533 | 79.0 |
+| 300,000 | 2,152 | 2,392 | 125.4 |
+| 400,000 | 2,136 | 2,322 | 172.2 |
+| 500,000 | 1,900 | 2,223 | 224.9 |
+| 600,000 | 1,720 | 2,120 | 283.0 |
+| 700,000 | 1,680 | 2,043 | 342.6 |
+| 800,000 | 1,571 | 1,969 | 406.2 |
+| 900,000 | 1,358 | 1,875 | 479.9 |
+| 1,000,000 | 1,555 | 1,838 | 544.2 |
 
 ## Results
 
@@ -50,9 +50,9 @@ Rows: 1,000,000 in 552.9s (**1,808 rows/s** overall)
 
 | JD | Lang | Gold | R@10 (capped/raw) | R@50 | R@100 | P@10 | NDCG@10 | p50 | p95 |
 |---|---|---:|---|---|---|---:|---:|---:|---:|
-| jd-en-backend | en | 1441 | 90.0% / 0.6% | 82.0% / 2.8% | 83.0% / 5.8% | 90.0% | 93.4% | 3234.64ms | 21829.18ms |
-| jd-vi-data-engineering | vi | 1166 | 30.0% / 0.3% | 14.0% / 0.6% | 16.0% / 1.4% | 30.0% | 45.4% | 1714.75ms | 17635.12ms |
-| jd-ja-mobile | ja | 925 | 60.0% / 0.6% | 44.0% / 2.4% | 34.0% / 3.7% | 60.0% | 65.0% | 1549.11ms | 6538.31ms |
+| jd-en-backend | en | 1441 | 90.0% / 0.6% | 82.0% / 2.8% | 83.0% / 5.8% | 90.0% | 93.4% | 1423.08ms | 14635.38ms |
+| jd-vi-data-engineering | vi | 1166 | 30.0% / 0.3% | 14.0% / 0.6% | 16.0% / 1.4% | 30.0% | 45.4% | 1397.07ms | 12605.76ms |
+| jd-ja-mobile | ja | 925 | 60.0% / 0.6% | 44.0% / 2.4% | 34.0% / 3.7% | 60.0% | 65.0% | 1575.51ms | 5905.54ms |
 
 ## Per-language gold composition and hits
 
