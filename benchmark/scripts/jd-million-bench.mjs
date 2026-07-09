@@ -596,6 +596,17 @@ async function run(options) {
       ? { rows: 0, elapsedSeconds: 0, rowsPerSecond: 0, checkpoints: [], path: 'skipped (resume complete)' }
       : await ingest(client, { resumesPath, startIndex, count, questionId: 'jd-million' });
 
+    // INGEST-1M-PER-SEC (2026-07-09): when LONGMEM_WRITE_ENGINE=1 routed
+    // ingest through the sharded write engine, rows are durable-but-not-yet-
+    // query-visible until `write_engine_finalize` runs (flush -> reconcile ->
+    // materialize into self.conn, the ONLY table the unmodified query path
+    // below reads). A no-op (reports `enabled: false`) when the engine
+    // wasn't active, so this is safe to send unconditionally.
+    const writeEngineFinalize = await client.send({ op: 'write_engine_finalize' });
+    if (writeEngineFinalize?.enabled !== false) {
+      console.log(`[jd-bench] write_engine_finalize ${JSON.stringify(writeEngineFinalize)}`);
+    }
+
     // MEMORY-CFG-AUDIT-5 mechanism: persist HybridWeights on the store's
     // Cell before the query phase. Order: vector, keyword, recency,
     // importance, decay, tier_priority. Affects the `hybrid` system only
@@ -626,7 +637,7 @@ async function run(options) {
         node: process.version,
         platform: `${process.platform} ${process.arch}`,
       },
-      ingest: { ...ingestStats, start_index: startIndex },
+      ingest: { ...ingestStats, start_index: startIndex, write_engine_finalize: writeEngineFinalize },
       gold_summary: gold.jds,
       results,
     };
