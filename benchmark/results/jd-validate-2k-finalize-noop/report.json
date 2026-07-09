@@ -1,0 +1,364 @@
+{
+  "benchmark": "MILLION-RESUME-BENCH",
+  "generated_at": "2026-07-09T12:52:37.062Z",
+  "config": {
+    "count": 2000,
+    "seed": 20260703,
+    "systems": [
+      "rrf"
+    ],
+    "top_k": 100,
+    "resume": false,
+    "query_runs": 5,
+    "corpus_dir": "D:\\Git\\TerranSoulApp\\target-copilot-bench\\jdbench",
+    "hybrid_weights": null
+  },
+  "env": {
+    "longmem_vars": {
+      "LONGMEM_DATA_DIR": "C:/TerranSoul/jd-validate-2k-finalize-noop/store"
+    },
+    "effective_data_dir": "C:/TerranSoul/jd-validate-2k-finalize-noop/store",
+    "node": "v24.3.0",
+    "platform": "win32 x64"
+  },
+  "ingest": {
+    "rows": 2000,
+    "elapsedSeconds": 0.478,
+    "rowsPerSecond": 4185,
+    "checkpoints": [
+      {
+        "rows": 2000,
+        "sliceRows": 2000,
+        "sliceSeconds": 0.478,
+        "sliceRowsPerSecond": 4187,
+        "overallSeconds": 0.478,
+        "overallRowsPerSecond": 4187
+      }
+    ],
+    "path": "add_sessions_jsonl",
+    "start_index": 0,
+    "write_engine_finalize": {
+      "enabled": false,
+      "note": "sharded write engine not enabled (set LONGMEM_WRITE_ENGINE=1 + LONGMEM_DATA_DIR)"
+    }
+  },
+  "gold_summary": [
+    {
+      "id": "jd-en-backend",
+      "lang": "en",
+      "title": "Senior Backend Engineer",
+      "area": "backend",
+      "requiredSkills": [
+        "skill:rust",
+        "skill:postgresql",
+        "skill:kubernetes",
+        "skill:grpc"
+      ],
+      "minYears": 5,
+      "goldSize": 1,
+      "byLang": {
+        "en": 1
+      }
+    },
+    {
+      "id": "jd-vi-data-engineering",
+      "lang": "vi",
+      "title": "Kỹ sư Dữ liệu",
+      "area": "data-engineering",
+      "requiredSkills": [
+        "skill:python",
+        "skill:spark",
+        "skill:airflow",
+        "skill:sql"
+      ],
+      "minYears": 3,
+      "goldSize": 4,
+      "byLang": {
+        "en": 2,
+        "zh": 2
+      }
+    },
+    {
+      "id": "jd-ja-mobile",
+      "lang": "ja",
+      "title": "モバイルアプリエンジニア",
+      "area": "mobile",
+      "requiredSkills": [
+        "skill:swift",
+        "skill:kotlin",
+        "skill:react-native"
+      ],
+      "minYears": 3,
+      "goldSize": 2,
+      "byLang": {
+        "zh": 1,
+        "en": 1
+      }
+    },
+    {
+      "id": "jd-en-backend-typo",
+      "lang": "en",
+      "title": "Senior Backend Engineer (typo probe)",
+      "area": "backend",
+      "requiredSkills": [
+        "skill:rust",
+        "skill:postgresql",
+        "skill:kubernetes",
+        "skill:grpc"
+      ],
+      "minYears": 5,
+      "goldSize": 1,
+      "byLang": {
+        "en": 1
+      }
+    }
+  ],
+  "results": [
+    {
+      "system": "rrf",
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "jd_title": "Senior Backend Engineer",
+      "gold_size": 1,
+      "runs": 5,
+      "latency_ms": {
+        "p50": 2.27,
+        "p95": 2.62,
+        "all": [
+          2.27,
+          2.06,
+          2.69,
+          2.37,
+          2.02
+        ],
+        "cold_ms": 4189.01
+      },
+      "recall_at_10": {
+        "capped": 1,
+        "raw": 1,
+        "hits": 1
+      },
+      "recall_at_50": {
+        "capped": 1,
+        "raw": 1,
+        "hits": 1
+      },
+      "recall_at_100": {
+        "capped": 1,
+        "raw": 1,
+        "hits": 1
+      },
+      "precision_at_10": 0.1,
+      "ndcg_at_10": 1,
+      "gold_hits_by_lang": {
+        "en": 1
+      },
+      "retrieved_top_20": [
+        "res-1829",
+        "res-353",
+        "res-556",
+        "res-404",
+        "res-512",
+        "res-933",
+        "res-876",
+        "res-922",
+        "res-1759",
+        "res-1550",
+        "res-1464",
+        "res-946",
+        "res-275",
+        "res-125",
+        "res-1124",
+        "res-1880",
+        "res-1856",
+        "res-1223",
+        "res-923",
+        "res-1684"
+      ]
+    },
+    {
+      "system": "rrf",
+      "jd_id": "jd-vi-data-engineering",
+      "jd_lang": "vi",
+      "jd_title": "Kỹ sư Dữ liệu",
+      "gold_size": 4,
+      "runs": 5,
+      "latency_ms": {
+        "p50": 2.34,
+        "p95": 2.49,
+        "all": [
+          2.41,
+          2.34,
+          2.51,
+          2.28,
+          2.25
+        ],
+        "cold_ms": 4652.77
+      },
+      "recall_at_10": {
+        "capped": 0,
+        "raw": 0,
+        "hits": 0
+      },
+      "recall_at_50": {
+        "capped": 0,
+        "raw": 0,
+        "hits": 0
+      },
+      "recall_at_100": {
+        "capped": 0,
+        "raw": 0,
+        "hits": 0
+      },
+      "precision_at_10": 0,
+      "ndcg_at_10": 0,
+      "gold_hits_by_lang": {},
+      "retrieved_top_20": [
+        "res-872",
+        "res-1300",
+        "res-1902",
+        "res-774",
+        "res-420",
+        "res-1435",
+        "res-1661",
+        "res-1993",
+        "res-1861",
+        "res-401",
+        "res-320",
+        "res-1535",
+        "res-1133",
+        "res-942",
+        "res-619",
+        "res-47",
+        "res-1331",
+        "res-1363",
+        "res-927",
+        "res-849"
+      ]
+    },
+    {
+      "system": "rrf",
+      "jd_id": "jd-ja-mobile",
+      "jd_lang": "ja",
+      "jd_title": "モバイルアプリエンジニア",
+      "gold_size": 2,
+      "runs": 5,
+      "latency_ms": {
+        "p50": 2.43,
+        "p95": 2.58,
+        "all": [
+          2.6,
+          2.51,
+          2.43,
+          2.33,
+          2.39
+        ],
+        "cold_ms": 598.9
+      },
+      "recall_at_10": {
+        "capped": 0.5,
+        "raw": 0.5,
+        "hits": 1
+      },
+      "recall_at_50": {
+        "capped": 0.5,
+        "raw": 0.5,
+        "hits": 1
+      },
+      "recall_at_100": {
+        "capped": 0.5,
+        "raw": 0.5,
+        "hits": 1
+      },
+      "precision_at_10": 0.1,
+      "ndcg_at_10": 0.6131471927654584,
+      "gold_hits_by_lang": {
+        "zh": 1
+      },
+      "retrieved_top_20": [
+        "res-447",
+        "res-1241",
+        "res-906",
+        "res-1924",
+        "res-1579",
+        "res-66",
+        "res-1151",
+        "res-753",
+        "res-28",
+        "res-680",
+        "res-1319",
+        "res-480",
+        "res-442",
+        "res-235",
+        "res-14",
+        "res-573",
+        "res-16",
+        "res-1134",
+        "res-1938",
+        "res-41"
+      ]
+    },
+    {
+      "system": "rrf",
+      "jd_id": "jd-en-backend-typo",
+      "jd_lang": "en",
+      "jd_title": "Senior Backend Engineer (typo probe)",
+      "gold_size": 1,
+      "runs": 5,
+      "latency_ms": {
+        "p50": 2.22,
+        "p95": 2.29,
+        "all": [
+          2.31,
+          2.22,
+          2.22,
+          2.13,
+          1.95
+        ],
+        "cold_ms": 4343.74
+      },
+      "recall_at_10": {
+        "capped": 0,
+        "raw": 0,
+        "hits": 0
+      },
+      "recall_at_50": {
+        "capped": 1,
+        "raw": 1,
+        "hits": 1
+      },
+      "recall_at_100": {
+        "capped": 1,
+        "raw": 1,
+        "hits": 1
+      },
+      "precision_at_10": 0,
+      "ndcg_at_10": 0,
+      "gold_hits_by_lang": {
+        "en": 1
+      },
+      "retrieved_top_20": [
+        "res-512",
+        "res-933",
+        "res-876",
+        "res-922",
+        "res-1550",
+        "res-1464",
+        "res-923",
+        "res-946",
+        "res-1880",
+        "res-1856",
+        "res-1684",
+        "res-830",
+        "res-92",
+        "res-353",
+        "res-1334",
+        "res-1497",
+        "res-645",
+        "res-1735",
+        "res-556",
+        "res-1482"
+      ]
+    }
+  ]
+}
