@@ -39,6 +39,7 @@ import { fileURLToPath } from 'node:url';
 import { generateCorpus, writeGold, DEFAULT_SEED } from './jd-corpus.mjs';
 import { JD_QUERIES } from './jd-queries.mjs';
 import { recallAtK, precisionAtK, ndcgAtK, percentile } from './lib/jd-metrics.mjs';
+import { goldMatchesQueries } from './lib/jd-gold-cache.mjs';
 import { JsonlClient } from './lib/jd-ipc.mjs';
 import { chooseDrive } from '../../scripts/build/pick-build-cache-root.mjs';
 
@@ -218,9 +219,20 @@ async function prepare({ count, seed, corpusDir }) {
   const fresh = manifest && manifest.count === count && manifest.seed === seed
     && existsSync(resolve(corpusDir, 'resumes.jsonl'))
     && existsSync(resolve(corpusDir, 'meta.jsonl'));
-  if (fresh && existsSync(goldPath)) {
+  let cachedGold = null;
+  if (existsSync(goldPath)) {
+    try {
+      cachedGold = JSON.parse(readFileSync(goldPath, 'utf8'));
+    } catch {
+      cachedGold = null;
+    }
+  }
+  if (fresh && goldMatchesQueries(cachedGold, JD_QUERIES)) {
     console.log(`[jd-bench] reusing corpus at ${corpusDir} (count=${count}, seed=${seed})`);
     return;
+  }
+  if (fresh && cachedGold) {
+    console.log('[jd-bench] cached gold.json does not cover the current JD_QUERIES ids -- recomputing gold labels (corpus itself is reused)');
   }
   if (!fresh) {
     console.log(`[jd-bench] generating corpus count=${count} seed=${seed} -> ${corpusDir}`);

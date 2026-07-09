@@ -51,6 +51,30 @@ export const JD_QUERIES = [
       + '開発も担当していただきます。ユーザー体験を重視し、デザイナーと密に連携できる方を'
       + '求めています。モバイルアプリ開発の実務経験3年以上の方を歓迎します。',
   },
+  {
+    // TYPESENSE-ADAPT-6: same gold predicate as jd-en-backend (reused
+    // verbatim, no new corpus/gold-set generation needed) but with two
+    // deliberate skill-token typos in queryText -- "kubernetess" (extra
+    // trailing letter) and "postgressql" (extra letter) -- to exercise the
+    // typo_sidecar.rs bounded edit-distance expansion tier against the real
+    // 1M-row corpus. Both misspelled tokens are 10 characters (>= the
+    // default query.typo.min_len_2 = 7), so each is within the 2-typo
+    // budget the sidecar allows for long tokens. If query.typo.enabled is
+    // false, this JD's raw-keyword recall should collapse close to zero
+    // (the correctly-spelled tokens never appear in queryText at all); if
+    // true, the sidecar should recover matches comparable to jd-en-backend.
+    id: 'jd-en-backend-typo',
+    lang: 'en',
+    title: 'Senior Backend Engineer (typo probe)',
+    area: 'backend',
+    requiredSkills: ['skill:rust', 'skill:postgresql', 'skill:kubernetes', 'skill:grpc'],
+    minYears: 5,
+    queryText: 'We are hiring a Senior Backend Engineer to own our core platform services. '
+      + 'You will design and operate distributed systems written in Rust, expose gRPC APIs to '
+      + 'internal teams, and run everything on Kubernetess with Postgressql as the system of '
+      + 'record. At least 5 years of professional backend experience is required, and you '
+      + 'should be comfortable debugging production incidents end to end.',
+  },
 ];
 
 export default JD_QUERIES;
