@@ -41,6 +41,7 @@ import { JD_QUERIES } from './jd-queries.mjs';
 import { recallAtK, precisionAtK, ndcgAtK, percentile } from './lib/jd-metrics.mjs';
 import { goldMatchesQueries } from './lib/jd-gold-cache.mjs';
 import { JsonlClient } from './lib/jd-ipc.mjs';
+import { warmupThenMeasure } from './lib/jd-warmup.mjs';
 import { chooseDrive } from '../../scripts/build/pick-build-cache-root.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -364,21 +365,24 @@ async function runQueries(client, { systems, topK, gold }) {
   for (const system of systems) {
     for (const jd of JD_QUERIES) {
       const goldIds = new Set(gold.gold[jd.id] ?? []);
-      const latencies = [];
-      let lastRetrieved = [];
-      for (let runIdx = 0; runIdx < QUERY_RUNS; runIdx += 1) {
-        const start = performance.now();
+
+      // JD-MILLION-WARMP50-1: one untimed warm-up request primes caches/plans
+      // before the timed runs so latency_ms.p50/p95 are genuinely warm (see
+      // benchmark/scripts/lib/jd-warmup.mjs for why the first-of-N sample was
+      // a methodology mismatch). The warm-up's own latency is preserved as
+      // latency_ms.cold_ms for auditability, not silently dropped.
+      const sendOnce = async () => {
         const response = await client.send({
           op: 'search',
           query: jd.queryText,
           mode: system,
           limit: topK,
         });
-        latencies.push(performance.now() - start);
-        lastRetrieved = (response.results ?? []).map(hit => hit.session_id).filter(Boolean);
-      }
+        return (response.results ?? []).map(hit => hit.session_id).filter(Boolean);
+      };
+      const { coldMs, latencies, lastResult: lastRetrieved } = await warmupThenMeasure(sendOnce, QUERY_RUNS);
 
-      // Accuracy from the LAST run (warm store, stable caches).
+      // Accuracy from the LAST timed run (warm store, stable caches).
       const r10 = recallAtK(lastRetrieved, goldIds, 10);
       const r50 = recallAtK(lastRetrieved, goldIds, 50);
       const r100 = recallAtK(lastRetrieved, goldIds, 100);
@@ -400,6 +404,7 @@ async function runQueries(client, { systems, topK, gold }) {
           p50: Number(percentile(latencies, 50).toFixed(2)),
           p95: Number(percentile(latencies, 95).toFixed(2)),
           all: latencies.map(v => Number(v.toFixed(2))),
+          cold_ms: Number(coldMs.toFixed(2)),
         },
         recall_at_10: { capped: r10.capped, raw: r10.raw, hits: r10.hits },
         recall_at_50: { capped: r50.capped, raw: r50.raw, hits: r50.hits },
@@ -412,7 +417,8 @@ async function runQueries(client, { systems, topK, gold }) {
       const r = results[results.length - 1];
       console.log(`[jd-bench] ${system} ${jd.id}: R@10=${pct(r.recall_at_10.capped)} `
         + `R@100=${pct(r.recall_at_100.capped)} P@10=${pct(r.precision_at_10)} `
-        + `NDCG@10=${pct(r.ndcg_at_10)} p50=${r.latency_ms.p50}ms p95=${r.latency_ms.p95}ms`);
+        + `NDCG@10=${pct(r.ndcg_at_10)} p50=${r.latency_ms.p50}ms p95=${r.latency_ms.p95}ms `
+        + `cold=${r.latency_ms.cold_ms}ms`);
     }
   }
   return results;
@@ -449,7 +455,11 @@ function markdownReport(report) {
   w('  10 job areas, canonical skill IDs with Latin-script tech tokens in every language.');
   w('- Gold predicate per JD: `area equal AND >= 2 requiredSkills present AND years >= minYears`.');
   w('- Ingest through the `longmemeval-ipc` JSONL shim (same MemoryStore code path production uses).');
-  w('- Each JD query runs 5x per system; latency is p50/p95 over the 5 runs; accuracy from the LAST run.');
+  w('- Each JD query issues one untimed warm-up request (discarded, primes caches/plans) then');
+  w('  5 timed runs per system; latency_ms.p50/p95 are computed over ONLY those 5 warm timed runs');
+  w('  (JD-MILLION-WARMP50-1); the warm-up\'s own latency is preserved separately as');
+  w('  `latency_ms.cold_ms` so the cold-start cost stays visible/auditable. Accuracy is from the');
+  w('  LAST timed run.');
   w('- Recall@K is reported in two labelled forms: **capped** = hits / min(K, |gold|)');
   w('  (1.0 achievable when |gold| > K) and **raw** = hits / |gold| (classic recall,');
   w('  bounded by K/|gold| at this gold density). NDCG@10 uses binary relevance.');
@@ -487,15 +497,15 @@ function markdownReport(report) {
     w('');
     w(`### system: ${system}`);
     w('');
-    w('| JD | Lang | Gold | R@10 (capped/raw) | R@50 | R@100 | P@10 | NDCG@10 | p50 | p95 |');
-    w('|---|---|---:|---|---|---|---:|---:|---:|---:|');
+    w('| JD | Lang | Gold | R@10 (capped/raw) | R@50 | R@100 | P@10 | NDCG@10 | p50 (warm) | p95 (warm) | cold (warm-up) |');
+    w('|---|---|---:|---|---|---|---:|---:|---:|---:|---:|');
     for (const row of report.results.filter(r => r.system === system)) {
       w(`| ${row.jd_id} | ${row.jd_lang} | ${row.gold_size} `
         + `| ${pct(row.recall_at_10.capped)} / ${pct(row.recall_at_10.raw)} `
         + `| ${pct(row.recall_at_50.capped)} / ${pct(row.recall_at_50.raw)} `
         + `| ${pct(row.recall_at_100.capped)} / ${pct(row.recall_at_100.raw)} `
         + `| ${pct(row.precision_at_10)} | ${pct(row.ndcg_at_10)} `
-        + `| ${row.latency_ms.p50}ms | ${row.latency_ms.p95}ms |`);
+        + `| ${row.latency_ms.p50}ms | ${row.latency_ms.p95}ms | ${row.latency_ms.cold_ms}ms |`);
     }
   }
   w('');
