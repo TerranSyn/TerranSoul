@@ -437,7 +437,14 @@ verify results: `rules/completion-log.md` →
     in `rules/milestones.md`, explicitly owner-gated per the
     `WIRE-CLI-PARITY-GAP-3` precedent (an unauthorized bypass of a
     deliberate safety gate was correctly reverted earlier this session; no
-    bypass has been implemented here either).
+    bypass has been implemented here either). **Empirically reproduced,
+    not just statically inferred:** once `terransoul-cli` finished building
+    (`d2e63c11`), a live smoke test — `--agent-task "say hello, make no
+    edits" --grant-dir <isolated scratch dir>` against a fresh
+    `TERRANSOUL_HEADLESS_DATA_DIR` — exited 1 with `agent-task denied:
+    action gated by earned autonomy: tool \`agentic_cli_edit\` is in the
+    \`code_execute\` category, whose trust (0.67) is below the earned
+    threshold (0.80)`, the exact predicted deny, through the real binary.
 
 **There is therefore still no v2 number to report from either rewire.** Per
 this repo's never-silently-overwrite convention, the original **59.62
@@ -447,7 +454,7 @@ blocked on `WIRE-CLI-PARITY-GAP-6`'s owner decision — neither deleted nor
 replaced.
 
 **What remains to close this out (not claimed done):**
-1. Finish building `terransoul-cli` [in progress 2026-07-10].
+1. Done — `terransoul-cli` built (`d2e63c11`), deny reproduced live.
 2. Done — confirmed above, filed as `WIRE-CLI-PARITY-GAP-6`, owner decision
    pending before any re-run can produce a non-trivially-denied result.
 3. Add the missing `--strict-mcp-config --mcp-config '{"mcpServers":{}}'`
