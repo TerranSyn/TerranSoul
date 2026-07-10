@@ -26,15 +26,37 @@
 - **Graph RAG lineage:** a "deeply modified" fork of
   [LightRAG](https://github.com/HKUDS/LightRAG) (Guo, Xia, Yu, Ao, Huang,
   *"LightRAG: Simple and Fast Retrieval-Augmented Generation,"*
-  [arXiv:2410.05779](https://arxiv.org/abs/2410.05779), MIT license), with
-  ApeRAG's own additions being entity normalization/merging for cleaner
-  graphs, plus production concurrency (Celery/Prefect distributed task
-  queues) and stateless operation. TerranSoul's own GraphRAG lineage is
-  different: hierarchical community detection adopted from
-  `microsoft/graphrag` (`docs/brain-advanced-design.md`, chunks
-  `GRAPHRAG-1a/1b/1c`, 2026-05-16) — same *category* of technique
-  (entity/relationship graph over a document corpus), different upstream
-  project, not a shared codebase.
+  [arXiv:2410.05779](https://arxiv.org/abs/2410.05779), MIT license).
+  Read directly against source (`aperag/graph/lightrag/`, shallow-cloned
+  2026-07-10 — not just the README), ApeRAG's own
+  `CHANGELOG.md` documents its real contribution as a **stateless-architecture
+  refactor for distributed workers**, not a retrieval-quality change: (1)
+  data isolation moved from string-prefix concatenation (`namespace_prefix`)
+  to a first-class `workspace` field on every storage layer; (2) the
+  monolithic `ainsert` was split into independent stateless calls
+  (`ainsert_and_chunk_document` / `aprocess_graph_indexing` /
+  `adelete_by_doc_id`) so a Celery/Prefect worker can pick up any stage; (3)
+  `shared_storage.py`'s global in-process locks and the `pipeline_status`
+  busy-mutex (which serialized all ingestion to one job at a time) were
+  deleted outright, replaced by a `concurrent_control` module
+  (`ThreadingLock` + `asyncio.to_thread`) and worker-level synchronous
+  PostgreSQL/Neo4j connection pools (`postgres_sync_impl.py`,
+  `neo4j_sync_impl.py`) built for Celery's `--pool=solo`/`--pool=threads`
+  workers, which don't share an asyncio event loop with the caller.
+  File-based and experimental storage backends (NetworkX, JSON KV, TiDB,
+  Apache AGE) were deleted, keeping only PostgreSQL/Neo4j/Redis/Qdrant. One
+  claim checked and NOT kept in this doc: the codebase does define an
+  `amerge_entities` function (`utils_graph.py`) for manual entity merging,
+  but it has zero call sites anywhere else in the repository — it is
+  unused, not a live product feature, so it is not cited here as an ApeRAG
+  differentiator. TerranSoul's own GraphRAG lineage is different:
+  hierarchical community detection adopted from `microsoft/graphrag`
+  (`docs/brain-advanced-design.md`, chunks `GRAPHRAG-1a/1b/1c`,
+  2026-05-16) — same *category* of technique (entity/relationship graph
+  over a document corpus), different upstream project, not a shared
+  codebase, and TerranSoul's single-process embedded design has no
+  distributed-worker problem to solve in the first place (no Celery, no
+  separate workers, no cross-process global-state hazard).
 - **Storage:** five separate backing services — PostgreSQL, Qdrant (vector),
   Elasticsearch (full-text), Neo4j (graph), and MinIO (object storage) —
   orchestrated via Docker Compose for local use or a Helm chart (with
@@ -89,4 +111,8 @@ knowledge base over MCP, rather than only through their own first-party UI,
 was the right integration surface for 2026-era AI assistants.
 
 Source: [github.com/apecloud/ApeRAG](https://github.com/apecloud/ApeRAG),
-README and `docs/en-US/design/architecture.md`, accessed 2026-07-10.
+README and `docs/en-US/design/architecture.md` (accessed 2026-07-10), plus a
+direct shallow clone read of `aperag/graph/lightrag/CHANGELOG.md` and its
+`operate.py`/`utils_graph.py`/`kg/*_sync_impl.py` source for the
+stateless-refactor paragraph above (same clone-and-read standard applied to
+`A-EVOLVE-COMPARISON.md`, not a README-only pass).

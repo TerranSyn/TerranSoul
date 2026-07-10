@@ -88,7 +88,7 @@ source URL + access date).
 | Model | Score | Benchmark (what the score is on) | Source |
 |---|---|---|---|
 | **Claude Opus 4.8 + TerranSoul** | **73.68 %** (gemma4) · **68.26 %** (Opus 4.8 vision) | **Boeing-747** primitives — autonomous self-improve loop (v2 harness) | this harness (local) ● |
-| **Claude Fable 5 + TerranSoul** | **59.62 %** (gemma4) · **49.48 %** (Fable-5 vision) | **Boeing-747** primitives — autonomous self-improve loop, TerranSoul's own agent machinery (v2 harness) | this harness (local) ● |
+| **Claude Fable 5 + TerranSoul** ² ³ | **59.62 %** (gemma4) · **49.48 %** (Fable-5 vision) | **Boeing-747** primitives — autonomous self-improve loop, TerranSoul's own agent machinery (v2 harness) | this harness (local) ● |
 | Claude Fable 5 | 88.0 % | Terminal-Bench 2.1 (agentic coding, in a loop) | aggregate ○ |
 | GPT-5.5 (Codex CLI) | 83.4 % | Terminal-Bench 2.1 | aggregate ○ |
 | Claude Sonnet 5 | 80.4 % | Terminal-Bench 2.1 | aggregate ○ |
@@ -99,6 +99,25 @@ source URL + access date).
 | xAI Grok 4-Fast (+ Poetiq) | 54 % | ARC-AGI-2 (verified) | ARC Prize ● |
 | Human senior engineers | 89 – 96 % | Every "Senior-Engineer" bench | Every ● |
 | _rig floor — fixed hand-authored stub (**not a model**)_ | 28.25 % | Boeing-747 — harness sanity check | this harness ● |
+
+² **Harness-bug flag (2026-07-10) — see § Harness fix.** 4 of the 10 iterations
+behind this number (7–10) were later root-caused as a harness retry/signal bug
+(a fixed 600,000 ms actor timeout re-scored the same unchanged `plane.js` four
+times and the loop counted those repeats as genuine non-improving attempts,
+manufacturing the apparent `stall`). The number is **kept, not deleted**
+(never-silently-overwrite convention), now explicitly labeled bug-affected; a
+harness fix has shipped and a corrected re-run (`terransoul-fable5-v2`) was
+started but has **not completed** as of this writing — there is no superseding
+number yet.
+
+³ **CLI-routed actor rewire (2026-07-10) — see § CLI-routed actor.** The
+Boeing-747 actor was further rewired off the bare-CLI-adjacent, tool-granted
+`claude` shell-out onto TerranSoul's own product CLI
+(`terransoul-cli --agent-task`, gated through the `action_trust`
+earned-autonomy ledger). A second corrected-re-run attempt on this new,
+product-native path was started but is **also not complete** — no superseding
+number exists from either attempt; the 59.62 / 49.48 figures remain the last
+published measurement for this track.
 
 **● official / first-party · ○ informal aggregate.** All scores are shown as **%**,
 but the **Score column deliberately mixes benchmarks** — each row names its own test,
@@ -259,6 +278,189 @@ are sha256-identical before/after this run; `judge/judge.mjs` and every
 `terransoul-opus48*` result/candidate are untouched (`git diff` empty).
 Reproduce: `npm run bench:747:loop:terransoul`.
 
+## Harness fix (2026-07-10): the iterations 7–10 "stall" was a retry/signal bug, not a capability ceiling
+
+**Root cause, confirmed (not just suspected).** The "Honest caveat" above
+correctly flagged the iterations-7–10 timeouts as suspicious but stopped short
+of a full root cause. Investigation confirmed it precisely:
+`candidates/terransoul-fable5/plane.js`'s sha256 is **byte-identical across
+iterations 6 through 10** — the actor's edit call hit the flat 600,000 ms
+`execFile` timeout and was killed before returning on all four of iterations
+7, 8, 9, 10, so **zero edits were ever applied** in that span. But
+`loop-runner-terransoul.mjs` still re-rendered and re-judged that unchanged
+candidate on every one of those four iterations and fed the resulting
+(necessarily identical) scores into `evaluateStopConditions` as four ordinary
+non-improving attempts. The reported gemma4 `stall` (3 consecutive
+non-improving iterations) was therefore **a measurement artifact of counting
+infra timeouts as attempts** — not evidence the actor exhausted its ideas at
+59.62 / 49.48. This is the general failure mode a fixed timeout + naive
+iteration counting can introduce into *any* self-improve loop (see the
+generalized lesson synced to `mcp-data/shared/memory-seed.sql` below).
+
+**Four fixes shipped**, all pure Node/JS under `benchmark/boeing747/`, no
+cargo touched, all 8 frozen artifacts (`rubric.json`, `lib/cameras.mjs`,
+`lib/scoring.mjs`, `lib/stop-conditions.mjs`, `lib/contract.mjs`,
+`lib/judge-parse.mjs`, `rig/render-rig.mjs`, `rig/rig.html`) plus
+`judge/judge.mjs` sha256-verified unchanged before/after:
+
+1. **Retry-with-backoff** (`lib/actor-retry.mjs` new, `loop-runner-terransoul.mjs`) —
+   retries the *same* actor-edit call (same already-rendered shots, same
+   already-computed judge scores — no re-render/re-judge per retry) with
+   `attempt_timeout_ms = base_timeout_ms × (attempt+1)` capped at
+   `timeout_cap_ms`; attempt 0 keeps the unchanged 600,000 ms budget. Retry
+   count/timeouts are read from a documented `ACTOR_RETRY_CONFIG_JSON` row in
+   `mcp-data/shared/memory-seed.sql` (mirroring how `judge.mjs::loadRubric()`
+   reads `rubric.json`), fail-open to named defaults, overridable via
+   `--max-actor-retries`.
+2. **Corrected stop-condition signal** — `lib/stop-conditions.mjs` stays
+   **frozen, untouched**; every iteration record now carries an
+   `actor_status` field, and any iteration whose status is the new terminal
+   `actor_exhausted_retries` is **excluded** before the array ever reaches
+   `evaluateStopConditions`, so stall/threshold/budget counters only ever see
+   genuine attempts. A separate `actor_exhausted_retries_cap` reason fires
+   only when a trailing streak of fully-exhausted iterations reaches a
+   configurable cap, so a single infra hiccup can no longer masquerade as
+   `stall`, while a genuinely broken CLI still can't spin the loop forever.
+3. **Streaming observability** (`lib/actor-stream.mjs` new, `actor/actor-claude.mjs`) —
+   switched from `--output-format json` to `--output-format stream-json
+   --verbose` (mirroring `crates/brain/src/claude_cli.rs`'s `chat_stream`);
+   partial stdout from a timeout-killed call now yields a real tool-call
+   tally / event summary instead of a black box.
+4. **Cross-iteration self-learning** (`lib/mcp-client.mjs`, `lib/self-learning.mjs`
+   new, both generic — no Boeing-specific strings in the function bodies) —
+   `brain_search` is called before each actor call to inject a "prior
+   attempts on this benchmark" section into the actor's prompt, and
+   `brain_ingest_lesson` records the outcome once the next iteration's judge
+   scores make the edit's effect observable. Fail-open throughout; an
+   unreachable MCP tray never blocks or crashes the loop.
+
+**Fix verification: PASSED.** `npx vitest run benchmark/boeing747/lib` → 8
+test files, 136 tests, all green (5 pre-existing frozen-file suites unaffected
++ 3 new: `actor-retry.test.mjs`, `actor-stream.test.mjs`,
+`self-learning.test.mjs`). The `actor-retry.test.mjs` regression suite
+specifically reproduces the historical bug shape (3 genuine non-improving
+iterations + 4 straight `actor_exhausted_retries` iterations) and proves the
+stall streak advances only on the genuine ones. Durable lessons recorded:
+`LESSON (BOEING-747-FAITHFUL-ACTOR-1, 2026-07-10)` and
+`LESSON (BOEING-747-ACTOR-RETRY-1, 2026-07-10)` in
+`mcp-data/shared/memory-seed.sql`.
+
+**Corrected re-run status: STARTED, NOT COMPLETE.** A `terransoul-fable5-v2`
+run was launched on the fixed harness, seeded from the v1 `terransoul-fable5`
+run's final geometry (`candidates/terransoul-fable5-v2/plane.js`, sha256
+`ad705ff5…`). As of this writing:
+- Iteration 1's nine views rendered successfully
+  (`shots/terransoul-fable5-v2-iter-1-mrebeyti/`, 2026-07-10T02:27:17Z).
+- **No `results/terransoul-fable5-v2/iter-*.json` or
+  `results/terransoul-fable5-v2-claude/iter-*.json` was ever written**, and no
+  stop condition fired — the run did not progress past iteration 1's render
+  step to a recorded judge/actor result, and no loop process was found
+  running when this status was written.
+- **There is therefore no v2 number to report.** Per this repo's
+  never-silently-overwrite convention, the original **59.62 gemma4 / 49.48
+  Fable-5-vision** figures (§ Fable-5 + TerranSoul measurement, above) remain
+  published as the last **completed** measurement for this track — they are
+  **not deleted or replaced** — but are now explicitly labeled **bug-affected**
+  (4 of the 10 reported iterations were measurement-artifact repeats of
+  unchanged geometry, not genuine attempts) rather than presented as a clean
+  ceiling.
+- **What remains to close this out:** re-run (or resume)
+  `npm run bench:747:loop:terransoul` against the `terransoul-fable5-v2`
+  candidate/results directories to completion (a stop condition — threshold,
+  stall, or 12-iteration budget — actually firing on the corrected harness),
+  then replace this status paragraph with the completed v2 score, iteration
+  table, and stop-condition reason, following the same honest-decomposition
+  style used for the Opus-4.8 v1→v2 camera-spec re-baseline earlier in this
+  doc. Until that happens, this section stays open/incomplete — it is not
+  claimed as done.
+
+## CLI-routed actor (2026-07-10): the Boeing-747 actor now drives TerranSoul's own product CLI, not a parallel script — second re-run attempt also incomplete
+
+**What changed and why.** § Harness fix (above) hardened the actor's
+retry/stop-condition logic, but the actor itself still spawned the **bare
+`claude` binary directly** (`--allowedTools "Read Edit" --add-dir ...`) — a
+working but bare-CLI-adjacent, tool-granted script that bypassed every
+safety/observability mechanism the shipped TerranSoul product actually has
+(no `action_trust` gating, no product telemetry, no config isolation). This
+pass closes that gap. A new, generic agentic-edit capability was shipped in
+the product itself — `terransoul-cli --agent-task <prompt> --grant-dir
+<dir>...` (`crates/brain/src/agentic_cli.rs`'s `AgenticCliClient`,
+`src-tauri/src/cli.rs`) — gated end-to-end through the **same**
+`action_trust` earned-autonomy ledger `WIRE-CLI-PARITY-GAP-3` already wired
+for `SelfImproveEngine`'s own apply/test actions (`ActionCategory::
+CodeExecute`; a deny returns before the subprocess is even constructed). The
+Boeing-747 actor (`actor/actor-claude.mjs`) was then rewired to call this
+new CLI subcommand instead of shelling out to `claude` itself, plus a
+Fable-5 isolated-config bootstrap so the actor's model choice is resolved
+the same way `--self-improve` resolves its own. Full technical detail and
+verify results: `rules/completion-log.md` →
+`BOEING-TERRANSOUL-CLI-ACTOR-1`. Durable pattern lesson:
+`mcp-data/shared/memory-seed.sql` → `LESSON (BOEING-TERRANSOUL-CLI-ACTOR-1,
+2026-07-10)`.
+
+**Verify status, honestly:**
+- **CLI build verify: PASS** — `cargo clippy --workspace --lib --tests
+  --features postgres -- -D warnings` clean; `cargo test --workspace --lib
+  --features postgres` 1983 passed / 1 pre-existing documented flake / 8
+  ignored.
+- **Rewire verify: PASS** — `npx vitest run benchmark/boeing747/lib
+  benchmark/boeing747/actor` → 153/153 tests passed; full repo suite 3696
+  passed; all 9 frozen artifacts sha256-unchanged.
+- **Corrected re-run verify: FAIL — did not complete, less far along than
+  the § Harness fix attempt above.** As of this writing:
+  - **No `terransoul-cli` binary exists** in either `target/release` or
+    `target/debug` — the build was launched but never finished/persisted
+    before the session ended, so the loop was never actually invoked
+    through the new CLI path.
+  - `results/terransoul-fable5-v2/` and `results/terransoul-fable5-v2-claude/`
+    remain **completely empty** (zero `iter-*.json`), same as before this
+    attempt. The `shots/terransoul-fable5-v2-iter-1-mrebeyti/` render present
+    in the working tree **predates** this attempt (it is a product of the §
+    Harness fix rerun, not of `terransoul-cli --agent-task`).
+  - `candidates/terransoul-fable5-v2/plane.js` is confirmed unchanged
+    (sha256 `ad705ff5…`, same as before) — consistent with zero actor-edit
+    calls having executed via this path.
+  - **The flagged risk is now CONFIRMED, not just likely — and it is
+    architectural, not benchmark-specific.** Re-verified 2026-07-10 two
+    ways: (a) the production `memory.db`'s `action_trust_ledger` table
+    doesn't exist yet at all (never migrated — this machine has never
+    launched the desktop app since the table was added), confirming true
+    cold start, not merely low confidence; (b) a full-repo grep of every
+    `record_outcome(ActionCategory::CodeExecute, …)` call site shows all
+    production sites (`engine.rs` apply/test, `cli.rs` agent-task) sit
+    strictly after their own gate check in the same function — a deny
+    short-circuits before the outcome is ever recorded, so the ledger can
+    never receive its first success through any autonomous path. This
+    means `terransoul-cli --self-improve` is equally affected on a fresh
+    install — this is not a Boeing-747 quirk, it's the self-improve
+    feature's cold-start usability. Filed as **`WIRE-CLI-PARITY-GAP-6`**
+    in `rules/milestones.md`, explicitly owner-gated per the
+    `WIRE-CLI-PARITY-GAP-3` precedent (an unauthorized bypass of a
+    deliberate safety gate was correctly reverted earlier this session; no
+    bypass has been implemented here either).
+
+**There is therefore still no v2 number to report from either rewire.** Per
+this repo's never-silently-overwrite convention, the original **59.62
+gemma4 / 49.48 Fable-5-vision** figures remain the last **completed**
+measurement for this track, now flagged bug-affected (§ Harness fix) *and*
+blocked on `WIRE-CLI-PARITY-GAP-6`'s owner decision — neither deleted nor
+replaced.
+
+**What remains to close this out (not claimed done):**
+1. Finish building `terransoul-cli` [in progress 2026-07-10].
+2. Done — confirmed above, filed as `WIRE-CLI-PARITY-GAP-6`, owner decision
+   pending before any re-run can produce a non-trivially-denied result.
+3. Add the missing `--strict-mcp-config --mcp-config '{"mcpServers":{}}'`
+   isolation to `agentic_cli.rs::build_command` (flagged in
+   `rules/completion-log.md`, not yet fixed) before relying on this path
+   near any `.mcp.json`-bearing directory.
+4. Once 1–3 are resolved, run `npm run bench:747:loop:terransoul` against
+   `terransoul-fable5-v2`/`terransoul-fable5-v2-claude` to actual completion,
+   then publish the v2 score here, superseding both this section and §
+   Harness fix's "started, not complete" status, following the same
+   honest-decomposition style used for the Opus-4.8 v1→v2 camera-spec
+   re-baseline.
+
 ## How to read the comparison
 
 - **Single-shot** — one prompt, no iteration (`run-baselines.mjs`). This is how a
@@ -279,7 +481,7 @@ Reproduce: `npm run bench:747:loop:terransoul`.
 |---|---|---|---|---|
 | **Claude Opus 4.8 + TerranSoul** (v2 harness) | self-improve loop (Opus actor inside TerranSoul) | **73.68** gemma4 · **68.26** Opus vision | 9+ (both judge tracks) | measured — `results/terransoul-opus48*/` |
 | _(v1 pre-fix rig — retained floor)_ | same, aliased/thumbnail render | 66.07 gemma4 · 63.5 Opus vision | — | prior record; **not comparable to v2** |
-| **Claude Fable 5 + TerranSoul** (v2 harness, TerranSoul-agent-driven actor)¹ | self-improve loop (Fable-5 actor via TerranSoul's own Read+Edit-restricted CLI agent, real vision tool access) | **59.62** gemma4 · **49.48** Fable-5 vision | 10 of 12-budget (gemma4 `stall`) | measured — `results/terransoul-fable5*/` |
+| **Claude Fable 5 + TerranSoul** (v2 harness, TerranSoul-agent-driven actor)¹ ² ³ | self-improve loop (Fable-5 actor via TerranSoul's own Read+Edit-restricted CLI agent, real vision tool access) | **59.62** gemma4 · **49.48** Fable-5 vision — **bug-affected, see § Harness fix; re-run also pending via § CLI-routed actor** | 10 of 12-budget (gemma4 `stall`, 4 of 10 later root-caused as a timeout-retry artifact) | measured — `results/terransoul-fable5*/`; two corrected re-run attempts (`results/terransoul-fable5-v2*/`), **both incomplete** |
 | Stub (rig validation) | fixed source | 28.25 | — | `results/stub-validation.json` (pre-render-fix; methodology check only) |
 
 ¹ Different actor, different driving mechanism (TerranSoul's own agent loop vs.
@@ -287,6 +489,19 @@ the Opus-4.8 row's bare-CLI shell-out), and a different vision judge model —
 **not ranked against the Opus-4.8 row above**; see § Fable-5 + TerranSoul
 measurement for the full honest caveats (notably the actor-timeout stall in
 iterations 7–10).
+
+² **The `stall` was root-caused as a harness bug, not a demonstrated
+capability ceiling** — see § Harness fix (2026-07-10) for the fix and the
+corrected re-run's status. The 59.62 / 49.48 figures are the last **completed**
+measurement for this track and remain published (never silently overwritten),
+now explicitly flagged bug-affected rather than presented as a clean ceiling.
+
+³ **The actor was further rewired onto TerranSoul's own product CLI**
+(`terransoul-cli --agent-task`, `action_trust`-gated) in place of the
+bare-CLI-adjacent, tool-granted script the ¹/² measurement and its first
+re-run attempt used — see § CLI-routed actor (2026-07-10). A second corrected
+re-run attempt on this new path was started but is **also not complete**; no
+number in this row has changed as a result of either rewire.
 
 **The loop trajectory (measured).** Judged by Claude Opus 4.8 vision, the loop climbed
 **37.9 → 60.4 → 61.0 → 62.6 → 63.7 → 64.4 → 66.3 (peak) → 63.5 (median-of-3)** as the
