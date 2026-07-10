@@ -1,0 +1,91 @@
+{
+  "actor": "terransoul-fable5-v2-claude",
+  "judge_track": "claude-fable-5-vision",
+  "iter": 1,
+  "run_id": "terransoul-fable5-v2-iter-1-mreyb73w",
+  "plane_sha256": "ad705ff58c4cda5174edc449832e94b999e7e9da77d0b174537ddb86d85d31fb",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 42.02,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 3.89,
+      "notes": "Long uniform grey tube with flat cut tail, front hump with cockpit patch present in front quarter. Only two boxy engine blocks near belly, no clear pylons or inlets. Wing is a thin edge-on sliver. No fin surface, just a thin rear spike. Gear is small floating balls: one nose, five clustered mid. Irregular oversized square windows."
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.55,
+      "notes": "Head-on: four dark underwing nacelles with plausible spacing; clear wing dihedral but wings read as thin slabs. Round fuselage disc with dark arc suggesting cockpit; hump indistinct. Vertical fin is a bare thin pole; tailplanes read as small bars. Nose strut plus two main struts visible, fewer than four trucks. No window lines; coherent gray scheme."
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.24,
+      "notes": "Slender tube ~10x diameter with capsule-shaped front hump and cockpit marking. Wings render as wire-thin swept lines with no chord or taper; four boxy nacelles appear to float along them. Tail surfaces are similar thin lines. Dashed window specks along fuselage. Uniform grey scheme; assembly reads disconnected from above."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 2.8,
+      "notes": "Plain gray cylinder with flat disc nose, no taper, no hump. Wings and tail are wire-thin rods, not surfaces. Four small nacelles but one floats above the fuselage; two hang near a thin wing bar. Tiny black spheres suggest floating wheels. Consistent window row is the strongest feature. Coherent but flat gray scheme."
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.53,
+      "notes": "Slender tube with front hump bearing separate upper-deck window row and main-deck window line. Tail end is a blunt flat disc; no tall vertical fin visible, only thin flat plates. Wings are paper-thin swept boards. Four cylindrical nacelles float near wings without clear pylons. Few small detached wheels under body. Coherent gray scheme."
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": null,
+      "notes": ""
+    }
+  ],
+  "weakest_feature": {
+    "id": "empennage",
+    "mean": 2.8,
+    "perCriterion": {
+      "engines_four_underwing": 4.6,
+      "upper_deck_hump": 4.25,
+      "fuselage_proportions": 4.75,
+      "wing_geometry": 3.8,
+      "empennage": 2.8,
+      "landing_gear": 3.75,
+      "window_door_lines": 5.75,
+      "livery_coherence": 5.8,
+      "silhouette_747": 3.4,
+      "craftsmanship": 4
+    }
+  },
+  "critic": {
+    "weakest_feature": "empennage",
+    "fix_suggestion": "Improve 'Empennage (tall vertical stabilizer + horizontal stabilizers)' (mean 2.8/10). Target the 8 anchor: single tall swept vertical stabilizer plus swept horizontal stabilizers at the tail cone, plausible sizes; then the 10 anchor: correct 747 empennage: very tall swept fin, low-mounted swept tailplane pair with dihedral, all tapered and proportioned to the fuselage.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 3.495894,
+  "regressed": false,
+  "best_total_after": 42.02,
+  "created_at": "2026-07-10T13:18:40.765Z",
+  "actor_status": "edited"
+}

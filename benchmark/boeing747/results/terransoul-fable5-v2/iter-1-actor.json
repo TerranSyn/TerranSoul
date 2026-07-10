@@ -1,0 +1,120 @@
+{
+  "model": "claude-fable-5",
+  "effort": "max",
+  "ms": 1060220,
+  "cost_usd": 6.779966999999998,
+  "timeout_ms": 1200000,
+  "observability": {
+    "event_count": 55,
+    "tool_calls": {
+      "Read": 10,
+      "Glob": 2,
+      "Grep": 2,
+      "Bash": 6,
+      "Edit": 1
+    },
+    "total_tool_calls": 21,
+    "text_chunks": 13,
+    "tool_failures": 1,
+    "tool_calls_reported": [
+      {
+        "name": "Read",
+        "count": 10
+      },
+      {
+        "name": "Glob",
+        "count": 2
+      },
+      {
+        "name": "Grep",
+        "count": 2
+      },
+      {
+        "name": "Bash",
+        "count": 6
+      },
+      {
+        "name": "Edit",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "ad705ff58c4cda5174edc449832e94b999e7e9da77d0b174537ddb86d85d31fb",
+  "plane_sha256_after": "bfd12b76b7ec71a74aa8ba76428f5be91058819cfcc36eb978df8c829c3149e4",
+  "changed": true,
+  "claude_result_text": "True vertex extremes are exactly as designed: x −30.6 (stab tip trailing edge, intentionally just past the tail) to 30 (nose), y −5.45 (wheels) to 11.4 (fin tip), z ±27.3 (wingtips). Nothing actually floats past the tail — the earlier −33.4 was only the rig's conservative AABB math, which just adds a little camera margin. The fix is fully verified, so I'm leaving the file in its current state rather than double-editing over the concurrent writer.\n\n**Summary of this iteration's change to plane.js**\n\n**Root cause found (genuine vision + reproduce-first):** Both judges' weakest features had one shared cause. Inspecting the renders myself showed every ExtrudeGeometry part — both wings, the vertical fin, both tailplanes — drawing as hollow wire outlines: hairline wings from the top view, a \"bare pole\" fin in profiles, and nacelles that looked like they floated because there was no visible wing surface to hang from (gemma's weakest: engines_four_underwing 4.56; Claude's weakest: empennage 2.8). A 10-second node repro against the repo's own three r175 proved it: **ExtrudeGeometry in this environment emits side walls but zero cap faces — even for a plain unit square (8 wall triangles, 0 cap triangles)**. The prior iteration's planform math was correct; the faces simply never existed. Box/Cylinder/Capsule parts (fuselage, nacelles, wheels, hump) render solid, which is why only the flying surfaces degraded.\n\n**The geometric edit (one tightly-related set):** all five flying surfaces were rebuilt as solid **4-segment CylinderGeometry frustums** — a flattened diamond cross-section where radiusBottom→radiusTop gives true root-to-tip chord *and* thickness taper — sheared into place with an explicit basis matrix (chord kept parallel to world X, span column carrying sweep + dihedral, right-handed thickness column so faces stay outward). Planform lines are identical to before (root chord 15 → tip 3.5, ~37.5° sweep, span ~55, ~6.9° dihedral; fin root x −19.5..−29.9 → tip 2.8 at y 11.4",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 600208,
+      "actor_error": "terransoul-cli agent-task timed out after 600000ms (7 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 22,
+        "tool_calls": {
+          "Read": 7
+        },
+        "total_tool_calls": 7,
+        "text_chunks": 8,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "edited",
+      "ms": 1060220,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 55,
+        "tool_calls": {
+          "Read": 10,
+          "Glob": 2,
+          "Grep": 2,
+          "Bash": 6,
+          "Edit": 1
+        },
+        "total_tool_calls": 21,
+        "text_chunks": 13,
+        "tool_failures": 1,
+        "tool_calls_reported": [
+          {
+            "name": "Read",
+            "count": 10
+          },
+          {
+            "name": "Glob",
+            "count": 2
+          },
+          {
+            "name": "Grep",
+            "count": 2
+          },
+          {
+            "name": "Bash",
+            "count": 6
+          },
+          {
+            "name": "Edit",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}

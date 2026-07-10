@@ -25,7 +25,26 @@
 // the LOCAL wing height, so profile views show two staggered engines per side
 // instead of one stacked block; wing-pair gear struts shortened to re-embed
 // in the new lower wing underside.
-// Next targets: nose taper, aft tail cone, root-to-tip thickness taper.
+// Iter 8: root-cause fix for wire-thin flight surfaces — the five
+// ExtrudeGeometry surfaces (wings, fin, tailplanes) rendered with their cap
+// faces MISSING in this harness: every planform face was invisible, leaving
+// only the thin extrude walls (wings absent from the top view, fin a bare
+// pole, nacelles seemingly floating — gemma weakest engines_four_underwing
+// 4.56, claude weakest empennage 2.8). All five surfaces are rebuilt as
+// sheared 4-sided CylinderGeometry frustums (diamond airfoil cross-section,
+// chord+thickness taper, identical planforms); pylons deepened so they
+// re-embed through the thinner diamond wing.
+// Iter 9: engines_four_underwing (gemma weakest, 5.67 — "boxy blocks",
+// "floating", "only two visible"; claude notes agree). Root cause: nacelles
+// ~20% undersized and hung so high the outboard pair sat ABOVE the belly
+// line (bottom y=-2.53 vs hull bottom -3), hiding inside the fuselage
+// silhouette in profile so only the dark pylon boxes read. Nacelles resized
+// to the real cowl ratio (r 1.45, len 5.6), dropped to 1.9 below the local
+// underside (inboard bottom -4.33, outboard -3.38 — both clear the belly),
+// inlet disc enlarged, a tapered exhaust plug added, and the pylon deepened
+// into a 3.4x1.8 wedge embedded nacelle-crown-to-wing so the hang gap is
+// visibly bridged.
+// Next targets: nose taper, aft tail cone.
 export function buildPlane(THREE) {
   const group = new THREE.Group();
   const grey = new THREE.MeshStandardMaterial({ color: 0xd8dde3 });
@@ -36,15 +55,43 @@ export function buildPlane(THREE) {
   fuselage.rotation.z = -Math.PI / 2;
   group.add(fuselage);
 
-  // Wings (iter 7): real 747 planform — two swept tapered surfaces built like
-  // the tail stabs (planform drawn chordwise-x / spanwise-y, extruded to
-  // thickness, rolled about X so the span lands on +-Z with the thickness
-  // pointing up). Leading edge swept ~37.5 deg (0.767 aft per unit span),
-  // root chord 15 (LE x=9.5 just aft of the hump fade, TE x=-5.5) tapering to
-  // 3.5 at the tip, semi-span 27.5 -> span ~55 ~ 0.9x the 60-long body,
-  // ~6.9 deg dihedral. Low-mounted: root underside y=-2.3 buried in the lower
-  // lobe (hull half-width there ~1.9) with both roots meeting on the
-  // centerline, so each surface emerges from the belly with no gap.
+  // Lifting-surface builder (iter 8): ONE 4-sided CylinderGeometry frustum
+  // per surface. With radialSegments=4 the cross-section is a diamond whose
+  // vertices sit on local +-X and +-Z, so local X is a sharp-edged chord
+  // (airfoil LE/TE read) and radiusBottom->radiusTop tapers chord AND
+  // thickness root->tip. A manual basis matrix maps local X -> streamwise
+  // chord (1,0,0), local Y -> the swept+dihedraled root->tip span line, and
+  // local Z -> the thickness axis (X cross Y, length = thickness/chord
+  // ratio; that ordering keeps det>0 so faces stay outward). The shear keeps
+  // every cross-section streamwise, so from above the silhouette is exactly
+  // the intended swept tapered trapezoid.
+  const addSurface = (rootX, rootY, rootZ, tipX, tipY, tipZ, rootChord, tipChord, tRatio) => {
+    const root = new THREE.Vector3(rootX, rootY, rootZ);
+    const tip = new THREE.Vector3(tipX, tipY, tipZ);
+    const span = new THREE.Vector3().subVectors(tip, root);
+    const mesh = new THREE.Mesh(
+      new THREE.CylinderGeometry(tipChord / 2, rootChord / 2, span.length(), 4, 1),
+      dark
+    );
+    const chordDir = new THREE.Vector3(1, 0, 0);
+    const spanDir = span.clone().normalize();
+    const thickDir = new THREE.Vector3().crossVectors(chordDir, spanDir).setLength(tRatio);
+    mesh.matrixAutoUpdate = false;
+    mesh.matrix
+      .makeBasis(chordDir, spanDir, thickDir)
+      .setPosition(root.add(tip).multiplyScalar(0.5));
+    group.add(mesh);
+  };
+
+  // Wings: same 747 planform as iter 7 — root chord 15 (LE x=9.5 just aft of
+  // the hump fade, TE x=-5.5) tapering to 3.5 at the tip, LE swept ~37.5 deg,
+  // semi-span 27.5 -> span ~55 ~ 0.9x the 60-long body, ~6.9 deg dihedral.
+  // Thickness = 9% of chord (1.35 root -> 0.32 tip); the mid-chord axis runs
+  // root (2.0, -1.625, +-0.4) -> tip so the root underside stays at y=-2.3
+  // buried in the lower lobe and the local underside keeps tracking
+  // wingUnderY (pylons and the wing-pair gear struts stay embedded). Root
+  // caps sit at z=+-0.4 deep inside the hull; tip caps read as squared
+  // wingtips.
   const WING_DIHEDRAL = 0.12; // ~6.9 deg
   const WING_SWEEP = 0.767; // tan ~37.5 deg — LE aft-shift per unit span
   const WING_ROOT_LE = 9.5;
@@ -53,26 +100,25 @@ export function buildPlane(THREE) {
   const wingLEx = (s) => WING_ROOT_LE - WING_SWEEP * s; // local leading-edge x
   const wingUnderY = (s) => WING_ROOT_Y + Math.sin(WING_DIHEDRAL) * s; // local underside y
   for (const side of [1, -1]) {
-    const wingShape = new THREE.Shape();
-    wingShape.moveTo(WING_ROOT_LE, 0); // root leading edge
-    wingShape.lineTo(wingLEx(WING_SEMISPAN), side * WING_SEMISPAN); // tip LE
-    wingShape.lineTo(wingLEx(WING_SEMISPAN) - 3.5, side * WING_SEMISPAN); // tip TE
-    wingShape.lineTo(-5.5, 0); // root trailing edge
-    wingShape.closePath();
-    const wing = new THREE.Mesh(
-      new THREE.ExtrudeGeometry(wingShape, { depth: 1.0, bevelEnabled: false }),
-      dark
+    addSurface(
+      WING_ROOT_LE - 7.5, WING_ROOT_Y + 0.675, side * 0.4,
+      wingLEx(WING_SEMISPAN) - 1.75, wingUnderY(WING_SEMISPAN) + 0.16,
+      side * WING_SEMISPAN * Math.cos(WING_DIHEDRAL),
+      15, 3.5, 0.09
     );
-    wing.rotation.x = -Math.PI / 2 + side * WING_DIHEDRAL;
-    wing.position.y = WING_ROOT_Y;
-    group.add(wing);
   }
 
-  // Engines: four underslung pylon-mounted nacelles (747 layout), restaggered
-  // along the swept leading edge — inboard pair at 40% semi-span, outboard at
-  // 69% — each hung below the LOCAL wing underside (which rises with the
-  // dihedral) with the inlet poking ~3 ahead of the local leading edge and a
-  // darker open inlet face.
+  // Engines (iter 9): four underslung pylon-mounted nacelles (747 layout) on
+  // the swept leading edge — inboard pair at 40% semi-span, outboard at 69%.
+  // Nacelles sized to the real cowl/fuselage ratio (r 1.45 vs hull r 3) and
+  // dropped 1.9 below the LOCAL wing underside so both staggered engines per
+  // side hang clear below the belly line (y=-3) in profile views; the inlet
+  // lip pokes ~3.5 ahead of the local leading edge with a recessed darker
+  // inlet disc, and a tapered dark exhaust plug closes the aft end. Each
+  // hangs on a deep pylon wedge whose bottom is buried in the nacelle crown
+  // and whose top is buried in the wing's diamond thickness aft of the LE
+  // (top y = under+0.5, below the local top skin at the pylon's aft edge at
+  // both span stations) — the hang gap is visibly bridged, nothing floats.
   const nacelleMat = new THREE.MeshStandardMaterial({ color: 0x9aa3ad });
   const inletMat = new THREE.MeshStandardMaterial({ color: 0x22262c });
   for (const side of [1, -1]) {
@@ -81,20 +127,25 @@ export function buildPlane(THREE) {
       const under = wingUnderY(s);
       const z = side * s * Math.cos(WING_DIHEDRAL);
 
-      const nacelle = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 4.5, 20), nacelleMat);
+      const nacelle = new THREE.Mesh(new THREE.CylinderGeometry(1.45, 1.45, 5.6, 20), nacelleMat);
       nacelle.rotation.z = -Math.PI / 2;
-      nacelle.position.set(le + 0.7, under - 1.35, z);
+      nacelle.position.set(le + 0.7, under - 1.9, z);
       group.add(nacelle);
 
-      const inlet = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 0.3, 20), inletMat);
+      const inlet = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.3, 20), inletMat);
       inlet.rotation.z = -Math.PI / 2;
-      inlet.position.set(le + 2.9, under - 1.35, z);
+      inlet.position.set(le + 3.45, under - 1.9, z);
       group.add(inlet);
 
-      // Pylon spans from just inside the wing (top y = under+0.1) down past
-      // the nacelle crown, so both ends stay embedded — nothing floats.
-      const pylon = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.9, 0.35), dark);
-      pylon.position.set(le - 0.6, under - 0.85, z);
+      // Exhaust plug: tapers rearward (rotation maps geometry top -> +X, so
+      // radiusTop is the forward face butted 0.3 into the nacelle barrel).
+      const exhaust = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 0.55, 1.4, 16), dark);
+      exhaust.rotation.z = -Math.PI / 2;
+      exhaust.position.set(le - 2.5, under - 1.9, z);
+      group.add(exhaust);
+
+      const pylon = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.8, 0.45), dark);
+      pylon.position.set(le - 0.5, under - 0.4, z);
       group.add(pylon);
     }
   }
@@ -105,41 +156,19 @@ export function buildPlane(THREE) {
   // trailing edge kept 0.1 ahead of the aft rim so its face never goes
   // coplanar with the tail cap, root chord buried ~0.8 into the crown so
   // nothing floats.
-  const finShape = new THREE.Shape();
-  finShape.moveTo(-19.5, 2.2); // root leading edge
-  finShape.lineTo(-26.8, 11.4); // tip leading edge — swept back ~38 deg
-  finShape.lineTo(-29.6, 11.4); // tip trailing edge
-  finShape.lineTo(-29.9, 2.2); // root trailing edge, just ahead of the rim
-  finShape.closePath();
-  const fin = new THREE.Mesh(
-    new THREE.ExtrudeGeometry(finShape, { depth: 0.5, bevelEnabled: false }),
-    dark
-  );
-  fin.position.z = -0.25;
-  group.add(fin);
-  // Low-mounted swept horizontal stabilizers with dihedral: planform drawn
-  // chordwise-x / spanwise-y, extruded to thickness, then rolled about X by
-  // -90deg +- dihedral so the span lands on -+Z with tips rising and the
-  // thickness pointing up. Span 17 (~31% of the wingspan, the 747 ratio);
-  // both roots meet on the centerline deep inside the hull (half-width at
-  // y=-0.6 is ~2.94), so each surface emerges from the skin with no gap, and
-  // tip trailing edges reach x=-30.6, just past the tail like the reference
-  // planform.
-  const TAIL_DIHEDRAL = 0.14; // ~8 deg
+  // Same planform as iter 6 (root chord x=-19.5..-29.9 buried ~0.8 into the
+  // crown, tip chord 2.8 at y=11.4, LE swept ~38 deg, TE just ahead of the
+  // aft rim), rebuilt as a single sheared diamond frustum spanning +Y,
+  // thickness 7.5% of chord (0.78 root -> 0.21 tip, well inside the crown
+  // half-width ~2.04 at y=2.2).
+  addSurface(-24.7, 2.2, 0, -28.2, 11.4, 0, 10.4, 2.8, 0.075);
+  // Low-mounted swept horizontal stabilizers with ~8 deg dihedral: same
+  // planform as iter 6 — root chord 5.5 (x=-23.4..-28.9) buried on the
+  // centerline (hull half-width at y=-0.6 is ~2.94), tip chord 1.8 with the
+  // tip trailing edge reaching x=-30.6 just past the tail, span ~31% of the
+  // wingspan (the 747 ratio), tips rising sin(0.14)*8.5 ~ 1.19.
   for (const side of [1, -1]) {
-    const stabShape = new THREE.Shape();
-    stabShape.moveTo(-23.4, 0); // root leading edge
-    stabShape.lineTo(-28.8, side * 8.5); // tip leading edge — swept ~32 deg
-    stabShape.lineTo(-30.6, side * 8.5); // tip trailing edge
-    stabShape.lineTo(-28.9, 0); // root trailing edge
-    stabShape.closePath();
-    const stab = new THREE.Mesh(
-      new THREE.ExtrudeGeometry(stabShape, { depth: 0.35, bevelEnabled: false }),
-      dark
-    );
-    stab.rotation.x = -Math.PI / 2 + side * TAIL_DIHEDRAL;
-    stab.position.y = -0.77;
-    group.add(stab);
+    addSurface(-26.15, -0.6, side * 0.3, -29.7, 0.59, side * 8.72, 5.5, 1.8, 0.09);
   }
 
   // Landing gear (747 layout): two-wheel nose strut plus FOUR main bogies —
