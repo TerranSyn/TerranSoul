@@ -77,6 +77,14 @@ source URL + access date).
 > honest v2 decomposition is published now (rather than withheld) so the correction is
 > transparent; the *status* (provisional vs. official) is what awaits sign-off, not the
 > analysis.
+>
+> **⚠ Consistency flag (2026-07-10 re-audit, owner call needed):** the southwest2026
+> pitch deck — an *external publishing surface* under the sign-off gate above — now
+> displays the v2 numbers (73.68/68.26, plus the Fable-5 track's 59.62/49.48) via the
+> Boeing chart added in commit `9014d495`, which records no sign-off. Until the owner
+> either records the sign-off (making v2 the official record here) or has the chart
+> reworked, the deck's Boeing panel should be read as **provisional-v2 pending
+> sign-off**. Tracked in `rules/milestones.md` → `BOEING-747-BENCH` item (1).
 
 > **Each column is a DIFFERENT benchmark on its own scale** — a SWE-bench % is not
 > a Boeing /100 is not an ARC %. Read *down* each column (how models rank on that
@@ -411,7 +419,12 @@ verify results: `rules/completion-log.md` →
   - **No `terransoul-cli` binary exists** in either `target/release` or
     `target/debug` — the build was launched but never finished/persisted
     before the session ended, so the loop was never actually invoked
-    through the new CLI path.
+    through the new CLI path. *(Superseded later the same day, 2026-07-10:
+    the binary WAS subsequently built — `d2e63c11` — and the cold-start
+    deny reproduced live through it (`95919490`), see below. What remains
+    true of this bullet is only that the loop was never run to completion
+    through the CLI path: `results/terransoul-fable5-v2*/` still contain
+    zero `iter-*.json`.)*
   - `results/terransoul-fable5-v2/` and `results/terransoul-fable5-v2-claude/`
     remain **completely empty** (zero `iter-*.json`), same as before this
     attempt. The `shots/terransoul-fable5-v2-iter-1-mrebeyti/` render present
@@ -449,17 +462,25 @@ verify results: `rules/completion-log.md` →
 **There is therefore still no v2 number to report from either rewire.** Per
 this repo's never-silently-overwrite convention, the original **59.62
 gemma4 / 49.48 Fable-5-vision** figures remain the last **completed**
-measurement for this track, now flagged bug-affected (§ Harness fix) *and*
-blocked on `WIRE-CLI-PARITY-GAP-6`'s owner decision — neither deleted nor
-replaced.
+measurement for this track, flagged bug-affected (§ Harness fix) — neither
+deleted nor replaced. *(The `WIRE-CLI-PARITY-GAP-6` trust-gate blocker was
+resolved later on 2026-07-10: the owner decision was recorded — `ee4161c0`,
+reuse the existing `ExecutionApprovalMode` `Bypass` toggle, keep its shared
+default — and implemented — `088c9849`, the Bypass short-circuit ahead of
+`CodeExecute` gate checks with regression tests. With Bypass the explicit
+default, the cold-start deny reproduced above no longer occurs. See
+`rules/completion-log.md` → `WIRE-CLI-PARITY-GAP-6-SHIPPED-2026-07-10`.)*
 
 **What remains to close this out (not claimed done):**
 1. Done — `terransoul-cli` built (`d2e63c11`), deny reproduced live.
-2. Done — confirmed above, filed as `WIRE-CLI-PARITY-GAP-6`, owner decision
-   pending before any re-run can produce a non-trivially-denied result.
+2. Done — confirmed above, filed as `WIRE-CLI-PARITY-GAP-6`; the owner
+   decision was subsequently recorded (`ee4161c0`) **and implemented**
+   (`088c9849`) on 2026-07-10, so the re-run is no longer trust-gate
+   blocked.
 3. Add the missing `--strict-mcp-config --mcp-config '{"mcpServers":{}}'`
    isolation to `agentic_cli.rs::build_command` (flagged in
-   `rules/completion-log.md`, not yet fixed) before relying on this path
+   `rules/completion-log.md`, not yet fixed — verified still absent from
+   the committed module on 2026-07-10) before relying on this path
    near any `.mcp.json`-bearing directory.
 4. Once 1–3 are resolved, run `npm run bench:747:loop:terransoul` against
    `terransoul-fable5-v2`/`terransoul-fable5-v2-claude` to actual completion,

@@ -112,9 +112,11 @@ in a new dated section of this file, not a retrofit of the table above.
 A-Evolve's "frozen model, evolve the harness" design is the same shape as
 TerranSoul's own skill-synthesis and procedural-memory pipeline (the
 outcome-predicate → LLM skill-authoring → promotion-gate → curator lifecycle
-chain — see `rules/completion-log.md`). A detailed, file:line-grounded
-comparison of the two architectures (what TerranSoul already has, any real
-gaps, and any deliberate differences) is tracked separately and, once
-complete, its findings belong in `docs/brain-advanced-design.md` rather than
-duplicated here — this file's scope is strictly A-Evolve's own published
-numbers.
+chain — see `rules/completion-log.md`). The detailed, file:line-grounded
+comparison of the two architectures **completed the same day this file was
+written**: see `docs/a-evolve-parity-audit-2026-07-10.md` (RESOLVED
+2026-07-10 — its 5 findings were closed as code changes in the same session;
+gap closures logged in `rules/completion-log.md` →
+`RSL-3-AEVOLVE-GAPS-2026-07-10`, and the audit is linked from
+`docs/brain-advanced-design.md`'s Related Documents). This file's scope
+remains strictly A-Evolve's own published numbers.

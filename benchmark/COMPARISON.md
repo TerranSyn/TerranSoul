@@ -24,7 +24,7 @@ results across four reproducible benchmarks:
 3. **LoCoMo / MTEB-style retrieval** (mteb/LoCoMo).
 4. **ZorkGPT long-horizon task bench** (BENCH-ZORK-1.5, the 2-ep × 100-turn `gemma4:e4b` canonical that closed 2026-05-28; supersedes the BENCH-ZORK-iter12 `gemma3:4b` baseline).
 
-Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestones.md). The latest canonical for each benchmark is below; the iteration trail is in the archive.
+Results were tracked through Phase BENCH-AM, long since closed and archived to [rules/completion-log.md](../rules/completion-log.md) (milestones.md contains only open work). The latest canonical for each benchmark is below; the iteration trail is in the archive.
 
 ## Comprehensive comparison — every system at a glance
 
@@ -32,7 +32,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 
 | System | Category | R@5 | R@10 | R@20 | NDCG@10 | MRR | Quality 0–10 | Success | Latency p50 | Cost | Benchmark |
 |---|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|---|
-| **🧠 TerranSoul** (this repo) | Memory + RAG + agent | **98.6 %** | **99.8 %** | **100.0 %** | **88.8 %** | **89.1 %** | **9.7** | 100.0 % | **0.9 s** | $0 | LongMemEval-S + parity |
+| **🧠 TerranSoul** (this repo) | Memory + RAG + agent | **98.6 %** | **99.8 %** | **100.0 %** | **88.8 %** | **89.1 %** | **9.8** | 100.0 % | **1.1 s** | $0 | LongMemEval-S + parity |
 | *— Memory systems —* | | | | | | | | | | | |
 | agentmemory | Memory | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | — | — | — | — | LongMemEval-S |
 | MemPalace | Memory | ~96.6 % | ~97.6 % | — | — | — | — | — | — | — | LongMemEval-S |
@@ -51,7 +51,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 | GraphRAG (Microsoft) | RAG (graph) | 5.0 % | 5.0 % | 5.0 % | — | — | — | — | — | — | agentmemory |
 | obsidian-wiki | Markdown wiki (grep, no DB) | 37.3 % | 53.8 % | 72.6 % | 79.5 % | 82.8 % | — | — | **42.8 ms** | $0 | agentmemory vault; agentic ripgrep + local gemma4:12b-it-qat rerank (keyword-only; O(n), doesn't scale) |
 | *— Self-improving LLM agents —* | | | | | | | | | | | |
-| OpenJarvis (Stanford SAIL) | Agent | 40.6 % | 60.9 % | 74.2 % | 88.2 % | 91.7 % | 9.6 | 100.0 % | 3.2 s | $0 | agentmemory (DenseMemory + nomic) + parity |
+| OpenJarvis (Stanford SAIL) | Agent | 40.6 % | 60.9 % | 74.2 % | 88.2 % | 91.7 % | 9.6 | 100.0 % | 3.5 s | $0 | agentmemory (DenseMemory + nomic) + parity |
 | OpenClaw | Agent | — | — | — | — | — | 8.4 | 100.0 % | 38.1 s | $0 | parity; retrieval not IR-benched (config-first agent, no retrieval/RAG engine) |
 | Claude Code + GENesis-AGI | Agent (frontier) | 43.6 % | 57.2 % | 72.3 % | 83.9 % | 100.0 % | 8.2 | 95.5 % | 17.5 s | $6 | parity + agentic Claude-Code retrieval (grep/read→ranked top-20; cloud claude-haiku, ~53 s/query; Qdrant memory layer not runnable here) |
 | Hermes-Agent (Nous Research) | Agent | 14.2 % | 15.8 % | 15.8 % | 18.2 % | 20.0 % | 6.9 | 95.5 % | 10.9 s | $0 | agentmemory (holographic FTS5+Jaccard+HRR) + parity |
@@ -59,7 +59,7 @@ Results are tracked through Phase BENCH-AM in [milestones.md](../rules/milestone
 **Honesty notes** (full methodology + sources are in the detailed sections below):
 
 - A "—" marks a metric the system does not publish or was not run on — an honest blank, not a zero or a failure.
-- TerranSoul's `rrf`/`rrf_emb` LongMemEval-S rows are the committed 2026-06-28 baseline. A 2026-07-01 lower reproduction was root-caused on 2026-07-02 to the re-run harness omitting `LONGMEM_EMBED=1` — those re-runs measured the lexical-only path, not a code change. A correctly-configured, run-invariant re-run is tracked in `benchmark/results/longmemeval_s_terransoul.md`; the table updates from that run once it lands.
+- TerranSoul's `rrf`/`rrf_emb` LongMemEval-S numbers: a 2026-07-01 lower reproduction was root-caused on 2026-07-02 to the re-run harness omitting `LONGMEM_EMBED=1` — those re-runs measured the lexical-only path, not a code change. The correctly-configured, run-invariant re-run **landed 2026-07-03** (`benchmark/results/longmemeval_s_terransoul.md`, commit `4eea9e45` — "baseline reproduced to the decimal": rrf R@5 99.4 % / NDCG@10 95.1 % / MRR 95.9 %; rrf_emb 99.4 % / R@10 100.0 % / 94.5 % / 95.3 %); the tables below carry those resolved numbers, matching the pitch deck's BENCH-AM-6.3 chart.
 - The "LoCoMo QA" figures in the Benchmark column are end-to-end answer accuracy (J-score), not retrieval recall, shown for context only.
 - The agentmemory-corpus rows share one nomic-embed-text embedder, so the pure-vector memory systems and RAG frameworks cluster around 41 / 61 / 74 / 88 / 92 % — the embedder sets that recall, independent of framework.
 - The graph systems (GraphRAG, Memary, HippoRAG) return entity subgraphs rather than ranked passages, so their low recall is a metric-shape mismatch on this single-doc corpus, not a like-for-like loss.
@@ -223,7 +223,7 @@ This is the same retrieval-only shape used by agentmemory's LongMemEval-S script
 | System | R@5 | R@10 | R@20 | NDCG@10 | MRR | Source |
 |---|---:|---:|---:|---:|---:|---|
 | **TerranSoul `search`** | **98.6 %** | **99.8 %** | **100.0 %** | **88.8 %** | **89.1 %** | committed result files |
-| TerranSoul `rrf` | 98.6 % | 99.8 % | 100.0 % | 88.6 % | 88.9 % | same run |
+| TerranSoul `rrf` | 99.4 % | 99.8 % | 100.0 % | 95.1 % | 95.9 % | 2026-07-03 resolved re-run (`results/longmemeval_s_terransoul.md`) |
 | agentmemory LongMemEval-S | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | upstream published row |
 | MemPalace LongMemEval-S | ~96.6 % | ~97.6 % | — | — | — | self-reported; via agentmemory LONGMEMEVAL.md; no primary paper |
 
@@ -260,7 +260,7 @@ Per-task signal (from the earlier 250-query slice): temporal reasoning is alread
 | System | Benchmark | Recall@K / Score | NDCG@10 | MRR | Source | Directly run? |
 |---|---|---|---|---|---|---|
 | **TerranSoul `search`** | LongMemEval-S retrieval-only | **R@5 98.6 % / R@10 99.8 % / R@20 100.0 %** | **88.8 %** | **89.1 %** | this repo, BENCH-AM-6.2 (embeddinggemma) | ✅ this repo |
-| TerranSoul `rrf` | LongMemEval-S retrieval-only | R@5 98.6 % / R@10 99.8 % / R@20 100.0 % | 88.6 % | 88.9 % | this repo, BENCH-AM-6.2 (embeddinggemma) | ✅ this repo |
+| TerranSoul `rrf` | LongMemEval-S retrieval-only | R@5 99.4 % / R@10 99.8 % / R@20 100.0 % | 95.1 % | 95.9 % | this repo, BENCH-AM-6.3 resolved re-run 2026-07-03 (`results/longmemeval_s_terransoul.md`, embeddinggemma) | ✅ this repo |
 | **TerranSoul keyword-only `search` (regenerated 2026-06-25)** | agentmemory bench:quality | **R@10 67.1 %** | **98.2 %** | **100.0 %** | this doc | ✅ this repo |
 | **TerranSoul `hybrid_search_rrf` no-vector (regenerated 2026-06-25, post RRF-fix)** | agentmemory bench:quality | **R@10 66.8 %** | **95.0 %** | **95.0 %** | this doc | ✅ this repo |
 | **TerranSoul `rrf_emb`** (EmbeddingGemma vector) | MTEB LoCoMo retrieval-only, full 1976 queries | **R@10 64.5 % / R@100 85.8 %** | **49.9 %** | **48.3 %** | [docs/locomo-mteb-adapter.md](locomo-mteb-adapter.md) | ✅ this repo |
@@ -429,7 +429,7 @@ Every system's **real CLI** answers the **same 22 prompts** (7 archetypes) with 
 
 **Provenance.** TerranSoul + OpenJarvis are the **2026-07-03 deterministic-protocol canonical run** (`results/parity_headtohead.json`); OpenClaw, Hermes, and Claude Code were measured **2026-06-27** under the earlier single-call-judge protocol — same harness, prompts, and judge model. Each runs its *real* pipeline at equal injected context (OpenClaw runs its agent; the rest single-pass). Raw per-prompt data — including every per-repeat judge score — is committed alongside our internal harness; reproducible from the committed result files.
 
-**Protocol resolution note (2026-07-03).** The earlier canonical (2026-06-07, TerranSoul 9.82 / OpenJarvis 9.55) was measured with unseeded temperature-0.7 generation and a single judge call per answer. Per-prompt forensics across the 2026-06-07 / 07-01 / 07-03 runs (dated artifacts `parity_headtohead_rerank_latency_check_20260701.json`, `parity_headtohead_rebench_20260703.json`, `parity_headtohead_judgefix_v1..v4_20260703.json`) showed both layers were nondeterministic: generation draws randomly dropped context facts, and the judge scored materially equivalent answers 8 vs 6 vs 5 across runs. The MCP-RERANK-1 `brain_search` rerank bound was investigated and exonerated (the 07-01 run had all 22 retrieval calls pinned at ~4.2 s — budget exhausted with fallback — with no quality effect distinguishable from a rerank-off run). Under the deterministic protocol the **2026-06-07 canonical answers themselves re-score 9.68 — identical to the fresh 2026-07-03 run's 9.68** — i.e. TerranSoul answer quality did not regress; the 9.82 → 9.68 headline delta is the retired protocol's measurement noise, and OpenJarvis reproduces its 9.55 exactly. 9.68 on this protocol is therefore the same answer-quality class as the retired 9.82, and it is the new never-regress floor.
+**Protocol resolution note (2026-07-03).** The earlier canonical (2026-06-07, TerranSoul 9.82 / OpenJarvis 9.55) was measured with unseeded temperature-0.7 generation and a single judge call per answer. Per-prompt forensics across the 2026-06-07 / 07-01 / 07-03 runs (dated artifacts `parity_headtohead_rerank_latency_check_20260701.json`, `parity_headtohead_rebench_20260703.json`, `parity_headtohead_judgefix_v1..v4_20260703.json`) showed both layers were nondeterministic: generation draws randomly dropped context facts, and the judge scored materially equivalent answers 8 vs 6 vs 5 across runs. The MCP-RERANK-1 `brain_search` rerank bound was investigated and exonerated (the 07-01 run had all 22 retrieval calls pinned at ~4.2 s — budget exhausted with fallback — with no quality effect distinguishable from a rerank-off run). Under the deterministic protocol the **2026-06-07 canonical answers themselves re-score 9.68 — identical to the fresh 2026-07-03 run's 9.68** — i.e. TerranSoul answer quality did not regress; the 9.82 → 9.68 headline delta is the retired protocol's measurement noise, and OpenJarvis reproduces its 9.55 exactly. 9.68 on this protocol is therefore the same answer-quality class as the retired 9.82 — and it was the never-regress floor for part of that day only: **PARITY-FLOOR-2 (later on 2026-07-03, commit `77ec9feb`) restored 9.82 on the deterministic protocol via a production prompt fix (complete-recall + capability-offer enforcement), reproduced across four independent runs — the deterministic-protocol floor is 9.82** (see the head-to-head table above and `results/parity_floor2_loop.md`; beat-attempts ≥ 9.83 continue from that floor).
 
 Sources: [openclaw/openclaw](https://github.com/openclaw/openclaw) (MIT) · [NousResearch/hermes-agent](https://github.com/nousresearch/hermes-agent) (MIT) · [WingedGuardian/GENesis-AGI](https://github.com/WingedGuardian/GENesis-AGI) · plus the in-repo adoption studies cited above.
 
@@ -560,6 +560,6 @@ The case is not "TerranSoul scored X on Zork." The case is **"these five classes
 
 ## What ships next
 
-Open chunks in [rules/milestones.md](../rules/milestones.md): README-AUDIT-2 (closed 2026-05-28 with this and the README update) and COMPARISON-CONDENSE-1 (this rewrite). No active BENCH-AM blockers. New benchmark, source system, or implementation target → open a new chunk in `milestones.md`.
+The chunks that produced this file — README-AUDIT-2 and COMPARISON-CONDENSE-1 (this rewrite) — closed 2026-05-28 and live in [rules/completion-log.md](../rules/completion-log.md), as does the closed Phase BENCH-AM (milestones.md contains only open work, and none of these appear there). New benchmark, source system, or implementation target → open a new chunk in `rules/milestones.md`.
 
 The deeper iteration narrative (Round 1 baseline through Round 7 parity sweep, Phase TOP1 Round 1 cross-system matrix, BENCH-MCP-PARITY / BENCH-MCP-LATENCY-1 / BENCH-LCM-KG-HYDE-1 / BENCH-ZORK-iter12 / BENCH-ZORK-RERUN-1, and the superseded BENCH-ZORK-1.5 300-turn placeholder) was condensed out of this file by COMPARISON-CONDENSE-1 (2026-05-28) and the archive file was not committed — see the git history around that commit if you need it.
