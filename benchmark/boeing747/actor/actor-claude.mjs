@@ -377,11 +377,18 @@ async function callTerranSoulAgentTask({
  * through the `action_trust` ledger — see callTerranSoulAgentTask's doc);
  * re-validate the edited source against the FROZEN contract; restore-and-
  * record on any violation or CLI failure rather than accepting/relaxing/
- * retrying. `cliBinary`/`cliDataDir`/`execImpl` are optional overrides
- * (operator convenience + test seam) — see callTerranSoulAgentTask's doc for
- * their exact semantics; all three default to production behavior when
- * omitted (auto-resolve the built binary, inherit this process's env
- * unchanged, spawn a real subprocess).
+ * retrying. `cliBinary`/`cliDataDir`/`execImpl`/`copyReferenceImagesFn` are
+ * optional overrides (operator convenience + test seam) — see
+ * callTerranSoulAgentTask's doc for `cliBinary`/`cliDataDir`/`execImpl`'s
+ * exact semantics; all four default to production behavior when omitted
+ * (auto-resolve the built binary, inherit this process's env unchanged,
+ * spawn a real subprocess, read the real prepared reference photos from
+ * disk via `copyReferenceImages`). `copyReferenceImagesFn` exists because
+ * the real `copyReferenceImages` reads `references/prepared/meta.json`,
+ * which is a local-only, gitignored, fetched-not-committed artifact (see
+ * `references/fetch-references.mjs`) — a test suite that calls this
+ * function without injecting a fake here is not actually CI-safe even if
+ * every subprocess call is mocked via `execImpl`.
  */
 export async function runActorEdit({
   candidatePath,
@@ -395,11 +402,12 @@ export async function runActorEdit({
   cliBinary,
   cliDataDir,
   execImpl,
+  copyReferenceImagesFn = copyReferenceImages,
 }) {
   const { rubric } = loadRubric();
   const forbiddenReasons = extractForbiddenReasons();
   const shotsDirAbs = path.resolve(shotsDir);
-  const refPaths = copyReferenceImages(shotsDirAbs);
+  const refPaths = copyReferenceImagesFn(shotsDirAbs);
 
   const candidateAbs = path.resolve(candidatePath);
   const candidateDir = path.dirname(candidateAbs);

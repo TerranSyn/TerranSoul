@@ -1,15 +1,30 @@
 // Tests for the WIRE-CLI-PARITY-GAP-3 rewire: actor-claude.mjs now spawns
 // `terransoul-cli --agent-task` instead of the bare `claude` binary. Every
 // test here mocks the subprocess boundary via `execImpl` (mirrors
-// lib/self-learning.mjs's injectable `callTool` pattern) — no real
-// subprocess is ever spawned, so this suite is deterministic and CI-safe
-// (the real terransoul-cli binary + live `claude` calls stay local-only).
+// lib/self-learning.mjs's injectable `callTool` pattern) AND the
+// reference-photo boundary via `copyReferenceImagesFn` (the real
+// `copyReferenceImages` reads a local-only, gitignored, fetched-not-
+// committed `references/prepared/meta.json` — mocking only `execImpl` and
+// leaving this one real was a CI-vs-local gap that shipped once already:
+// every test passed locally, where that file happened to already exist
+// from prior manual bench setup, then failed on a clean CI checkout that
+// never ran `fetch-references.mjs`) — no real subprocess is spawned and no
+// real filesystem reference lookup happens, so this suite is deterministic
+// and CI-safe (the real terransoul-cli binary + live `claude` calls +
+// prepared reference photos stay local-only).
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { VIEWS } from '../lib/cameras.mjs';
-import { resolveTerranSoulCliBinary, runActorEdit } from './actor-claude.mjs';
+import { resolveTerranSoulCliBinary, runActorEdit as runActorEditReal } from './actor-claude.mjs';
+
+/** No prepared reference photos in CI — every test gets an empty ref set. */
+const fakeCopyReferenceImagesFn = () => ({});
+
+function runActorEdit(opts) {
+  return runActorEditReal({ copyReferenceImagesFn: fakeCopyReferenceImagesFn, ...opts });
+}
 
 const VALID_PLANE_SOURCE = `export function buildPlane(THREE) {
   const group = new THREE.Group();
