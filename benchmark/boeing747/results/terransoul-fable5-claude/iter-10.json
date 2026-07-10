@@ -1,0 +1,90 @@
+{
+  "actor": "terransoul-fable5-claude",
+  "judge_track": "claude-fable-5-vision",
+  "iter": 10,
+  "run_id": "terransoul-fable5-iter-10-mre2vjfx",
+  "plane_sha256": "ad705ff58c4cda5174edc449832e94b999e7e9da77d0b174537ddb86d85d31fb",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 47.34,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 3.93,
+      "notes": "Overly long blunt-ended grey tube; no nose taper or upswept tail cone. Front hump present with cockpit dots. Wing is a thin edge-on sliver; two crude box nacelles under belly. No vertical fin, only a needle-thin diagonal line at rear. Nose wheel plus clustered ball wheels on thin struts. Monochrome grey, square oversized windows."
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.95,
+      "notes": "Slender gray tube with front partial-length hump bearing upper-deck windows and a main-deck window row. No vertical stabilizer visible; only a thin flat plate at the tail. Two boxy block nacelles under the edge-on wing plate. Nose gear plus a small cluster of tiny main wheels. Blunt tail cone, uniform flat gray, thin floating antenna line."
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.82,
+      "notes": ""
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.76,
+      "notes": "Slender constant-width tube with rounded nose, blunt tail, dashed window rows, and a front oval hump region. Wings render only as hairline swept wires with no chord area; four nacelles float along them on tiny pylons. Empennage is thin edge lines. Two detached truck-like gear shapes beside fuselage. Planform does not read as a 747."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.27,
+      "notes": "Slender grey tube with a consistent square window row, but the nose is a flat blunt disc. Wings are wire-thin rods with no chord or surface; empennage is bent sticks. Three nacelle cylinders visible, one floating above the fuselage on a rod. Tiny sphere blobs suggest gear. No distinct 747 hump; reads as a skeletal generic airliner."
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.03,
+      "notes": "Slender tube with good front hump, upper-deck and main-deck window rows, dark cockpit. Rear ends in a flat blunt disc, no tail cone. Wings are paper-thin swept sticks; four cylinder nacelles float detached near, not under, the wings. Tail surfaces are crude thin slabs with no tall fin. Small wheels sit loosely under mid-fuselage."
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.38,
+      "notes": "Slender tube ends in a flat blunt disc nose with a dark half-cylinder stuck on top instead of an ogive. Hump is a partial-length front shell with its own window row but visibly unblended. Thin slab wings; nacelles hang on stick pylons, some appearing detached. Tiny floating wheels; window line is consistent; uniform grey monochrome."
+    }
+  ],
+  "weakest_feature": {
+    "id": "empennage",
+    "mean": 3.43,
+    "perCriterion": {
+      "engines_four_underwing": 5.29,
+      "upper_deck_hump": 6,
+      "fuselage_proportions": 4.83,
+      "wing_geometry": 3.86,
+      "empennage": 3.43,
+      "landing_gear": 4.33,
+      "window_door_lines": 6.67,
+      "livery_coherence": 5.86,
+      "silhouette_747": 4,
+      "craftsmanship": 3.86
+    }
+  },
+  "critic": {
+    "weakest_feature": "empennage",
+    "fix_suggestion": "Improve 'Empennage (tall vertical stabilizer + horizontal stabilizers)' (mean 3.43/10). Target the 8 anchor: single tall swept vertical stabilizer plus swept horizontal stabilizers at the tail cone, plausible sizes; then the 10 anchor: correct 747 empennage: very tall swept fin, low-mounted swept tailplane pair with dihedral, all tapered and proportioned to the fuselage.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 4.836592,
+  "regressed": true,
+  "best_total_after": 49.48,
+  "created_at": "2026-07-09T22:36:57.124Z"
+}

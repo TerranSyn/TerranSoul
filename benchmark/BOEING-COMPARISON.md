@@ -26,6 +26,17 @@
 > vision inspection and the edits through its own machinery). Those forthcoming
 > numbers will be the definitive **"Opus 4.8 + TerranSoul"** result; the numbers in
 > this doc are relabeled as the bare-model series until then.
+>
+> **Partial fulfillment (2026-07-10) — a different actor, same real-agent
+> mechanism.** § Fable-5 + TerranSoul measurement below is the first row in this
+> doc produced by the genuine mechanism described above: a new
+> `benchmark/boeing747/actor/actor-claude.mjs` drives the `claude` CLI with
+> `--allowedTools "Read Edit"` and `--add-dir` vision access (the actor reads its
+> own rendered views itself), not the bare shell-out `loop-runner-claude.mjs`
+> uses. It measures **Claude Fable 5**, not Opus 4.8, so it does not yet close
+> the Opus-4.8 re-measurement flagged above — that remeasurement is still
+> forthcoming — but it is the proof-of-mechanism that the real-agent path works
+> end-to-end, and stands as its own, separate, honestly-labeled data point.
 
 The actor being maximized is **Claude Opus 4.8**. In the numbers below to date it was
 driven by the benchmark's own loop calling the bare `claude` CLI (the raw model); the
@@ -77,6 +88,7 @@ source URL + access date).
 | Model | Score | Benchmark (what the score is on) | Source |
 |---|---|---|---|
 | **Claude Opus 4.8 + TerranSoul** | **73.68 %** (gemma4) · **68.26 %** (Opus 4.8 vision) | **Boeing-747** primitives — autonomous self-improve loop (v2 harness) | this harness (local) ● |
+| **Claude Fable 5 + TerranSoul** | **59.62 %** (gemma4) · **49.48 %** (Fable-5 vision) | **Boeing-747** primitives — autonomous self-improve loop, TerranSoul's own agent machinery (v2 harness) | this harness (local) ● |
 | Claude Fable 5 | 88.0 % | Terminal-Bench 2.1 (agentic coding, in a loop) | aggregate ○ |
 | GPT-5.5 (Codex CLI) | 83.4 % | Terminal-Bench 2.1 | aggregate ○ |
 | Claude Sonnet 5 | 80.4 % | Terminal-Bench 2.1 | aggregate ○ |
@@ -168,6 +180,85 @@ Every figure here is from a committed results JSON — **no number is written th
 has not been measured** — and reported factually; the project does not use
 "beat / win / outperform" framing in any published benchmark content.
 
+## Fable-5 + TerranSoul measurement (2026-07-10) — a second, architecturally distinct actor track
+
+**What's different vs the Opus-4.8 row above.** The Opus-4.8 numbers (73.68 /
+68.26) were produced by `loop-runner-claude.mjs` shelling out to the bare
+`claude --model claude-opus-4-8` CLI as a text editor between manual
+invocations — the raw model, not TerranSoul's own agent machinery, drove the
+edits (see the ACTOR-FIDELITY CORRECTION note above). This run is the first
+Boeing-747 measurement in this doc where the edit-producing step is genuinely
+**"TerranSoul-Agent-driven"**: a new `benchmark/boeing747/actor/actor-claude.mjs`
+drives the `claude` CLI with `--allowedTools "Read Edit"` (no Bash / Write /
+Web* / Task), `--add-dir` scoped to the candidate directory and the run's
+shots directory (so the actor reads its own nine rendered views plus the
+reference photos itself, not a human relaying them), `--model claude-fable-5`,
+`--effort max` (`claude --help`'s highest available reasoning effort — there is
+no separate "thinking" flag), all gated by the same frozen `lib/contract.mjs`
+primitives-only contract used everywhere else in this harness. A new
+`benchmark/boeing747/loop-runner-terransoul.mjs` wires it into the standard
+render → judge (gemma4) → judge (Claude vision) → actor-edit → contract-gate →
+stop-condition loop, unchanged from the frozen protocol.
+
+**This is an ADDITIONAL data point, not a ranking claim.** The actor (Claude
+Fable 5 vs. Claude Opus 4.8), the driving mechanism (TerranSoul's own
+Read+Edit-restricted agent loop vs. a bare-CLI text-editor shell-out), and the
+seed candidate all differ between this row and the Opus-4.8 row above, so the
+two are **not compared against each other**. Per the repo's factual-language
+policy (`benchmark/boeing747/README.md` → "Reporting rules"), this result is
+reported plainly, with no "beats / wins / outperforms" framing in either
+direction, and it does **not** touch or lower the existing Opus-4.8 floors
+(73.68 gemma4 / 68.26 Opus vision) — this is a brand-new actor track, so per
+`rules/bench-never-regress.md` there is no prior floor for it to fail.
+
+**Result: Claude Fable 5 + TerranSoul, best 59.62 / 100** (frozen gemma4:12b
+judge, v2 harness) **/ 49.48 / 100** (Claude Fable 5 vision judge) — committed
+under `results/terransoul-fable5/` and `results/terransoul-fable5-claude/`.
+**Neither judge track reached the 8.0/10-per-view threshold** (`view_threshold`);
+the actual numbers are reported plainly rather than reframed as a pass.
+
+| Iter | gemma4 | gemma best | Fable-5-vision | F5V best | Actor status |
+|---|---|---|---|---|---|
+| 1 | 37.39 | 37.39 | 21.44 | 21.44 | edited (206s) |
+| 2 | 40.04 | 40.04 | 32.80 | 32.80 | edited (432s) |
+| 3 | 48.74 | 48.74 | 35.30 | 35.30 | edited (276s) |
+| 4 | 56.88 | 56.88 | 37.93 | 37.93 | edited (353s) |
+| 5 | 54.78 | 56.88 | 47.00 | 47.00 | edited (552s) |
+| 6 | 53.84 | 56.88 | 44.05 | 47.00 | edited (346s) |
+| 7 | 59.62 | 59.62 | 48.93 | 48.93 | actor_failed (600s timeout) |
+| 8 | 59.62 | 59.62 | 42.80 | 48.93 | actor_failed (600s timeout) |
+| 9 | 59.62 | 59.62 | 49.48 | 49.48 | actor_failed (600s timeout) |
+| 10 | 59.62 | 59.62 | 47.34 | 49.48 | actor_failed (600s timeout) |
+
+**Stop condition fired: gemma4 `stall`** — 3 consecutive non-improving
+iterations at best = 59.62 (iterations 8, 9, 10). **Iteration count: 10 of the
+12-iteration budget.** Total cost ≈ $57.64 (≈ $16.90 actor + ≈ $40.74
+Fable-5-vision judge).
+
+**Honest caveat — the stall is a timeout artifact, not a demonstrated capability
+ceiling.** Iterations 1–6 all produced successful edits (206s–552s); iterations
+7–10 **all four** hit the actor's 600,000 ms subprocess timeout and failed
+closed (previous `plane.js` source restored verbatim via the frozen contract
+gate, $0 cost recorded since the process was killed before returning). The
+growing prompt / `plane.js` / image-read load likely pushed the actor past ten
+minutes as the geometry got more detailed — this is **not** evidence the model
+exhausted its ideas at 59.62 / 49.48. `CLAUDE_ACTOR_TIMEOUT_MS` was deliberately
+left unchanged mid-run to keep the measurement protocol consistent; a re-run
+with a higher timeout is needed before drawing any ceiling conclusion.
+Separately, `judge-claude.mjs`'s per-view Claude-vision judge has no
+parse-retry at `samples=1` (matching the frozen script's own CLI default) — a
+single JSON-parse failure permanently nulls a view, so 2–8 of the 9 views were
+scored per iteration on the Fable-5-vision track across this run (fail-open by
+design, pre-existing in `judge-claude.mjs`, not introduced by this
+measurement).
+
+**Frozen-harness integrity:** all 8 frozen artifacts (`rubric.json`,
+`lib/cameras.mjs`, `lib/scoring.mjs`, `lib/stop-conditions.mjs`,
+`lib/contract.mjs`, `lib/judge-parse.mjs`, `rig/render-rig.mjs`, `rig/rig.html`)
+are sha256-identical before/after this run; `judge/judge.mjs` and every
+`terransoul-opus48*` result/candidate are untouched (`git diff` empty).
+Reproduce: `npm run bench:747:loop:terransoul`.
+
 ## How to read the comparison
 
 - **Single-shot** — one prompt, no iteration (`run-baselines.mjs`). This is how a
@@ -188,7 +279,14 @@ has not been measured** — and reported factually; the project does not use
 |---|---|---|---|---|
 | **Claude Opus 4.8 + TerranSoul** (v2 harness) | self-improve loop (Opus actor inside TerranSoul) | **73.68** gemma4 · **68.26** Opus vision | 9+ (both judge tracks) | measured — `results/terransoul-opus48*/` |
 | _(v1 pre-fix rig — retained floor)_ | same, aliased/thumbnail render | 66.07 gemma4 · 63.5 Opus vision | — | prior record; **not comparable to v2** |
+| **Claude Fable 5 + TerranSoul** (v2 harness, TerranSoul-agent-driven actor)¹ | self-improve loop (Fable-5 actor via TerranSoul's own Read+Edit-restricted CLI agent, real vision tool access) | **59.62** gemma4 · **49.48** Fable-5 vision | 10 of 12-budget (gemma4 `stall`) | measured — `results/terransoul-fable5*/` |
 | Stub (rig validation) | fixed source | 28.25 | — | `results/stub-validation.json` (pre-render-fix; methodology check only) |
+
+¹ Different actor, different driving mechanism (TerranSoul's own agent loop vs.
+the Opus-4.8 row's bare-CLI shell-out), and a different vision judge model —
+**not ranked against the Opus-4.8 row above**; see § Fable-5 + TerranSoul
+measurement for the full honest caveats (notably the actor-timeout stall in
+iterations 7–10).
 
 **The loop trajectory (measured).** Judged by Claude Opus 4.8 vision, the loop climbed
 **37.9 → 60.4 → 61.0 → 62.6 → 63.7 → 64.4 → 66.3 (peak) → 63.5 (median-of-3)** as the
@@ -368,8 +466,13 @@ node benchmark/boeing747/references/fetch-references.mjs
 node benchmark/boeing747/run-baselines.mjs --model gemma4:12b-it-qat
 node benchmark/boeing747/run-baselines.mjs --actor opus48        # Claude Opus 4.8
 
-# 3. the self-improve loop (TerranSoul + Claude Opus 4.8 actor)
+# 3. the self-improve loop (TerranSoul + Claude Opus 4.8 actor, bare-CLI shell-out)
 node benchmark/boeing747/loop-runner.mjs --actor opus48 --terransoul
+
+# 4. the self-improve loop via TerranSoul's own agent machinery
+#    (Read+Edit tool grants, --add-dir vision access, Claude Fable 5 actor)
+node benchmark/boeing747/loop-runner-terransoul.mjs
+# equivalently: npm run bench:747:loop:terransoul
 
 # results land in benchmark/boeing747/results/*.json (rubric sha256 stamped)
 ```

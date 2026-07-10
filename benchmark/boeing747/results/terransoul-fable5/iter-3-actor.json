@@ -1,0 +1,11 @@
+{
+  "model": "claude-fable-5",
+  "effort": "max",
+  "ms": 275933,
+  "cost_usd": 2.3873260000000003,
+  "status": "edited",
+  "plane_sha256_before": "fe61d48ce53840ad875e675cc206f0d3c11861f47d7be1d8a3963c4f43cab4b9",
+  "plane_sha256_after": "bdfd8ebd6886dea6a467216cafa05b1a87c825a1cbe40340a7e154011a7edaaa",
+  "changed": true,
+  "claude_result_text": "Done — syntax verified, module exports `buildPlane` cleanly.\n\n**What I changed:** Added a complete 747 landing-gear assembly to `plane.js` — the one feature both my own image inspection and the Claude judge track confirmed was entirely absent (mean 0/10, every view). Nothing else was moved or resized.\n\n**Why this fix:** I opened the contact sheet plus views 2 and 8 myself: the model has no gear at all, while the side-profile reference photo (side.png) shows the 747 gear-down in flight and the three-view gives the exact bogie layout. Gemma's weakest (window lines) was already targeted last iteration and improved 0.43→3.14, so gear was the largest untouched gap — and it's purely additive under the belly, so the two views already scoring ≥7 (right-profile 8.69, rear 7.36) keep their silhouettes intact.\n\n**The geometry (all Cylinder/Box primitives, ~27 meshes):**\n- **Nose gear:** a thin strut at x=23 (~12% aft of the nose tip), embedded 0.3 into the hull, with two r=0.45 wheels astride it — the rubric's \"two-wheel nose strut\".\n- **Four main bogies** in the real 747 arrangement: a body pair near the centerline (z=±1.8, strut tops embedded into the curved hull bottom at y=−2.4) and a wing pair outboard (z=±5.5, struts reaching up into the wing underside), with the body pair slightly aft of the wing pair. Each bogie is a strut + beam + four wheels (2 axles × 2), matching the \"four multi-wheel main bogies (two under the body, two under the wings)\" 10-anchor.\n- **Craftsmanship guarded:** strut tops embed into hull/wing, strut bottoms embed into the bogie beams, wheel inner faces overlap the beams — nothing floats, no coplanar faces to z-fight. Wheel bottoms (y≈−5.45) clear the engine nacelles (bottoms −3.15) and sit level like the gear-down reference.\n\nWheel axles run along Z per the frozen orientation contract (nose +X, up +Y, span Z), and the file stays a self-contained ES module with the exact `export function buildPlane(THREE)` signature — no new geometry types beyond th"
+}

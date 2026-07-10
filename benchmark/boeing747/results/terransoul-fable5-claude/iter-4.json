@@ -1,0 +1,90 @@
+{
+  "actor": "terransoul-fable5-claude",
+  "judge_track": "claude-fable-5-vision",
+  "iter": 4,
+  "run_id": "terransoul-fable5-iter-4-mrdz2w9g",
+  "plane_sha256": "bdfd8ebd6886dea6a467216cafa05b1a87c825a1cbe40340a7e154011a7edaaa",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 37.93,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 3.2,
+      "notes": "Plain gray cylinder with flat blunt ends, no nose taper, tail cone, or hump. Wing is a thin flat edge-on plate with no dihedral. Single boxy nacelle under belly, not four. Vertical tail is an unswept dark rectangle; no horizontal stabilizers. Nose strut plus clustered ball wheels on thin sticks. Dashed window line present, roughly consistent."
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 3.33,
+      "notes": "Plain grey tube with blunt untapered nose and tail, no upper-deck hump. Single boxy nacelle under a thin flat wing plate; only one engine visible. Vertical tail is an unswept rectangular slab; no horizontal stabilizers. Dashed window line present with small cockpit mark. Nose-gear wheel plus a mid cluster of tiny wheels on thin struts; monochrome grey scheme."
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.62,
+      "notes": "Head-on: four dark-inlet nacelles hang under completely flat slab wings with zero dihedral or visible airfoil. Fuselage cross-section is a plain circle with no upper-lobe hump; two dark rectangles suggest cockpit windows. Vertical fin is a bare thin pole; no horizontal stabilizers visible. Nose gear plus only two main struts. Coherent all-grey scheme, clean assembly."
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 4.66,
+      "notes": ""
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.95,
+      "notes": "Slender gray tube with flat disc nose, no upper-deck hump—only tiny black blocks near nose top. Wings are flat untapered unswept slabs passing through the fuselage; four cylinder nacelles hang beneath them without clear pylons. Tall rectangular fin, no horizontal stabilizers. Small nose strut only. Square window row present; coherent gray scheme."
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 2.98,
+      "notes": "Slender grey tube with blunt flat ends, no nose or tail taper. Wings are flat unswept rectangular slabs, no dihedral or taper. Single crude vertical fin slab; no horizontal stabilizers. No engine nacelles anywhere. Tiny pin-mounted wheels dangle under mid-body. Evenly spaced dark window dashes present; small black block atop forward fuselage, no hump."
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.49,
+      "notes": "Plain gray tube with flat blunt nose disc, no hump anywhere. Wing is a dark flat slab mounted atop the fuselage with some sweep but no taper/dihedral. Three visible cylinder engines, one hung under the forward fuselage. Rectangular unswept fin, no horizontal stabilizers. Single tiny nose wheel plus two mid bogies. Window line present."
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.11,
+      "notes": "Slender grey tube with a completely flat nose disc; cockpit reads as two rectangles on the flat cap plus black boxes on the crown. No hump. Wings are flat untapered slabs without dihedral; four cylindrical nacelles hang below. Fin is an unswept rectangle; no horizontal stabilizers visible. Nose wheel plus sparse tiny main wheels. Consistent square window row."
+    }
+  ],
+  "weakest_feature": {
+    "id": "upper_deck_hump",
+    "mean": 0.71,
+    "perCriterion": {
+      "engines_four_underwing": 4.5,
+      "upper_deck_hump": 0.71,
+      "fuselage_proportions": 4.67,
+      "wing_geometry": 3.13,
+      "empennage": 3,
+      "landing_gear": 4.38,
+      "window_door_lines": 6,
+      "livery_coherence": 5.88,
+      "silhouette_747": 3.13,
+      "craftsmanship": 5.13
+    }
+  },
+  "critic": {
+    "weakest_feature": "upper_deck_hump",
+    "fix_suggestion": "Improve 'Partial-length upper-deck hump' (mean 0.71/10). Target the 8 anchor: distinct partial-length upper deck starting at the nose and blending down within roughly the front third of the fuselage; then the 10 anchor: iconic 747 hump: starts at the cockpit, smoothly faired into the crown, ends around one-third of the length, with a visible cockpit region on the upper lobe.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 5.470722,
+  "regressed": false,
+  "best_total_after": 37.93,
+  "created_at": "2026-07-09T20:50:48.547Z"
+}

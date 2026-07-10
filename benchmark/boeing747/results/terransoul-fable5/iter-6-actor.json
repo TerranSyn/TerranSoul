@@ -1,0 +1,11 @@
+{
+  "model": "claude-fable-5",
+  "effort": "max",
+  "ms": 345612,
+  "cost_usd": 3.047696,
+  "status": "edited",
+  "plane_sha256_before": "0c0561d9ba7135336d56c7a96bf29d1ce3d5915ebfaf46b6c061c6feca160936",
+  "plane_sha256_after": "ad705ff58c4cda5174edc449832e94b999e7e9da77d0b174537ddb86d85d31fb",
+  "changed": true,
+  "claude_result_text": "The edit is complete and the module passes a syntax check. Summary of the change:\n\n**What I changed:** Rebuilt the wings and re-hung the engines in `plane.js` — targeting the wing_geometry criterion (Claude track's weakest at 3/10, and the subject of gemma's complaints on views 4/5/6/7: \"straight rectangular slabs, no sweep or taper\").\n\n**Why:** My own inspection of view-5 (top-down) and view-1/6 confirmed the wing was a single flat `BoxGeometry(10, 0.6, 55)` slab — zero sweep, zero taper, zero dihedral, invisible edge-on in profile — with all four nacelles at one X station so profiles stacked them into \"one engine block.\" The reference planform/three-view shows strongly swept, heavily tapered wings with nacelles below and ahead of the leading edge.\n\n**The concrete edits (one tightly-coupled set):**\n1. **Wings:** replaced the slab with two swept trapezoid surfaces using the same ExtrudeGeometry pattern already proven for the tail stabilizers — ~37.5° leading-edge sweep, root chord 15 tapering to 3.5 at the tip (taper ratio ~0.23), semi-span 27.5 (span ~55 ≈ 0.9× body length), ~6.9° dihedral, low-mounted with the root underside at y=-2.3 buried in the lower fuselage lobe and both roots meeting on the centerline so nothing floats.\n2. **Engines:** the four nacelles (counts, sizes, dark inlets unchanged) now restagger along the swept leading edge at 40%/69% semi-span, each hung on a pylon under the *local* wing underside (which rises with dihedral), inlets poking ~3 units ahead of the local leading edge — so profiles now show two clearly staggered engines per side, and the top view shows nacelles ahead of a swept edge instead of stubs on a rectangle.\n3. **Gear coupling fix:** the two wing-mounted main-gear strut tops moved from y=-0.1 to y=-0.8 so they stay embedded inside the new, lower wing instead of spiking through its top surface.\n\nFuselage, hump, cockpit band, window/door lines, empennage, and nose/body gear are untouched, so the criteria that already score well ("
+}

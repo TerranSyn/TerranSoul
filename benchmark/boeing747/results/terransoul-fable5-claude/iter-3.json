@@ -1,0 +1,90 @@
+{
+  "actor": "terransoul-fable5-claude",
+  "judge_track": "claude-fable-5-vision",
+  "iter": 3,
+  "run_id": "terransoul-fable5-iter-3-mrdykkvj",
+  "plane_sha256": "fe61d48ce53840ad875e675cc206f0d3c11861f47d7be1d8a3963c4f43cab4b9",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 35.3,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 3.15,
+      "notes": "Plain slender grey tube with blunt ends, no nose taper or tail-cone upsweep, and no upper-deck hump. Single cylindrical nacelle under a small flat wing plate; only one engine visible. Vertical fin is an unswept rectangle at the tail; no horizontal stabilizers or landing gear. Dashed window line present; coherent grey scheme."
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.05,
+      "notes": "Plain white cylinder with flat blunt ends, no nose taper or tail cone. Flat dark slab wings with slight sweep but no taper or dihedral. Single thin vertical fin, no horizontal stabilizers. No engines or pylons anywhere. Sparse uneven window dots plus dark cockpit patch. No hump. Reads as a generic toy plane."
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.39,
+      "notes": "Gray cylinder fuselage with a flat disc nose, no taper. No upper-deck hump; only a small black box atop the nose and two black rectangles on the flat front face. Wings are flat unswept rectangular slabs, no dihedral. Four dark nacelles hang under the wings. Vertical fin is an unswept slab; no horizontal stabilizers visible. Even square window row present."
+    }
+  ],
+  "weakest_feature": {
+    "id": "landing_gear",
+    "mean": 0,
+    "perCriterion": {
+      "engines_four_underwing": 3.33,
+      "upper_deck_hump": 0.67,
+      "fuselage_proportions": 5,
+      "wing_geometry": 3.33,
+      "empennage": 3,
+      "landing_gear": 0,
+      "window_door_lines": 5.67,
+      "livery_coherence": 6.67,
+      "silhouette_747": 3,
+      "craftsmanship": 5.33
+    }
+  },
+  "critic": {
+    "weakest_feature": "landing_gear",
+    "fix_suggestion": "Improve 'Landing gear (nose gear + 4-truck main gear) when visible' (mean 0/10). Target the 8 anchor: nose gear plus four main-gear trucks under the wing/body junction with wheels; then the 10 anchor: recognizable 747 gear layout: two-wheel nose strut, four multi-wheel main bogies (two under the body, two under the wings), plausible strut lengths.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 2.054143,
+  "regressed": false,
+  "best_total_after": 35.3,
+  "created_at": "2026-07-09T20:37:14.826Z"
+}

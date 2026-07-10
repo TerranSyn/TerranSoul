@@ -236,7 +236,11 @@ export async function judgeShotsClaude({ shotsDir, views, out, force, samples, m
   const totalCost = Math.round(perView.reduce((a, v) => a + (v.cost_usd || 0), 0) * 1e6) / 1e6;
   const results = {
     protocol: rubric.protocol,
-    judge_track: 'claude-opus-4-8-vision',
+    // Honest labeling: derive from whichever model actually ran (modelLabel
+    // defaults to DEFAULT_MODEL_LABEL when --model is omitted, so the
+    // already-committed opus48 track's label/shape is byte-identical to
+    // before this fix — this is a pure relabeling, not a behavior change).
+    judge_track: `${modelLabel}-vision`,
     rubric_version: rubric.version,
     rubric_sha256: rubricSha256,
     judge_model: modelLabel,

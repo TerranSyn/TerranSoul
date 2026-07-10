@@ -1,0 +1,90 @@
+{
+  "actor": "terransoul-fable5-claude",
+  "judge_track": "claude-fable-5-vision",
+  "iter": 1,
+  "run_id": "terransoul-fable5-iter-1-mrdxks4s",
+  "plane_sha256": "59bfd02b1576986ec81deb64c51dffe19c468a5d7a212a8d29204ba32b68cbee",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 21.44,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 1.85,
+      "notes": "Plain grey cylinder ~10x diameter with blunt rounded ends, no nose taper. No engines, no hump, no landing gear, no windows. One dark unswept rectangular slab at rear top as fin; no horizontal stabilizers. Thin dark strip mid-body may be an edge-on flat wing. Muted grey/navy but featureless; barely reads as aircraft."
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 1.79,
+      "notes": "Plain light-grey cylinder with blunt rounded ends, no nose taper or tail cone. One unswept dark rectangular slab on the tail top (crude fin), no horizontal stabilizers. A small dark trapezoid on the lower mid-body vaguely hints at a wing root. No engines, hump, gear, windows, or doors. Parts join cleanly but assembly is minimal."
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.09,
+      "notes": "Plain constant-diameter cylinder fuselage with blunt ends; single unswept untapered rectangular wing slab at 90 degrees; no engines, pylons, or hump visible in planform; no horizontal stabilizers, only a thin edge-on fin sliver past the tail; two-tone grey scheme; assembly is clean but reads as a plus-sign, not a 747."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 2.07,
+      "notes": "Plain grey cylinder with blunt flat ends, no nose taper or tail cone. Two flat, untapered, unswept dark slab wings, no dihedral. Single rectangular vertical fin floats with a visible gap above the fuselage; no horizontal stabilizers. No engines, hump, windows, or surface detail. Reads as a generic toy plane."
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 1.92,
+      "notes": "Plain gray cylinder with blunt rounded ends; no nose taper. One flat dark swept plate sits atop the rear fuselage, a small plate hangs below mid-body, and a single rectangular fin rises at the rear. No engines, no hump, no landing gear, no windows. Parts read as thin floating slabs."
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": null,
+      "notes": ""
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 0,
+    "perCriterion": {
+      "engines_four_underwing": 0,
+      "upper_deck_hump": 0,
+      "fuselage_proportions": 4.8,
+      "wing_geometry": 2.4,
+      "empennage": 2.4,
+      "landing_gear": 0,
+      "window_door_lines": 0,
+      "livery_coherence": 4.8,
+      "silhouette_747": 1.6,
+      "craftsmanship": 5
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Improve 'Four engines under swept wings' (mean 0/10). Target the 8 anchor: four nacelles hung under the swept wings on visible pylons, plausible inboard/outboard spacing; then the 10 anchor: four underslung pylon-mounted nacelles with correct relative size, spacing, and forward offset ahead of the wing leading edge, inlet visibly open/darker.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 3.370898,
+  "regressed": false,
+  "best_total_after": 21.44,
+  "created_at": "2026-07-09T20:08:11.120Z"
+}

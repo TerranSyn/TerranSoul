@@ -1,0 +1,90 @@
+{
+  "actor": "terransoul-fable5-claude",
+  "judge_track": "claude-fable-5-vision",
+  "iter": 6,
+  "run_id": "terransoul-fable5-iter-6-mre09zdx",
+  "plane_sha256": "0c0561d9ba7135336d56c7a96bf29d1ce3d5915ebfaf46b6c061c6feca160936",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 44.05,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 3.64,
+      "notes": "Overlong grey tube with blunt nose and abrupt tail. Front hump with upper window row is present and correctly placed. Wing is only a thin flat plate edge-on; one boxy engine block under belly, not four nacelles. Tail is two wire-thin lines, no solid fin/tailplane. Tiny floating wheels; uniform flat grey."
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5.17,
+      "notes": "Top-down: slender tube ~10x diameter with rounded nose but blunt untapered tail. Wing is a single rectangular unswept, untapered slab; four small nacelle stubs sit atop it, no pylons or forward offset. Front-third oval hump and cockpit mark present. Dashed window rows both sides. Thin fin edge and swept stab lines at tail. Coherent grey scheme."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": null,
+      "notes": ""
+    }
+  ],
+  "weakest_feature": {
+    "id": "wing_geometry",
+    "mean": 3,
+    "perCriterion": {
+      "engines_four_underwing": 3.5,
+      "upper_deck_hump": 7,
+      "fuselage_proportions": 5.5,
+      "wing_geometry": 3,
+      "empennage": 3,
+      "landing_gear": 4,
+      "window_door_lines": 6,
+      "livery_coherence": 5.5,
+      "silhouette_747": 3.5,
+      "craftsmanship": 4.5
+    }
+  },
+  "critic": {
+    "weakest_feature": "wing_geometry",
+    "fix_suggestion": "Improve 'Wing sweep (~37.5 deg), dihedral, taper' (mean 3/10). Target the 8 anchor: clearly swept-back (~35-40 deg) tapering wings with visible upward dihedral, mounted at the lower mid-fuselage; then the 10 anchor: realistic planform: strong sweep, root-to-tip chord and thickness taper, dihedral, plausible span (~0.9x body length), wing roots faired into the belly.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 1.362288,
+  "regressed": true,
+  "best_total_after": 47,
+  "created_at": "2026-07-09T21:24:43.623Z"
+}

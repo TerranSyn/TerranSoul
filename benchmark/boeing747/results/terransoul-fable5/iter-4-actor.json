@@ -1,0 +1,11 @@
+{
+  "model": "claude-fable-5",
+  "effort": "max",
+  "ms": 352878,
+  "cost_usd": 2.690773,
+  "status": "edited",
+  "plane_sha256_before": "bdfd8ebd6886dea6a467216cafa05b1a87c825a1cbe40340a7e154011a7edaaa",
+  "plane_sha256_after": "876b76b38e283f399e9f0a03f7de5b5d5782639d6048c35ae20c059ba01ea003",
+  "changed": true,
+  "claude_result_text": "Done. Plain-text summary of the change:\n\n**What I saw:** I opened the contact sheet, view 1 (left profile), view 9 (nose-hump closeup), view 6 (front-3/4), and the nose-hump/side reference photos myself. The Claude judge was right: the model had no upper-deck hump at all — just a small floating black \"visor\" box sitting on the bare crown and two dark panes pasted on the completely flat nose disc. That's why upper_deck_hump averaged 0.71/10 (weight 1.5) on the Claude track and why gemma kept calling the hump \"a crude block\".\n\n**What I changed (one focused edit in plane.js, hump region only):**\n1. **Added a real partial-length upper-deck hump**: a CapsuleGeometry(2.0, 8) lobe laid along +X, stretched 1.54× lengthwise so its rounded ends fair gently into the crown, centered at (20.2, 2.1, 0). Its crest sits at y=4.1 (~37% above the radius-3 hull), it emerges from the hull above y≈2.24 giving the 747 double-bubble front cross-section, and the visible blister spans x≈11.3→29.1 — i.e. it starts at the cockpit and blends down at exactly one-third of the 60-long fuselage, matching the 8/10 rubric anchors. Its bottom (y=0.1) and flanks stay buried in the hull, so nothing floats.\n2. **Replaced the floating visor block and the two flat-nose panes** with a dark cockpit band: a thin cylinder (r=1.7 × 0.6) concentric with the hump brow that stays under the hump skin at its aft edge and emerges ~0.26 proud at the front, reading as the wrap-around 747 windshield on the upper lobe from front, side, and quarter views.\n3. **Added a second dash-line of upper-deck panes** on the hump flanks (7 per side at y=2.6, z=±1.95, within the capsule's cylindrical span) — this also targets the gemma track's weakest feature, since \"separate upper-deck windows on the hump\" is part of the window_door_lines 10-anchor.\n\n**Why it's safe:** wings, engines, tail, landing gear, and the main-deck window/door lines are untouched, so no ≥7-scoring criterion is regressed; craftsmanship should improve since the"
+}

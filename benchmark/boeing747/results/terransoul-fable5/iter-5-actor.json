@@ -1,0 +1,11 @@
+{
+  "model": "claude-fable-5",
+  "effort": "max",
+  "ms": 552280,
+  "cost_usd": 3.7828399999999993,
+  "status": "edited",
+  "plane_sha256_before": "876b76b38e283f399e9f0a03f7de5b5d5782639d6048c35ae20c059ba01ea003",
+  "plane_sha256_after": "0c0561d9ba7135336d56c7a96bf29d1ce3d5915ebfaf46b6c061c6feca160936",
+  "changed": true,
+  "claude_result_text": "Done. Summary of what I changed and why:\n\n**MCP preflight note:** skipped deliberately (recorded, not silent) — this is a bench-actor turn inside a running benchmark, and bench resource discipline forbids spawning extra MCP servers/terminals mid-bench.\n\n**What I inspected:** contact sheet plus views 1, 4, 7 directly, and the rear-quarter photo + three-view drawing references. My own eyes confirmed the Claude track's weakest feature (empennage, 3.0/10 — the lowest score on either track): the fin was a plain unswept `BoxGeometry` rectangle and the model had **zero horizontal stabilizers** in every view. I chose empennage over gemma's engines_four_underwing (4.22) because gemma's notes contain visible hallucinations (it \"saw\" Air New Zealand livery and a Scottish-flag tail on a monochrome grey model — bled in from reference photos), and its engine miscounts are largely a projection artifact: the unswept rectangular wing puts all four nacelles at the same X, so orthographic profile views stack them into \"one engine\". That proper fix is wing sweep + nacelle restagger — a bigger subsystem that deserves the next iteration on its own.\n\n**The edit (tail region of plane.js only):** replaced the rectangle tail box with a real 747 empennage, all via allowed `ExtrudeGeometry` trapezoids:\n- **Vertical stabilizer:** tall (tip y=11.4, ~8.4 above the crown — matching the 747's ~10 m-over-70 m ratio), leading edge swept ~38°, near-vertical trailing edge, root chord 10.4 buried ~0.8 into the fuselage crown so it can't float, and the TE face held 0.1 ahead of the blunt aft rim so it can't z-fight with the tail cap.\n- **Horizontal stabilizers:** low-mounted pair on the aft fuselage, ~32° leading-edge sweep, tapered (root chord 5.5 → tip 1.8), ~8° dihedral, total span 17 ≈ 31% of the wingspan (the 747 ratio). Each is a chord/span planform extruded to thickness and rolled −90°±dihedral about X so tips rise and span lands on ±Z; roots meet on the centerline deep inside the hull so both sur"
+}

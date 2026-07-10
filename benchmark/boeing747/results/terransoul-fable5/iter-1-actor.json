@@ -1,0 +1,11 @@
+{
+  "model": "claude-fable-5",
+  "effort": "max",
+  "ms": 206240,
+  "cost_usd": 1.91505,
+  "status": "edited",
+  "plane_sha256_before": "59bfd02b1576986ec81deb64c51dffe19c468a5d7a212a8d29204ba32b68cbee",
+  "plane_sha256_after": "1dee9d6922c5a32c79d42646e52bf7f00af79965f976f95f5bc5790887b52ccc",
+  "changed": true,
+  "claude_result_text": "Done. Summary of the change:\n\n**What I saw:** Opening the contact sheet and views 1, 5, and 6 myself confirmed the candidate was still the rig-validation stub — a blunt cylinder, one straight wing slab, one fin. No engines anywhere, which matches the Claude judge's weakest feature (engines_four_underwing, 0/10, weight 1.5) and gemma's repeated \"lacks all four engines\" notes. The reference photos (front-quarter, planform) show the target: four nacelles below the wing on visible pylons, inboard pair ~40% semi-span, outboard ~70%, inlets dark/open and ahead of the leading edge.\n\n**The edit (one focused set, engines only):** Added a loop creating four pylon-mounted engine assemblies at z = ±11 (40% semi-span) and ±19 (69%), each made of three allowed primitives:\n- **Nacelle** — metal-grey cylinder (r 1.15, length 4.5) with its axis along +X, centered at x=4.5 / y=−2.0, so it hangs below the wing plane and its lip reaches x=6.75, ahead of the wing leading edge at x=5.\n- **Inlet** — a slightly smaller near-black disc (r 1.0) protruding 0.1 past the nacelle front, giving the \"inlet visibly open/darker\" look from the 10-anchor while leaving a visible lip ring.\n- **Pylon** — a dark box (2.8 × 2.0 × 0.35) that embeds 0.2 into the wing underside and passes the nacelle centerline, so every part is solidly joined — no floating pieces or coplanar z-fighting faces.\n\nI also refreshed the stale header comment (the file is no longer \"NOT a real benchmark attempt\") and noted next targets: wing sweep/taper/dihedral, hump, nose taper, empennage.\n\n**Why this and nothing more:** Engines are the highest-weight zero-scoring criterion on the stricter judge track, the fix is purely additive (nothing existing was moved, so no >=7 criterion can regress), and it also feeds silhouette_747 (\"four-engine airliner\") and livery coherence (grey nacelles consistent with the scheme). Wing sweep is the natural next iteration, at which point the engine x-stations can shift with the local leading edge. Con"
+}
