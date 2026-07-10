@@ -229,6 +229,18 @@
       ],
     }));
 
+    // 5. Boeing-747 self-improve loop — two actors TerranSoul has driven
+    //    through the SAME frozen primitives-only rubric (rig, cameras, scoring,
+    //    stop-conditions all sha256-stamped and byte-identical across both
+    //    runs), each scored by two DIFFERENT judge instruments. Grouped by
+    //    judge track (not actor) so the chart's own structure carries the
+    //    "only compare within a column" rule: the frozen gemma4 column is the
+    //    single neutral track every actor is scored on the same way, while the
+    //    vision-judge column is each actor's OWN model family grading its own
+    //    build — a self-family-bias caveat carried on the panel itself, same
+    //    disclosure discipline as the Zork persistent-peak caveat above.
+    grid.appendChild(boeingChart());
+
     const foot = document.getElementById('compare-foot');
     if (foot) {
       const paperUrl = 'https://terransyn.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/';
@@ -299,6 +311,63 @@
       + 'reproduced in full on 2026-07-03 (rrf_emb R@5 99.4% / NDCG@10 94.5% / MRR 95.3% with the documented '
       + 'EmbeddingGemma embedder). The briefly-tracked "RRF regression" was an embedder-config mismatch between '
       + 'runs, not a code change — resolution recorded in benchmark/results/longmemeval_s_terransoul.md.</div>';
+    return wrap;
+  }
+
+  // Boeing-747 primitives-only self-improve loop, grouped bar chart: 2 judge
+  // tracks x 2 actors, frozen /100 rubric (benchmark/boeing747/, sha256-stamped
+  // rig/cameras/scoring/stop-conditions — identical measurement for both
+  // actors). Mirrors memoryGroupChart()'s group-by-metric / bar-by-entity
+  // shape exactly, reusing its .mg-* CSS via the shared .grouped-chart-style
+  // selectors (see deck.css) so the two grouped charts read as one visual
+  // language. Real committed numbers only (results/terransoul-opus48*/,
+  // results/terransoul-fable5*/) — see benchmark/BOEING-COMPARISON.md.
+  function boeingChart() {
+    const wrap = document.createElement('div');
+    wrap.className = 'chart chart--span-12 boeing-chart';
+    const groups = ['gemma4 — frozen, neutral judge', "vision judge — actor's own model family"];
+    const actors = [
+      { name: 'Opus 4.8 + TerranSoul', fill: 'url(#gradTSgBoeing)', v: [73.68, 68.26] },
+      { name: 'Fable 5 + TerranSoul', fill: '#5B9BD5', valCls: 'mg-val mg-val--fable', v: [59.62, 49.48] },
+    ];
+    const W = 1120, H = 135, base = 0, topV = 100;
+    const padL = 12, padR = 16, padTop = 28, padBot = 22;
+    const plotW = W - padL - padR, plotH = H - padTop - padBot;
+    const yFor = (v) => padTop + plotH * (1 - (v - base) / (topV - base));
+    const groupW = plotW / groups.length, innerPad = 46, barGap = 22, nb = actors.length;
+    const barW = (groupW - innerPad * 2 - barGap * (nb - 1)) / nb;
+    let s = '';
+    for (let g = base; g <= topV; g += 25) {
+      const gy = yFor(g).toFixed(1);
+      s += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '" class="mg-grid"/>';
+      s += '<text x="' + (W - padR + 2) + '" y="' + (yFor(g) + 3).toFixed(1) + '" class="mg-axis">' + g + '</text>';
+    }
+    groups.forEach((grp, gi) => {
+      const gx = padL + gi * groupW + innerPad;
+      actors.forEach((act, ai) => {
+        const val = act.v[gi];
+        const bx = gx + ai * (barW + barGap);
+        const cx = (bx + barW / 2).toFixed(1);
+        const by = yFor(val), bh = (padTop + plotH - by).toFixed(1);
+        s += '<rect x="' + bx.toFixed(1) + '" y="' + by.toFixed(1) + '" width="' + barW.toFixed(1) + '" height="' + bh + '" rx="3" fill="' + act.fill + '"/>';
+        s += '<text x="' + cx + '" y="' + (by - 4).toFixed(1) + '" class="' + (act.valCls || 'mg-val mg-valts') + '" text-anchor="middle">' + act.v[gi] + '</text>';
+      });
+      s += '<text x="' + (padL + gi * groupW + groupW / 2).toFixed(1) + '" y="' + (H - 12) + '" class="mg-metric" text-anchor="middle">' + esc(grp) + '</text>';
+    });
+    const legend = actors.map((act, i) =>
+      '<rect x="' + (padL + i * 260) + '" y="8" width="13" height="13" rx="3" fill="' + act.fill + '"/>'
+      + '<text x="' + (padL + i * 260 + 19) + '" y="19" class="' + (act.valCls ? 'mg-leg' : 'mg-leg mg-valts') + '">' + esc(act.name) + '</text>').join('');
+    wrap.innerHTML =
+      '<h3>Boeing-747 self-improve loop — primitives-only build, /100</h3>'
+      + '<div class="chart-sub">Three.js primitives only, frozen 9-view rubric (rig/cameras/scoring sha256-stamped) · higher is better</div>'
+      + '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Boeing-747 self-improve loop comparison">'
+      + '<defs><linearGradient id="gradTSgBoeing" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFC000"/><stop offset="100%" stop-color="#F4C77E"/></linearGradient></defs>'
+      + legend + s + '</svg>'
+      + '<div class="mem-note mem-caveat">Same actor, two judges: the frozen gemma4 track is the single neutral instrument every '
+      + 'actor is scored on identically; the vision-judge track is each actor’s OWN model family grading its own build '
+      + '(self-family-bias caveat — a generous read, not an independent check) and is never compared across actors as if it '
+      + 'were one instrument. Both are separate, honestly-labelled measurements, not a ranking of Opus vs Fable — full '
+      + 'protocol and per-iteration history: benchmark/BOEING-COMPARISON.md.</div>';
     return wrap;
   }
 

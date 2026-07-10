@@ -217,7 +217,8 @@ strong { color: var(--coral); font-weight: 700; }
 /* ── Slide 8 comparison (dark theme) ────────────────────────────────── */
 .compare-grid {
   flex: 1; min-height: 0; display: grid;
-  grid-template-columns: repeat(12, 1fr); grid-auto-rows: minmax(0, 1fr); gap: 16px;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: 1.05fr 1.05fr 1fr; gap: 16px;
 }
 .chart {
   background: rgba(255, 255, 255, 0.055); border: 1px solid rgba(255, 255, 255, 0.12);
@@ -230,17 +231,26 @@ strong { color: var(--coral); font-weight: 700; }
 .chart--span-5 { grid-column: span 5; }
 .chart--span-6 { grid-column: span 6; }
 .chart--span-4 { grid-column: span 4; }
+.chart--span-12 { grid-column: span 12; }
 
-/* Memory comparison — grouped bar chart (slide 9, wide slot): 4 metrics ×
-   TerranSoul + the top two memory systems, all on LongMemEval-S. */
-.mem-chart .mg-grid { stroke: rgba(255, 255, 255, 0.1); stroke-width: 1; }
-.mem-chart .mg-axis { fill: var(--ink-light-soft); font-size: 11px; opacity: 0.55; font-family: var(--body); }
-.mem-chart .mg-val { fill: var(--ink-light); font-size: 15px; font-weight: 700; font-family: var(--body); }
-.mem-chart .mg-valts { fill: var(--gold); }
-.mem-chart .mg-metric { fill: var(--ink-light); font-size: 14px; font-weight: 600; font-family: var(--body); }
-.mem-chart .mg-leg { fill: var(--ink-light-soft); font-size: 13px; font-family: var(--body); }
-.mem-chart .mg-dash { fill: var(--ink-light-soft); font-size: 15px; opacity: 0.5; font-family: var(--body); }
-.mem-chart .mem-note { margin-top: 8px; font-size: clamp(10px, 0.95vw, 13px); color: var(--ink-light-soft); opacity: 0.7; }
+/* Grouped bar chart (slide 9, wide slot) — shared by the memory comparison
+   (4 metrics x TerranSoul + top two memory systems, LongMemEval-S) and the
+   Boeing-747 comparison (2 judge tracks x 2 actors, frozen /100 rubric). */
+.mem-chart .mg-grid, .boeing-chart .mg-grid { stroke: rgba(255, 255, 255, 0.1); stroke-width: 1; }
+.mem-chart .mg-axis, .boeing-chart .mg-axis { fill: var(--ink-light-soft); font-size: 11px; opacity: 0.55; font-family: var(--body); }
+.mem-chart .mg-val, .boeing-chart .mg-val { fill: var(--ink-light); font-size: 15px; font-weight: 700; font-family: var(--body); }
+.mem-chart .mg-valts, .boeing-chart .mg-valts { fill: var(--gold); }
+.mem-chart .mg-metric, .boeing-chart .mg-metric { fill: var(--ink-light); font-size: 14px; font-weight: 600; font-family: var(--body); }
+.mem-chart .mg-leg, .boeing-chart .mg-leg { fill: var(--ink-light-soft); font-size: 13px; font-family: var(--body); }
+.mem-chart .mg-dash, .boeing-chart .mg-dash { fill: var(--ink-light-soft); font-size: 15px; opacity: 0.5; font-family: var(--body); }
+.mem-chart .mem-note, .boeing-chart .mem-note { margin-top: 8px; font-size: clamp(10px, 0.95vw, 13px); color: var(--ink-light-soft); opacity: 0.7; }
+.boeing-chart .mg-val--fable { fill: #7EB6E6; }
+/* Boeing panel is a wide/short slot (single full-width row) — scale its
+   grouped-chart text down from the memory chart's taller-slot sizing. */
+.boeing-chart .mg-val { font-size: 12px; }
+.boeing-chart .mg-metric { font-size: 11px; }
+.boeing-chart .mg-leg { font-size: 12px; }
+.boeing-chart .mg-axis { font-size: 9px; }
 
 /* Stat tile — a single "not a leaderboard bar" callout (e.g. a scripted
    replay demo) so it's never visually compared against the self-play bars
