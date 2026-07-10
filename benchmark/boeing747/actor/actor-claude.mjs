@@ -4,17 +4,38 @@
 // between loop-runner-claude.mjs invocations; see benchmark/BOEING-COMPARISON.md's
 // 2026-07-05 ACTOR-FIDELITY CORRECTION note).
 //
-// Mirrors judge-claude.mjs's callClaudeVision subprocess-spawn pattern
-// (execFile('claude', args, {cwd: REPO_ROOT, timeout, maxBuffer, windowsHide}))
-// but grants Read+Edit (no Bash/Write/Web*/Task) instead of Read-only, scoped
-// via --add-dir to the candidate's own directory AND the current run's shots
-// directory, so the actor can genuinely open the 9 rendered PNGs + reference
-// photos itself and apply ITS OWN edit to plane.js via the Edit tool — no
-// human, no text-only hint-following.
+// WIRE-CLI-PARITY-GAP-3 REWIRE (2026-07-10): this module used to spawn the
+// bare `claude` binary directly (`--allowedTools "Read Edit" --add-dir ...`).
+// It now spawns TerranSoul's OWN generic agentic-edit CLI capability instead
+// — `terransoul-cli --agent-task <prompt> --grant-dir <dir> [--grant-dir
+// <dir> ...] [--model <m>] [--effort <e>]` (src-tauri/src/cli.rs) — which:
+//   - gates the call through the SAME `action_trust` earned-autonomy ledger
+//     `SelfImproveEngine`'s own DAG uses (a DENY returns before `claude` is
+//     ever spawned — no second gating mechanism, no bypass);
+//   - internally drives the exact same Read+Edit-scoped `claude` invocation
+//     via `crates/brain/src/agentic_cli.rs::AgenticCliClient` — production
+//     infrastructure, not a bench-only shell-out;
+//   - reports its outcome as ONE line of JSON on stdout on success
+//     (`result_text`/`cost_usd`/`duration_ms`/`tool_calls`, already tallied
+//     for us — no stream reconstruction needed on the happy path) and
+//     human-readable progress lines on stderr throughout (`[tool] <name>
+//     ...` / `[tool-result] <name> (ok|FAILED)`), classified by
+//     lib/actor-stream.mjs so a killed/timed-out/denied call still leaves a
+//     real tool-call tally instead of a black box (LESSON BOEING-747-ACTOR-
+//     RETRY-1's fix 3, ported to the new transport).
+// KNOWN GAP (not fixable from this Node-only phase): the old bespoke call
+// passed `--strict-mcp-config --mcp-config '{"mcpServers":{}}'` to prevent
+// the actor's `claude` session from auto-loading any ambient project
+// `.mcp.json`. `AgenticCliClient::build_command` (Rust) does not set this —
+// confirmed by reading crates/brain/src/agentic_cli.rs in full before this
+// rewire. Fixing it requires a Rust change, out of scope for this phase;
+// flagged here (and in the task report) as a real, un-silenced regression
+// for a future Rust-touching pass, not swept under the rug.
 //
 // Effort: `claude --help` exposes `--effort <low|medium|high|xhigh|max>`; this
 // is the highest available extended-thinking/effort level and is applied by
-// default (DEFAULT_EFFORT). There is no separate "thinking" flag beyond this.
+// default (DEFAULT_EFFORT), forwarded through terransoul-cli's own `--effort`
+// flag. There is no separate "thinking" flag beyond this.
 //
 // Contract gate (mirrors run-baselines.mjs's `status: 'contract_failed'`):
 // after the call returns, plane.js is re-read from disk (the Edit tool already
@@ -22,12 +43,30 @@
 // (lib/contract.mjs, FROZEN). A violation is NOT accepted — the previous
 // candidate source is restored verbatim and the violation is recorded; the
 // contract is never relaxed and a failed edit is never silently retried with
-// a weakened contract.
+// a weakened contract. UNCHANGED by this rewire (harness-side, correct as-is).
+//
+// RETRY/BACKOFF (fix 1) lives in loop-runner-terransoul.mjs, which calls
+// runActorEdit() again on an `actor_failed` outcome with a longer
+// `timeoutMs`; this module stays retry-agnostic — it just accepts an
+// optional per-call `timeoutMs` override. A NEW failure mode introduced by
+// this rewire — `action_trust` DENIAL — is surfaced as `denied: true` on the
+// thrown error/returned result so a retry loop can recognize that a longer
+// timeout can never fix a ledger decision (see lib/actor-retry.mjs's
+// `shouldRetryActor(attemptIndex, maxRetries, {denied})`).
+//
+// PRIOR-ATTEMPTS CONTEXT / LESSON INGEST (fix 4, self-learning): wired at the
+// loop-runner-terransoul.mjs level (fetchPriorAttempts/
+// formatPriorAttemptsSection build the `priorAttemptsSection` this module's
+// buildActorPrompt() already accepts and injects; ingestAttemptLesson runs
+// there once the next iteration's judge scores make an edit's effect
+// observable) — unchanged by this rewire, still runs ALONGSIDE the
+// TerranSoul-CLI-driven edit, not instead of it.
 //
 // CLI:
 //   node actor/actor-claude.mjs --plane <plane.js> --shots <dir>
 //     --gemma-results <results.json> --claude-results <results.json>
-//     [--model claude-fable-5] [--effort max] [--out <result.json>]
+//     [--model claude-fable-5] [--effort max] [--timeout-ms N]
+//     [--cli-bin <path>] [--cli-data-dir <dir>] [--out <result.json>]
 import { execFile } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -37,6 +76,7 @@ import { VIEWS } from '../lib/cameras.mjs';
 import { ALLOWED_GEOMETRIES, validatePlaneSource } from '../lib/contract.mjs';
 import { loadRubric } from '../judge/judge.mjs';
 import { sha256 } from '../rig/render-rig.mjs';
+import { parseActorStreamBuffer, summarizeActorStream } from '../lib/actor-stream.mjs';
 
 const execFileAsync = promisify(execFile);
 const BENCH_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -50,6 +90,11 @@ const DEFAULT_MODEL = 'claude-fable-5';
 // CLI build removes this flag, callers should override --effort explicitly;
 // no invented flag is used in its place.
 const DEFAULT_EFFORT = 'max';
+// `terransoul-cli`'s own build output — mirrors `.cargo/config.toml`'s
+// `target-dir = "src-tauri/target"` pin; this is not a new build-output
+// convention, just where cargo already puts every workspace binary.
+const CLI_BIN_NAME = process.platform === 'win32' ? 'terransoul-cli.exe' : 'terransoul-cli';
+const DEFAULT_CARGO_TARGET_DIR = path.join(REPO_ROOT, 'src-tauri', 'target');
 
 /**
  * Extract the FORBIDDEN_PATTERNS reasons VERBATIM from the frozen
@@ -126,6 +171,7 @@ function buildActorPrompt({
   gemmaHint,
   claudeHint,
   forbiddenReasons,
+  priorAttemptsSection,
 }) {
   const gemmaNotes = perViewNotesGemma(gemmaResult);
   const lines = [];
@@ -179,6 +225,10 @@ function buildActorPrompt({
   }
   if (claudeHint) lines.push(`  ${claudeHint}`);
   lines.push('');
+  if (priorAttemptsSection) {
+    lines.push(priorAttemptsSection);
+    lines.push('');
+  }
   lines.push('YOUR TASK:');
   lines.push('1. Use the Read tool to open several rendered view PNGs above yourself, plus the reference photos most relevant to the weakest-scoring feature named above.');
   lines.push(`2. Use the Read tool to open the current source: ${candidatePath}`);
@@ -193,51 +243,159 @@ function buildActorPrompt({
   return lines.join('\n');
 }
 
-/** ONE Claude actor-edit call. Mirrors judge-claude.mjs's callClaudeVision subprocess pattern. */
-async function callClaudeActor({ prompt, candidateDir, shotsDirAbs, model, effort }) {
-  const args = [
-    '-p',
-    prompt,
-    '--output-format',
-    'json',
-    '--allowedTools',
-    'Read Edit',
-    '--strict-mcp-config',
-    '--mcp-config',
-    '{"mcpServers":{}}',
-    '--add-dir',
-    candidateDir,
-    '--add-dir',
-    shotsDirAbs,
-  ];
+/**
+ * Resolve the built `terransoul-cli` binary this actor drives
+ * (WIRE-CLI-PARITY-GAP-3 rewire — replaces the old bespoke direct `claude`
+ * spawn). Resolution order:
+ *   1. An explicit `TERRANSOUL_CLI_BIN` env var (absolute path, or a name
+ *      resolvable on `$PATH`) wins outright.
+ *   2. This repo's own `cargo build --bin terransoul-cli` output under
+ *      `CARGO_TARGET_DIR` (or the default `src-tauri/target`) — release
+ *      profile checked before debug.
+ * Never invokes cargo itself (this is a Node-only phase); throws a clear,
+ * actionable error naming the exact build command if neither profile has
+ * been built yet, so a missing binary surfaces as an honest `actor_failed`
+ * (never a silent fallback to the old bare-`claude` behavior).
+ * `env`/`existsSyncFn` are injectable so this resolution logic is directly
+ * vitest-covered without depending on this machine's actual build state.
+ */
+export function resolveTerranSoulCliBinary({ env = process.env, existsSyncFn = existsSync } = {}) {
+  const explicit = env.TERRANSOUL_CLI_BIN;
+  if (explicit && explicit.trim()) return explicit.trim();
+  const targetDir = env.CARGO_TARGET_DIR || DEFAULT_CARGO_TARGET_DIR;
+  const candidates = ['release', 'debug'].map((profile) => path.join(targetDir, profile, CLI_BIN_NAME));
+  for (const candidate of candidates) {
+    if (existsSyncFn(candidate)) return candidate;
+  }
+  throw new Error(
+    `terransoul-cli binary not found (checked: ${candidates.join(', ')}). Build it first: ` +
+      `cd src-tauri && cargo build --release --bin terransoul-cli — or set TERRANSOUL_CLI_BIN to an existing binary path.`,
+  );
+}
+
+/**
+ * ONE `terransoul-cli --agent-task` call (WIRE-CLI-PARITY-GAP-3 rewire —
+ * replaces the OLD bespoke direct `claude --allowedTools "Read Edit" ...`
+ * spawn). Contract:
+ *   - exit 0: stdout is ONE line of JSON (`AgenticTaskOutcome`: result_text/
+ *     cost_usd/duration_ms/tool_calls) — parsed directly, no stream
+ *     reconstruction needed since the CLI already tallies tool calls.
+ *   - a `timeout`-triggered kill, an `action_trust` DENIAL (exit 1, stderr
+ *     starts with `agent-task denied:`), or any other non-zero exit: stderr
+ *     carries terransoul-cli's own progress-line trace
+ *     (lib/actor-stream.mjs's NEW stderr-line format) plus, on denial, the
+ *     exact ledger message — both surfaced so a killed/denied call still
+ *     leaves real evidence instead of a black box (LESSON BOEING-747-ACTOR-
+ *     RETRY-1's fix 3, ported to the new transport).
+ *
+ * `execImpl` defaults to the real `execFileAsync` and is the sole spawn seam
+ * — tests inject a fake implementation (mirrors lib/self-learning.mjs's
+ * injectable `callTool` pattern) so this function's OWN logic (argv
+ * assembly, exit-code/timeout/denial classification, JSON parsing) is
+ * directly vitest-covered without ever spawning a real subprocess.
+ * `cliDataDir`, when supplied, is forwarded to the child as
+ * `TERRANSOUL_HEADLESS_DATA_DIR` (the SAME env var `boot_cli_app_state()`
+ * already resolves — JD-DEMO-CLI-PARITY's isolation mechanism, reused
+ * verbatim) so a bench run can optionally point `--agent-task` at a
+ * dedicated data dir instead of the operator's real production one; when
+ * omitted, the child inherits this process's environment unchanged, i.e.
+ * the real production `action_trust` ledger/`coding_llm_config.json` —
+ * matching exactly what a user running `terransoul-cli --agent-task`
+ * themselves would get, which is the most honest default measurement.
+ */
+async function callTerranSoulAgentTask({
+  prompt,
+  candidateDir,
+  shotsDirAbs,
+  model,
+  effort,
+  timeoutMs,
+  cliBinary,
+  cliDataDir,
+  execImpl = execFileAsync,
+}) {
+  const binary = cliBinary || resolveTerranSoulCliBinary();
+  const args = ['--agent-task', prompt, '--grant-dir', candidateDir, '--grant-dir', shotsDirAbs];
   if (model) args.push('--model', model);
   if (effort) args.push('--effort', effort);
-  const { stdout } = await execFileAsync('claude', args, {
-    cwd: REPO_ROOT,
-    timeout: ACTOR_TIMEOUT_MS,
-    maxBuffer: 16 * 1024 * 1024,
-    windowsHide: true,
-  });
-  let outer;
+  const effectiveTimeout = Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : ACTOR_TIMEOUT_MS;
+  const env = cliDataDir ? { ...process.env, TERRANSOUL_HEADLESS_DATA_DIR: cliDataDir } : process.env;
+
+  let stdoutText;
+  let stderrText;
   try {
-    outer = JSON.parse(stdout);
-  } catch {
-    throw new Error(`claude CLI did not return JSON: ${String(stdout).slice(0, 200)}`);
+    const result = await execImpl(binary, args, {
+      cwd: REPO_ROOT,
+      timeout: effectiveTimeout,
+      maxBuffer: 16 * 1024 * 1024,
+      windowsHide: true,
+      env,
+    });
+    stdoutText = result.stdout || '';
+    stderrText = result.stderr || '';
+  } catch (err) {
+    stderrText = typeof err.stderr === 'string' ? err.stderr : '';
+    const observability = summarizeActorStream(parseActorStreamBuffer(stderrText));
+    const timedOut = Boolean(err.killed) || err.signal === 'SIGTERM';
+    const denied = /\bagent-task denied:/.test(stderrText);
+    const detail = stderrText.trim().slice(0, 500) || String(err.message || err);
+    const reason = timedOut
+      ? `terransoul-cli agent-task timed out after ${effectiveTimeout}ms (${observability.total_tool_calls} tool call(s) observed before kill)`
+      : denied
+        ? `terransoul-cli agent-task denied: ${detail}`
+        : `terransoul-cli agent-task failed (exit ${err.code ?? 'unknown'}): ${detail}`;
+    const wrapped = new Error(reason);
+    wrapped.observability = observability;
+    wrapped.timed_out = timedOut;
+    wrapped.denied = denied;
+    throw wrapped;
   }
-  if (outer.is_error || outer.subtype !== 'success') {
-    throw new Error(`claude actor error (subtype=${outer.subtype}): ${String(outer.result).slice(0, 300)}`);
+
+  const observability = summarizeActorStream(parseActorStreamBuffer(stderrText));
+  let outcome;
+  try {
+    outcome = JSON.parse(stdoutText.trim());
+  } catch (parseErr) {
+    const err = new Error(
+      `terransoul-cli agent-task exited 0 but stdout was not the expected JSON outcome: ${String(parseErr.message || parseErr)}`,
+    );
+    err.observability = observability;
+    throw err;
   }
-  return outer;
+  return {
+    result: outcome.result_text,
+    duration_ms: outcome.duration_ms,
+    total_cost_usd: outcome.cost_usd,
+    observability: { ...observability, tool_calls_reported: outcome.tool_calls || [] },
+  };
 }
 
 /**
  * Run one autonomous actor-edit step: build the prompt from the rubric,
- * contract, and this iteration's two judge tracks; spawn the `claude` CLI
- * with Read+Edit scoped to the candidate dir + shots dir; re-validate the
- * edited source against the FROZEN contract; restore-and-record on any
- * violation or CLI failure rather than accepting/relaxing/retrying.
+ * contract, and this iteration's two judge tracks; spawn `terransoul-cli
+ * --agent-task` (Read+Edit scoped to the candidate dir + shots dir, gated
+ * through the `action_trust` ledger — see callTerranSoulAgentTask's doc);
+ * re-validate the edited source against the FROZEN contract; restore-and-
+ * record on any violation or CLI failure rather than accepting/relaxing/
+ * retrying. `cliBinary`/`cliDataDir`/`execImpl` are optional overrides
+ * (operator convenience + test seam) — see callTerranSoulAgentTask's doc for
+ * their exact semantics; all three default to production behavior when
+ * omitted (auto-resolve the built binary, inherit this process's env
+ * unchanged, spawn a real subprocess).
  */
-export async function runActorEdit({ candidatePath, shotsDir, gemmaResult, claudeResult, model, effort }) {
+export async function runActorEdit({
+  candidatePath,
+  shotsDir,
+  gemmaResult,
+  claudeResult,
+  model,
+  effort,
+  timeoutMs,
+  priorAttemptsSection,
+  cliBinary,
+  cliDataDir,
+  execImpl,
+}) {
   const { rubric } = loadRubric();
   const forbiddenReasons = extractForbiddenReasons();
   const shotsDirAbs = path.resolve(shotsDir);
@@ -260,17 +418,36 @@ export async function runActorEdit({ candidatePath, shotsDir, gemmaResult, claud
     gemmaHint,
     claudeHint,
     forbiddenReasons,
+    priorAttemptsSection,
   });
 
   const useModel = model || DEFAULT_MODEL;
   const useEffort = effort || DEFAULT_EFFORT;
+  const useTimeoutMs = Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : ACTOR_TIMEOUT_MS;
   const started = Date.now();
   let outer = null;
   let actorError = null;
+  let observability;
+  let timedOut = false;
+  let denied = false;
   try {
-    outer = await callClaudeActor({ prompt, candidateDir, shotsDirAbs, model: useModel, effort: useEffort });
+    outer = await callTerranSoulAgentTask({
+      prompt,
+      candidateDir,
+      shotsDirAbs,
+      model: useModel,
+      effort: useEffort,
+      timeoutMs: useTimeoutMs,
+      cliBinary,
+      cliDataDir,
+      execImpl,
+    });
+    observability = outer.observability || null;
   } catch (err) {
     actorError = String(err.message || err);
+    observability = err.observability || null;
+    timedOut = Boolean(err.timed_out);
+    denied = Boolean(err.denied);
   }
   const ms = outer ? Number(outer.duration_ms) || Date.now() - started : Date.now() - started;
   const costUsd = outer ? Number(outer.total_cost_usd) || 0 : 0;
@@ -279,7 +456,22 @@ export async function runActorEdit({ candidatePath, shotsDir, gemmaResult, claud
   const editedSha = sha256(editedSource);
   const changed = editedSha !== originalSha;
 
-  const base = { model: useModel, effort: useEffort, ms, cost_usd: costUsd };
+  const base = {
+    model: useModel,
+    effort: useEffort,
+    ms,
+    cost_usd: costUsd,
+    timeout_ms: useTimeoutMs,
+    observability,
+    timed_out: timedOut,
+    // NEW (WIRE-CLI-PARITY-GAP-3 rewire): whether this failure was an
+    // `action_trust` ledger DENIAL rather than a timeout/crash — a longer
+    // retry timeout can never change a trust decision, so callers (lib/
+    // actor-retry.mjs's shouldRetryActor) use this to stop retrying
+    // immediately instead of burning the whole backoff schedule on a call
+    // that is guaranteed to be denied again.
+    denied,
+  };
 
   if (actorError) {
     // A failed/errored call must never leave a half-applied edit in place.
@@ -348,7 +540,7 @@ if (isMain) {
   const run = async () => {
     if (!args.plane || !args.shots || !args['gemma-results'] || !args['claude-results']) {
       throw new Error(
-        'usage: actor-claude.mjs --plane <plane.js> --shots <dir> --gemma-results <results.json> --claude-results <results.json> [--model claude-fable-5] [--effort max] [--out <result.json>]',
+        'usage: actor-claude.mjs --plane <plane.js> --shots <dir> --gemma-results <results.json> --claude-results <results.json> [--model claude-fable-5] [--effort max] [--timeout-ms N] [--cli-bin <path>] [--cli-data-dir <dir>] [--out <result.json>]',
       );
     }
     const gemmaResult = JSON.parse(readFileSync(path.resolve(args['gemma-results']), 'utf8'));
@@ -360,6 +552,9 @@ if (isMain) {
       claudeResult,
       model: typeof args.model === 'string' ? args.model : undefined,
       effort: typeof args.effort === 'string' ? args.effort : undefined,
+      timeoutMs: args['timeout-ms'] ? Number(args['timeout-ms']) : undefined,
+      cliBinary: typeof args['cli-bin'] === 'string' ? args['cli-bin'] : undefined,
+      cliDataDir: typeof args['cli-data-dir'] === 'string' ? args['cli-data-dir'] : undefined,
     });
     if (args.out) writeFileSync(path.resolve(args.out), JSON.stringify(result, null, 2));
     console.log(`ACTOR_${result.status.toUpperCase()} ${JSON.stringify(result)}`);

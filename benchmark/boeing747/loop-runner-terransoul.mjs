@@ -13,12 +13,39 @@
 //     -> judgeShots (frozen gemma4 judge, judge/judge.mjs)
 //     -> judgeShotsClaude({ model: 'claude-fable-5' }) (judge/judge-claude.mjs,
 //        honest judge_track label from Task 1's fix)
-//     -> runActorEdit (actor/actor-claude.mjs: TerranSoul's own Claude
-//        Fable-5-driven edit, its own vision inspection, Read+Edit only)
+//     -> runActorWithRetries (retry-with-backoff wrapper around
+//        actor/actor-claude.mjs's runActorEdit: TerranSoul's OWN generic
+//        agentic-edit CLI capability, `terransoul-cli --agent-task`
+//        (WIRE-CLI-PARITY-GAP-3 rewire, 2026-07-10 — replaces the OLD
+//        bespoke direct `claude` spawn), its own vision inspection,
+//        Read+Edit only, gated end-to-end through the `action_trust`
+//        earned-autonomy ledger)
 //     -> contract gate (actor-claude.mjs already restores + records on
 //        violation; the loop just reads the resulting status)
 //     -> evaluateStopConditions (frozen lib/stop-conditions.mjs, EXACTLY the
-//        thresholds/patience/budget loop-runner-claude.mjs already uses)
+//        thresholds/patience/budget loop-runner-claude.mjs already uses) —
+//        fed ONLY genuine iterations (see LESSON BOEING-747-ACTOR-RETRY-1)
+//
+// LESSON BOEING-747-ACTOR-RETRY-1 (mcp-data/shared/memory-seed.sql): the
+// committed terransoul-fable5 run stalled on 4 straight actor-timeout
+// iterations that never produced a genuine attempt, yet were fed into
+// evaluateStopConditions as ordinary non-improving scores — a measurement
+// artifact, not a demonstrated capability ceiling. This file now: (1)
+// retries a timed-out actor call with backoff instead of re-rendering/
+// re-judging (lib/actor-retry.mjs), (2) tags every iteration with an
+// actor_status and excludes actor_exhausted_retries entries from the arrays
+// passed to evaluateStopConditions, firing a SEPARATE, honestly-labeled
+// actor_exhausted_retries_cap stop reason instead of corrupting `stall`
+// (WIRE-CLI-PARITY-GAP-3 rewire: an `action_trust` DENIAL is a NEW member of
+// this same excluded bucket — see `denied` on actorResult/attempts — and
+// short-circuits the retry loop immediately, since no timeout can fix a
+// ledger decision; lib/actor-retry.mjs's `shouldRetryActor`), (3) gets
+// streaming observability on every actor call (lib/actor-stream.mjs, wired
+// inside actor-claude.mjs itself; rewritten for the terransoul-cli
+// stderr-progress-line format — see that module's header), and (4) surfaces
+// prior-attempt context to the actor and records a lesson once an edit's
+// effect becomes observable (lib/self-learning.mjs, generic MCP brain
+// plumbing) — unchanged by the CLI rewire, still runs alongside it.
 //
 // Results land under NEW actor-name directories so nothing existing is
 // touched: results/<actor>/ (gemma4 track, mirrors terransoul-opus48/'s shape)
@@ -27,17 +54,26 @@
 //
 // Judge calls stay strictly sequential (existing discipline — the GPU/CLI may
 // be shared); this script itself is the only thing looping, so there is
-// exactly one `claude` subprocess in flight at any time.
+// exactly one `terransoul-cli --agent-task` subprocess in flight at any time.
 //
 // CLI:
 //   node loop-runner-terransoul.mjs --plane <plane.js> [--actor terransoul-fable5]
-//     [--model claude-fable-5] [--effort max] [--max-iter N]
+//     [--model claude-fable-5] [--effort max] [--max-iter N] [--max-actor-retries N]
+//     [--cli-bin <path>] [--cli-data-dir <dir>]
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runActorEdit } from './actor/actor-claude.mjs';
 import { judgeShotsClaude } from './judge/judge-claude.mjs';
 import { judgeShots, loadRubric } from './judge/judge.mjs';
+import {
+  computeAttemptTimeoutMs,
+  computeTrailingExhaustionStreak,
+  filterGenuineIterationsForStopConditions,
+  loadActorRetryConfig,
+  shouldRetryActor,
+} from './lib/actor-retry.mjs';
+import { fetchPriorAttempts, formatPriorAttemptsSection, ingestAttemptLesson } from './lib/self-learning.mjs';
 import { evaluateStopConditions } from './lib/stop-conditions.mjs';
 import { runRig } from './rig/render-rig.mjs';
 
@@ -46,6 +82,15 @@ const DEFAULT_ACTOR = 'terransoul-fable5';
 const DEFAULT_MODEL = 'claude-fable-5';
 const DEFAULT_EFFORT = 'max';
 const CLAUDE_JUDGE_SAMPLES = 1;
+// Domain-specific ONLY as an argument value passed to the generic
+// lib/self-learning.mjs functions — those functions never hardcode this
+// string themselves (rules/brain-driven-self-improvement.md,
+// rules/bench-agi-purity.md).
+const SELF_LEARNING_TAG = 'boeing747-actor-attempt';
+// Statuses actor-claude.mjs/runActorWithRetries can produce that reflect a
+// REAL attempt (as opposed to a pure infra failure never worth learning from
+// or counting toward stall/threshold/budget).
+const GENUINE_ACTOR_STATUSES = new Set(['edited', 'no_change', 'contract_failed']);
 
 function loadHistory(actorDir) {
   if (!existsSync(actorDir)) return [];
@@ -111,8 +156,145 @@ function bookkeepTrack({ actorDir, iterNum, runId, judged, judgeTrack, rubric, r
   return record;
 }
 
+/**
+ * Stamp the (by-then-known) actor outcome onto an already-written iter-N.json
+ * record, both in-memory (the caller keeps using the returned/mutated object
+ * this call) and on disk (so a FUTURE loadHistory() call — i.e. the next
+ * iteration, or a resumed run — sees it too). This is the mechanism fix 2
+ * relies on: gemmaIterations/claudeIterations are filtered on this field.
+ */
+function patchActorStatus(actorDir, iterNum, record, actorStatus) {
+  record.actor_status = actorStatus;
+  writeFileSync(path.join(actorDir, `iter-${iterNum}.json`), JSON.stringify(record, null, 2));
+  return record;
+}
+
+/**
+ * Fix 1 (retry-with-backoff): retry the SAME actor call — same rendered
+ * shots + already-computed judge results passed straight through, so NO
+ * re-render/re-judge happens per retry — up to `retryCfg.maxRetries` times,
+ * with computeAttemptTimeoutMs's backoff schedule. Only once every attempt
+ * has come back 'actor_failed' does this resolve to the new terminal
+ * 'actor_exhausted_retries' status; any genuine outcome (edited/no_change/
+ * contract_failed) short-circuits immediately. Every attempt is recorded in
+ * the returned `attempts` array for full audit (including each attempt's
+ * streaming observability from actor-claude.mjs).
+ */
+async function runActorWithRetries({ retryCfg, ...actorArgs }) {
+  const attempts = [];
+  let attemptIdx = 0;
+  let result;
+  for (;;) {
+    const timeoutMs = computeAttemptTimeoutMs(attemptIdx, retryCfg.baseTimeoutMs, retryCfg.timeoutCapMs);
+    // Sequential by design (existing discipline): one `terransoul-cli
+    // --agent-task` subprocess in flight at a time.
+    result = await runActorEdit({ ...actorArgs, timeoutMs });
+    attempts.push({
+      attempt: attemptIdx + 1,
+      timeout_ms: timeoutMs,
+      status: result.status,
+      ms: result.ms,
+      actor_error: result.actor_error || null,
+      timed_out: Boolean(result.timed_out),
+      denied: Boolean(result.denied),
+      observability: result.observability || null,
+    });
+    if (result.status !== 'actor_failed') break; // genuine outcome — stop retrying
+    // WIRE-CLI-PARITY-GAP-3 rewire: an `action_trust` ledger DENIAL is
+    // passed through so shouldRetryActor can short-circuit immediately — a
+    // longer per-attempt timeout can never change a trust decision, unlike a
+    // genuine subprocess timeout, which a longer budget might legitimately
+    // fix.
+    if (!shouldRetryActor(attemptIdx, retryCfg.maxRetries, { denied: Boolean(result.denied) })) break;
+    console.log(
+      `  actor attempt ${attemptIdx + 1}/${retryCfg.maxRetries + 1} failed (${result.actor_error}) — retrying with a longer timeout...`,
+    );
+    attemptIdx += 1;
+  }
+  const exhausted = result.status === 'actor_failed';
+  return {
+    ...result,
+    status: exhausted ? 'actor_exhausted_retries' : result.status,
+    attempts,
+    retry_config: retryCfg,
+  };
+}
+
+/**
+ * Fix 4 (cross-iteration self-learning, read half): fetch prior attempts on
+ * THIS weakest feature from the brain and format them into a prompt section.
+ * Fails open (fetchPriorAttempts never throws) — a down/unreachable MCP tray
+ * simply means no prior-attempts section this iteration.
+ */
+async function buildPriorAttemptsSection({ weakestId }) {
+  const query = `${SELF_LEARNING_TAG} ${weakestId || 'general'}`;
+  const priorAttempts = await fetchPriorAttempts({ query, limit: 5 });
+  return formatPriorAttemptsSection(priorAttempts);
+}
+
+/**
+ * Fix 4 (cross-iteration self-learning, write half): a self-improve loop
+ * only learns whether iteration N-1's edit helped once iteration N's judge
+ * has re-scored the (possibly now-edited) candidate — so this runs at the
+ * START of iteration N, right after judging, using the PREVIOUS iteration's
+ * recorded actor outcome (iter-{N-1}-actor.json) plus this iteration's fresh
+ * scores. Skips silently (no lesson) when there is no previous iteration, or
+ * the previous iteration's actor outcome was a pure infra failure (nothing
+ * genuine to learn from) — never breaks the bench loop on an MCP error.
+ */
+async function maybeIngestPriorIterationLesson({ gemmaDir, gemmaHistory, claudeHistory, gemmaRecord, claudeRecord, iterNum, actorName }) {
+  if (gemmaHistory.length === 0) return;
+  const prevGemma = gemmaHistory[gemmaHistory.length - 1];
+  if (!prevGemma || prevGemma.iter !== iterNum - 1) return;
+  const prevActorPath = path.join(gemmaDir, `iter-${prevGemma.iter}-actor.json`);
+  if (!existsSync(prevActorPath)) return;
+  let prevActor;
+  try {
+    prevActor = JSON.parse(readFileSync(prevActorPath, 'utf8'));
+  } catch {
+    return;
+  }
+  if (!GENUINE_ACTOR_STATUSES.has(prevActor.status)) return; // infra exhaustion — nothing to learn
+
+  const prevClaude = claudeHistory[claudeHistory.length - 1];
+  const gemmaDelta =
+    typeof gemmaRecord.total_0_100 === 'number' && typeof prevGemma.total_0_100 === 'number'
+      ? Math.round((gemmaRecord.total_0_100 - prevGemma.total_0_100) * 100) / 100
+      : null;
+  const claudeDelta =
+    prevClaude && typeof claudeRecord.total_0_100 === 'number' && typeof prevClaude.total_0_100 === 'number'
+      ? Math.round((claudeRecord.total_0_100 - prevClaude.total_0_100) * 100) / 100
+      : null;
+
+  const summary =
+    prevActor.status === 'edited'
+      ? prevActor.claude_result_text || '(no summary text returned)'
+      : prevActor.status === 'contract_failed'
+        ? `edit rejected by the frozen contract: ${(prevActor.contract_violations || []).join('; ')}`
+        : 'actor made no change to the candidate';
+
+  await ingestAttemptLesson({
+    tag: SELF_LEARNING_TAG,
+    category: 'self-improve-attempt',
+    criterion: prevGemma.weakest_feature?.id,
+    summary,
+    scoreDeltas: { gemma4: gemmaDelta, [prevClaude?.judge_track || 'claude-vision']: claudeDelta },
+    outcome: prevActor.status,
+    extraTags: [actorName],
+  });
+}
+
 /** ONE full autonomous iteration: render (shared) -> gemma judge -> Fable-5-vision judge -> actor edit. */
-export async function runIterationTerransoul({ planePath, iter, actor, model, effort }) {
+export async function runIterationTerransoul({
+  planePath,
+  iter,
+  actor,
+  model,
+  effort,
+  maxActorRetries,
+  cliBinary,
+  cliDataDir,
+}) {
   const { rubric, rubricSha256 } = loadRubric();
   const actorName = actor || DEFAULT_ACTOR;
   const gemmaDir = path.join(BENCH_DIR, 'results', actorName);
@@ -144,7 +326,7 @@ export async function runIterationTerransoul({ planePath, iter, actor, model, ef
   });
   if (!claudeJudged) throw new Error('claude vision judge did not complete all 9 views');
 
-  const gemmaRecord = bookkeepTrack({
+  let gemmaRecord = bookkeepTrack({
     actorDir: gemmaDir,
     iterNum,
     runId,
@@ -153,7 +335,7 @@ export async function runIterationTerransoul({ planePath, iter, actor, model, ef
     rubric,
     rubricSha256,
   });
-  const claudeRecord = bookkeepTrack({
+  let claudeRecord = bookkeepTrack({
     actorDir: claudeDir,
     iterNum,
     runId,
@@ -168,63 +350,139 @@ export async function runIterationTerransoul({ planePath, iter, actor, model, ef
       `${claudeJudged.judge_track}=${claudeRecord.total_0_100}/100 (best ${claudeRecord.best_total_after})`,
   );
 
-  console.log(`actor: driving ${model || DEFAULT_MODEL} (--effort ${effort || DEFAULT_EFFORT}) to edit ${planePath}`);
-  const actorResult = await runActorEdit({
+  // Fix 4 (write half): learn from the PREVIOUS iteration's actor edit now
+  // that this iteration's fresh scores make its effect observable. Fails
+  // open — an MCP error here must never break the bench loop.
+  try {
+    await maybeIngestPriorIterationLesson({
+      gemmaDir,
+      gemmaHistory,
+      claudeHistory,
+      gemmaRecord,
+      claudeRecord,
+      iterNum,
+      actorName,
+    });
+  } catch (err) {
+    console.log(`  self-learning lesson ingest skipped: ${String(err.message || err)}`);
+  }
+
+  // Fix 4 (read half): surface prior attempts on this weakest feature.
+  const weakestId = gemmaJudged.weakest_feature?.id || claudeJudged.weakest_feature?.id;
+  const priorAttemptsSection = await buildPriorAttemptsSection({ weakestId });
+
+  // Fix 1: retry-with-backoff instead of a single all-or-nothing call.
+  const retryCfg = loadActorRetryConfig({ overrideMaxRetries: maxActorRetries });
+  console.log(
+    `actor: driving ${model || DEFAULT_MODEL} (--effort ${effort || DEFAULT_EFFORT}) to edit ${planePath} ` +
+      `(retry policy: ${retryCfg.maxRetries} retries, base ${retryCfg.baseTimeoutMs}ms, cap ${retryCfg.timeoutCapMs}ms, source=${retryCfg.source})`,
+  );
+  const actorResult = await runActorWithRetries({
+    retryCfg,
     candidatePath: planePath,
     shotsDir: rig.outDir,
     gemmaResult: gemmaJudged,
     claudeResult: claudeJudged,
     model: model || DEFAULT_MODEL,
     effort: effort || DEFAULT_EFFORT,
+    priorAttemptsSection,
+    cliBinary,
+    cliDataDir,
   });
-  console.log(`actor status: ${actorResult.status} (changed=${actorResult.changed}, $${actorResult.cost_usd}, ${Math.round(actorResult.ms / 1000)}s)`);
+  console.log(
+    `actor status: ${actorResult.status} (changed=${actorResult.changed}, $${actorResult.cost_usd}, ` +
+      `${Math.round(actorResult.ms / 1000)}s, attempts=${actorResult.attempts.length})`,
+  );
   if (actorResult.status === 'contract_failed') {
     console.log(`  CONTRACT VIOLATIONS (edit rejected, previous candidate restored):`);
     for (const v of actorResult.contract_violations) console.log(`    - ${v}`);
   }
-  if (actorResult.status === 'actor_failed') {
-    console.log(`  ACTOR ERROR (no change applied): ${actorResult.actor_error}`);
+  if (actorResult.status === 'actor_exhausted_retries') {
+    // WIRE-CLI-PARITY-GAP-3 rewire: distinguish a `action_trust` ledger
+    // DENIAL (no retry was even attempted — shouldRetryActor short-circuits
+    // it, see lib/actor-retry.mjs) from a genuine infra timeout/crash that
+    // burned the full retry budget, in the human-readable log only — both
+    // still share the SAME `actor_exhausted_retries` status for the
+    // stop-condition exclusion mechanism (lib/actor-retry.mjs's
+    // filterGenuineIterationsForStopConditions/computeTrailingExhaustionStreak).
+    const deniedRun = actorResult.attempts.some((a) => a.denied);
+    console.log(
+      deniedRun
+        ? `  ACTOR CALL DENIED by the action_trust ledger (no retry attempted — a longer timeout cannot change a ` +
+            `trust decision) — NOT fed into evaluateStopConditions as a capability signal: ${actorResult.actor_error}`
+        : `  ACTOR EXHAUSTED ALL ${actorResult.attempts.length} RETRIES (no change applied) — infra failure, ` +
+            `NOT fed into evaluateStopConditions as a capability signal: ${actorResult.actor_error}`,
+    );
   }
   writeFileSync(path.join(gemmaDir, `iter-${iterNum}-actor.json`), JSON.stringify(actorResult, null, 2));
 
-  const gemmaIterations = [...gemmaHistory, gemmaRecord].map((h) => ({
-    iter: h.iter,
-    total: h.total_0_100,
-    perView: h.per_view.map((v) => v.score),
-  }));
-  const claudeIterations = [...claudeHistory, claudeRecord].map((h) => ({
-    iter: h.iter,
-    total: h.total_0_100,
-    perView: h.per_view.map((v) => v.score),
-  }));
+  // Fix 2: tag both tracks' records with the actor outcome so the stall/
+  // threshold/budget counters (evaluateStopConditions, FROZEN) only ever see
+  // genuine attempts — an actor_exhausted_retries iteration is excluded from
+  // the arrays below, on THIS call and every future loadHistory() call.
+  gemmaRecord = patchActorStatus(gemmaDir, iterNum, gemmaRecord, actorResult.status);
+  claudeRecord = patchActorStatus(claudeDir, iterNum, claudeRecord, actorResult.status);
+
+  const gemmaIterations = filterGenuineIterationsForStopConditions([...gemmaHistory, gemmaRecord]);
+  const claudeIterations = filterGenuineIterationsForStopConditions([...claudeHistory, claudeRecord]);
   const stopCfg = { viewThreshold: rubric.view_threshold, patience: rubric.stall_patience, budget: rubric.iteration_budget };
   const gemmaStop = evaluateStopConditions(gemmaIterations, stopCfg);
   const claudeStop = evaluateStopConditions(claudeIterations, stopCfg);
+
+  // A SEPARATE, explicit exhaustion cap — distinct from `stall` — so a
+  // genuinely broken/unreachable `claude` CLI cannot spin the loop forever,
+  // while a single exhausted iteration (a transient infra hiccup) does NOT
+  // by itself end the loop the way a real stall does.
+  const exhaustionStreak = computeTrailingExhaustionStreak([...gemmaHistory, gemmaRecord]);
+  const exhaustionCapped = exhaustionStreak >= retryCfg.exhaustionCap;
+  const exhaustionReason = exhaustionCapped
+    ? [
+        `actor_exhausted_retries_cap: ${exhaustionStreak} consecutive iteration(s) fully exhausted actor retries ` +
+          `(cap ${retryCfg.exhaustionCap}) — infra failure, NOT a demonstrated capability ceiling`,
+      ]
+    : [];
+
   // Stop when EITHER track's own stop condition fires (threshold on either
   // judge is a legitimate "done"; a stall/budget on either is a legitimate
-  // "stop looping") — printed per-track, never silently enforced.
+  // "stop looping"), OR the exhaustion cap fires — printed per-track, never
+  // silently enforced.
   const stop = {
-    stop: gemmaStop.stop || claudeStop.stop,
-    reasons: [...gemmaStop.reasons.map((r) => `gemma4: ${r}`), ...claudeStop.reasons.map((r) => `${claudeJudged.judge_track}: ${r}`)],
+    stop: gemmaStop.stop || claudeStop.stop || exhaustionCapped,
+    reasons: [
+      ...gemmaStop.reasons.map((r) => `gemma4: ${r}`),
+      ...claudeStop.reasons.map((r) => `${claudeJudged.judge_track}: ${r}`),
+      ...exhaustionReason,
+    ],
     gemma: gemmaStop,
     claude: claudeStop,
+    actor_exhausted_retries_cap: exhaustionCapped,
   };
   console.log(
     `STOP-CHECK stop=${stop.stop} gemma[nonImproving=${gemmaStop.consecutiveNonImproving}/${rubric.stall_patience} budget=${gemmaIterations.length}/${rubric.iteration_budget}] ` +
-      `${claudeJudged.judge_track}[nonImproving=${claudeStop.consecutiveNonImproving}/${rubric.stall_patience} budget=${claudeIterations.length}/${rubric.iteration_budget}]`,
+      `${claudeJudged.judge_track}[nonImproving=${claudeStop.consecutiveNonImproving}/${rubric.stall_patience} budget=${claudeIterations.length}/${rubric.iteration_budget}] ` +
+      `exhaustionStreak=${exhaustionStreak}/${retryCfg.exhaustionCap}`,
   );
   for (const reason of stop.reasons) console.log(`  STOP REASON: ${reason}`);
 
   return { iterNum, gemmaRecord, claudeRecord, actorResult, stop };
 }
 
-/** Drive the loop to ITS OWN stop condition (threshold / stall / budget) — never forced early, never fabricated. */
-export async function runLoopTerransoul({ planePath, actor, model, effort, maxIter }) {
+/** Drive the loop to ITS OWN stop condition (threshold / stall / budget / exhaustion cap) — never forced early, never fabricated. */
+export async function runLoopTerransoul({
+  planePath,
+  actor,
+  model,
+  effort,
+  maxIter,
+  maxActorRetries,
+  cliBinary,
+  cliDataDir,
+}) {
   const { rubric } = loadRubric();
   const hardCap = Math.min(maxIter || rubric.iteration_budget, rubric.iteration_budget);
   let last = null;
   for (let i = 0; i < hardCap; i++) {
-    last = await runIterationTerransoul({ planePath, actor, model, effort });
+    last = await runIterationTerransoul({ planePath, actor, model, effort, maxActorRetries, cliBinary, cliDataDir });
     if (last.stop.stop) break;
   }
   return last;
@@ -245,7 +503,8 @@ if (isMain) {
   const args = parseArgs(process.argv.slice(2));
   if (!args.plane) {
     console.error(
-      'usage: node loop-runner-terransoul.mjs --plane <plane.js> [--actor terransoul-fable5] [--model claude-fable-5] [--effort max] [--max-iter N]',
+      'usage: node loop-runner-terransoul.mjs --plane <plane.js> [--actor terransoul-fable5] [--model claude-fable-5] ' +
+        '[--effort max] [--max-iter N] [--max-actor-retries N] [--cli-bin <path>] [--cli-data-dir <dir>]',
     );
     process.exit(2);
   }
@@ -255,6 +514,9 @@ if (isMain) {
     model: typeof args.model === 'string' ? args.model : undefined,
     effort: typeof args.effort === 'string' ? args.effort : undefined,
     maxIter: args['max-iter'] ? Number(args['max-iter']) : undefined,
+    maxActorRetries: args['max-actor-retries'] ? Number(args['max-actor-retries']) : undefined,
+    cliBinary: typeof args['cli-bin'] === 'string' ? args['cli-bin'] : undefined,
+    cliDataDir: typeof args['cli-data-dir'] === 'string' ? args['cli-data-dir'] : undefined,
   })
     .then((last) => {
       console.log('\nLOOP DONE');
