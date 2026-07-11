@@ -328,7 +328,7 @@
     const groups = ['gemma4 — frozen, neutral judge', "vision judge — actor's own model family"];
     const actors = [
       { name: 'Opus 4.8 + TerranSoul', fill: 'url(#gradTSgBoeing)', v: [73.68, 68.26] },
-      { name: 'Fable 5 + TerranSoul', fill: '#5B9BD5', valCls: 'mg-val mg-val--fable', v: [59.62, 49.48] },
+      { name: 'Fable 5 + TerranSoul', fill: '#5B9BD5', valCls: 'mg-val mg-val--fable', v: [71.66, 63.7] },
     ];
     const W = 1120, H = 135, base = 0, topV = 100;
     const padL = 12, padR = 16, padTop = 28, padBot = 22;

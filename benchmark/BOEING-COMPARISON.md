@@ -96,7 +96,7 @@ source URL + access date).
 | Model | Score | Benchmark (what the score is on) | Source |
 |---|---|---|---|
 | **Claude Opus 4.8 + TerranSoul** | **73.68 %** (gemma4) · **68.26 %** (Opus 4.8 vision) | **Boeing-747** primitives — autonomous self-improve loop (v2 harness) | this harness (local) ● |
-| **Claude Fable 5 + TerranSoul** ² ³ | **59.62 %** (gemma4) · **49.48 %** (Fable-5 vision) | **Boeing-747** primitives — autonomous self-improve loop, TerranSoul's own agent machinery (v2 harness) | this harness (local) ● |
+| **Claude Fable 5 + TerranSoul** ² ³ | **71.66 %** (gemma4) · **63.7 %** (Fable-5 vision) | **Boeing-747** primitives — autonomous self-improve loop, TerranSoul's own product CLI end-to-end (v2 harness, corrected loop, 2026-07-11) | this harness (local) ● |
 | Claude Fable 5 | 88.0 % | Terminal-Bench 2.1 (agentic coding, in a loop) | aggregate ○ |
 | GPT-5.5 (Codex CLI) | 83.4 % | Terminal-Bench 2.1 | aggregate ○ |
 | Claude Sonnet 5 | 80.4 % | Terminal-Bench 2.1 | aggregate ○ |
@@ -108,15 +108,30 @@ source URL + access date).
 | Human senior engineers | 89 – 96 % | Every "Senior-Engineer" bench | Every ● |
 | _rig floor — fixed hand-authored stub (**not a model**)_ | 28.25 % | Boeing-747 — harness sanity check | this harness ● |
 
-² **Harness-bug flag (2026-07-10) — see § Harness fix.** 4 of the 10 iterations
-behind this number (7–10) were later root-caused as a harness retry/signal bug
-(a fixed 600,000 ms actor timeout re-scored the same unchanged `plane.js` four
-times and the loop counted those repeats as genuine non-improving attempts,
-manufacturing the apparent `stall`). The number is **kept, not deleted**
-(never-silently-overwrite convention), now explicitly labeled bug-affected; a
-harness fix has shipped and a corrected re-run (`terransoul-fable5-v2`) was
-started but has **not completed** as of this writing — there is no superseding
-number yet.
+² **Corrected-loop result (2026-07-11) — supersedes the bug-affected 59.62 /
+49.48.** This is the completed corrected re-run the § Harness fix and § CLI-
+routed actor sections describe, measured over two runs
+(`results/terransoul-fable5-v2*` + `terransoul-fable5-v2r2*`, commits
+`a77c0fd4`/`ee33877c`): **run 1** climbed 59.62 → **71.66** in 3 iterations
+(iter-1 re-judge of the seeded v1 geometry scored byte-identical 59.62 —
+judge reproducibility confirmed), then was stopped at iteration 5 by the NEW
+`actor_exhausted_retries_cap` stop when an Anthropic session-limit outage
+exhausted actor retries — correctly classified **infra failure, not
+capability** (the exact failure mode the harness fix exists to separate);
+**run 2** resumed from the 71.66 geometry after the quota reset, re-confirmed
+71.66 byte-identical again, explored 3 more max-thinking iterations without
+exceeding it (69.59/69.21/69.21), had its final edit **rejected by the frozen
+contract gate** (attempted forbidden `window` DOM access; candidate restored),
+and stopped with a genuine **gemma4 `stall`** — the corrected loop's first
+clean capability verdict for this track. The old bug-affected 59.62/49.48
+remains in the history sections below per the never-silently-overwrite
+convention. Never-regress floor for this track: **71.66 gemma4 / 63.7
+Fable-5-vision**. Honest positioning: 2.02 below the Opus 4.8 flagship's
+73.68 on the same frozen judge, consistent with the documented ~70+
+primitives-contract ceiling on strong judges; the frozen per-view threshold
+(all 9 views ≥ 8.0) was NOT reached — 100% was not achieved, and the stall
+verdict says more budget alone would likely not have reached it under the
+frozen meshes/textures contract.
 
 ³ **CLI-routed actor rewire (2026-07-10) — see § CLI-routed actor.** The
 Boeing-747 actor was further rewired off the bare-CLI-adjacent, tool-granted
@@ -459,35 +474,23 @@ verify results: `rules/completion-log.md` →
     \`code_execute\` category, whose trust (0.67) is below the earned
     threshold (0.80)`, the exact predicted deny, through the real binary.
 
-**There is therefore still no v2 number to report from either rewire.** Per
-this repo's never-silently-overwrite convention, the original **59.62
-gemma4 / 49.48 Fable-5-vision** figures remain the last **completed**
-measurement for this track, flagged bug-affected (§ Harness fix) — neither
-deleted nor replaced. *(The `WIRE-CLI-PARITY-GAP-6` trust-gate blocker was
-resolved later on 2026-07-10: the owner decision was recorded — `ee4161c0`,
-reuse the existing `ExecutionApprovalMode` `Bypass` toggle, keep its shared
-default — and implemented — `088c9849`, the Bypass short-circuit ahead of
-`CodeExecute` gate checks with regression tests. With Bypass the explicit
-default, the cold-start deny reproduced above no longer occurs. See
-`rules/completion-log.md` → `WIRE-CLI-PARITY-GAP-6-SHIPPED-2026-07-10`.)*
-
-**What remains to close this out (not claimed done):**
-1. Done — `terransoul-cli` built (`d2e63c11`), deny reproduced live.
-2. Done — confirmed above, filed as `WIRE-CLI-PARITY-GAP-6`; the owner
-   decision was subsequently recorded (`ee4161c0`) **and implemented**
-   (`088c9849`) on 2026-07-10, so the re-run is no longer trust-gate
-   blocked.
-3. Add the missing `--strict-mcp-config --mcp-config '{"mcpServers":{}}'`
-   isolation to `agentic_cli.rs::build_command` (flagged in
-   `rules/completion-log.md`, not yet fixed — verified still absent from
-   the committed module on 2026-07-10) before relying on this path
-   near any `.mcp.json`-bearing directory.
-4. Once 1–3 are resolved, run `npm run bench:747:loop:terransoul` against
-   `terransoul-fable5-v2`/`terransoul-fable5-v2-claude` to actual completion,
-   then publish the v2 score here, superseding both this section and §
-   Harness fix's "started, not complete" status, following the same
-   honest-decomposition style used for the Opus-4.8 v1→v2 camera-spec
-   re-baseline.
+**CLOSED (2026-07-11) — the corrected re-run completed through this exact
+path.** Every item on the former "what remains" list landed, in order:
+(1) `terransoul-cli` built and the cold-start deny reproduced live
+(`d2e63c11` + the smoke test above); (2) `WIRE-CLI-PARITY-GAP-6` owner
+decision recorded (`ee4161c0`) and implemented (`088c9849`) — with `Bypass`
+the explicit default, the trust gate opens for the bench's isolated data
+dir; a second smoke test confirmed both directions on the rebuilt binary
+(AskFirst still denies; Bypass allows, real spawn, $0.037); (3) the
+`--strict-mcp-config --mcp-config '{"mcpServers":{}}'` isolation shipped in
+`build_command` (`7ae8d2d5`) and was in the binary the re-run used; (4) the
+re-run itself executed to completion over two runs — see footnote ² at the
+top-of-doc table for the full trajectory and stop-condition story. Final
+track result: **71.66 gemma4 / 63.7 Fable-5-vision** (genuine `stall`
+verdict; contract gate proved live by rejecting a forbidden-`window` edit
+mid-run; cross-iteration self-learning wrote real lessons through the MCP
+tray during the run). The 59.62/49.48 figures stay preserved in the history
+sections above per the never-silently-overwrite convention.
 
 ## How to read the comparison
 
