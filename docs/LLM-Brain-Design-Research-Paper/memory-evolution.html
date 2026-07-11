@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Evolution of Memory for AI Systems - From Inverted Indexes to Governed Self-Consolidating Stores</title>
+<meta name="description" content="Companion article to 'Memory Is What a Store Does'. A stage-by-stage narrative of the worldwide evolution of memory and retrieval technology for AI systems - lexical search, dense embeddings, vector databases, knowledge graphs, RAG, corrective RAG, LLM observability, two-way agent memory, governed self-consolidating memory, embodied companions, and memory infrastructure - with the problem each stage solved, the limitation documented against it, and full citations." />
+<style>
+  :root{
+    --bg: oklch(0.985 0.008 80);
+    --bg-card: oklch(0.97 0.01 80);
+    --bg-deep: oklch(0.93 0.012 75);
+    --ink: oklch(0.22 0.015 60);
+    --ink-soft: oklch(0.42 0.012 65);
+    --ink-faint: oklch(0.62 0.01 70);
+    --rule: oklch(0.88 0.012 75);
+    --accent: oklch(0.62 0.14 45);
+    --accent-soft: oklch(0.92 0.04 55);
+    --accent-ink: oklch(0.38 0.10 45);
+    --sans: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --serif: Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --maxw: 1280px;
+    --col: 720px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:400;line-height:1.55;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--accent-soft);color:var(--accent-ink)}
+  a{color:var(--accent-ink);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;text-decoration-color:color-mix(in oklch, var(--accent-ink) 35%, transparent)}
+  a:hover{text-decoration-color:var(--accent-ink)}
+  .topbar{position:sticky;top:0;z-index:50;background:color-mix(in oklch, var(--bg) 88%, transparent);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--rule)}
+  .topbar-in{max-width:var(--maxw);margin:0 auto;padding:12px 32px;display:flex;align-items:center;gap:20px;font-size:13px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:600;font-size:17px;letter-spacing:-0.01em}
+  .brand-mark{width:18px;height:18px;border-radius:50%;background:var(--accent);position:relative}
+  .brand-mark::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg)}
+  .crumbs{color:var(--ink-faint);display:flex;gap:10px;align-items:center}
+  .crumbs span{color:var(--ink-soft)}
+  .crumbs em{font-style:normal;color:var(--ink)}
+  .topbar .spacer{flex:1}
+  .topbar a.lnk{color:var(--ink-soft);text-decoration:none}
+  .topbar a.lnk:hover{color:var(--ink)}
+  .topbar .meta{color:var(--ink-faint);font-family:var(--mono);font-size:11px;letter-spacing:0.05em;text-transform:uppercase}
+  @media (max-width:780px){.crumbs,.topbar .meta{display:none}.topbar-in{gap:12px;padding:10px 18px}}
+  .page{max-width:var(--maxw);margin:0 auto;padding:0 32px;display:grid;grid-template-columns:1fr;gap:48px}
+  article{padding:64px 0 96px;max-width:var(--col);margin:0 auto}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:24px}
+  .eyebrow .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);vertical-align:middle;margin:0 10px 2px 0}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(34px, 4.4vw, 48px);line-height:1.08;letter-spacing:-0.02em;margin:0 0 24px;color:var(--ink);text-wrap:balance}
+  h1 em{font-style:italic;color:var(--accent-ink);font-weight:500}
+  .deck{font-family:var(--serif);font-size:22px;line-height:1.45;color:var(--ink-soft);font-weight:400;font-style:italic;margin:0 0 40px;text-wrap:pretty}
+  .byline{display:flex;gap:16px;align-items:center;padding:16px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font-size:13px;color:var(--ink-soft);margin-bottom:48px;flex-wrap:wrap}
+  .byline .who{display:flex;gap:10px;align-items:center}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;font-family:var(--serif);font-weight:600;color:var(--accent-ink);font-size:13px}
+  .byline strong{color:var(--ink);font-weight:500}
+  .byline .sep{color:var(--ink-faint)}
+  article h2{font-family:var(--serif);font-weight:600;font-size:32px;line-height:1.18;letter-spacing:-0.01em;margin:64px 0 6px;color:var(--ink);text-wrap:balance}
+  article h2 .scene-num{display:block;font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-ink);font-weight:500;margin-bottom:10px}
+  article h3{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.3;margin:36px 0 8px;color:var(--ink)}
+  article p{font-size:18px;line-height:1.65;margin:0 0 20px;color:var(--ink);text-wrap:pretty}
+  article ul, article ol{font-size:18px;line-height:1.65;padding-left:24px;margin:0 0 24px}
+  article ul li, article ol li{margin-bottom:8px}
+  article blockquote{margin:24px 0;padding:4px 0 4px 24px;border-left:3px solid var(--accent);font-family:var(--serif);font-style:italic;font-size:21px;line-height:1.5;color:var(--ink-soft)}
+  article code, article kbd{font-family:var(--mono);font-size:0.86em;background:var(--bg-deep);padding:1px 6px;border-radius:3px;color:var(--accent-ink)}
+  .small{font-size:14px;color:var(--ink-soft)}
+  ol.refs{font-size:14px;line-height:1.5;color:var(--ink-soft)}
+  ol.refs li{margin-bottom:7px}
+  ol.refs cite{font-style:italic;color:var(--ink)}
+  .refgroup{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent-ink);margin:28px 0 6px}
+  table.compare{width:100%;border-collapse:collapse;font-size:15px;margin:16px 0 24px}
+  table.compare th, table.compare td{padding:12px 14px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+  table.compare th{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:500}
+  table.compare td{color:var(--ink)}
+  table.compare tr:last-child td{border-bottom:0}
+  .tablewrap{overflow-x:auto}
+  .summary-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;padding:20px 24px;margin:32px 0 40px;display:grid;gap:8px}
+  .summary-card h6{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent-ink);margin:0 0 4px;font-weight:500}
+  .summary-card ul{padding-left:20px;margin:0;font-size:15px;line-height:1.55;color:var(--ink-soft)}
+  .summary-card ul li{margin-bottom:6px}
+  .summary-card strong{color:var(--ink);font-weight:500}
+  .disclosure-card{background:oklch(0.96 0.015 55);border:1px solid oklch(0.85 0.03 50);border-radius:8px;padding:16px 20px;margin:0 0 40px;font-size:14px;color:var(--ink-soft);line-height:1.55}
+  .disclosure-card strong{color:var(--ink);font-weight:600}
+  footer.page-foot{border-top:1px solid var(--rule);padding:48px 32px;max-width:var(--maxw);margin:48px auto 0;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;font-size:13px;color:var(--ink-soft)}
+  footer.page-foot .links{display:flex;gap:20px;flex-wrap:wrap}
+  footer.page-foot a{color:var(--ink)}
+  .endmark{display:flex;align-items:center;gap:14px;color:var(--ink-faint);font-family:var(--mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;margin:40px 0 0}
+  .endmark::before,.endmark::after{content:"";flex:1;height:1px;background:var(--rule)}
+  figure.chart{margin:30px 0 40px}
+  figure.chart svg{display:block;width:100%;height:auto;background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;padding:10px 6px}
+  figure.chart figcaption{font-family:var(--serif);font-style:italic;font-size:14px;line-height:1.5;color:var(--ink-soft);margin-top:10px;text-wrap:pretty}
+  figure.chart figcaption .fignum{font-family:var(--mono);font-style:normal;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent-ink);margin-right:8px}
+  .c-title{fill:var(--ink);font-family:var(--sans);font-size:13px;font-weight:600}
+  .c-cat-sm{fill:var(--ink-soft);font-family:var(--sans);font-size:11.5px}
+  .c-axis{stroke:var(--ink-faint);stroke-width:1}
+  .c-grid{stroke:var(--rule);stroke-width:1;stroke-dasharray:2 4}
+  .c-tick{fill:var(--ink-faint);font-family:var(--mono);font-size:10px}
+  .c-legend{fill:var(--ink-soft);font-family:var(--sans);font-size:12px}
+  .c-band{fill:#a05a2c;opacity:.75;stroke:none}
+  .c-band-alt{fill:#3b6dc7;opacity:.75;stroke:none}
+  .c-band-now{fill:#6f7d1f;opacity:.85;stroke:none}
+</style>
+</head>
+<body>
+<!-- ts-site-nav: shared docs-site dropdown. The SAME block lives on every
+     docs page (only the relative prefix differs) so every page can reach
+     every other page - keep the link list in sync across pages. -->
+<details class="ts-site-nav">
+  <summary>&#9776; Site</summary>
+  <nav>
+    <a href="../">Docs home</a>
+    <a href="../getting-started/">Getting started</a>
+    <a href="../install/" class="sub">Installing TerranSoul</a>
+    <a href="../brain-architecture/">Brain architecture</a>
+    <a href="../brain-advanced-design/">Brain advanced design</a>
+    <a href="../goals-automation/" class="sub">Goals &amp; automation</a>
+    <a href="../LLM-Brain-Design-Research-Paper/">Research paper</a>
+    <a href="../LLM-Brain-Design-Research-Paper/memory-evolution.html" class="sub">&mdash; Memory-evolution companion</a>
+    <a href="../channels/">Channels</a>
+    <a href="../channels/telegram/" class="sub">&mdash; Telegram</a>
+    <a href="../channels/discord/" class="sub">&mdash; Discord</a>
+    <a href="../channels/slack/" class="sub">&mdash; Slack</a>
+    <a href="../channels/whatsapp/" class="sub">&mdash; WhatsApp</a>
+    <a href="../marketplace/">Marketplace</a>
+    <a href="../mcp-integration/">MCP integration</a>
+    <a href="../agentic-coding/" class="sub">Agentic coding</a>
+    <a href="../zorkgpt/">ZorkGPT bench</a>
+    <a href="../zorkgpt/claude-opus-4.8/" class="sub">&mdash; Opus 4.8 run</a>
+    <a href="../zorkgpt/taughtLocalLLM/" class="sub">&mdash; TaughtLocalLLM run</a>
+    <a href="../help/faq.html">FAQ &amp; troubleshooting</a>
+    <a href="../releases/">What's shipped</a>
+    <a href="https://github.com/TerranSyn/TerranSoul">GitHub &#8599;</a>
+  </nav>
+</details>
+<style>
+.ts-site-nav{position:fixed;top:10px;right:12px;z-index:2147483000;font:13px/1.45 system-ui,"Segoe UI",sans-serif}
+.ts-site-nav summary{list-style:none;cursor:pointer;user-select:none;background:rgba(17,19,28,.92);color:#e7e9f0;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px)}
+.ts-site-nav summary::-webkit-details-marker{display:none}
+.ts-site-nav[open] summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.ts-site-nav nav{position:absolute;right:0;min-width:230px;max-height:80vh;overflow-y:auto;display:flex;flex-direction:column;background:rgba(17,19,28,.96);border:1px solid rgba(255,255,255,.18);border-radius:10px 0 10px 10px;overflow-x:hidden;box-shadow:0 8px 28px rgba(0,0,0,.45)}
+.ts-site-nav nav a{color:#e7e9f0;text-decoration:none;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ts-site-nav nav a:last-child{border-bottom:0}
+.ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
+.ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+</style>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="brand-mark"></span> <a href="../" style="color:var(--ink);text-decoration:none">TerranSoul</a></div>
+    <div class="crumbs">
+      <span>Papers</span> <span>/</span> <em>The Evolution of Memory for AI Systems</em>
+    </div>
+    <div class="spacer"></div>
+    <a class="lnk" href="index.html">&larr; Main paper</a>
+    <div class="meta">2026-07</div>
+  </div>
+</div>
+
+<div class="page">
+  <article>
+    <div class="eyebrow"><span class="dot"></span>Research companion &middot; field history with citations</div>
+    <h1>The Evolution of Memory for AI Systems: <em>from inverted indexes to governed self-consolidating stores.</em></h1>
+    <p class="deck">Twelve stages of worldwide memory and retrieval technology &mdash; each with the problem it solved for the field, the limitation eventually documented against it, and why that limitation forced the next stage into existence. Companion to <a href="index.html"><em>Memory Is What a Store Does</em></a>.</p>
+
+    <div class="disclosure-card">
+      <strong>What this article is, and is not.</strong> This is industry-wide history, not any one project's development log. The narrative follows the evolution-timeline table maintained in TerranSoul's design contract, <code>docs/brain-advanced-design.md</code> [<a href="#cref-52">52</a>], whose citations were web-researched and dated (through July 2026) at research time; every external claim below carries its citation, and figures are quoted as their sources state them &mdash; none is re-measured here. Two rows near the end name TerranSoul's real peers before the final section records, honestly, which of the chain's limitations TerranSoul has measurably addressed, which it has merely contained, and which remain open in its design exactly as they remain open industry-wide. The measurement paper this accompanies is <a href="index.html"><em>Memory Is What a Store Does</em></a> [<a href="#cref-53">53</a>].
+    </div>
+
+    <div class="byline">
+      <div class="who"><div class="avatar">T</div><div><strong>TerranSoul Research</strong><br /><span class="small">Companion article, July 2026.</span></div></div>
+      <div class="sep">&middot;</div>
+      <div>Source table: <code>docs/brain-advanced-design.md</code> &middot; Main paper: <a href="index.html">Memory Is What a Store Does</a>.</div>
+    </div>
+
+    <h2><span class="scene-num">Overview</span>One chain, not a story of replacement</h2>
+    <p>The history of machine memory is often told as a sequence of replacements: keywords gave way to embeddings, embeddings to vector databases, retrieval to graphs, graphs to agents. Read closely, the chain is nothing of the sort. Earlier substrates keep resurfacing as load-bearing infrastructure inside their successors &mdash; BM25 inside hybrid retrievers, ANN indexes inside every &quot;semantic&quot; product, knowledge graphs inside 2026's agent-memory startups. What actually moves forward is the <em>failure mode</em>: each stage solved its predecessor's documented limitation and, in production at scale, exposed a new one that forced the next stage into existence. This article walks the twelve stages in order, quoting each stage's founding results and each limitation's documenting study.</p>
+    <figure class="chart">
+      <svg viewBox="0 0 720 470" role="img" aria-label="Timeline of twelve stages of memory and retrieval technology from the 1970s to 2026, drawn as horizontal era bands: lexical search from the 1970s to the 2000s, knowledge graphs from 2001, semantic search 2013 to 2021, vector databases 2016 to 2023, RAG 2020 to 2024, then agentic RAG, observability, two-way memory, and governed memory clustering in 2023 to 2026, with embodied companions, memory infrastructure, and TerranSoul marked as current in mid-2026.">
+        <text class="c-title" x="16" y="20">Twelve stages, 1970s &rarr; mid-2026 (qualitative timeline &mdash; no value axis)</text>
+        <line class="c-axis" x1="180" y1="410" x2="660" y2="410"/>
+        <!-- x = 180 + (year-1970)*(480/56) = 180 + (y-1970)*8.571 -->
+        <line class="c-grid" x1="180" y1="36" x2="180" y2="410"/>
+        <line class="c-grid" x1="266" y1="36" x2="266" y2="410"/>
+        <line class="c-grid" x1="351" y1="36" x2="351" y2="410"/>
+        <line class="c-grid" x1="437" y1="36" x2="437" y2="410"/>
+        <line class="c-grid" x1="523" y1="36" x2="523" y2="410"/>
+        <line class="c-grid" x1="608" y1="36" x2="608" y2="410"/>
+        <line class="c-grid" x1="660" y1="36" x2="660" y2="410"/>
+        <text class="c-tick" x="180" y="426" text-anchor="middle">1970</text>
+        <text class="c-tick" x="266" y="426" text-anchor="middle">1980</text>
+        <text class="c-tick" x="351" y="426" text-anchor="middle">1990</text>
+        <text class="c-tick" x="437" y="426" text-anchor="middle">2000</text>
+        <text class="c-tick" x="523" y="426" text-anchor="middle">2010</text>
+        <text class="c-tick" x="608" y="426" text-anchor="middle">2020</text>
+        <text class="c-tick" x="660" y="426" text-anchor="middle">2026</text>
+        <!-- rows, y = 44 + i*30 -->
+        <text class="c-cat-sm" x="172" y="56" text-anchor="end">1 &middot; Lexical / keyword</text>
+        <rect class="c-band" x="180" y="46" width="334" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="86" text-anchor="end">2 &middot; Semantic search</text>
+        <rect class="c-band-alt" x="549" y="76" width="68" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="116" text-anchor="end">3 &middot; Vector database</text>
+        <rect class="c-band" x="574" y="106" width="60" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="146" text-anchor="end">4 &middot; Knowledge graph</text>
+        <rect class="c-band-alt" x="446" y="136" width="154" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="176" text-anchor="end">5 &middot; RAG</text>
+        <rect class="c-band" x="608" y="166" width="35" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="206" text-anchor="end">6 &middot; Agentic / corrective RAG</text>
+        <rect class="c-band-alt" x="634" y="196" width="26" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="236" text-anchor="end">7 &middot; Observability &amp; evals</text>
+        <rect class="c-band" x="634" y="226" width="17" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="266" text-anchor="end">8 &middot; Two-way agent memory</text>
+        <rect class="c-band-alt" x="634" y="256" width="26" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="296" text-anchor="end">9 &middot; Governed self-consolidating</text>
+        <rect class="c-band" x="651" y="286" width="9" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="326" text-anchor="end">10 &middot; Embodied companions</text>
+        <rect class="c-band-now" x="646" y="316" width="14" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="356" text-anchor="end">11 &middot; Memory infrastructure</text>
+        <rect class="c-band-now" x="646" y="346" width="14" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="386" text-anchor="end">12 &middot; TerranSoul (this project)</text>
+        <rect class="c-band-now" x="646" y="376" width="14" height="14" rx="4"/>
+        <text class="c-tick" x="420" y="444" text-anchor="middle">bands span the era ranges the source table dates each stage to; rows 10&ndash;12 are undated</text>
+        <text class="c-tick" x="420" y="458" text-anchor="middle">in the source and marked only as current (mid-2026); band colors alternate for row separation only</text>
+      </svg>
+      <figcaption><span class="fignum">Fig 11</span>The memory-evolution timeline. Qualitative era bands only &mdash; there is no value axis, so no magnitude may be read from band length. Source: the evolution-timeline table of <code>docs/brain-advanced-design.md</code> [<a href="#cref-52">52</a>].</figcaption>
+    </figure>
+
+    <h2><span class="scene-num">Stage 1</span>Lexical / keyword search (inverted index + TF-IDF/BM25) &mdash; 1970s&ndash;2000s</h2>
+    <p><strong>What it solved.</strong> The inverted index plus statistical ranking &mdash; TF-IDF, then Okapi BM25 at TREC-3 in 1994 [<a href="#cref-1">1</a>] &mdash; gave fast, ranked full-text retrieval over huge collections, and it never left. It is still a 2026 production default: a benchmark of 23,088 queries over 7,318 financial documents found plain BM25 scoring above <code>text-embedding-3-large</code> on most metrics, because exact identifiers reward exact-term matching (Akarsu et al. [<a href="#cref-2">2</a>]).</p>
+    <p><strong>The documented limitation.</strong> Exact-term matching suffers vocabulary mismatch: synonyms are missed and polysemous words confused. The founding measurement is Furnas et al. (CACM 1987): two people choose the same term for a concept less than 20% of the time [<a href="#cref-3">3</a>]. The 2026 practice is hybrid BM25+dense <em>fusion</em>, not replacement &mdash; BM25 fails on paraphrase where dense retrieval fails on exact identifiers.</p>
+    <p><strong>Why it led on &mdash; and looped back.</strong> Dense embeddings answered the semantic gap, then converged back onto this stage's machinery: Clavi&eacute; et al.'s &quot;Latent Terms&quot; (2026) found that sparse autoencoders on frozen dense retrievers extract Zipfian vocabularies scorable via BM25 over an inverted index, matching the dense model's own accuracy [<a href="#cref-4">4</a>].</p>
+
+    <h2><span class="scene-num">Stage 2</span>Semantic search (dense embedding retrieval) &mdash; 2013&ndash;2021</h2>
+    <p><strong>What it solved.</strong> Encoding queries and documents into dense vectors ranked by cosine similarity solved vocabulary mismatch: DPR (Karpukhin et al., EMNLP 2020) scored 9&ndash;19% higher top-20 accuracy than BM25 [<a href="#cref-5">5</a>]. Dense retrieval became the field's backbone, powering instruction-tuned LLM embedders and multimodal encoders such as Gemini Embedding 2 [<a href="#cref-6">6</a>].</p>
+    <p><strong>The documented limitation.</strong> A fundamental capacity ceiling, proven in 2025: DeepMind (Weller et al.) used sign-rank results to show that for any fixed embedding dimension <em>d</em>, there exist relevant-document combinations no single-vector embedder can return as a top-k result; their LIMIT benchmark confirms it, with SOTA embedders below 20% recall@100 [<a href="#cref-7">7</a>].</p>
+    <p><strong>Why it led on.</strong> The proven ceiling drove an escape into multi-vector / late-interaction retrieval (the ColBERT family [<a href="#cref-8">8</a>]), once too slow for production, made practical by reductions to single-vector ANN search &mdash; LEMUR (ICML 2026) reports an order of magnitude faster multi-vector search than prior systems [<a href="#cref-9">9</a>].</p>
+
+    <h2><span class="scene-num">Stage 3</span>Vector databases (ANN at scale) &mdash; 2016&ndash;2023</h2>
+    <p><strong>What it solved.</strong> FAISS (Johnson, Douze &amp; J&eacute;gou 2017) [<a href="#cref-10">10</a>] and HNSW [<a href="#cref-11">11</a>] delivered approximate nearest-neighbour search at billion scale; Milvus, Pinecone, Weaviate, and pgvector wrapped ANN indexes in real databases [<a href="#cref-12">12</a>]. By 2025&ndash;2026 the category fully commoditized: SQL Server 2025 ships native vector indexes, and Amazon S3 Vectors ingested 40B+ vectors in preview before GA [<a href="#cref-12">12</a>].</p>
+    <p><strong>The documented limitation.</strong> RAM-residency is largely solved (DiskANN-style SSD indexes; S3 Vectors at 2B vectors/index; VAST's 2026 50B-vector benchmark [<a href="#cref-12">12</a>]), but disk-resident graph indexes remain immature &mdash; &le;15% I/O utilization (arXiv:2603.01779 [<a href="#cref-13">13</a>]) &mdash; and filtered search still degrades recall and latency. The structural limit stands regardless: <em>similarity is not structure</em>.</p>
+    <p><strong>Why it led on.</strong> Flat embedding similarity cannot represent typed entities and relations, so multi-hop questions need an explicit graph &mdash; confirmed by GraphRAG-Bench (ICLR 2026), which measures large multi-hop gaps for vector-only RAG (~45&ndash;50% accuracy vs 80&ndash;85% with graph-based retrieval) [<a href="#cref-14">14</a>].</p>
+
+    <h2><span class="scene-num">Stage 4</span>Knowledge graphs &mdash; 2001&ndash;2010s</h2>
+    <p><strong>What it solved.</strong> RDF/SPARQL, Freebase, DBpedia, and Neo4j property graphs enabled entity disambiguation and multi-hop relational answers; Google Knowledge Graph (2012; 500M entities, 3.5B facts) brought entity-centric answers to mainstream search worldwide [<a href="#cref-15">15</a>]. The structure argument has numbers: a 2023 data.world benchmark cited by <em>GraphRAG vs Vector RAG</em> reports GPT-4 over raw SQL at 16.7% execution accuracy versus 54.2% over a knowledge-graph (SPARQL) representation of the same 43 insurance-domain questions &mdash; and 0% vs non-zero in the high-complexity quadrant [<a href="#cref-16">16</a>].</p>
+    <p><strong>The documented limitation.</strong> Graphs are chronically incomplete and expensive to maintain: Knowledge Vault (KDD 2014) found 71% of Freebase persons lacked a place of birth [<a href="#cref-17">17</a>]; Google shut Freebase down in 2015. The incompleteness persists in the LLM era, where automatic KG construction from text still yields fragmented, inconsistent graphs.</p>
+    <p><strong>Why it led on &mdash; and partly swung back.</strong> The field moved to RAG (retrieve text, let an LLM synthesize) because hand-curating graphs did not scale; by 2025 it partly swung back with LLMs as curators &mdash; temporal-KG agent memory (Zep/Graphiti) reports DMR 94.8% beside MemGPT's 93.4%, +18.5% on LongMemEval, at ~90% lower latency [<a href="#cref-18">18</a>].</p>
+
+    <h2><span class="scene-num">Stage 5</span>Retrieval-Augmented Generation &mdash; 2020&ndash;2024</h2>
+    <p><strong>What it solved.</strong> Lewis et al. (NeurIPS 2020) fixed frozen parametric knowledge &mdash; hallucination, staleness, no provenance &mdash; via query-time document retrieval [<a href="#cref-19">19</a>]. By 2026 the pattern hardened into managed, agentic infrastructure: Azure AI Search's agentic retrieval (LLM query planning, parallel subqueries, reranking) reached GA in April 2026 [<a href="#cref-20">20</a>].</p>
+    <p><strong>The documented limitation.</strong> Most production RAG failures are retrieval failures, not generation failures. A 2026 matched-control study found &quot;Lost in the Middle&quot; reader errors stem mainly from semantic competition among retrieved passages, not context length &mdash; swapping in less-competitive passages recovered up to +6.0 EM, showing longer windows relocate the problem rather than solve it [<a href="#cref-21">21</a>].</p>
+    <p><strong>Why it led on.</strong> Many silent failure stages plus fluent output either way meant teams could not localize failures without dedicated tooling &mdash; and agentic RAG's added planning/reranking stages made this worse. The fix taking shape by 2025&ndash;26: span-level tracing (TruLens [<a href="#cref-22">22</a>]) and faithfulness eval suites such as FaithJudge [<a href="#cref-23">23</a>].</p>
+
+    <h2><span class="scene-num">Stage 6</span>Agentic / corrective RAG &mdash; 2023&ndash;2026</h2>
+    <p><strong>What it solved.</strong> Self-RAG (Asai et al., ICLR 2024) trained a single LM to emit reflection tokens that decide on-demand retrieval and critique its own generations for factuality and citation quality [<a href="#cref-24">24</a>]. CRAG (Yan et al.; v1 January 2024 through v3 October 2024) added a lightweight retrieval evaluator grading retrieved documents Correct/Incorrect/Ambiguous, triggering knowledge refinement, web-search fallback with query rewriting, or both &mdash; directly answering the prior stage's finding that most RAG failures are retrieval failures [<a href="#cref-25">25</a>]. By June 2026 the pattern reached quantified production form: the FareedKhan-dev <code>rag-zero-hallucinations</code> pipeline tunes explicit thresholds (crag_ok&nbsp;=&nbsp;0.7 / crag_bad&nbsp;=&nbsp;0.4; &tau;_claim&nbsp;=&nbsp;0.3 / &tau;_abstain&nbsp;=&nbsp;0.3) around a verifier benchmarked on HaluBench (Lynx; Ravi et al., 15K faithful/hallucinated triplets) reaching AUROC 0.702, landing on an operating point of 2% hallucination at 0.908 faithfulness and 0.46 coverage [<a href="#cref-26">26</a>,<a href="#cref-27">27</a>].</p>
+    <p><strong>The documented limitation.</strong> The correction loop is only as trustworthy as its own grader. An AUROC of 0.702 (0.5 is chance) means the verifier's separation of faithful from hallucinated evidence is well short of reliable at any threshold, so grade-then-correct silently inherits a large share of the judge's own error rate &mdash; and the 0.46-coverage operating point shows how the low hallucination number is actually reached: by abstaining or rerouting more than half of all queries. Both 2024 originals also grade at document/answer level, not per claim; an answer with five correct statements and one fabricated one still clears a document-relevance check &mdash; a gap the field only began closing in 2025 (Gray Zone of Faithfulness [<a href="#cref-28">28</a>]; FaithLens [<a href="#cref-29">29</a>]).</p>
+    <p><strong>Why it led on.</strong> Because the embedded evaluator's reliability &mdash; not retrieval or generation &mdash; became the bottleneck, teams needed a standardized way to measure whether the critic inside these loops could be trusted at all. RAGAS, TruLens, LangSmith, and MT-Bench industrialized exactly that measurement layer &mdash; which then had to confront its own validity problem, the subject of the next stage.</p>
+
+    <h2><span class="scene-num">Stage 7</span>LLM observability &amp; evals (LLM-as-a-judge) &mdash; 2023&ndash;2025</h2>
+    <p><strong>What it solved.</strong> RAGAS, TruLens, LangSmith [<a href="#cref-30">30</a>], and MT-Bench (NeurIPS 2023) [<a href="#cref-31">31</a>] gave teams reference-free, LLM-judged ways to detect hallucination and regressions; by 2025&ndash;26 the layer industrialized via OpenTelemetry GenAI semantic conventions for standardized LLM/agent tracing [<a href="#cref-32">32</a>] and human-calibrated judges.</p>
+    <p><strong>The documented limitation.</strong> The judge is itself unreliable at scale: <em>Reliability without Validity</em> (21 judges, ~541K judgments) found judges with &gt;0.95 test-retest reliability that also carry severe position bias (&gt;0.10) and rankings shifting up to 14 positions across benchmarks [<a href="#cref-33">33</a>]. And the layer stays passive &mdash; it mines traces for humans instead of writing experience back.</p>
+    <p><strong>Why it led on.</strong> Observability is read-only: traces pile up while agents restart stateless each session. The successor is memory that writes evaluated experience back &mdash; EvoAgentBench benchmarks converting traces into reusable &quot;Ability&quot; units, finding transfer works but no method yet sustains gains in all settings [<a href="#cref-34">34</a>].</p>
+
+    <h2><span class="scene-num">Stage 8</span>Two-way agent memory (the read-write layer) &mdash; 2023&ndash;2026</h2>
+    <p><strong>What it solved.</strong> MemGPT introduced OS-inspired virtual context management [<a href="#cref-35">35</a>], since mainstreamed as Letta, Zep, Mem0, and OpenAI ChatGPT Memory [<a href="#cref-36">36</a>]. By 2026 read-write memory is table stakes: Anthropic made Claude memory free for all users and added cross-assistant memory import in March 2026 [<a href="#cref-36">36</a>].</p>
+    <p><strong>The documented limitation.</strong> The write path is an attack surface &mdash; MINJA achieves &gt;95% injection success [<a href="#cref-37">37</a>]. Measurement is also unresolved: the Mem0-vs-Zep LoCoMo dispute saw the same benchmark reported at 84%, then 58.44%, then 75.14% [<a href="#cref-38">38</a>]; and MemoryArena shows systems scoring near-perfectly on LoCoMo collapse to 40&ndash;60% on interdependent multi-session agentic tasks [<a href="#cref-39">39</a>].</p>
+    <p><strong>Why it led on.</strong> Because agents now write their own memory, the unguarded write path is the next problem: TOKI formalizes write-time contradiction resolution as concurrency control, observing that production heuristics that silently keep only the most recent write never declare their isolation level [<a href="#cref-40">40</a>].</p>
+
+    <h2><span class="scene-num">Stage 9</span>Governed, self-consolidating memory &mdash; 2025&ndash;2026</h2>
+    <p><strong>What it solved.</strong> This stage targets two-way memory's unguarded write path via sleep-time consolidation: Letta's sleep-time compute swaps in-conversation self-editing for a background agent that curates memory during idle time [<a href="#cref-41">41</a>], validated by Hindsight's &quot;Observations&quot; process taking #1 on BEAM at 73.9% with 1M-token corpora [<a href="#cref-42">42</a>].</p>
+    <p><strong>The documented limitation.</strong> GateMem finds no current method achieves utility, access control, and reliable forgetting simultaneously &mdash; a trilemma echoing the prior stage's poisoning problem [<a href="#cref-43">43</a>]. BEAM separately shows a ~25% accuracy drop from 1M to 10M tokens [<a href="#cref-42">42</a>], and the ecosystem remains fragmented with no consensus name.</p>
+    <p><strong>The frontier as of mid-2026.</strong> Resolving the utility/access-control/forgetting trilemma, hardening the write path against lifecycle attacks [<a href="#cref-44">44</a>], and closing the passive-recall vs active-use gap on unsaturated 10M-token-plus benchmarks &mdash; where TerranSoul's own memory design sits, per the final section.</p>
+
+    <h2><span class="scene-num">Stage 10</span>Embodied companions &mdash; Project AIRI, Amica, Open-LLM-VTuber, Utsuwa</h2>
+    <p><strong>What they proved.</strong> Self-hosted &quot;digital being&quot; avatars work in the open: local-first VRM/Live2D companions with realtime voice, emotion, and vision on consumer hardware, running on Ollama/llama.cpp-class backends &mdash; AIRI even shares TerranSoul's Tauri+Rust desktop shell [<a href="#cref-45">45</a>].</p>
+    <p><strong>The categorical gap.</strong> Memory. AIRI's own &quot;Memory Alaya&quot; module &mdash; the most memory-focused entrant in the class &mdash; is explicitly labeled experimental/WIP, and none of the others ships a persistent, governed memory architecture either [<a href="#cref-45">45</a>]. Embodiment is solved in open source; the mind is not: none ships governed writes, hybrid BM25+dense retrieval, a temporal KG, CRDT sync, or a reflection loop.</p>
+
+    <h2><span class="scene-num">Stage 11</span>Memory infrastructure &mdash; Letta, Zep (Graphiti), Mem0</h2>
+    <p><strong>What they industrialized.</strong> The agent-memory layer itself: Mem0's extract-consolidate-update vector pipeline (~47k GitHub stars), Zep/Graphiti's bitemporal knowledge graph for facts that change over time, and Letta's OS-style runtime where the model pages its own memory via sleep-time curation [<a href="#cref-46">46</a>]. Adjacent, same problem class with a different deployment shape: ApeRAG, an agentic GraphRAG platform built as a deeply modified fork of LightRAG (Guo, Xia, Yu, Ao &amp; Huang [<a href="#cref-47">47</a>]) with five backing services, Kubernetes/Helm deployment, and optional MinerU document parsing [<a href="#cref-48">48</a>] &mdash; ApeRAG publishes no quantitative benchmark suite, so it is compared by architecture, not number [<a href="#cref-49">49</a>].</p>
+    <p><strong>The documented limitation.</strong> Headless developer infrastructure with zero embodiment: no avatar, voice, or companion product in any of the three; Mem0's vector-first design scores 49.0% beside Zep's 63.8% on LongMemEval temporal reasoning [<a href="#cref-46">46</a>]; Letta remains a runtime for developers, not end users.</p>
+    <p><strong>The synthesis these two rows force.</strong> The infrastructure row defined the memory-architecture bar (temporal KG, consolidation, provenance) that companion apps import rather than build &mdash; Open-LLM-VTuber literally mounts Letta as its brain [<a href="#cref-46">46</a>]. The companion row proved the embodied surface. No project in either row ships both natively.</p>
+
+    <h2><span class="scene-num">Stage 12</span>TerranSoul's position &mdash; addressed, contained, open</h2>
+    <p>The final row of the source table records where TerranSoul sits against the whole chain, in three honest columns [<a href="#cref-52">52</a>]. Where a claim below is a measurement, its number and source file are in the main paper [<a href="#cref-53">53</a>].</p>
+    <div class="tablewrap"><table class="compare">
+      <tr><th>Status</th><th>Chain limitation</th><th>TerranSoul's record</th></tr>
+      <tr><td><strong>Addressed (measured)</strong></td><td>Vocabulary mismatch (Stage 1)</td><td>Hybrid FTS5 + EmbeddingGemma-768d/RRF holds LongMemEval-S NDCG@10 &ge; 95.1; a CJK trigram mirror lifts Japanese NDCG@10 9.5 &rarr; 42.3&ndash;65.0 at 1M rows.</td></tr>
+      <tr><td><strong>Addressed (measured)</strong></td><td>ANN scale (Stage 3)</td><td>Per-shard usearch HNSW + IVF-PQ + TurboVec; the shard router holds quality at 1M rows (routed 60.5% vs all-shards 59.5% R@10) while cutting fan-out.</td></tr>
+      <tr><td><strong>Addressed (measured)</strong></td><td>Retrieval-failure RAG (Stage 5/6)</td><td>Never-regress floors + an agentic verify-and-rank path reaching 100% en/vi/ja on its 1M gate; CRAG-style hard-abstain and claim-level weakest-link verification wired into the live research paths (2026-07-10).</td></tr>
+      <tr><td><strong>Addressed (built)</strong></td><td>Unguarded write-back (Stage 8)</td><td>A governed write gate on every autonomous durable write, plus provenance, typed edges, ACL, and CRDT sync.</td></tr>
+      <tr><td><strong>Contained, not solved</strong></td><td>Graph incompleteness (Stage 4)</td><td>Built but unproven as a ranking signal: the KG cascade measured 0pp retrieval gain at 2&times; latency and stays default-false &mdash; the graph has not yet earned its retrieval cost.</td></tr>
+      <tr><td><strong>Contained, not solved</strong></td><td>LLM-judge unreliability (Stage 7)</td><td>Hedged (judges fail open and never veto; the DEAD-JUDGE-1 incident &mdash; a stale model tag whose dead judge erased all recall &mdash; is the founding lesson), not calibrated away.</td></tr>
+      <tr><td><strong>Open</strong></td><td>Adversarial write governance (Stages 8/9)</td><td>Untested against MINJA-class poisoning at published attack strength; the utility/access-control/forgetting trilemma is open here exactly as it is industry-wide.</td></tr>
+      <tr><td><strong>Open</strong></td><td>Throughput through search (Stage 3/9)</td><td>The ~1.15M CRUD/s write engine is bench-gated pending sharded search; measured end-to-end ingest is in the thousands of rows/s. Numbers are single-machine self-run benches.</td></tr>
+    </table></div>
+    <p>Design-lineage notes the source table's body sections add, each with its upstream credit: reciprocal-rank fusion with <em>k</em>&nbsp;=&nbsp;60 follows Cormack, Clarke &amp; B&uuml;ttcher (2009) [<a href="#cref-50">50</a>]; HyDE follows Gao et al. [<a href="#cref-51">51</a>]; the temporal-edge supersession pattern follows Zep/Graphiti [<a href="#cref-18">18</a>]; Matryoshka two-stage search follows Kusupati et al. (2022) [<a href="#cref-54">54</a>]; the retrieval evaluator adopts CRAG's grading [<a href="#cref-25">25</a>]; community detection follows microsoft/graphrag's hierarchy [<a href="#cref-55">55</a>] with LightRAG-style community summaries [<a href="#cref-47">47</a>]; conflict resolution adopts Mem0's LLM-arbitrated approach [<a href="#cref-56">56</a>]; and the self-improvement boundary &mdash; harness and memory evolve, weights never &mdash; is argued against SIA [<a href="#cref-57">57</a>] and the A-Evolve line [<a href="#cref-58">58</a>,<a href="#cref-59">59</a>,<a href="#cref-60">60</a>,<a href="#cref-61">61</a>].</p>
+
+    <h2><span class="scene-num">The open frontier</span>What nobody has solved, as of mid-2026</h2>
+    <ul>
+      <li><strong>The write-governance trilemma.</strong> No current method achieves utility, access control, and reliable forgetting simultaneously [<a href="#cref-43">43</a>]; lifecycle attacks on the write path are formalized [<a href="#cref-44">44</a>] and MINJA-class injection remains &gt;95% effective against unguarded stores [<a href="#cref-37">37</a>]. TerranSoul's gate is built but not adversarially proven.</li>
+      <li><strong>Judge validity.</strong> The measurement layer every corrective loop depends on carries position bias and benchmark-dependent rankings at scale [<a href="#cref-33">33</a>]; fail-open containment is a mitigation, not calibration.</li>
+      <li><strong>Making the graph earn its cost.</strong> Graph structure demonstrably helps structure-shaped questions [<a href="#cref-14">14</a>,<a href="#cref-16">16</a>] yet TerranSoul's own measured cascade bought 0pp at 2&times; latency at current local-model scale &mdash; the honest record is that the cost/benefit crossover has not been reached, and the field's graph claims rarely publish the latency column.</li>
+      <li><strong>Scale without decay.</strong> The best governed-memory system drops ~25% from 1M to 10M tokens [<a href="#cref-42">42</a>]; benchmarks above 10M are unsaturated; and the near-perfect LoCoMo scores of Stage 8 collapse on interdependent tasks [<a href="#cref-39">39</a>] &mdash; the passive-recall vs active-use gap.</li>
+    </ul>
+    <p>Even in TerranSoul's own design, the chain's youngest limitations remain genuinely open &mdash; adversarially robust write governance, LLM-judge validity, and a knowledge graph that demonstrably earns its retrieval cost &mdash; none of which any single system, commercial or academic, has resolved as of mid-2026 [<a href="#cref-52">52</a>]. The measurement paper this article accompanies tests what <em>can</em> be tested today, as three falsifiable hypotheses [<a href="#cref-53">53</a>].</p>
+
+    <h2><span class="scene-num">References</span>Every citation, grouped by stage</h2>
+    <p class="small">Citation strings follow the source table in <code>docs/brain-advanced-design.md</code> [<a href="#cref-52">52</a>] and its linked comparison records; tools and products without papers are cited by name as the source table cites them. One negative finding recorded for auditability: RAPTOR appears nowhere in the source document and is therefore deliberately absent from this list rather than attributed to it; HippoRAG likewise enters the main paper via its own related-work references, not via the source table.</p>
+    <div class="refgroup">Stage 1 &mdash; lexical / keyword</div>
+    <ol class="refs">
+      <li id="cref-1" value="1">Robertson, S., et al. <cite>Okapi at TREC-3</cite> (Okapi BM25). TREC-3, 1994.</li>
+      <li id="cref-2" value="2">Akarsu, K., et al. <cite>BM25 vs dense retrieval over financial documents</cite> (23,088 queries / 7,318 documents). 2026. arXiv:2604.01733.</li>
+      <li id="cref-3" value="3">Furnas, G., Landauer, T., Gomez, L., Dumais, S. <cite>The vocabulary problem in human-system communication.</cite> CACM, 1987.</li>
+      <li id="cref-4" value="4">Clavi&eacute;, B., et al. <cite>Latent Terms.</cite> 2026. arXiv:2605.29384.</li>
+    </ol>
+    <div class="refgroup">Stage 2 &mdash; semantic search</div>
+    <ol class="refs">
+      <li id="cref-5" value="5">Karpukhin, V., et al. <cite>Dense Passage Retrieval for Open-Domain Question Answering (DPR).</cite> EMNLP 2020.</li>
+      <li id="cref-6" value="6">Google. <cite>Gemini Embedding 2</cite> (tool, cited by name).</li>
+      <li id="cref-7" value="7">Weller, O., et al. (DeepMind). <cite>Sign-rank limits of single-vector embedding retrieval + the LIMIT benchmark.</cite> 2025. arXiv:2508.21038.</li>
+      <li id="cref-8" value="8">Khattab, O., Zaharia, M., et al. <cite>ColBERT-family late-interaction retrieval</cite> (cited by name in the source table).</li>
+      <li id="cref-9" value="9"><cite>LEMUR: fast multi-vector retrieval via reduction to single-vector ANN.</cite> ICML 2026. arXiv:2601.21853.</li>
+    </ol>
+    <div class="refgroup">Stage 3 &mdash; vector databases</div>
+    <ol class="refs">
+      <li id="cref-10" value="10">Johnson, J., Douze, M., J&eacute;gou, H. <cite>Billion-scale similarity search with GPUs (FAISS).</cite> 2017.</li>
+      <li id="cref-11" value="11">Malkov, Y., Yashunin, D. <cite>Hierarchical Navigable Small World graphs (HNSW)</cite> (cited by name).</li>
+      <li id="cref-12" value="12">Milvus; Pinecone; Weaviate; pgvector; SQL Server 2025 native vector indexes; Amazon S3 Vectors; DiskANN-style SSD indexes; VAST 50B-vector benchmark (tools/products, cited by name as the source table cites them).</li>
+      <li id="cref-13" value="13"><cite>Disk-resident graph-index immaturity (&le;15% I/O utilization).</cite> 2026. arXiv:2603.01779.</li>
+      <li id="cref-14" value="14"><cite>GraphRAG-Bench.</cite> ICLR 2026.</li>
+    </ol>
+    <div class="refgroup">Stage 4 &mdash; knowledge graphs</div>
+    <ol class="refs">
+      <li id="cref-15" value="15">RDF/SPARQL; Freebase; DBpedia; Neo4j; Google Knowledge Graph (2012) (standards/products, cited by name).</li>
+      <li id="cref-16" value="16">data.world benchmark (2023), as cited by <cite>GraphRAG vs Vector RAG</cite>: GPT-4 SQL 16.7% vs SPARQL 54.2% execution accuracy on 43 insurance-domain questions.</li>
+      <li id="cref-17" value="17">Dong, X., et al. <cite>Knowledge Vault.</cite> KDD 2014.</li>
+      <li id="cref-18" value="18">Zep AI. <cite>Zep / Graphiti: A Temporal Knowledge-Graph Architecture for Agent Memory.</cite> 2025. arXiv:2501.13956. (DMR 94.8 vs MemGPT 93.4; +18.5% LongMemEval; ~90% lower latency.)</li>
+    </ol>
+    <div class="refgroup">Stage 5 &mdash; RAG</div>
+    <ol class="refs">
+      <li id="cref-19" value="19">Lewis, P., et al. <cite>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.</cite> NeurIPS 2020.</li>
+      <li id="cref-20" value="20">Microsoft. <cite>Azure AI Search agentic retrieval</cite> (GA April 2026; product, cited by name).</li>
+      <li id="cref-21" value="21"><cite>&quot;Lost in the Middle&quot; matched-control study: semantic competition, not context length.</cite> 2026. arXiv:2605.27294.</li>
+      <li id="cref-22" value="22">TruLens (span-level tracing; tool, cited by name).</li>
+      <li id="cref-23" value="23"><cite>FaithJudge.</cite> 2025. arXiv:2505.04847.</li>
+    </ol>
+    <div class="refgroup">Stage 6 &mdash; agentic / corrective RAG</div>
+    <ol class="refs">
+      <li id="cref-24" value="24">Asai, A., et al. <cite>Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection.</cite> ICLR 2024. arXiv:2310.11511.</li>
+      <li id="cref-25" value="25">Yan, S., et al. <cite>Corrective Retrieval-Augmented Generation (CRAG).</cite> 2024 (v1 January&ndash;v3 October). arXiv:2401.15884.</li>
+      <li id="cref-26" value="26">FareedKhan-dev. <cite>rag-zero-hallucinations</cite> pipeline (crag_ok 0.7 / crag_bad 0.4; &tau;_claim 0.3 / &tau;_abstain 0.3; 2% hallucination at 0.908 faithfulness / 0.46 coverage; tool, cited by name with its published thresholds).</li>
+      <li id="cref-27" value="27">Ravi, S., et al. <cite>Lynx / HaluBench</cite> (15K faithful/hallucinated triplets; verifier AUROC 0.702 as used above). 2024. arXiv:2407.08488.</li>
+      <li id="cref-28" value="28"><cite>The Gray Zone of Faithfulness.</cite> 2025. arXiv:2510.21118.</li>
+      <li id="cref-29" value="29"><cite>FaithLens.</cite> 2025. arXiv:2512.20182.</li>
+    </ol>
+    <div class="refgroup">Stage 7 &mdash; observability &amp; evals</div>
+    <ol class="refs">
+      <li id="cref-30" value="30">RAGAS; TruLens; LangSmith (tools, cited by name).</li>
+      <li id="cref-31" value="31">Zheng, L., et al. <cite>MT-Bench / Judging LLM-as-a-Judge.</cite> NeurIPS 2023.</li>
+      <li id="cref-32" value="32">OpenTelemetry GenAI semantic conventions (standard, cited by name).</li>
+      <li id="cref-33" value="33"><cite>Reliability without Validity</cite> (21 judges, ~541K judgments). 2026. arXiv:2606.19544.</li>
+      <li id="cref-34" value="34"><cite>EvoAgentBench.</cite> 2026. arXiv:2607.05202.</li>
+    </ol>
+    <div class="refgroup">Stage 8 &mdash; two-way agent memory</div>
+    <ol class="refs">
+      <li id="cref-35" value="35">Packer, C., et al. <cite>MemGPT: Towards LLMs as Operating Systems</cite> (&rarr; Letta). 2023. arXiv:2310.08560.</li>
+      <li id="cref-36" value="36">Zep; Mem0; OpenAI ChatGPT Memory; Anthropic Claude memory (free for all users + cross-assistant import, March 2026) (products, cited by name).</li>
+      <li id="cref-37" value="37"><cite>MINJA: memory injection attacks (&gt;95% injection success).</cite> 2025. arXiv:2503.03704.</li>
+      <li id="cref-38" value="38">The Mem0-vs-Zep LoCoMo measurement dispute (84% &rarr; 58.44% &rarr; 75.14%; named dispute, as recorded in the source table).</li>
+      <li id="cref-39" value="39"><cite>MemoryArena.</cite> 2026. arXiv:2602.16313.</li>
+      <li id="cref-40" value="40"><cite>TOKI: write-time contradiction resolution as concurrency control.</cite> 2026. arXiv:2606.06240.</li>
+    </ol>
+    <div class="refgroup">Stage 9 &mdash; governed, self-consolidating memory</div>
+    <ol class="refs">
+      <li id="cref-41" value="41">Letta. <cite>Sleep-time compute.</cite> 2025. arXiv:2504.13171.</li>
+      <li id="cref-42" value="42">Hindsight &quot;Observations&quot; &mdash; #1 on BEAM, 73.9% at 1M tokens; BEAM's ~25% drop from 1M to 10M tokens (named results, as recorded in the source table).</li>
+      <li id="cref-43" value="43">GateMem &mdash; the utility / access-control / reliable-forgetting trilemma (named result).</li>
+      <li id="cref-44" value="44"><cite>Memory lifecycle attacks.</cite> 2026. arXiv:2602.08563.</li>
+    </ol>
+    <div class="refgroup">Stages 10&ndash;11 &mdash; embodied companions and memory infrastructure</div>
+    <ol class="refs">
+      <li id="cref-45" value="45">Project AIRI (incl. the experimental &quot;Memory Alaya&quot; module); Amica; Open-LLM-VTuber; Utsuwa (open-source companion projects, cited by name).</li>
+      <li id="cref-46" value="46">Letta; Zep (Graphiti); Mem0 (~47k stars; Mem0 49.0% vs Zep 63.8% on LongMemEval temporal reasoning; Open-LLM-VTuber mounts Letta as its brain) &mdash; as recorded in the source table.</li>
+      <li id="cref-47" value="47">Guo, Z., Xia, L., Yu, Y., Ao, T., Huang, C. <cite>LightRAG: Simple and Fast Retrieval-Augmented Generation.</cite> 2024. arXiv:2410.05779 (MIT). ApeRAG's graph-RAG lineage.</li>
+      <li id="cref-48" value="48">apecloud/ApeRAG (Apache-2.0) and its optional MinerU parsing service (tools, cited by name).</li>
+      <li id="cref-49" value="49">ApeRAG architecture comparison record: <code>benchmark/APERAG_COMPARISON.md</code> (ApeRAG publishes no quantitative benchmark suite &mdash; architecture-only comparison).</li>
+    </ol>
+    <div class="refgroup">Design lineage and the self-evolution boundary</div>
+    <ol class="refs">
+      <li id="cref-50" value="50">Cormack, G., Clarke, C., B&uuml;ttcher, S. <cite>Reciprocal Rank Fusion (RRF)</cite> &mdash; the rank-fusion method and its <em>k</em>&nbsp;=&nbsp;60 constant. SIGIR 2009. (Short-form citation; the full published title is available under that venue and year.)</li>
+      <li id="cref-51" value="51">Gao, L., et al. <cite>Precise Zero-Shot Dense Retrieval without Relevance Labels (HyDE).</cite> 2022. arXiv:2212.10496.</li>
+      <li id="cref-54" value="54">Kusupati, A., et al. <cite>Matryoshka Representation Learning.</cite> 2022.</li>
+      <li id="cref-55" value="55">microsoft/graphrag &mdash; hierarchical community detection and global/local query routing (tool; adopted per the source table's GRAPHRAG-1a/b/c record).</li>
+      <li id="cref-56" value="56"><cite>Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory</cite> (LLM-arbitrated conflict resolution, adopted at the typed-edge layer). 2025. arXiv:2504.19413.</li>
+      <li id="cref-57" value="57">Hebbar, P., et al. <cite>SIA: Self Improving AI with Harness &amp; Weight Updates.</cite> 2026. arXiv:2605.27276. github.com/hexo-ai/sia (MIT).</li>
+      <li id="cref-58" value="58">A-EVO-Lab. <cite>Position: Agentic Evolution is the Path to Evolving LLMs</cite> (A-Evolve). 2026. arXiv:2602.00359. Published-numbers record: <code>benchmark/A-EVOLVE-COMPARISON.md</code>.</li>
+      <li id="cref-59" value="59"><cite>Harness Updating Is Not Harness Benefit.</cite> 2026. arXiv:2605.30621.</li>
+      <li id="cref-60" value="60"><cite>Evolved-harness brittleness under ungated corpus growth.</cite> 2026. arXiv:2606.01770.</li>
+      <li id="cref-61" value="61">A-EVO-Lab. <cite>A-Evolve-Training: Autonomous Post-Training of a 30B Model.</cite> 2026. arXiv:2606.20657 (weight fine-tuning; recorded as the deliberate opposite of the frozen-actor boundary).</li>
+    </ol>
+    <div class="refgroup">Source documents</div>
+    <ol class="refs">
+      <li id="cref-52" value="52">TerranSoul. <cite>Brain &amp; Memory &mdash; Advanced Architecture Design</cite>: <code>docs/brain-advanced-design.md</code> (the evolution-timeline table this article narrates; per-stage citation trail in <code>mcp-data/shared/memory-seed.sql</code>, <code>seed:lesson-worldwide-memory-evolution-2026-07-09</code>).</li>
+      <li id="cref-53" value="53">TerranSoul Research. <a href="index.html"><cite>Memory Is What a Store Does: Falsifiable Behavioral Criteria and a Multi-Benchmark Measurement of Frozen-Model External Memory.</cite></a> 2026-07 (the main paper; all TerranSoul measurements cited there with source files).</li>
+    </ol>
+
+    <div class="endmark">The Evolution of Memory for AI Systems &middot; TerranSoul Research &middot; 2026</div>
+  </article>
+</div>
+
+<footer class="page-foot">
+  <div class="links">
+    <a href="../">&larr; TerranSoul home</a>
+    <a href="index.html">Main paper</a>
+    <a href="../brain-advanced-design/">Brain advanced design</a>
+    <a href="https://github.com/TerranSyn/TerranSoul">GitHub</a>
+  </div>
+  <div>Authoritative source (markdown, source of truth): <code>docs/LLM-Brain-Design-Research-Paper-memory-evolution.md</code> &middot; 2026-07.</div>
+</footer>
+</body>
+</html>
