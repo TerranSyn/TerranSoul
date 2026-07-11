@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tesseres — Sovereign AI</title>
+<meta name="description" content="Tesseres builds a Sovereign AI platform — TerranSoul (AI memory) and Tessera (AI execution) — so individuals, businesses, and nations can own their own AI. / Nền tảng AI có chủ quyền." />
+<link rel="canonical" href="https://terransyn.github.io/TerranSoul/tesseres/" />
+<style>
+  :root{
+    --bg: oklch(0.985 0.008 80);
+    --bg-card: oklch(0.97 0.01 80);
+    --bg-deep: oklch(0.93 0.012 75);
+    --ink: oklch(0.22 0.015 60);
+    --ink-soft: oklch(0.42 0.012 65);
+    --ink-faint: oklch(0.62 0.01 70);
+    --rule: oklch(0.88 0.012 75);
+    --accent: oklch(0.62 0.14 45);
+    --accent-soft: oklch(0.94 0.035 55);
+    --accent-ink: oklch(0.40 0.11 45);
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+    --maxw: 720px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg: oklch(0.19 0.012 260);
+      --bg-card: oklch(0.23 0.014 260);
+      --bg-deep: oklch(0.16 0.012 260);
+      --ink: oklch(0.93 0.01 250);
+      --ink-soft: oklch(0.74 0.012 250);
+      --ink-faint: oklch(0.58 0.012 255);
+      --rule: oklch(0.34 0.014 258);
+      --accent: oklch(0.72 0.13 55);
+      --accent-soft: oklch(0.30 0.06 50);
+      --accent-ink: oklch(0.82 0.10 60);
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);font-weight:400;line-height:1.65;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    overflow-x:hidden;overflow-wrap:break-word}
+
+  /* Topbar */
+  .topbar{position:sticky;top:0;z-index:20;background:color-mix(in oklab, var(--bg) 86%, transparent);
+    backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--rule);
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    padding:12px clamp(16px,5vw,40px)}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);
+    font-weight:600;font-size:19px;letter-spacing:-0.01em;color:var(--ink);text-decoration:none}
+  .brand .dot{width:11px;height:11px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--accent-ink), var(--accent));
+    box-shadow:0 0 0 3px var(--accent-soft)}
+  .langswitch{display:inline-flex;border:1px solid var(--rule);border-radius:999px;
+    overflow:hidden;background:var(--bg-card)}
+  .lang-btn{appearance:none;border:0;background:transparent;color:var(--ink-soft);
+    font-family:var(--sans);font-size:14px;font-weight:600;letter-spacing:0.02em;
+    min-height:40px;padding:0 16px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .lang-btn[aria-pressed="true"]{background:var(--accent);color:oklch(0.99 0 0)}
+  @media (prefers-color-scheme: dark){.lang-btn[aria-pressed="true"]{color:oklch(0.15 0.01 260)}}
+  .lang-btn:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+  /* Hero */
+  .hero{padding:clamp(48px,9vw,96px) clamp(16px,5vw,40px) clamp(20px,4vw,40px);
+    max-width:var(--maxw);margin:0 auto}
+  .hero h1{font-family:var(--serif);font-weight:600;letter-spacing:-0.02em;
+    font-size:clamp(44px,11vw,76px);line-height:1.02;margin:0 0 4px}
+  .hero .tag{color:var(--accent-ink);font-weight:600;font-size:clamp(15px,4vw,18px);
+    letter-spacing:0.01em;margin:0}
+
+  /* Article */
+  main{max-width:var(--maxw);margin:0 auto;padding:0 clamp(16px,5vw,40px) clamp(64px,10vw,120px)}
+  h2{font-family:var(--serif);font-weight:600;letter-spacing:-0.015em;
+    font-size:clamp(26px,6.5vw,38px);line-height:1.12;
+    margin:clamp(40px,7vw,64px) 0 6px;padding-top:clamp(24px,5vw,40px);
+    border-top:1px solid var(--rule)}
+  h2.no-rule{border-top:0;padding-top:0}
+  .kicker{color:var(--accent-ink);font-weight:600;font-size:14px;letter-spacing:0.06em;
+    text-transform:uppercase;margin:0 0 clamp(24px,5vw,40px)}
+  p{font-size:clamp(16px,2.6vw,18.5px);margin:0 0 1.05em;color:var(--ink)}
+  p.lead{font-size:clamp(18px,3.2vw,21px);color:var(--ink-soft);line-height:1.55}
+  strong{font-weight:600;color:var(--ink)}
+  a{color:var(--accent-ink);text-decoration:underline;text-underline-offset:2px;
+    text-decoration-thickness:1px;overflow-wrap:anywhere}
+  a:hover{text-decoration-thickness:2px}
+  .beats p{margin:0 0 0.35em;color:var(--ink-soft)}
+  .reslink{display:block;margin:0.4em 0 0;font-family:var(--sans);font-size:15px}
+  blockquote{margin:clamp(20px,4vw,32px) 0;padding:clamp(20px,4vw,28px) clamp(20px,4vw,30px);
+    background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:0 10px 10px 0}
+  blockquote p{margin:0;font-family:var(--serif);font-weight:600;
+    font-size:clamp(20px,4.4vw,26px);line-height:1.3;color:var(--accent-ink)}
+  .sysnote{font-size:clamp(15px,2.4vw,16.5px);color:var(--ink-soft);font-style:italic}
+
+  footer{border-top:1px solid var(--rule);max-width:var(--maxw);margin:0 auto;
+    padding:28px clamp(16px,5vw,40px) 48px;color:var(--ink-faint);font-size:14px;
+    display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between}
+  footer a{color:var(--ink-soft)}
+  [data-lang][hidden]{display:none}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="?lang=en"><span class="dot" aria-hidden="true"></span> Tesseres</a>
+  <div class="langswitch" role="group" aria-label="Language / Ngôn ngữ">
+    <button class="lang-btn" data-set-lang="en" aria-pressed="true">EN</button>
+    <button class="lang-btn" data-set-lang="vi" aria-pressed="false">VI</button>
+  </div>
+</header>
+
+<!-- ============================ ENGLISH ============================ -->
+<div data-lang="en">
+  <section class="hero">
+    <h1>Tesseres</h1>
+    <p class="tag">Sovereign AI — owned by people, not rented from a few.</p>
+  </section>
+  <main>
+    <p class="lead">Artificial intelligence is steadily becoming an essential infrastructure of society. Yet almost all AI capability today sits in the hands of a very small number of companies.</p>
+    <p>Governments keep asserting that AI will create more jobs than it replaces, but so far no one has actually explained where those jobs will come from, or how workers will transition into them. In reality, the opposite is unfolding: those hit first are not low-skilled workers but highly qualified ones — programmers, lawyers, accountants, designers, data analysts, and many other knowledge professions.</p>
+    <p>AI can <strong>replace</strong> people, or <strong>reinstate</strong> new work where humans are indispensable — and that is a design choice. Tesseres chooses the reinstatement path, in three ways: TerranSoul lets anyone start a business simply by talking to AI, so every new business is new economic activity rather than a displaced worker; Tessera always requires a human to approve and take responsibility for every AI action, creating oversight roles most of which require no programming skills; and by letting businesses own their own AI capability, value and jobs stay in the country instead of flowing to a handful of foreign corporations.</p>
+    <p>But the greatest risk is not AI replacing people.</p>
+    <p>It is the <strong>concentration of power</strong>.</p>
+    <p>Building the most advanced AI models requires an enormous amount of compute, data, and investment, meaning only a very few corporations in the US and China can own the core technology. That forces the rest of the world to <strong>rent intelligence</strong> rather than own it. Businesses pay monthly to use a system they cannot control, cannot customize, and do not truly own.</p>
+    <p><strong>Tesseres was born to change that.</strong></p>
+    <p>We are building a <strong>Sovereign AI</strong> platform — enabling individuals, businesses, and even governments to own, operate, and fully control their own AI systems.</p>
+    <div class="beats">
+      <p>AI does not replace people.</p>
+      <p>AI amplifies human capability.</p>
+      <p>And people always make the final decision.</p>
+    </div>
+
+    <h2>Two products, one platform</h2>
+    <p>Tesseres brings together two products developed independently, then unified into one complete platform.</p>
+    <div class="beats">
+      <p>One product helps AI <strong>remember</strong>.</p>
+      <p>One product helps AI <strong>act</strong>.</p>
+    </div>
+
+    <h2>TerranSoul — The memory of AI</h2>
+    <p>Imagine Siri, but one that truly has memory, a body, and emotions.</p>
+    <p>TerranSoul is an AI companion with long-term memory, helping AI remember every conversation, piece of knowledge, and experience across many sessions, many applications, and even many different AI models.</p>
+    <p>Instead of every chatbot starting over from scratch, all the AIs you use can access the same shared knowledge base that you own and control.</p>
+    <p>For everyday users, TerranSoul lets them build or run a business simply by talking to AI in natural language, with no coding required.</p>
+    <p>For businesses and developers, TerranSoul serves as a long-term memory layer that can run on both cloud AI and local AI, keeping an organization's knowledge in its own hands rather than locked into a single AI provider.</p>
+    <p>One important advantage is cost optimization.</p>
+    <p>A business only needs to use a powerful cloud AI model to solve a complex task once. After that, all the experience and knowledge learned is saved into memory, allowing open-source models running locally to reuse it at almost no additional cost.</p>
+    <p>TerranSoul's architecture has been published as scientific research along with public benchmark results, showing it can improve knowledge-retrieval quality, reduce latency, and lower operating costs compared to many current AI memory approaches.</p>
+    <p class="reslink">Research: <a href="https://terransyn.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/">terransyn.github.io/TerranSoul/LLM-Brain-Design-Research-Paper</a></p>
+
+    <h2>Tessera — The doer</h2>
+    <p>Every business runs on dozens of different software systems: ERP, CRM, accounting, logistics, email, databases, APIs…</p>
+    <p>These systems must constantly exchange data with one another. Integrating them remains one of the hard, costly problems, heavily dependent on technical specialists.</p>
+    <p>Tessera is a next-generation enterprise integration platform built specifically for the AI era.</p>
+    <div class="beats">
+      <p>AI does most of the technical work.</p>
+      <p>A human approves before any change is applied to the real environment.</p>
+    </div>
+    <p>Technically, Tessera implements the full <strong>Enterprise Integration Patterns (EIP)</strong> catalog — a standard the industry has used for over two decades — becoming a modern alternative to platforms like Microsoft BizTalk or MuleSoft, but with no vendor lock-in and deployable anywhere: from cloud infrastructure down to a single personal laptop.</p>
+    <p>As AI agents become widespread, Tessera acts as the reliable execution layer that lets AI interact safely with a business's operational systems.</p>
+    <div class="beats">
+      <p>Every action is recorded.</p>
+      <p>Every change is traceable.</p>
+      <p>Every decision stays under human control.</p>
+    </div>
+
+    <h2>When combined</h2>
+    <p>TerranSoul gives AI <strong>long-term memory</strong>.</p>
+    <p>Tessera gives AI <strong>the ability to act in the real world</strong>.</p>
+    <p>Together, they form a complete Sovereign AI platform, where AI has both memory and the ability to execute work — but ultimate control always remains with people.</p>
+    <p>Instead of having to <strong>rent intelligence</strong> from tech corporations, businesses can build and own their own AI capability.</p>
+
+    <h2>Mission</h2>
+    <blockquote><p>Bring Sovereign AI to every individual, every business, and every nation.</p></blockquote>
+    <p>We believe the future of AI should not belong only to a few corporations able to invest tens of billions of dollars to train foundation models.</p>
+    <p>That future should belong to everyone.</p>
+  </main>
+</div>
+
+<!-- ============================ VIETNAMESE ============================ -->
+<div data-lang="vi" hidden>
+  <section class="hero">
+    <h1>Tesseres</h1>
+    <p class="tag">AI có chủ quyền — do con người sở hữu, không phải đi thuê.</p>
+  </section>
+  <main>
+    <p class="lead">Trí tuệ nhân tạo đang dần trở thành một hạ tầng thiết yếu của xã hội. Tuy nhiên, gần như toàn bộ năng lực AI hiện nay lại nằm trong tay của một số rất ít công ty.</p>
+    <p>Các chính phủ liên tục khẳng định rằng AI sẽ tạo ra nhiều việc làm hơn số việc làm mà nó thay thế, nhưng cho đến nay vẫn chưa ai thực sự giải thích được những công việc đó sẽ đến từ đâu, hay người lao động sẽ chuyển đổi sang chúng bằng cách nào. Thực tế lại đang diễn ra theo hướng ngược lại: những người chịu ảnh hưởng đầu tiên không phải lao động phổ thông mà là những người có trình độ cao — lập trình viên, luật sư, kế toán, nhà thiết kế, nhà phân tích dữ liệu và nhiều ngành nghề tri thức khác.</p>
+    <p>AI có thể <strong>thay thế</strong> con người, hoặc <strong>tái tạo</strong> những công việc mới nơi con người là không thể thiếu — và đó là một lựa chọn thiết kế. Tesseres chọn hướng tái tạo, theo ba cách: TerranSoul giúp bất kỳ ai cũng có thể khởi nghiệp chỉ bằng cách trò chuyện với AI, nên mỗi doanh nghiệp mới là một hoạt động kinh tế mới chứ không phải một người bị thay thế; Tessera luôn cần con người phê duyệt và chịu trách nhiệm cho mọi hành động của AI, tạo ra những vai trò giám sát mà phần lớn không đòi hỏi kỹ năng lập trình; và bằng cách để doanh nghiệp tự sở hữu năng lực AI, giá trị và việc làm ở lại trong nước thay vì chảy về một số ít tập đoàn nước ngoài.</p>
+    <p>Nhưng rủi ro lớn nhất không phải là AI thay thế con người.</p>
+    <p>Mà là <strong>sự tập trung quyền lực</strong>.</p>
+    <p>Để xây dựng các mô hình AI tiên tiến nhất cần một lượng tài nguyên tính toán, dữ liệu và vốn đầu tư khổng lồ, khiến chỉ một số rất ít tập đoàn tại Mỹ và Trung Quốc có khả năng sở hữu công nghệ cốt lõi. Điều đó buộc phần còn lại của thế giới phải <strong>đi thuê trí tuệ</strong>, thay vì sở hữu nó. Doanh nghiệp phải trả tiền hàng tháng để sử dụng một hệ thống mà họ không thể kiểm soát, không thể tùy chỉnh và cũng không thực sự làm chủ.</p>
+    <p><strong>Tesseres được sinh ra để thay đổi điều đó.</strong></p>
+    <p>Chúng tôi xây dựng nền tảng <strong>Sovereign AI</strong> (AI có chủ quyền) — cho phép cá nhân, doanh nghiệp và cả chính phủ có thể sở hữu, vận hành và kiểm soát hoàn toàn hệ thống AI của mình.</p>
+    <div class="beats">
+      <p>AI không thay thế con người.</p>
+      <p>AI tăng cường năng lực của con người.</p>
+      <p>Và con người luôn là người đưa ra quyết định cuối cùng.</p>
+    </div>
+
+    <h2>Hai sản phẩm, một nền tảng</h2>
+    <p>Tesseres kết hợp hai sản phẩm được phát triển độc lập, sau đó hợp nhất thành một nền tảng hoàn chỉnh.</p>
+    <div class="beats">
+      <p>Một sản phẩm giúp AI <strong>ghi nhớ</strong>.</p>
+      <p>Một sản phẩm giúp AI <strong>hành động</strong>.</p>
+    </div>
+
+    <h2>TerranSoul — Bộ nhớ của AI</h2>
+    <p>Hãy tưởng tượng Siri, nhưng thực sự có trí nhớ, có cơ thể và cảm xúc.</p>
+    <p>TerranSoul là một người đồng hành AI có khả năng ghi nhớ lâu dài, giúp AI nhớ được mọi cuộc trò chuyện, kiến thức và kinh nghiệm xuyên suốt nhiều phiên làm việc, nhiều ứng dụng và thậm chí nhiều mô hình AI khác nhau.</p>
+    <p>Thay vì mỗi chatbot đều phải bắt đầu lại từ đầu, tất cả các AI mà bạn sử dụng đều có thể truy cập cùng một kho tri thức chung do chính bạn sở hữu và kiểm soát.</p>
+    <p>Đối với người dùng phổ thông, TerranSoul cho phép họ xây dựng hoặc điều hành doanh nghiệp chỉ bằng cách trò chuyện với AI bằng ngôn ngữ tự nhiên, không cần biết lập trình.</p>
+    <p>Đối với doanh nghiệp và lập trình viên, TerranSoul đóng vai trò là lớp bộ nhớ dài hạn có thể hoạt động trên cả AI đám mây lẫn AI chạy cục bộ, giúp tri thức của tổ chức luôn thuộc quyền sở hữu của chính họ thay vì bị khóa trong một nhà cung cấp AI duy nhất.</p>
+    <p>Một ưu điểm quan trọng là khả năng tối ưu chi phí.</p>
+    <p>Doanh nghiệp chỉ cần sử dụng một mô hình AI mạnh trên nền tảng đám mây để giải quyết một tác vụ phức tạp một lần duy nhất. Sau đó, toàn bộ kinh nghiệm và kiến thức đã học sẽ được lưu vào bộ nhớ, cho phép các mô hình AI mã nguồn mở chạy cục bộ tái sử dụng mà gần như không phát sinh thêm chi phí.</p>
+    <p>Kiến trúc của TerranSoul đã được công bố dưới dạng nghiên cứu khoa học cùng với các kết quả benchmark công khai, cho thấy khả năng cải thiện chất lượng truy xuất tri thức, giảm độ trễ và giảm chi phí vận hành so với nhiều phương pháp bộ nhớ AI hiện nay.</p>
+    <p class="reslink">Nghiên cứu: <a href="https://terransyn.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/">terransyn.github.io/TerranSoul/LLM-Brain-Design-Research-Paper</a></p>
+
+    <h2>Tessera — Người thực thi</h2>
+    <p>Mọi doanh nghiệp đều vận hành trên hàng chục hệ thống phần mềm khác nhau: ERP, CRM, kế toán, logistics, email, cơ sở dữ liệu, API…</p>
+    <p>Những hệ thống này phải liên tục trao đổi dữ liệu với nhau. Việc tích hợp chúng hiện vẫn là một trong những bài toán khó, tốn kém và phụ thuộc nhiều vào các chuyên gia kỹ thuật.</p>
+    <p>Tessera là một nền tảng tích hợp doanh nghiệp thế hệ mới được xây dựng dành riêng cho kỷ nguyên AI.</p>
+    <div class="beats">
+      <p>AI thực hiện phần lớn công việc kỹ thuật.</p>
+      <p>Con người phê duyệt trước khi bất kỳ thay đổi nào được áp dụng vào môi trường thực tế.</p>
+    </div>
+    <p>Về mặt kỹ thuật, Tessera triển khai đầy đủ bộ <strong>Enterprise Integration Patterns (EIP)</strong> — tiêu chuẩn đã được ngành công nghiệp sử dụng suốt hơn hai thập kỷ — trở thành một giải pháp hiện đại thay thế các nền tảng như Microsoft BizTalk hay MuleSoft, nhưng không bị khóa bởi nhà cung cấp và có thể triển khai ở bất kỳ đâu: từ hạ tầng cloud cho đến một chiếc laptop cá nhân.</p>
+    <p>Khi AI Agent trở nên phổ biến, Tessera đóng vai trò là lớp thực thi đáng tin cậy, cho phép AI tương tác an toàn với các hệ thống nghiệp vụ của doanh nghiệp.</p>
+    <div class="beats">
+      <p>Mọi hành động đều được ghi nhận.</p>
+      <p>Mọi thay đổi đều có thể truy vết.</p>
+      <p>Mọi quyết định đều có sự kiểm soát của con người.</p>
+    </div>
+
+    <h2>Khi kết hợp lại</h2>
+    <p>TerranSoul mang đến cho AI <strong>khả năng ghi nhớ lâu dài</strong>.</p>
+    <p>Tessera mang đến cho AI <strong>khả năng hành động trong thế giới thực</strong>.</p>
+    <p>Kết hợp với nhau, chúng tạo thành một nền tảng Sovereign AI hoàn chỉnh, nơi AI vừa có trí nhớ, vừa có khả năng thực thi công việc, nhưng quyền kiểm soát cuối cùng vẫn luôn thuộc về con người.</p>
+    <p>Thay vì phải <strong>đi thuê trí tuệ</strong> từ các tập đoàn công nghệ, doanh nghiệp có thể xây dựng và sở hữu năng lực AI của chính mình.</p>
+
+    <h2>Sứ mệnh</h2>
+    <blockquote><p>Đưa Sovereign AI đến với mọi cá nhân, mọi doanh nghiệp và mọi quốc gia.</p></blockquote>
+    <p>Chúng tôi tin rằng tương lai của AI không nên chỉ thuộc về một vài tập đoàn đủ khả năng đầu tư hàng chục tỷ đô la để huấn luyện các mô hình nền tảng.</p>
+    <p>Tương lai đó nên thuộc về tất cả mọi người.</p>
+  </main>
+</div>
+
+<footer>
+  <span>© Tesseres — Sovereign AI</span>
+  <span><a href="https://terransyn.github.io/TerranSoul/">TerranSoul</a> · <a href="https://terransyn.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/">Research</a></span>
+</footer>
+
+<script>
+(function(){
+  var VALID = ['en','vi'];
+  function detect(){
+    try{
+      var p = new URLSearchParams(location.search).get('lang');
+      if(p){ p = p.toLowerCase(); if(VALID.indexOf(p) !== -1) return p; }
+      var h = (location.hash || '').replace('#','').toLowerCase();
+      if(VALID.indexOf(h) !== -1) return h;
+      var nav = (navigator.language || 'en').toLowerCase();
+      return nav.indexOf('vi') === 0 ? 'vi' : 'en';
+    }catch(e){ return 'en'; }
+  }
+  function apply(lang){
+    if(VALID.indexOf(lang) === -1) lang = 'en';
+    document.documentElement.setAttribute('lang', lang);
+    var blocks = document.querySelectorAll('[data-lang]');
+    for(var i=0;i<blocks.length;i++){
+      blocks[i].hidden = (blocks[i].getAttribute('data-lang') !== lang);
+    }
+    var btns = document.querySelectorAll('.lang-btn');
+    for(var j=0;j<btns.length;j++){
+      btns[j].setAttribute('aria-pressed', btns[j].getAttribute('data-set-lang') === lang ? 'true' : 'false');
+    }
+    document.title = (lang === 'vi') ? 'Tesseres — AI có chủ quyền' : 'Tesseres — Sovereign AI';
+    try{
+      var u = new URL(location.href);
+      u.searchParams.set('lang', lang);
+      history.replaceState(null, '', u.pathname + u.search + u.hash);
+    }catch(e){}
+    window.scrollTo(0, 0);
+  }
+  var buttons = document.querySelectorAll('.lang-btn');
+  for(var k=0;k<buttons.length;k++){
+    buttons[k].addEventListener('click', function(){ apply(this.getAttribute('data-set-lang')); });
+  }
+  apply(detect());
+})();
+</script>
+</body>
+</html>
