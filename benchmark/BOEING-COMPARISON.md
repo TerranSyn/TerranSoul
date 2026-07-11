@@ -490,6 +490,44 @@ mid-run; cross-iteration self-learning wrote real lessons through the MCP
 tray during the run). The 59.62/49.48 figures stay preserved in the history
 sections above per the never-silently-overwrite convention.
 
+## boeing747-open — relaxed-contract track (2026-07-11): 100% NOT reached; a real "opened medium is not automatically used" finding
+
+> **A SEPARATE benchmark, not comparable to the primitives table above.** Per
+> the owner's 2026-07-11 decision to pursue the all-views-≥8.0 (100%)
+> threshold, a new relaxed-contract track (`benchmark/boeing747/OPEN-VARIANT-DESIGN.md`,
+> `lib/contract-open.mjs`) opens the *modeling medium* — arbitrary computed
+> meshes (`BufferGeometry`) and computed textures (`DataTexture`/`CanvasTexture`,
+> vertex colors, in-code normal/bump) are allowed — while keeping the same
+> closed-world determinism (network/DOM/nondeterminism/asset-loaders still
+> banned, plus a 1024-byte anti-smuggling cap on `data:` URIs so textures must
+> be *computed, not embedded*). Same 9 cameras, same frozen rubric + judge, same
+> self-improve loop. The frozen primitives records (71.66 Fable-5 / 73.68
+> Opus-4.8) are untouched.
+
+**Actor: Claude Opus 4.8 (`--effort max`, `--contract open`), seeded from the
+frozen track's 71.66 geometry, 2026-07-11.** Result: **stalled at 71.66/100
+gemma4** (best held at the seed; iterations 2–4 scored 70.5/70.5/69.49, none
+improving) · **57.86/100 Opus-4.8 vision**, genuine `stall` (3/3 non-improving
+on both judge tracks) at iteration 4/12. Cross-iteration self-learning inherited
+the Fable-5 lessons via the actor's `brain_search`; one edit was correctly
+rejected by the open contract for a `window` DOM access.
+
+**The honest finding — 100% was NOT reached, and the reason is instructive.**
+Inspecting the final candidate: it contains **zero** `BufferGeometry`,
+`CanvasTexture`, `DataTexture`, or vertex-color constructs — i.e. **Opus never
+used the opened medium.** Given a relaxed contract, the incremental
+self-improve loop kept making primitive tweaks (as on the frozen track) rather
+than re-architecting with meshes/textures, and could not improve the strong
+71.66 primitive seed. This says the primitives ceiling is not the *only* barrier
+to 100%: (a) the 71.66 seed is a strong local optimum small edits do not escape;
+(b) the frozen gemma4:12b judge's geometry perception caps near there; and
+(c) **an actor does not seize new capabilities merely because a contract permits
+them** — exploiting meshes/textures would require seeding from a mesh-based
+candidate or explicitly directing the actor to re-approach, a distinct
+experiment, not a re-run. Never-regress floor for the open track: **71.66
+gemma4 / 57.86 Opus-vision** (its first completed run). Results:
+`results/terransoul-opus48-open*/`.
+
 ## How to read the comparison
 
 - **Single-shot** — one prompt, no iteration (`run-baselines.mjs`). This is how a

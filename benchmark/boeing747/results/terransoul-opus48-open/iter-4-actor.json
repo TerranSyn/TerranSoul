@@ -1,0 +1,72 @@
+{
+  "model": "claude-opus-4-8",
+  "effort": "max",
+  "ms": 577111,
+  "cost_usd": 2.2572330000000003,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 51,
+    "tool_calls": {
+      "Read": 9,
+      "Edit": 5
+    },
+    "total_tool_calls": 14,
+    "text_chunks": 23,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "Read",
+        "count": 9
+      },
+      {
+        "name": "Edit",
+        "count": 5
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "9c75ece8efde0cc04e8854de8e3bb1453798e4d938ad2a3b86b60c76f7bc53f4",
+  "plane_sha256_after": "ba801ab7b5e5c3c21eed4fd817230871f4c9c87f973f1dd58a54134891a7c61c",
+  "changed": true,
+  "claude_result_text": "All five edits applied cleanly. Here's what I changed and why.\n\n**What I inspected:** view-1 (left-profile), view-9 (nose-hump closeup), view-6 (front-34-left), view-8 (low-front-left), view-3 (front), plus the `side.png`, `nose-hump.png`, and `front-quarter.png` references. The front view already renders four cleanly-spaced underwing engines (that's why head-on scores fine), but every side/quarter/low view shows the same two root defects both judges hammer hardest.\n\n**Diagnosis:**\n1. The fuselage nose is a **flat-ended blunt cylinder** — flagged in 7+ views by both tracks (\"flat blunt nose cap, no taper,\" \"a separate cylinder telescoped into a blunt tube\").\n2. That flat cap is *why* the upper deck reads as **stacked telescoped tubes** rather than a faired hump — the Claude track's weakest feature (upper_deck_hump 4.43).\n3. I also traced why the hump \"disappears\" from front-quarter/low angles: at radius 2.0 / center y=2.1 its flanks (±2.0) sat *inside* the hull cross-section (±2.14 at that height), so only a thin top crest poked out — no double-bubble shoulder.\n\n**One tightly-related front-end fairing set (all computed primitives, no imports/loaders/data-URIs — contract intact):**\n- **Added a smooth ogive nose**: a `SphereGeometry(3)` stretched 1.7× along +X (semi-axis ~5.1) to a rounded radome tip at x≈35.1, with y/z scaled to 3.06 so it fully caps the fuselage front rim with no seam/gap. Its rear half is buried inside the tube. This kills the flat cap, lifts fuselage_proportions + silhouette_747, and stretches the body to ~65 long (~11× diameter, closer to the ~70 m target).\n- **Grew the hump into a real double-bubble**: radius 2.0→2.2, crown y 2.1→2.35 (crest 4.1→4.55). Its flanks now reach ±2.2 vs hull ~1.87 at that height, so a genuine upper-deck shoulder emerges from the fuselage sides and reads from quarter/low angles.\n- **Faired the hump front into the ogive**: the hump front now interpenetrates the nose and emerges from the crown — no flat cap, no telescope",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 577111,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 51,
+        "tool_calls": {
+          "Read": 9,
+          "Edit": 5
+        },
+        "total_tool_calls": 14,
+        "text_chunks": 23,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "Read",
+            "count": 9
+          },
+          {
+            "name": "Edit",
+            "count": 5
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}
