@@ -1,0 +1,93 @@
+{
+  "model": "claude-fable-5",
+  "effort": "max",
+  "ms": 704450,
+  "cost_usd": 5.137229,
+  "timeout_ms": 1200000,
+  "observability": {
+    "event_count": 37,
+    "tool_calls": {
+      "Read": 10,
+      "Edit": 3
+    },
+    "total_tool_calls": 13,
+    "text_chunks": 11,
+    "tool_failures": 1,
+    "tool_calls_reported": [
+      {
+        "name": "Read",
+        "count": 10
+      },
+      {
+        "name": "Edit",
+        "count": 3
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "contract_failed",
+  "contract_violations": [
+    "forbidden token `window`: DOM access (window)"
+  ],
+  "plane_sha256_before": "a633ea95ee2354d16e4efd13abbeb139de4b284cc1d5a60a656631e278bc5d48",
+  "plane_sha256_after": "a633ea95ee2354d16e4efd13abbeb139de4b284cc1d5a60a656631e278bc5d48",
+  "plane_sha256_rejected": "f85c6d0e665e454021d5700ce95b85b7e1f3e37db494b3f7cb9c138b4f375345",
+  "changed": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 600576,
+      "actor_error": "terransoul-cli agent-task timed out after 600000ms (8 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 22,
+        "tool_calls": {
+          "Read": 8
+        },
+        "total_tool_calls": 8,
+        "text_chunks": 6,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "contract_failed",
+      "ms": 704450,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 37,
+        "tool_calls": {
+          "Read": 10,
+          "Edit": 3
+        },
+        "total_tool_calls": 13,
+        "text_chunks": 11,
+        "tool_failures": 1,
+        "tool_calls_reported": [
+          {
+            "name": "Read",
+            "count": 10
+          },
+          {
+            "name": "Edit",
+            "count": 3
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}

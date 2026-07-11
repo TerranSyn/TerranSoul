@@ -1,0 +1,91 @@
+{
+  "actor": "terransoul-fable5-v2r2-claude",
+  "judge_track": "claude-fable-5-vision",
+  "iter": 3,
+  "run_id": "terransoul-fable5-v2r2-iter-3-mrfjw86a",
+  "plane_sha256": "a633ea95ee2354d16e4efd13abbeb139de4b284cc1d5a60a656631e278bc5d48",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 60.13,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.23,
+      "notes": "Slender grey tube with partial front hump carrying its own window row; main-deck window line evenly spaced. Two port nacelles hang under a thin swept wing, slightly jumbled with a small wheel cluster. Nose gear is a stick with one tiny wheel. Fin swept but shortish; horizontal stabilizer barely visible. Blunt nose, all-grey livery, visible hump seam."
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.97,
+      "notes": "Slender grey tube with partial front hump bearing upper-deck windows and a main-deck window row. Only two crude nacelles visible below a wing that reads as a flat thin sliver with no dihedral or thickness. Fin small for a 747; tailplane is a needle-like spike. Nose blunt, tail cone abrupt. Nose strut plus clustered small wheels under engines."
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.6,
+      "notes": "Four dark nacelles hang on pylons under dihedral, tapering wings with plausible spacing. Domed upper lobe with dark cockpit-like band suggests a hump. Vertical fin reads as a thin spike; horizontal stabilizers barely discernible. Nose strut plus two small wing-root gear visible, fewer than four bogies. Coherent grey scheme; fuselage length unjudgeable head-on."
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.58,
+      "notes": "Rear head-on: four underslung nacelles with open dark exhausts, plausible spacing. Wings show clear dihedral and tip taper. Tall vertical fin present but no horizontal stabilizers visible anywhere. Small crown bump peeks above fuselage circle suggesting a hump. Several thin gear struts with small wheels. Uniform flat grey, no livery. Clean junctions, nothing floating."
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.37,
+      "notes": "Slender white tube with main-deck window row and windowed front hump. Wings swept and tapered, dark grey. Only two nacelles clearly visible, clustered near the right wing root. Tail ends in a blunt flat cap; swept horizontal surfaces present but no tall vertical fin visible. Sparse thin gear struts with small wheels; hump reads as a placed block."
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.33,
+      "notes": "Slender gray tube with flat unfaired disc nose. Raised front-third upper section with window dots suggests a hump. Only 2-3 nacelles visible; one cylinder hangs low near the belly, looking detached. Swept dark wings and swept fin/tailplanes present. Nose strut plus two mid-body wheel bogies visible. Window dashes along fuselage; monochrome gray scheme."
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": null,
+      "notes": ""
+    }
+  ],
+  "weakest_feature": {
+    "id": "empennage",
+    "mean": 4.83,
+    "perCriterion": {
+      "engines_four_underwing": 6.33,
+      "upper_deck_hump": 6.6,
+      "fuselage_proportions": 5.5,
+      "wing_geometry": 6.33,
+      "empennage": 4.83,
+      "landing_gear": 4.83,
+      "window_door_lines": 6.75,
+      "livery_coherence": 6.17,
+      "silhouette_747": 6,
+      "craftsmanship": 6
+    }
+  },
+  "critic": {
+    "weakest_feature": "empennage",
+    "fix_suggestion": "Improve 'Empennage (tall vertical stabilizer + horizontal stabilizers)' (mean 4.83/10). Target the 8 anchor: single tall swept vertical stabilizer plus swept horizontal stabilizers at the tail cone, plausible sizes; then the 10 anchor: correct 747 empennage: very tall swept fin, low-mounted swept tailplane pair with dihedral, all tapered and proportioned to the fuselage.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 4.08713,
+  "regressed": true,
+  "best_total_after": 63.7,
+  "created_at": "2026-07-10T23:21:47.548Z",
+  "actor_status": "contract_failed"
+}

@@ -1,0 +1,91 @@
+{
+  "actor": "terransoul-fable5-v2r2-claude",
+  "judge_track": "claude-fable-5-vision",
+  "iter": 2,
+  "run_id": "terransoul-fable5-v2r2-iter-2-mrfj85lu",
+  "plane_sha256": "63ac2ea2427f79bab71706b1fa673c97c3ced9b7cd391692516ef22e3a2cad9e",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 63.7,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.77,
+      "notes": "Slender grey tube with partial front hump bearing upper-deck window dots and a main-deck window row. Two staggered nacelles visible under a thin swept wing blade. Tall swept fin; thin horizontal stabilizer edge. Nose and tail are blunt with no upswept tail cone. Nose gear is a spindly floating strut; main wheels cluster crudely near engines. Monochrome grey livery."
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.92,
+      "notes": "Slender ~11x fuselage with tail cone; blunt rounded nose. Front-third upper-deck outline and cockpit band visible. Strongly swept tapered wings, plausible span. Four nacelles read as upright cylinders atop wings with dark caps, no forward offset or visible pylons. Swept tailplanes plus edge-on fin. Dashed window lines; coherent grey scheme, no accent."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 6.42,
+      "notes": "Slender white tube with main-deck window line and windowed front hump; rear fuselage ends in a visible flat cap, no upswept cone. Swept tapered grey wings; only two underwing nacelles clearly visible, clustered inboard. Tail surfaces present but fin looks short. Gear is a few tiny thin struts/wheels floating under mid-body."
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": null,
+      "notes": ""
+    }
+  ],
+  "weakest_feature": {
+    "id": "landing_gear",
+    "mean": 4,
+    "perCriterion": {
+      "engines_four_underwing": 5.67,
+      "upper_deck_hump": 7,
+      "fuselage_proportions": 6,
+      "wing_geometry": 6.67,
+      "empennage": 6.33,
+      "landing_gear": 4,
+      "window_door_lines": 7.33,
+      "livery_coherence": 6.33,
+      "silhouette_747": 6.67,
+      "craftsmanship": 6.67
+    }
+  },
+  "critic": {
+    "weakest_feature": "landing_gear",
+    "fix_suggestion": "Improve 'Landing gear (nose gear + 4-truck main gear) when visible' (mean 4/10). Target the 8 anchor: nose gear plus four main-gear trucks under the wing/body junction with wheels; then the 10 anchor: recognizable 747 gear layout: two-wheel nose strut, four multi-wheel main bogies (two under the body, two under the wings), plausible strut lengths.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 2.145748,
+  "regressed": false,
+  "best_total_after": 63.7,
+  "created_at": "2026-07-10T23:03:09.922Z",
+  "actor_status": "edited"
+}

@@ -1,0 +1,91 @@
+{
+  "actor": "terransoul-fable5-v2r2-claude",
+  "judge_track": "claude-fable-5-vision",
+  "iter": 4,
+  "run_id": "terransoul-fable5-v2r2-iter-4-mrfl4b8g",
+  "plane_sha256": "a633ea95ee2354d16e4efd13abbeb139de4b284cc1d5a60a656631e278bc5d48",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 61.16,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.98,
+      "notes": "Slender grey tube with front-third hump bearing upper-deck windows and a main-deck window line. Only two nacelles visible under a thin swept wing. Tall swept fin but horizontal stabilizers barely discernible. Gear is a spindly nose strut with one tiny wheel plus a clustered wheel clump. Flat all-grey livery; tail cone blunt, not upswept."
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.97,
+      "notes": "Head-on: four black nacelles on pylons under wings with clear dihedral and staggered inboard/outboard placement. Rounded cap atop fuselage suggests hump/cockpit; a dark band hints at windshield but no window or door detail. Tall fin visible; horizontal stabilizers barely discernible. Gear present but reads as nose strut plus roughly two main struts. Clean assembly, coherent grey scheme."
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.03,
+      "notes": "Rear head-on: circular fuselage cross-section, tall swept vertical fin, four underwing nacelles with plausible spacing, clear wing dihedral and thickness taper. No horizontal stabilizers visible at the tail cone. Roughly four small gear struts with tiny wheels. Uniform flat grey monochrome, no livery. Assembly is clean with no floating parts or gaps."
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.3,
+      "notes": "Top-down: four nacelles ahead of swept tapered wings with plausible spacing, but they read as upright cylinders with dark tops and no clear pylons. Front-third hump lozenge with dark cockpit glazing. Slender tube fuselage, limited rear taper; fin edge-on spike pierces tailplane. Dotted window lines both sides; no doors. Coherent grey scheme."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.3,
+      "notes": "Plain grey tube with a flat disc nose, no upper-deck hump, no nose taper. Three nacelles visible under swept tapered wings; fourth unclear, one nacelle looks loosely attached. Swept fin with a thin small tailplane. Single tiny strut under nose, no main bogies. Even blocky window row, no cockpit windows. Coherent grey scheme."
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": null,
+      "notes": ""
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": null,
+      "notes": ""
+    }
+  ],
+  "weakest_feature": {
+    "id": "upper_deck_hump",
+    "mean": 4.33,
+    "perCriterion": {
+      "engines_four_underwing": 6.8,
+      "upper_deck_hump": 4.33,
+      "fuselage_proportions": 5.67,
+      "wing_geometry": 7,
+      "empennage": 5.4,
+      "landing_gear": 4.75,
+      "window_door_lines": 6,
+      "livery_coherence": 6.2,
+      "silhouette_747": 6,
+      "craftsmanship": 6.8
+    }
+  },
+  "critic": {
+    "weakest_feature": "upper_deck_hump",
+    "fix_suggestion": "Improve 'Partial-length upper-deck hump' (mean 4.33/10). Target the 8 anchor: distinct partial-length upper deck starting at the nose and blending down within roughly the front third of the fuselage; then the 10 anchor: iconic 747 hump: starts at the cockpit, smoothly faired into the crown, ends around one-third of the length, with a visible cockpit region on the upper lobe.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 3.458527,
+  "regressed": true,
+  "best_total_after": 63.7,
+  "created_at": "2026-07-10T23:56:33.108Z",
+  "actor_status": "contract_failed"
+}
