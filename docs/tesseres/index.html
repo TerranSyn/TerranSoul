@@ -86,6 +86,14 @@
   a:hover{text-decoration-thickness:2px}
   .beats p{margin:0 0 0.35em;color:var(--ink-soft)}
   .reslink{display:block;margin:0.4em 0 0;font-family:var(--sans);font-size:15px}
+  .deckcta{margin:clamp(30px,6vw,48px) 0 0}
+  .deckcta a{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);
+    font-weight:600;font-size:16px;text-decoration:none;color:oklch(0.99 0 0);
+    background:var(--accent);border-radius:999px;padding:12px 22px;min-height:44px}
+  .deckcta a::after{content:"\2192"}
+  .deckcta a:hover{filter:brightness(1.05)}
+  .deckcta a:focus-visible{outline:2px solid var(--accent-ink);outline-offset:3px}
+  @media (prefers-color-scheme: dark){.deckcta a{color:oklch(0.15 0.01 260)}}
   blockquote{margin:clamp(20px,4vw,32px) 0;padding:clamp(20px,4vw,28px) clamp(20px,4vw,30px);
     background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:0 10px 10px 0}
   blockquote p{margin:0;font-family:var(--serif);font-weight:600;
@@ -136,7 +144,7 @@
     </div>
 
     <h2>TerranSoul - The memory of AI</h2>
-    <p>Imagine Siri, but one that truly has memory, a body, and emotions.</p>
+    <p>Imagine Siri or Claude Code, but one that truly has memory, a body, and emotions.</p>
     <p>TerranSoul is an AI companion with long-term memory, helping AI remember every conversation, piece of knowledge, and experience across many sessions, many applications, and even many different AI models.</p>
     <p>Instead of every chatbot starting over from scratch, all the AIs you use can access the same shared knowledge base that you own and control.</p>
     <p>For everyday users, TerranSoul lets them build or run a business simply by talking to AI in natural language, with no coding required.</p>
@@ -168,10 +176,11 @@
     <p>Together, they form a complete Sovereign AI platform, where AI has both memory and the ability to execute work - but ultimate control always remains with people.</p>
     <p>Instead of having to <strong>rent intelligence</strong> from tech corporations, businesses can build and own their own AI capability.</p>
 
-    <h2>Mission</h2>
+    <h2 id="mission-en">Mission</h2>
     <blockquote><p>Bring Sovereign AI to every individual, every business, and every nation.</p></blockquote>
     <p>We believe the future of AI should not belong only to a few corporations able to invest tens of billions of dollars to train foundation models.</p>
     <p>That future should belong to everyone.</p>
+    <p class="deckcta"><a href="pitch/?lang=en">See the mission pitch deck</a></p>
   </main>
 </div>
 
@@ -202,7 +211,7 @@
     </div>
 
     <h2>TerranSoul - Bộ nhớ của AI</h2>
-    <p>Hãy tưởng tượng Siri, nhưng thực sự có trí nhớ, có cơ thể và cảm xúc.</p>
+    <p>Hãy tưởng tượng Siri hay Claude Code, nhưng thực sự có trí nhớ, có cơ thể và cảm xúc.</p>
     <p>TerranSoul là một người đồng hành AI có khả năng ghi nhớ lâu dài, giúp AI nhớ được mọi cuộc trò chuyện, kiến thức và kinh nghiệm xuyên suốt nhiều phiên làm việc, nhiều ứng dụng và thậm chí nhiều mô hình AI khác nhau.</p>
     <p>Thay vì mỗi chatbot đều phải bắt đầu lại từ đầu, tất cả các AI mà bạn sử dụng đều có thể truy cập cùng một kho tri thức chung do chính bạn sở hữu và kiểm soát.</p>
     <p>Đối với người dùng phổ thông, TerranSoul cho phép họ xây dựng hoặc điều hành doanh nghiệp chỉ bằng cách trò chuyện với AI bằng ngôn ngữ tự nhiên, không cần biết lập trình.</p>
@@ -234,10 +243,11 @@
     <p>Kết hợp với nhau, chúng tạo thành một nền tảng Sovereign AI hoàn chỉnh, nơi AI vừa có trí nhớ, vừa có khả năng thực thi công việc, nhưng quyền kiểm soát cuối cùng vẫn luôn thuộc về con người.</p>
     <p>Thay vì phải <strong>đi thuê trí tuệ</strong> từ các tập đoàn công nghệ, doanh nghiệp có thể xây dựng và sở hữu năng lực AI của chính mình.</p>
 
-    <h2>Sứ mệnh</h2>
+    <h2 id="mission-vi">Sứ mệnh</h2>
     <blockquote><p>Đưa Sovereign AI đến với mọi cá nhân, mọi doanh nghiệp và mọi quốc gia.</p></blockquote>
     <p>Chúng tôi tin rằng tương lai của AI không nên chỉ thuộc về một vài tập đoàn đủ khả năng đầu tư hàng chục tỷ đô la để huấn luyện các mô hình nền tảng.</p>
     <p>Tương lai đó nên thuộc về tất cả mọi người.</p>
+    <p class="deckcta"><a href="pitch/?lang=vi">Xem bản pitch deck sứ mệnh</a></p>
   </main>
 </div>
 
@@ -259,7 +269,7 @@
       return nav.indexOf('vi') === 0 ? 'vi' : 'en';
     }catch(e){ return 'en'; }
   }
-  function apply(lang){
+  function apply(lang, resetScroll){
     if(VALID.indexOf(lang) === -1) lang = 'en';
     document.documentElement.setAttribute('lang', lang);
     var blocks = document.querySelectorAll('[data-lang]');
@@ -276,13 +286,19 @@
       u.searchParams.set('lang', lang);
       history.replaceState(null, '', u.pathname + u.search + u.hash);
     }catch(e){}
-    window.scrollTo(0, 0);
+    if(resetScroll !== false) window.scrollTo(0, 0);
   }
   var buttons = document.querySelectorAll('.lang-btn');
   for(var k=0;k<buttons.length;k++){
-    buttons[k].addEventListener('click', function(){ apply(this.getAttribute('data-set-lang')); });
+    buttons[k].addEventListener('click', function(){ apply(this.getAttribute('data-set-lang'), true); });
   }
-  apply(detect());
+  apply(detect(), false);
+  try{
+    if(location.hash){
+      var target = document.getElementById(location.hash.slice(1));
+      if(target){ target.scrollIntoView(); }
+    }
+  }catch(e){}
 })();
 </script>
 </body>
