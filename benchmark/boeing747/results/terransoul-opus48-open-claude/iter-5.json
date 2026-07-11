@@ -1,7 +1,10 @@
 {
+  "actor": "terransoul-opus48-open-claude",
+  "judge_track": "claude-opus-4-8-vision",
   "iter": 5,
   "run_id": "terransoul-opus48-open-iter-5-mrgnh0vx",
   "plane_sha256": "ba801ab7b5e5c3c21eed4fd817230871f4c9c87f973f1dd58a54134891a7c61c",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
   "total_0_100": 59.22,
   "per_view": [
     {
@@ -58,5 +61,31 @@
       "score": 6.23,
       "notes": "Slender tapering fuselage with rounded nose; partial upper-deck hump present at front third. Multiple nacelles cluster tightly near the wing root rather than spread inboard/outboard, spacing cramped and pylons stubby. Consistent main-deck window dots, cockpit windows faint. Small nose gear visible. Flat uniform grey clay, no livery. Tall swept fin present."
     }
-  ]
+  ],
+  "weakest_feature": {
+    "id": "landing_gear",
+    "mean": 4.88,
+    "perCriterion": {
+      "engines_four_underwing": 5.33,
+      "upper_deck_hump": 5.43,
+      "fuselage_proportions": 7.63,
+      "wing_geometry": 6.22,
+      "empennage": 5.78,
+      "landing_gear": 4.88,
+      "window_door_lines": 6.71,
+      "livery_coherence": 6,
+      "silhouette_747": 5.56,
+      "craftsmanship": 5.67
+    }
+  },
+  "critic": {
+    "weakest_feature": "landing_gear",
+    "fix_suggestion": "Improve 'Landing gear (nose gear + 4-truck main gear) when visible' (mean 4.88/10). Target the 8 anchor: nose gear plus four main-gear trucks under the wing/body junction with wheels; then the 10 anchor: recognizable 747 gear layout: two-wheel nose strut, four multi-wheel main bogies (two under the body, two under the wings), plausible strut lengths.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 2.967082,
+  "regressed": false,
+  "best_total_after": 59.22,
+  "created_at": "2026-07-11T17:49:43.489Z",
+  "actor_status": "contract_failed"
 }

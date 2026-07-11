@@ -528,6 +528,29 @@ experiment, not a re-run. Never-regress floor for the open track: **71.66
 gemma4 / 57.86 Opus-vision** (its first completed run). Results:
 `results/terransoul-opus48-open*/`.
 
+**Update 2026-07-12 — AGI-purity correction + clean re-run.** The 2026-07-11
+open-track results above (and a 2026-07-12 first re-run that reached 74.61 gemma4)
+were **seed-contaminated**: a prior session had committed 8 raw
+`LESSON (boeing747-actor-attempt)` 747-geometry lessons (nose ogive, engine
+span stations, pylon dimensions) into `mcp-data/shared/memory-seed.sql`, and the
+seed is applied to bench stores — so the actor started with geometry hints,
+violating the no-game-tuned-seeds rule. Those 8 blocks were removed (commit
+`7e11cf43`; the two *generic* harness lessons — autonomous-actor wiring,
+stop-condition measurement-artifact — were kept, as they concern the mechanism,
+not the plane). The **clean, AGI-pure re-run** (cleaned seed + fresh isolated
+store, Opus 4.8 `--effort max --contract open`) then scored **71.66/100 gemma4 ·
+59.22/100 Opus-4.8 vision** and genuinely stalled — i.e. **without the geometry
+hints the actor could not exceed 71.66**, confirming 71.66 as the AGI-pure
+open-track ceiling and that the contaminated 74.61 was a ~+3 seed boost
+(discarded). **100% (all-views ≥ 8.0) is not reached.** Never-regress floor for
+the open track stays **71.66 gemma4** (now AGI-pure-confirmed) / 59.22
+Opus-vision. Two systemic issues this surfaced, filed as follow-ups: (1) the CLI
+hard-panics opening a pre-`category` (schema-v9) store because
+`ensure_late_columns`' `LATE_COLUMNS` omits the v9→v66 columns; (2) the
+ingest-lesson → shared-seed sync appends game-specific `self-improve-attempt`
+bench lessons into the committed seed — it must filter bench lessons so only
+generic mechanism lessons sync.
+
 ## How to read the comparison
 
 - **Single-shot** — one prompt, no iteration (`run-baselines.mjs`). This is how a

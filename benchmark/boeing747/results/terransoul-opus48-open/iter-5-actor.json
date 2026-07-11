@@ -1,0 +1,85 @@
+{
+  "model": "claude-opus-4-8",
+  "effort": "max",
+  "ms": 403039,
+  "cost_usd": 1.7052029999999998,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 46,
+    "tool_calls": {
+      "Read": 6,
+      "Edit": 4,
+      "Grep": 1
+    },
+    "total_tool_calls": 11,
+    "text_chunks": 24,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "Read",
+        "count": 6
+      },
+      {
+        "name": "Edit",
+        "count": 4
+      },
+      {
+        "name": "Grep",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "contract_failed",
+  "contract_violations": [
+    "forbidden token `window`: DOM access (window)"
+  ],
+  "plane_sha256_before": "ba801ab7b5e5c3c21eed4fd817230871f4c9c87f973f1dd58a54134891a7c61c",
+  "plane_sha256_after": "ba801ab7b5e5c3c21eed4fd817230871f4c9c87f973f1dd58a54134891a7c61c",
+  "plane_sha256_rejected": "b6b6a6fd316f50ae0a9dde2e485e686681a3ff02ec061d66e1ce57156c6eab90",
+  "changed": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "contract_failed",
+      "ms": 403039,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 46,
+        "tool_calls": {
+          "Read": 6,
+          "Edit": 4,
+          "Grep": 1
+        },
+        "total_tool_calls": 11,
+        "text_chunks": 24,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "Read",
+            "count": 6
+          },
+          {
+            "name": "Edit",
+            "count": 4
+          },
+          {
+            "name": "Grep",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}
