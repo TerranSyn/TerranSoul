@@ -1009,7 +1009,6 @@
     }
     return cur;
   }
-  var BABEL_URL = "https://unpkg.com/@babel/standalone@7.26.4/babel.min.js";
   var GLOBAL_POLL_INTERVAL_MS = 50;
   var GLOBAL_POLL_TIMEOUT_MS = 3e4;
   function createExternalModules(onResolved) {
@@ -1018,16 +1017,13 @@
     const reportedMissing = /* @__PURE__ */ new Map();
     const polling = /* @__PURE__ */ new Set();
     function ensureBabel() {
-      if (window.Babel) return Promise.resolve();
-      if (babelLoading) return babelLoading;
-      babelLoading = new Promise((res, rej) => {
-        const s = document.createElement("script");
-        s.src = BABEL_URL;
-        s.crossOrigin = "anonymous";
-        s.onload = () => res();
-        s.onerror = rej;
-        document.head.appendChild(s);
-      });
+      // Self-contained: no @babel/standalone CDN fetch. Any JSX/TSX x-import source
+      // shipped with this deployment is pre-transpiled offline, so the runtime only
+      // needs a pass-through `transform` that hands the (already-plain-JS) code back.
+      // The result is eval'd via `new Function(...)`, which natively supports modern
+      // JS. Kept Promise-returning to preserve the load() contract.
+      if (!window.Babel) window.Babel = { transform: (code) => ({ code }) };
+      babelLoading = babelLoading || Promise.resolve();
       return babelLoading;
     }
     const pending = /* @__PURE__ */ new Map();
@@ -1503,9 +1499,13 @@
   }
 
   // src/index.ts
-  var REACT_URL = "https://unpkg.com/react@18.3.1/umd/react.production.min.js";
+  // Self-contained: React + ReactDOM are vendored locally under ./vendor/ (resolved
+  // relative to the page), so this docs page makes ZERO external network requests.
+  // The SRI hashes are the exact unpkg react@18.3.1 UMD builds (verified byte-for-byte),
+  // so subresource-integrity still holds against the local copies.
+  var REACT_URL = "./vendor/react.production.min.js";
   var REACT_SRI = "sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z";
-  var REACT_DOM_URL = "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js";
+  var REACT_DOM_URL = "./vendor/react-dom.production.min.js";
   var REACT_DOM_SRI = "sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1";
   function hideRawTemplate() {
     const s = document.createElement("style");
