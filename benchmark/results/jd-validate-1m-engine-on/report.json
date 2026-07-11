@@ -1,0 +1,785 @@
+{
+  "benchmark": "MILLION-RESUME-BENCH",
+  "generated_at": "2026-07-11T06:38:41.484Z",
+  "config": {
+    "count": 1000000,
+    "seed": 20260703,
+    "systems": [
+      "rrf"
+    ],
+    "top_k": 100,
+    "resume": false,
+    "query_runs": 5,
+    "corpus_dir": "D:\\Git\\TerranSoulApp\\target-copilot-bench\\jdbench",
+    "hybrid_weights": null
+  },
+  "env": {
+    "longmem_vars": {
+      "LONGMEM_APPLY_SEED": "1",
+      "LONGMEM_DATA_DIR": "C:/TerranSoul/jd-validate-1m-engine-on/store",
+      "LONGMEM_SHIM_EXE": "D:/Git/TerranSoulApp/src-tauri/target/release/longmemeval-ipc.exe",
+      "LONGMEM_WRITE_ENGINE": "1"
+    },
+    "effective_data_dir": "C:/TerranSoul/jd-validate-1m-engine-on/store",
+    "node": "v24.3.0",
+    "platform": "win32 x64"
+  },
+  "ingest": {
+    "rows": 1000000,
+    "elapsedSeconds": 44.584,
+    "rowsPerSecond": 22429,
+    "checkpoints": [
+      {
+        "rows": 100000,
+        "sliceRows": 100000,
+        "sliceSeconds": 3.962,
+        "sliceRowsPerSecond": 25241,
+        "overallSeconds": 3.962,
+        "overallRowsPerSecond": 25241
+      },
+      {
+        "rows": 200000,
+        "sliceRows": 100000,
+        "sliceSeconds": 4.205,
+        "sliceRowsPerSecond": 23782,
+        "overallSeconds": 8.167,
+        "overallRowsPerSecond": 24489
+      },
+      {
+        "rows": 300000,
+        "sliceRows": 100000,
+        "sliceSeconds": 4.494,
+        "sliceRowsPerSecond": 22251,
+        "overallSeconds": 12.661,
+        "overallRowsPerSecond": 23694
+      },
+      {
+        "rows": 400000,
+        "sliceRows": 100000,
+        "sliceSeconds": 4.723,
+        "sliceRowsPerSecond": 21173,
+        "overallSeconds": 17.384,
+        "overallRowsPerSecond": 23009
+      },
+      {
+        "rows": 500000,
+        "sliceRows": 100000,
+        "sliceSeconds": 4.497,
+        "sliceRowsPerSecond": 22238,
+        "overallSeconds": 21.881,
+        "overallRowsPerSecond": 22851
+      },
+      {
+        "rows": 600000,
+        "sliceRows": 100000,
+        "sliceSeconds": 4.223,
+        "sliceRowsPerSecond": 23681,
+        "overallSeconds": 26.104,
+        "overallRowsPerSecond": 22985
+      },
+      {
+        "rows": 700000,
+        "sliceRows": 100000,
+        "sliceSeconds": 4.353,
+        "sliceRowsPerSecond": 22974,
+        "overallSeconds": 30.457,
+        "overallRowsPerSecond": 22983
+      },
+      {
+        "rows": 800000,
+        "sliceRows": 100000,
+        "sliceSeconds": 4.816,
+        "sliceRowsPerSecond": 20764,
+        "overallSeconds": 35.273,
+        "overallRowsPerSecond": 22680
+      },
+      {
+        "rows": 900000,
+        "sliceRows": 100000,
+        "sliceSeconds": 4.39,
+        "sliceRowsPerSecond": 22780,
+        "overallSeconds": 39.663,
+        "overallRowsPerSecond": 22691
+      },
+      {
+        "rows": 1000000,
+        "sliceRows": 100000,
+        "sliceSeconds": 4.921,
+        "sliceRowsPerSecond": 20322,
+        "overallSeconds": 44.584,
+        "overallRowsPerSecond": 22430
+      }
+    ],
+    "path": "add_sessions_jsonl",
+    "start_index": 0,
+    "write_engine_finalize": {
+      "applied_lsn": 1000000,
+      "committed_lsn": 1000000,
+      "count": 1000808,
+      "durable_append_flush_s": 0.0231276,
+      "enabled": true,
+      "materialize_query_visible_s": 199.5648041,
+      "materialized_rows": 1000000,
+      "reconcile_searchable_s": 39.0209389,
+      "rows_applied": 1000000
+    }
+  },
+  "gold_summary": [
+    {
+      "id": "jd-en-backend",
+      "lang": "en",
+      "title": "Senior Backend Engineer",
+      "area": "backend",
+      "requiredSkills": [
+        "skill:rust",
+        "skill:postgresql",
+        "skill:kubernetes",
+        "skill:grpc"
+      ],
+      "minYears": 5,
+      "goldSize": 1441,
+      "byLang": {
+        "en": 580,
+        "vi": 224,
+        "zh": 110,
+        "es": 104,
+        "ko": 105,
+        "ja": 228,
+        "fr": 90
+      }
+    },
+    {
+      "id": "jd-vi-data-engineering",
+      "lang": "vi",
+      "title": "Kỹ sư Dữ liệu",
+      "area": "data-engineering",
+      "requiredSkills": [
+        "skill:python",
+        "skill:spark",
+        "skill:airflow",
+        "skill:sql"
+      ],
+      "minYears": 3,
+      "goldSize": 1166,
+      "byLang": {
+        "en": 459,
+        "zh": 85,
+        "fr": 94,
+        "vi": 177,
+        "ko": 95,
+        "es": 87,
+        "ja": 169
+      }
+    },
+    {
+      "id": "jd-ja-mobile",
+      "lang": "ja",
+      "title": "モバイルアプリエンジニア",
+      "area": "mobile",
+      "requiredSkills": [
+        "skill:swift",
+        "skill:kotlin",
+        "skill:react-native"
+      ],
+      "minYears": 3,
+      "goldSize": 925,
+      "byLang": {
+        "zh": 77,
+        "en": 375,
+        "ja": 151,
+        "ko": 70,
+        "vi": 134,
+        "fr": 68,
+        "es": 50
+      }
+    },
+    {
+      "id": "jd-en-backend-typo",
+      "lang": "en",
+      "title": "Senior Backend Engineer (typo probe)",
+      "area": "backend",
+      "requiredSkills": [
+        "skill:rust",
+        "skill:postgresql",
+        "skill:kubernetes",
+        "skill:grpc"
+      ],
+      "minYears": 5,
+      "goldSize": 1441,
+      "byLang": {
+        "en": 580,
+        "vi": 224,
+        "zh": 110,
+        "es": 104,
+        "ko": 105,
+        "ja": 228,
+        "fr": 90
+      }
+    }
+  ],
+  "results": [
+    {
+      "system": "rrf",
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "jd_title": "Senior Backend Engineer",
+      "gold_size": 1441,
+      "runs": 5,
+      "latency_ms": {
+        "p50": 0.5,
+        "p95": 0.63,
+        "all": [
+          0.64,
+          0.57,
+          0.43,
+          0.49,
+          0.5
+        ],
+        "cold_ms": 6199.72
+      },
+      "recall_at_10": {
+        "capped": 1,
+        "raw": 0.006939625260235947,
+        "hits": 10
+      },
+      "recall_at_50": {
+        "capped": 0.84,
+        "raw": 0.02914642609299098,
+        "hits": 42
+      },
+      "recall_at_100": {
+        "capped": 0.62,
+        "raw": 0.04302567661346287,
+        "hits": 62
+      },
+      "precision_at_10": 1,
+      "ndcg_at_10": 1,
+      "gold_hits_by_lang": {
+        "en": 62
+      },
+      "retrieved_top_20": [
+        "res-697539",
+        "res-216961",
+        "res-108166",
+        "res-685931",
+        "res-74608",
+        "res-173934",
+        "res-384369",
+        "res-882584",
+        "res-792985",
+        "res-866505",
+        "res-735102",
+        "res-571604",
+        "res-387254",
+        "res-924693",
+        "res-111278",
+        "res-484940",
+        "res-563299",
+        "res-215147",
+        "res-772296",
+        "res-421347"
+      ],
+      "typo_dict_cache": {
+        "expansion": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        },
+        "hit_rate": null,
+        "hits": 0,
+        "misses_cold": 0,
+        "misses_data_version_changed": 0,
+        "misses_mutations_changed": 0,
+        "rebuild": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        }
+      }
+    },
+    {
+      "system": "rrf",
+      "jd_id": "jd-vi-data-engineering",
+      "jd_lang": "vi",
+      "jd_title": "Kỹ sư Dữ liệu",
+      "gold_size": 1166,
+      "runs": 5,
+      "latency_ms": {
+        "p50": 0.55,
+        "p95": 0.67,
+        "all": [
+          0.68,
+          0.55,
+          0.59,
+          0.5,
+          0.53
+        ],
+        "cold_ms": 3626.14
+      },
+      "recall_at_10": {
+        "capped": 0.3,
+        "raw": 0.002572898799313894,
+        "hits": 3
+      },
+      "recall_at_50": {
+        "capped": 0.14,
+        "raw": 0.006003430531732418,
+        "hits": 7
+      },
+      "recall_at_100": {
+        "capped": 0.16,
+        "raw": 0.0137221269296741,
+        "hits": 16
+      },
+      "precision_at_10": 0.3,
+      "ndcg_at_10": 0.4537425745411855,
+      "gold_hits_by_lang": {
+        "vi": 16
+      },
+      "retrieved_top_20": [
+        "res-969921",
+        "res-39528",
+        "res-950092",
+        "res-785413",
+        "res-953503",
+        "res-841096",
+        "res-623844",
+        "res-705041",
+        "res-55947",
+        "res-526022",
+        "res-596565",
+        "res-788635",
+        "res-979798",
+        "res-327580",
+        "res-577855",
+        "res-858404",
+        "res-138110",
+        "res-954233",
+        "res-806771",
+        "res-128729"
+      ],
+      "typo_dict_cache": {
+        "expansion": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        },
+        "hit_rate": null,
+        "hits": 0,
+        "misses_cold": 0,
+        "misses_data_version_changed": 0,
+        "misses_mutations_changed": 0,
+        "rebuild": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        }
+      }
+    },
+    {
+      "system": "rrf",
+      "jd_id": "jd-ja-mobile",
+      "jd_lang": "ja",
+      "jd_title": "モバイルアプリエンジニア",
+      "gold_size": 925,
+      "runs": 5,
+      "latency_ms": {
+        "p50": 0.58,
+        "p95": 0.69,
+        "all": [
+          0.72,
+          0.6,
+          0.57,
+          0.58,
+          0.54
+        ],
+        "cold_ms": 1188.44
+      },
+      "recall_at_10": {
+        "capped": 0.5,
+        "raw": 0.005405405405405406,
+        "hits": 5
+      },
+      "recall_at_50": {
+        "capped": 0.44,
+        "raw": 0.023783783783783784,
+        "hits": 22
+      },
+      "recall_at_100": {
+        "capped": 0.34,
+        "raw": 0.036756756756756756,
+        "hits": 34
+      },
+      "precision_at_10": 0.5,
+      "ndcg_at_10": 0.5330752584449808,
+      "gold_hits_by_lang": {
+        "ja": 33,
+        "ko": 1
+      },
+      "retrieved_top_20": [
+        "res-527425",
+        "res-989248",
+        "res-337416",
+        "res-818114",
+        "res-90891",
+        "res-154304",
+        "res-722786",
+        "res-831158",
+        "res-618385",
+        "res-262342",
+        "res-39185",
+        "res-999498",
+        "res-37952",
+        "res-81792",
+        "res-90496",
+        "res-379712",
+        "res-2049",
+        "res-397158",
+        "res-339797",
+        "res-333760"
+      ],
+      "typo_dict_cache": {
+        "expansion": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        },
+        "hit_rate": null,
+        "hits": 0,
+        "misses_cold": 0,
+        "misses_data_version_changed": 0,
+        "misses_mutations_changed": 0,
+        "rebuild": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        }
+      }
+    },
+    {
+      "system": "rrf",
+      "jd_id": "jd-en-backend-typo",
+      "jd_lang": "en",
+      "jd_title": "Senior Backend Engineer (typo probe)",
+      "gold_size": 1441,
+      "runs": 5,
+      "latency_ms": {
+        "p50": 0.47,
+        "p95": 0.74,
+        "all": [
+          0.79,
+          0.52,
+          0.44,
+          0.42,
+          0.47
+        ],
+        "cold_ms": 4416.29
+      },
+      "recall_at_10": {
+        "capped": 0.7,
+        "raw": 0.004857737682165163,
+        "hits": 7
+      },
+      "recall_at_50": {
+        "capped": 0.6,
+        "raw": 0.020818875780707843,
+        "hits": 30
+      },
+      "recall_at_100": {
+        "capped": 0.32,
+        "raw": 0.02220680083275503,
+        "hits": 32
+      },
+      "precision_at_10": 0.7,
+      "ndcg_at_10": 0.7100226348397882,
+      "gold_hits_by_lang": {
+        "en": 32
+      },
+      "retrieved_top_20": [
+        "res-173934",
+        "res-697539",
+        "res-772296",
+        "res-421347",
+        "res-599536",
+        "res-203017",
+        "res-251088",
+        "res-466896",
+        "res-859548",
+        "res-216961",
+        "res-380769",
+        "res-511564",
+        "res-425139",
+        "res-91296",
+        "res-497666",
+        "res-419290",
+        "res-424188",
+        "res-436373",
+        "res-793562",
+        "res-568609"
+      ],
+      "typo_dict_cache": {
+        "expansion": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        },
+        "hit_rate": null,
+        "hits": 0,
+        "misses_cold": 0,
+        "misses_data_version_changed": 0,
+        "misses_mutations_changed": 0,
+        "rebuild": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        }
+      }
+    }
+  ],
+  "metrics": {
+    "after_ingest": {
+      "add": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "add_many": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "delete": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "hybrid_search": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "hybrid_search_rrf": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "rag_cache_hit": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "rag_candidate_retrieval": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "rag_rrf_fusion": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "rag_scoring": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "set_embedding": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "settings_cache": {
+        "hit_rate": null,
+        "hits": 0,
+        "misses_cold": 0,
+        "misses_data_version_changed": 0,
+        "misses_mutations_changed": 0,
+        "scan": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        }
+      },
+      "typo_dict_cache": {
+        "expansion": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        },
+        "hit_rate": null,
+        "hits": 0,
+        "misses_cold": 0,
+        "misses_data_version_changed": 0,
+        "misses_mutations_changed": 0,
+        "rebuild": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        }
+      },
+      "update": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      }
+    },
+    "final": {
+      "add": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "add_many": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "delete": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "hybrid_search": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "hybrid_search_rrf": {
+        "count": 24,
+        "mean_ms": 606.0646333333334,
+        "p50_ms": 0.256,
+        "p95_ms": 16.384,
+        "p99_ms": 16.384
+      },
+      "rag_cache_hit": {
+        "count": 20,
+        "mean_ms": 0.346745,
+        "p50_ms": 0.256,
+        "p95_ms": 0.256,
+        "p99_ms": 0.256
+      },
+      "rag_candidate_retrieval": {
+        "count": 4,
+        "mean_ms": 2310.706325,
+        "p50_ms": 16.384,
+        "p95_ms": 16.384,
+        "p99_ms": 16.384
+      },
+      "rag_rrf_fusion": {
+        "count": 4,
+        "mean_ms": 28.052325,
+        "p50_ms": 16.384,
+        "p95_ms": 16.384,
+        "p99_ms": 16.384
+      },
+      "rag_scoring": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "set_embedding": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      },
+      "settings_cache": {
+        "hit_rate": 0.8787878787878788,
+        "hits": 29,
+        "misses_cold": 4,
+        "misses_data_version_changed": 0,
+        "misses_mutations_changed": 0,
+        "scan": {
+          "count": 4,
+          "mean_ms": 484.6309,
+          "p50_ms": 16.384,
+          "p95_ms": 16.384,
+          "p99_ms": 16.384
+        }
+      },
+      "typo_dict_cache": {
+        "expansion": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        },
+        "hit_rate": null,
+        "hits": 0,
+        "misses_cold": 0,
+        "misses_data_version_changed": 0,
+        "misses_mutations_changed": 0,
+        "rebuild": {
+          "count": 0,
+          "mean_ms": null,
+          "p50_ms": null,
+          "p95_ms": null,
+          "p99_ms": null
+        }
+      },
+      "update": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      }
+    }
+  }
+}
