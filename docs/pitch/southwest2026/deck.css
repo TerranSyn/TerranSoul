@@ -309,3 +309,31 @@ strong { color: var(--coral); font-weight: 700; }
   .compare-grid { grid-template-columns: repeat(6, 1fr); }
   .chart { grid-column: span 6 !important; min-height: 220px; }
 }
+
+/* ── Phones ──────────────────────────────────────────────────────────
+   The deck stays one-slide-at-a-time and the body never scrolls sideways
+   (html,body{overflow:hidden}). But a portrait phone is far narrower and
+   shorter than the 16:9 canvas the slides are tuned for, so on small
+   screens each active slide fits to width and scrolls VERTICALLY within
+   itself — nothing is clipped or unreachable — and the few tight rows
+   un-cramp. Desktop / projector rendering is untouched. The full-bleed
+   brain slide (its own iframe) is left as-is. */
+@media (max-width: 600px) {
+  .slide { padding: 5.5vh 6vw; }
+  .slide.is-active:not(.slide--brainfull) {
+    justify-content: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* slide 4: let the closing line and the reveal button stack instead of
+     being crushed onto one row, and make the button a full-width, easy
+     touch target. */
+  .product-cta { flex-direction: column; align-items: stretch; gap: 18px; }
+  .product-cta .reveal-zone { margin-top: 0; align-items: stretch; }
+  .reveal-btn { align-self: stretch; padding: 14px 20px; }
+  .reveal-hint { text-align: left; }
+  /* slide 9 footer + offline brain-fallback: restack for a narrow column. */
+  .compare-foot { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .brain-fallback { grid-template-columns: repeat(2, 1fr); padding: 16px; gap: 10px; }
+}

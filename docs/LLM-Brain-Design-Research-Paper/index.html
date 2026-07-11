@@ -41,7 +41,7 @@
   .topbar a.lnk{color:var(--ink-soft);text-decoration:none}
   .topbar a.lnk:hover{color:var(--ink)}
   .topbar .meta{color:var(--ink-faint);font-family:var(--mono);font-size:11px;letter-spacing:0.05em;text-transform:uppercase}
-  @media (max-width:780px){.crumbs,.topbar .meta{display:none}.topbar-in{gap:12px;padding:10px 18px}}
+  @media (max-width:780px){.crumbs,.topbar .meta{display:none}.topbar-in{gap:12px;padding:10px 18px;flex-wrap:wrap}.topbar a.lnk{display:inline-flex;align-items:center;min-height:44px;padding:6px 0}}
 
   .page{max-width:var(--maxw);margin:0 auto;padding:0 32px;display:grid;grid-template-columns:1fr;gap:48px}
   article{padding:64px 0 96px;max-width:var(--col);margin:0 auto}
@@ -66,7 +66,7 @@
   article blockquote{margin:24px 0;padding:4px 0 4px 24px;border-left:3px solid var(--accent);font-family:var(--serif);font-style:italic;font-size:21px;line-height:1.5;color:var(--ink-soft)}
   article blockquote cite{display:block;font-style:normal;font-family:var(--sans);font-size:13px;color:var(--ink-faint);margin-top:8px}
   article hr{border:0;border-top:1px solid var(--rule);margin:48px 0}
-  article code, article kbd{font-family:var(--mono);font-size:0.86em;background:var(--bg-deep);padding:1px 6px;border-radius:3px;color:var(--accent-ink)}
+  article code, article kbd{font-family:var(--mono);font-size:0.86em;background:var(--bg-deep);padding:1px 6px;border-radius:3px;color:var(--accent-ink);overflow-wrap:anywhere}
   article pre{background:var(--ink);color:var(--bg);padding:18px 22px;border-radius:6px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.55;margin:20px 0}
   article pre code{background:transparent;color:inherit;padding:0;font-size:13px}
   .small{font-size:14px;color:var(--ink-soft)}
@@ -134,6 +134,18 @@
   .c-s1-line{stroke:#a05a2c}
   .c-s2-line{stroke:#3b6dc7}
   .c-s3-line{stroke:#6f7d1f}
+
+  /* Responsive: on narrow screens let each wide vector chart scroll inside its
+     own container at a legible minimum size (viewBox scaling below this makes
+     axis/value text unreadable); the figcaption still wraps at viewport width.
+     Multi-column footer collapses to a single column. Desktop is unchanged. */
+  @media (max-width:640px){
+    .page{grid-template-columns:minmax(0,1fr)}
+    article{min-width:0;max-width:100%}
+    figure.chart{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    figure.chart svg{min-width:560px}
+    footer.page-foot{grid-template-columns:1fr}
+  }
 </style>
 </head>
 <body>
@@ -177,6 +189,11 @@
 .ts-site-nav nav a:last-child{border-bottom:0}
 .ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
 .ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+@media (max-width:780px){
+  .ts-site-nav summary{min-height:44px;display:flex;align-items:center;padding:8px 16px}
+  .ts-site-nav nav a{min-height:44px;display:flex;align-items:center;padding:8px 16px}
+  .ts-site-nav nav a.sub{padding-left:28px}
+}
 </style>
 
 

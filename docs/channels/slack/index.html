@@ -34,6 +34,10 @@
   .note{background:rgba(139,124,255,.08);border:1px solid rgba(139,124,255,.35);border-radius:10px;padding:14px 16px;margin:0 0 20px;font-size:13.5px;color:var(--soft);max-width:70ch}
   .note b{color:var(--ink)}
   footer{max-width:820px;margin:0 auto;padding:24px;border-top:1px solid var(--rule);color:var(--faint);font-size:13px;display:flex;gap:18px;flex-wrap:wrap}
+  code{overflow-wrap:anywhere}
+  .tablewrap{overflow-x:auto;max-width:100%;margin:10px 0 28px}
+  .tablewrap table{margin:0;min-width:480px}
+  @media(max-width:640px){.crumbs{display:none}}
 </style>
 </head>
 <body>
@@ -76,6 +80,7 @@
 .ts-site-nav nav a:last-child{border-bottom:0}
 .ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
 .ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+@media(max-width:640px){.ts-site-nav summary{min-height:44px;display:inline-flex;align-items:center}.ts-site-nav nav a{min-height:44px;display:flex;align-items:center}}
 </style>
 
 <div class="topbar"><div class="topbar-in">
@@ -108,11 +113,11 @@
   <p>Then flip <code>channels.slack.enabled</code> to <code>true</code>.</p>
 
   <h2>Config</h2>
-  <table>
+  <div class="tablewrap"><table>
     <tr><th>Key</th><th>Meaning</th></tr>
     <tr><td><code>channels.slack.enabled</code></td><td>Must be <code>true</code> for the Socket Mode supervisor to run.</td></tr>
     <tr><td><code>channels.slack.base_url</code></td><td>Optional Slack REST API base override.</td></tr>
-  </table>
+  </table></div>
 
   <h2>Troubleshooting</h2>
   <ul>

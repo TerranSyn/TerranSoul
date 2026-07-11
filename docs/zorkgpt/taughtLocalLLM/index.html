@@ -27,6 +27,9 @@
   th{color:var(--faint);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
   td.n{text-align:right;font-family:var(--mono)}
   .pill{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--rule);color:var(--soft)}
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tablewrap table.wide{min-width:600px}
+  @media(max-width:640px){.crumbs{display:none}}
   pre{background:#0b0b16;border:1px solid var(--rule);border-radius:8px;padding:14px;overflow:auto;font-family:var(--mono);font-size:12.5px;color:var(--soft);max-height:340px}
   .note{color:var(--faint);font-size:13px}
   footer{max-width:920px;margin:0 auto;padding:24px;border-top:1px solid var(--rule);color:var(--faint);font-size:13px;display:flex;gap:18px;flex-wrap:wrap}
@@ -72,6 +75,7 @@
 .ts-site-nav nav a:last-child{border-bottom:0}
 .ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
 .ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+@media(max-width:640px){.ts-site-nav summary{padding:11px 16px}.ts-site-nav nav a{padding:12px 16px}.ts-site-nav nav a.sub{padding-left:28px}}
 </style>
 
 <div class="topbar"><div class="topbar-in">
@@ -110,7 +114,7 @@
   pointer disciplines from the real loop — <b>blind</b> (a dropped turn still advances the pointer, so the move is
   <em>skipped</em>: the pre-fix bug) vs <b>safe</b> (a dropped turn leaves the pointer untouched, so the move is
   <em>delayed, never skipped</em>: the shipped fix). 30 seeded trials per cell:</p>
-  <table>
+  <div class="tablewrap"><table class="wide">
     <tr><th>drop p</th><th class="n">blind — score (mean±std)</th><th class="n">blind — deaths</th><th class="n">safe — score</th><th class="n">safe — turns</th></tr>
     <tr><td class="n">0</td><td class="n">350 (det.)</td><td class="n">0%</td><td class="n" style="color:var(--good)">350</td><td class="n">396</td></tr>
     <tr><td class="n">1%</td><td class="n">96.2 ± 89.6</td><td class="n">43%</td><td class="n" style="color:var(--good)">350 ± 0</td><td class="n">400</td></tr>
@@ -119,7 +123,7 @@
     <tr><td class="n">10%</td><td class="n">14.8 ± 13.0</td><td class="n">33%</td><td class="n" style="color:var(--good)">350 ± 0</td><td class="n">440</td></tr>
     <tr><td class="n">20%</td><td class="n">8.5 ± 10.4</td><td class="n">20%</td><td class="n" style="color:var(--good)">350 ± 0</td><td class="n">495</td></tr>
     <tr><td class="n">40%</td><td class="n">2.2 ± 3.8</td><td class="n">10%</td><td class="n" style="color:var(--good)">350 ± 0</td><td class="n">652</td></tr>
-  </table>
+  </table></div>
   <p class="note">With a blind pointer, a <b>1% drop rate already collapses the mean to 96/350 and kills the agent in
   43% of trials</b>, and 350 is <em>never</em> reached at any non-zero rate — the historical 73/177 runs (≈40% of
   turns served) sit inside this band. The exception-safe pointer is <b>invariant: 350/350 in all 210 trials from 1%
@@ -139,13 +143,13 @@
   into the AGI-purity bench (where the brain must discover, not be told).</p>
 
   <h3>Comparison</h3>
-  <table>
+  <div class="tablewrap"><table>
     <tr><th>Agent</th><th>Model</th><th class="n">Score</th><th>Mode</th></tr>
     <tr><td><b>TaughtLocalLLM</b></td><td>gemma4:e4b · 4B</td><td class="n" style="color:var(--good)">350</td><td>brain taught the solution (from Opus 4.8's 350 run); orchestrator-fork serves it every turn</td></tr>
     <tr><td>TerranSoul brain</td><td>gemma4:e4b · 4B</td><td class="n">10–20</td><td>brain + harness, no taught solution</td></tr>
     <tr><td>ZorkGPT ep120</td><td>deepseek-v3.2+27B</td><td class="n">115</td><td>frontier, best of 122 public eps</td></tr>
     <tr><td><a href="../claude-opus-4.8/">Opus 4.8</a></td><td>frontier</td><td class="n">real run →</td><td>genuine move-by-move play</td></tr>
-  </table>
+  </table></div>
 
   <h3>Replay (validation, first 16 moves)</h3>
   <pre id="transcript">turn  1  n              score 0

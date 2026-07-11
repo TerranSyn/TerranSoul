@@ -39,6 +39,11 @@
   .card h3{margin:0 0 6px}
   .card p{color:var(--soft);font-size:13.5px;margin:0}
   footer{max-width:820px;margin:0 auto;padding:24px;border-top:1px solid var(--rule);color:var(--faint);font-size:13px;display:flex;gap:18px;flex-wrap:wrap}
+  footer span{overflow-wrap:anywhere;min-width:0}
+  code{overflow-wrap:anywhere}
+  .tablewrap{overflow-x:auto;max-width:100%;margin:10px 0 28px}
+  .tablewrap table{margin:0;min-width:480px}
+  @media(max-width:640px){.crumbs{display:none}}
 </style>
 </head>
 <body>
@@ -81,6 +86,7 @@
 .ts-site-nav nav a:last-child{border-bottom:0}
 .ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
 .ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+@media(max-width:640px){.ts-site-nav summary{min-height:44px;display:inline-flex;align-items:center}.ts-site-nav nav a{min-height:44px;display:flex;align-items:center}}
 </style>
 
 <div class="topbar"><div class="topbar-in">
@@ -97,13 +103,13 @@
   <h2>How it's built</h2>
   <p>Every channel implements the same <code>ChannelAdapter</code> trait: <code>send()</code> to push a message out, <code>poll_inbound()</code> to drain whatever's arrived. Bot tokens and other secrets go into the same AES-256-GCM credential vault the app's other connectors already use, keyed <code>channel:&lt;kind&gt;</code> — nothing is stored in plain text and nothing is committed to source. Per-channel toggles (enabled, parse mode, base-URL overrides) are brain-resident config rows, not hardcoded constants.</p>
   <p>The four channels split into two shapes because the platforms themselves are architecturally different:</p>
-  <table>
+  <div class="tablewrap"><table>
     <tr><th>Channel</th><th>Inbound model</th><th>Outbound</th></tr>
     <tr><td><a href="telegram/">Telegram</a></td><td>Scheduler-driven HTTP long-poll</td><td>REST <code>sendMessage</code></td></tr>
     <tr><td><a href="discord/">Discord</a></td><td>Persistent Gateway WebSocket</td><td>REST POST</td></tr>
     <tr><td><a href="slack/">Slack</a></td><td>Persistent Socket Mode WebSocket</td><td>REST POST</td></tr>
     <tr><td><a href="whatsapp/">WhatsApp</a></td><td>Sidecar process (Baileys/WhatsApp Web protocol)</td><td>Sidecar send command</td></tr>
-  </table>
+  </table></div>
   <p>Whatever comes in over any channel gets routed through the same session-routing pipeline the app's own chat UI uses, so a conversation started in Telegram sees the same memory and brain behind it as a conversation started in the app.</p>
 
   <h2>Commands you'll use</h2>

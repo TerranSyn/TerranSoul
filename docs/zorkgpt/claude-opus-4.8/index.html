@@ -26,6 +26,8 @@
   th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule)}
   th{color:var(--faint);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
   td.n{text-align:right;font-family:var(--mono)}
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  @media(max-width:640px){.crumbs{display:none}}
   pre{background:#0b0b16;border:1px solid var(--rule);border-radius:8px;padding:14px;overflow:auto;font-family:var(--mono);font-size:12.5px;color:var(--soft);max-height:340px}
   .note{color:var(--faint);font-size:13px}
   footer{max-width:920px;margin:0 auto;padding:24px;border-top:1px solid var(--rule);color:var(--faint);font-size:13px;display:flex;gap:18px;flex-wrap:wrap}
@@ -71,6 +73,7 @@
 .ts-site-nav nav a:last-child{border-bottom:0}
 .ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
 .ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
+@media(max-width:640px){.ts-site-nav summary{padding:11px 16px}.ts-site-nav nav a{padding:12px 16px}.ts-site-nav nav a.sub{padding-left:28px}}
 </style>
 
 <div class="topbar"><div class="topbar-in">
@@ -97,13 +100,13 @@
   </div>
 
   <h3>Honest baseline (real runs only)</h3>
-  <table>
+  <div class="tablewrap"><table>
     <tr><th>Run</th><th class="n">Score</th><th>What it is</th></tr>
     <tr><td>Opus 4.8 — cold reactive (no recall)</td><td class="n">50</td><td>genuine in-context play with zero Zork recall</td></tr>
     <tr><td>Opus 4.8 — recall-based, move-by-move</td><td class="n" style="color:var(--good)">350</td><td>reproduces the solution it knows; real Jericho run, the winning game</td></tr>
     <tr><td>ZorkGPT (deepseek-v3.2 + 27B)</td><td class="n">94–115</td><td>frontier baseline to surpass</td></tr>
     <tr><td><a href="../taughtLocalLLM/">TaughtLocalLLM (gemma4:e4b)</a></td><td class="n">177</td><td>weak 4B + taught solution context</td></tr>
-  </table>
+  </table></div>
   <p class="note">"Opus leads deepseek" holds when Opus leverages its Zork training (recall) move-by-move — the same basis
   deepseek uses. The cold-reactive floor (no recall) is 50.</p>
 
