@@ -53,8 +53,8 @@ row is scored by the same yardstick regardless of which actor produced the plane
 
 The flagship result — **Claude Opus 4.8 + TerranSoul, Boeing-747 = 73.68/100**
 (frozen gemma4 judge, median-of-3) / **68.26/100** (Claude Opus 4.8 vision judge,
-samples-of-3), on the **v2 corrected harness** _(provisional — v1 66.07/63.5 remains the
-signed-off floor pending owner sign-off on the camera-spec re-baseline; see caveat below)_ —
+samples-of-3), on the **v2 corrected harness** _(the official signed-off record as of
+2026-07-11, OWNER DECISION 3; v1 66.07/63.5 is retired to history — see decomposition below)_ —
 set against the frontier models'
 latest **published** standing across the major existing benchmarks (filled from the
 online citation sweep in § Existing online benchmarks; every figure there carries a
@@ -70,21 +70,18 @@ source URL + access date).
 > judge** (Opus already saw through the aliasing → its ~68 is *genuine geometry*, the
 > real primitives ceiling). That split is the honest proof the fix is a *measurement*
 > correction, not gaming (a gaming trick would inflate both judges). **v2 numbers are
-> NOT comparable to v1.** Because the camera-framing fix re-baselines the *frozen* camera
-> spec, **v1 (66.07 gemma / 63.5 Opus) remains the officially-signed-off published floor**
-> and the **v2 figures here are provisional** until the project owner explicitly signs off
-> on the camera-spec re-baseline — at which point v2 becomes the official record. The
-> honest v2 decomposition is published now (rather than withheld) so the correction is
-> transparent; the *status* (provisional vs. official) is what awaits sign-off, not the
-> analysis.
+> NOT comparable to v1.** The camera-framing fix re-baselines the *frozen* camera
+> spec; the project owner reviewed that re-baseline and **signed off v2 as the official
+> record (2026-07-11, OWNER DECISION 3, `rules/milestones.md` → `BOEING-747-BENCH`)**.
+> **v1 (66.07 gemma / 63.5 Opus) is retired to history** — it is the prior record, not
+> the live floor. The honest v2 decomposition is published in full so the correction
+> stays transparent; only the *status* changed (v2 is now official), not the analysis.
 >
-> **⚠ Consistency flag (2026-07-10 re-audit, owner call needed):** the southwest2026
-> pitch deck — an *external publishing surface* under the sign-off gate above — now
-> displays the v2 numbers (73.68/68.26, plus the Fable-5 track's 59.62/49.48) via the
-> Boeing chart added in commit `9014d495`, which records no sign-off. Until the owner
-> either records the sign-off (making v2 the official record here) or has the chart
-> reworked, the deck's Boeing panel should be read as **provisional-v2 pending
-> sign-off**. Tracked in `rules/milestones.md` → `BOEING-747-BENCH` item (1).
+> **Consistency check (resolved 2026-07-11):** the southwest2026 pitch deck displays
+> the v2 numbers (73.68/68.26, plus the Fable-5 track) via the Boeing chart added in
+> commit `9014d495`. With OWNER DECISION 3 recorded, v2 is the official record on every
+> surface (this doc, the deck, and the research paper), so the deck panel needs no
+> caveat.
 
 > **Each column is a DIFFERENT benchmark on its own scale** — a SWE-bench % is not
 > a Boeing /100 is not an ARC %. Read *down* each column (how models rank on that
@@ -211,12 +208,13 @@ judge/label gaming**:
 **The split is the proof of honesty:** a gaming trick would inflate *both* judges; the
 render fixes only helped the judge that was genuinely handicapped — which is exactly
 what a *correct* measurement fix does. **v2 numbers are NOT comparable to v1**
-(66.07 / 63.5, pre-fix rig — retained as the prior floor per `bench-never-regress.md`;
-the corrected numbers are higher on both judges, so no regression). The
-**camera-framing change re-baselines the frozen camera spec** and is the one edit
-flagged for **explicit owner sign-off before any external (pitch / paper / wiki)
-publishing**. The stub rig floor is 28.25 (pre-fix render). Single-shot local
-baselines were dropped per the project owner's direction.
+(66.07 / 63.5, pre-fix rig — retained as history, the prior record; the corrected
+numbers are higher on both judges, so no regression). The **camera-framing change
+re-baselines the frozen camera spec**; the project owner reviewed and **signed off v2
+as the official record (2026-07-11, OWNER DECISION 3)**, so it is published across all
+external surfaces (pitch / paper / wiki). The never-regress floor for this track is now
+the v2 pair **73.68 gemma4 / 68.26 Opus**. The stub rig floor is 28.25 (pre-fix
+render). Single-shot local baselines were dropped per the project owner's direction.
 
 Every figure here is from a committed results JSON — **no number is written that
 has not been measured** — and reported factually; the project does not use
@@ -511,7 +509,7 @@ sections above per the never-silently-overwrite convention.
 | System | Approach | Boeing-747 score /100 | Iterations | Source |
 |---|---|---|---|---|
 | **Claude Opus 4.8 + TerranSoul** (v2 harness) | self-improve loop (Opus actor inside TerranSoul) | **73.68** gemma4 · **68.26** Opus vision | 9+ (both judge tracks) | measured — `results/terransoul-opus48*/` |
-| _(v1 pre-fix rig — retained floor)_ | same, aliased/thumbnail render | 66.07 gemma4 · 63.5 Opus vision | — | prior record; **not comparable to v2** |
+| _(v1 pre-fix rig — history)_ | same, aliased/thumbnail render | 66.07 gemma4 · 63.5 Opus vision | — | prior record, retired to history; **not comparable to v2** |
 | **Claude Fable 5 + TerranSoul** (v2 harness, TerranSoul-agent-driven actor)¹ ² ³ | self-improve loop (Fable-5 actor via TerranSoul's own Read+Edit-restricted CLI agent, real vision tool access) | **59.62** gemma4 · **49.48** Fable-5 vision — **bug-affected, see § Harness fix; re-run also pending via § CLI-routed actor** | 10 of 12-budget (gemma4 `stall`, 4 of 10 later root-caused as a timeout-retry artifact) | measured — `results/terransoul-fable5*/`; two corrected re-run attempts (`results/terransoul-fable5-v2*/`), **both incomplete** |
 | Stub (rig validation) | fixed source | 28.25 | — | `results/stub-validation.json` (pre-render-fix; methodology check only) |
 
