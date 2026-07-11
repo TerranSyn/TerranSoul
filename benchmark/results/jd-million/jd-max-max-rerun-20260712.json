@@ -1,0 +1,509 @@
+{
+  "benchmark": "MILLION-RESUME JD-DEMO — MAX (agentic wide retrieve + verify-from-text)",
+  "generated_at": "2026-07-11T15:43:10.850Z",
+  "mode": "million",
+  "config": {
+    "rrf_mode": "rrf",
+    "dense": false,
+    "per_q": 1000,
+    "discover_n": 14,
+    "max_rounds": 4,
+    "epsilon": 0.004,
+    "judge_model": "gemma4:12b-it-qat",
+    "judge_head": 150,
+    "judge_batch": 10,
+    "judge_ctx": 8192,
+    "no_judge": false
+  },
+  "env": {
+    "longmem_vars": {
+      "LONGMEM_DATA_DIR": "D:/Git/TerranSoulApp/target-copilot-bench/jdbench/store",
+      "LONGMEM_SHIM_EXE": "D:/Git/TerranSoulApp/target-copilot-bench/debug/longmemeval-ipc.exe"
+    },
+    "ollama_host": "http://127.0.0.1:11434",
+    "node": "v24.3.0",
+    "platform": "win32 x64"
+  },
+  "results": [
+    {
+      "jd_id": "jd-en-backend",
+      "jd_lang": "en",
+      "gold_size": 1441,
+      "retrieval": {
+        "rrf_mode": "rrf",
+        "dense": false,
+        "query_count": 62,
+        "pool_size": 21813,
+        "rounds": [
+          {
+            "round": 1,
+            "kind": "required-pairs",
+            "queries": 6,
+            "added": 3746,
+            "pool": 3746
+          },
+          {
+            "round": 2,
+            "kind": "discovered-pairs",
+            "discovered": [
+              "Backend",
+              "Backend Engineer",
+              "REST",
+              "API",
+              "Python",
+              "REST API",
+              "Java",
+              "Node.js",
+              "SQL",
+              "Engineering",
+              "Docker",
+              "GraphQL",
+              "Redis",
+              "MongoDB"
+            ],
+            "queries": 56,
+            "added": 18067,
+            "pool": 21813,
+            "passers": 1715,
+            "new_passers": 0
+          }
+        ],
+        "gold_in_pool": 1441,
+        "gold_in_pool_pct": 100,
+        "gold_in_pool_by_lang": {
+          "es": 104,
+          "en": 580,
+          "fr": 90,
+          "ja": 228,
+          "vi": 224,
+          "ko": 105,
+          "zh": 110
+        },
+        "gold_total_by_lang": {
+          "en": 580,
+          "vi": 224,
+          "zh": 110,
+          "es": 104,
+          "ko": 105,
+          "ja": 228,
+          "fr": 90
+        },
+        "latency_ms": 932588
+      },
+      "verify": {
+        "passers": 1715,
+        "judged": 150,
+        "domain_kept": 1606,
+        "judge_calls": 15,
+        "judge_ms": 54781,
+        "judge_tokens": {
+          "prompt": 25149,
+          "eval": 1748
+        },
+        "verify_ms": 49,
+        "no_judge": false
+      },
+      "accuracy": {
+        "recall_at_10": {
+          "capped": 1,
+          "raw": 0.006939625260235947,
+          "hits": 10
+        },
+        "precision_at_10": 1,
+        "ndcg_at_10": 1,
+        "top_10": [
+          "res-576780",
+          "res-281309",
+          "res-847790",
+          "res-75788",
+          "res-162600",
+          "res-141495",
+          "res-216961",
+          "res-179898",
+          "res-261742",
+          "res-651762"
+        ]
+      },
+      "total_ms": 987419
+    },
+    {
+      "jd_id": "jd-vi-data-engineering",
+      "jd_lang": "vi",
+      "gold_size": 1166,
+      "retrieval": {
+        "rrf_mode": "rrf",
+        "dense": false,
+        "query_count": 230,
+        "pool_size": 32269,
+        "rounds": [
+          {
+            "round": 1,
+            "kind": "required-pairs",
+            "queries": 6,
+            "added": 4272,
+            "pool": 4272
+          },
+          {
+            "round": 2,
+            "kind": "discovered-pairs",
+            "discovered": [
+              "Data",
+              "Backend",
+              "ETL",
+              "Snowflake",
+              "Data Engineer",
+              "Scala",
+              "Engineering",
+              "dbt",
+              "Modeling",
+              "Computer",
+              "Backend Engineer",
+              "Data Modeling",
+              "API",
+              "REST"
+            ],
+            "queries": 56,
+            "added": 18865,
+            "pool": 23137,
+            "passers": 3701,
+            "new_passers": 770
+          },
+          {
+            "round": 3,
+            "kind": "discovered-pairs",
+            "discovered": [
+              "REST API",
+              "Mentored teammates",
+              "teammates",
+              "practices while",
+              "while",
+              "while owning",
+              "roadmap",
+              "roadmap end",
+              "end end.",
+              "end.",
+              "cutting incident",
+              "incident",
+              "incident volume",
+              "volume"
+            ],
+            "queries": 56,
+            "added": 3474,
+            "pool": 26611,
+            "passers": 3921,
+            "new_passers": 220
+          },
+          {
+            "round": 4,
+            "kind": "discovered-pairs",
+            "discovered": [
+              "volume through",
+              "through",
+              "through better",
+              "Bachelor",
+              "and shipped",
+              "shipped",
+              "shipped services",
+              "improving delivery",
+              "delivery",
+              "delivery speed",
+              "whole team.",
+              "team.",
+              "Technology.",
+              "Technology. Skills"
+            ],
+            "queries": 56,
+            "added": 481,
+            "pool": 27092,
+            "passers": 3940,
+            "new_passers": 19
+          },
+          {
+            "round": 5,
+            "kind": "discovered-pairs",
+            "discovered": [
+              "core workloads",
+              "workloads",
+              "collaborating",
+              "collaborating with",
+              "with cross-functional",
+              "cross-functional",
+              "cross-functional partners",
+              "partners",
+              "Science",
+              "Java",
+              "Lead",
+              "Senior",
+              "AWS",
+              "Node.js"
+            ],
+            "queries": 56,
+            "added": 5177,
+            "pool": 32269,
+            "passers": 4340,
+            "new_passers": 400
+          }
+        ],
+        "gold_in_pool": 1062,
+        "gold_in_pool_pct": 91.08,
+        "gold_in_pool_by_lang": {
+          "zh": 67,
+          "en": 446,
+          "vi": 154,
+          "ja": 147,
+          "fr": 86,
+          "ko": 91,
+          "es": 71
+        },
+        "gold_total_by_lang": {
+          "en": 459,
+          "zh": 85,
+          "fr": 94,
+          "vi": 177,
+          "ko": 95,
+          "es": 87,
+          "ja": 169
+        },
+        "latency_ms": 1689024
+      },
+      "verify": {
+        "passers": 4340,
+        "judged": 150,
+        "domain_kept": 4209,
+        "judge_calls": 15,
+        "judge_ms": 46696,
+        "judge_tokens": {
+          "prompt": 25441,
+          "eval": 1763
+        },
+        "verify_ms": 73,
+        "no_judge": false
+      },
+      "accuracy": {
+        "recall_at_10": {
+          "capped": 1,
+          "raw": 0.008576329331046312,
+          "hits": 10
+        },
+        "precision_at_10": 1,
+        "ndcg_at_10": 1,
+        "top_10": [
+          "res-421187",
+          "res-293748",
+          "res-686473",
+          "res-84788",
+          "res-142621",
+          "res-799742",
+          "res-54993",
+          "res-584554",
+          "res-595966",
+          "res-737017"
+        ]
+      },
+      "total_ms": 1735793
+    },
+    {
+      "jd_id": "jd-ja-mobile",
+      "jd_lang": "ja",
+      "gold_size": 925,
+      "retrieval": {
+        "rrf_mode": "rrf",
+        "dense": false,
+        "query_count": 45,
+        "pool_size": 11590,
+        "rounds": [
+          {
+            "round": 1,
+            "kind": "required-pairs",
+            "queries": 3,
+            "added": 2322,
+            "pool": 2322
+          },
+          {
+            "round": 2,
+            "kind": "discovered-pairs",
+            "discovered": [
+              "React",
+              "SDK",
+              "Native",
+              "Mobile",
+              "Mobile App",
+              "App",
+              "App Engineer",
+              "iOS",
+              "Android",
+              "REST",
+              "iOS SDK",
+              "Firebase",
+              "Gradle",
+              "API"
+            ],
+            "queries": 42,
+            "added": 9268,
+            "pool": 11590,
+            "passers": 927,
+            "new_passers": 0
+          }
+        ],
+        "gold_in_pool": 925,
+        "gold_in_pool_pct": 100,
+        "gold_in_pool_by_lang": {
+          "vi": 134,
+          "ja": 151,
+          "zh": 77,
+          "en": 375,
+          "ko": 70,
+          "es": 50,
+          "fr": 68
+        },
+        "gold_total_by_lang": {
+          "zh": 77,
+          "en": 375,
+          "ja": 151,
+          "ko": 70,
+          "vi": 134,
+          "fr": 68,
+          "es": 50
+        },
+        "latency_ms": 454701
+      },
+      "verify": {
+        "passers": 927,
+        "judged": 150,
+        "domain_kept": 878,
+        "judge_calls": 15,
+        "judge_ms": 46777,
+        "judge_tokens": {
+          "prompt": 24949,
+          "eval": 1799
+        },
+        "verify_ms": 22,
+        "no_judge": false
+      },
+      "accuracy": {
+        "recall_at_10": {
+          "capped": 1,
+          "raw": 0.010810810810810811,
+          "hits": 10
+        },
+        "precision_at_10": 1,
+        "ndcg_at_10": 1,
+        "top_10": [
+          "res-419914",
+          "res-715461",
+          "res-256800",
+          "res-453915",
+          "res-551946",
+          "res-270376",
+          "res-788901",
+          "res-600084",
+          "res-971802",
+          "res-349031"
+        ]
+      },
+      "total_ms": 501500
+    },
+    {
+      "jd_id": "jd-en-backend-typo",
+      "jd_lang": "en",
+      "gold_size": 1441,
+      "retrieval": {
+        "rrf_mode": "rrf",
+        "dense": false,
+        "query_count": 62,
+        "pool_size": 21132,
+        "rounds": [
+          {
+            "round": 1,
+            "kind": "required-pairs",
+            "queries": 6,
+            "added": 3756,
+            "pool": 3756
+          },
+          {
+            "round": 2,
+            "kind": "discovered-pairs",
+            "discovered": [
+              "Backend",
+              "Backend Engineer",
+              "REST",
+              "API",
+              "Python",
+              "REST API",
+              "Java",
+              "Node.js",
+              "SQL",
+              "Engineering",
+              "Docker",
+              "GraphQL",
+              "Redis",
+              "MongoDB"
+            ],
+            "queries": 56,
+            "added": 17376,
+            "pool": 21132,
+            "passers": 1715,
+            "new_passers": 0
+          }
+        ],
+        "gold_in_pool": 1441,
+        "gold_in_pool_pct": 100,
+        "gold_in_pool_by_lang": {
+          "es": 104,
+          "en": 580,
+          "fr": 90,
+          "ja": 228,
+          "ko": 105,
+          "vi": 224,
+          "zh": 110
+        },
+        "gold_total_by_lang": {
+          "en": 580,
+          "vi": 224,
+          "zh": 110,
+          "es": 104,
+          "ko": 105,
+          "ja": 228,
+          "fr": 90
+        },
+        "latency_ms": 635192
+      },
+      "verify": {
+        "passers": 1715,
+        "judged": 150,
+        "domain_kept": 1601,
+        "judge_calls": 15,
+        "judge_ms": 47150,
+        "judge_tokens": {
+          "prompt": 25184,
+          "eval": 1823
+        },
+        "verify_ms": 48,
+        "no_judge": false
+      },
+      "accuracy": {
+        "recall_at_10": {
+          "capped": 1,
+          "raw": 0.006939625260235947,
+          "hits": 10
+        },
+        "precision_at_10": 1,
+        "ndcg_at_10": 1,
+        "top_10": [
+          "res-576780",
+          "res-281309",
+          "res-162600",
+          "res-23711",
+          "res-315238",
+          "res-846196",
+          "res-216658",
+          "res-16843",
+          "res-13221",
+          "res-26078"
+        ]
+      },
+      "total_ms": 682390
+    }
+  ],
+  "wall_seconds_total": 4157.237
+}

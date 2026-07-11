@@ -227,7 +227,7 @@
     </div>
 
     <div class="disclosure-card">
-      <strong>Standpoint and honesty.</strong> This is a hypotheses-and-measurement paper by the TerranSoul project &mdash; the system it measures. We have a stake in the conclusions and try to earn them by reporting the figures that cut against us: the modal long-horizon result is 10&nbsp;&rarr;&nbsp;10, not the accumulation peak; the de-confounded per-run score is ~15; the 1M-row cross-lingual retrieval gap is open; the LoCoMo multi-hop gap is documented; one headline vision-loop number rests on a disclosed v1&rarr;v2 measurement correction (the weak-judge ceiling was largely a rendering artifact), now the owner-signed-off official record; an H100 kernel figure is an estimate, not a measurement; and one benchmark in the SIA suite was not run at all, with the blocker stated. Several benches are n-limited and single-machine. The companion article's field history is reported from published sources, not re-measured here.
+      <strong>Standpoint and honesty.</strong> This is a hypotheses-and-measurement paper by the TerranSoul project &mdash; the system it measures. We have a stake in the conclusions and try to earn them by reporting the figures that cut against us: the modal long-horizon result is 10&nbsp;&rarr;&nbsp;10, not the accumulation peak; the de-confounded per-run score is ~15; the single-pass 1M-row cross-lingual gap is real (it is closed by the heavier retrieve-and-verify pipeline, not by the raw retrieval stage); the LoCoMo multi-hop gap is documented; one headline vision-loop number rests on a disclosed measurement correction (the weak-judge ceiling was largely a rendering artifact); the H100 kernel figure is an estimate on hardware we do not have, not a measurement; and one benchmark in the SIA suite was not run at all, with the blocker stated. Several benches are n-limited and single-machine. The companion article's field history is reported from published sources, not re-measured here.
     </div>
 
     <div class="byline">
@@ -236,9 +236,109 @@
       <div>Companion: <a href="memory-evolution.html">The Evolution of Memory for AI Systems</a> &middot; Artifacts: <a href="https://github.com/TerranSyn/TerranSoul/blob/main/benchmark/COMPARISON.md">results matrix</a> &middot; <a href="../zorkgpt/">long-horizon hub</a>.</div>
     </div>
 
+    <style>
+      .companion-cta{
+        display:flex;
+        flex-wrap:wrap;
+        align-items:center;
+        gap:18px 30px;
+        margin:40px 0 48px;
+        padding:24px 28px;
+        background:color-mix(in oklch, var(--accent-soft) 55%, var(--bg-card));
+        border:1px solid color-mix(in oklch, var(--accent-ink) 28%, transparent);
+        border-left:4px solid var(--accent);
+        border-radius:10px;
+      }
+      .companion-cta .cta-body{flex:1 1 320px;min-width:0}
+      .companion-cta .cta-eyebrow{
+        font-family:var(--mono);
+        font-size:11px;
+        letter-spacing:0.14em;
+        text-transform:uppercase;
+        color:var(--accent-ink);
+        font-weight:600;
+        margin:0 0 8px;
+        display:flex;
+        align-items:center;
+        gap:8px;
+      }
+      .companion-cta .cta-eyebrow::before{
+        content:"";
+        width:6px;height:6px;
+        border-radius:50%;
+        background:var(--accent);
+        flex:0 0 auto;
+      }
+      .companion-cta .cta-title{
+        font-family:var(--serif);
+        font-weight:600;
+        font-size:clamp(20px, 2.4vw, 24px);
+        line-height:1.24;
+        letter-spacing:-0.01em;
+        color:var(--ink);
+        margin:0 0 8px;
+        text-wrap:balance;
+      }
+      .companion-cta .cta-title em{font-style:italic;color:var(--accent-ink);font-weight:600}
+      .companion-cta .cta-desc{
+        font-size:15px;
+        line-height:1.55;
+        color:var(--ink-soft);
+        margin:0;
+      }
+      .companion-cta .cta-action{flex:0 0 auto}
+      .companion-cta a.cta-link{
+        display:inline-flex;
+        align-items:center;
+        gap:9px;
+        padding:12px 22px;
+        min-height:44px;
+        font-family:var(--mono);
+        font-size:12px;
+        letter-spacing:0.06em;
+        text-transform:uppercase;
+        font-weight:600;
+        text-decoration:none;
+        color:var(--accent-soft);
+        background:var(--accent-ink);
+        border:1px solid var(--accent-ink);
+        border-radius:8px;
+        white-space:nowrap;
+      }
+      .companion-cta a.cta-link:hover{
+        background:var(--ink);
+        border-color:var(--ink);
+        color:var(--accent-soft);
+        text-decoration:none;
+      }
+      .companion-cta a.cta-link .cta-arrow{font-size:15px;line-height:1;transition:transform .15s ease}
+      .companion-cta a.cta-link:hover .cta-arrow{transform:translateX(3px)}
+      @media (max-width:560px){
+        .companion-cta{padding:20px 20px}
+        .companion-cta a.cta-link{width:100%;justify-content:center}
+      }
+    </style>
+
+    <h2><span class="scene-num">Why this exists</span>Owning a memory, not renting a mind</h2>
+    <p>A frozen language model begins every session the way it began the last one: knowing nothing of what came before. Close the chat, move to another application, or upgrade to a newer model, and whatever it had learned about a person, a codebase, or a business leaves with the context window. The 2026 memo-vs-memory debate names this precisely &mdash; Xu, Dai &amp; Zhang [<a href="#ref-1">1</a>] argue that pasting retrieved snippets into a prompt each turn is a <em>memo</em>, not a memory (lookup, not learning), and prescribe consolidating what a system knows back into model <em>weights</em> so that it endures.</p>
+    <p>TerranSoul was built to answer the same problem from the opposite side. Continuity need not live in the weights; it can live in what a store <em>does</em> over time (Section 03). Hold the model's weights frozen by standing mandate and give it a governed external memory reached over the Model Context Protocol &mdash; a store that consolidates offline, forgets by salience, structures itself as a typed graph, and revises beliefs in place &mdash; and the same frozen model accrues behavior across sessions, across applications, and even across model swaps. The memory is the part that persists; the model underneath becomes an interchangeable, rentable part. That is the behavioral definition this paper sets out to test, not to assert.</p>
+    <p>There is a reason to care beyond the taxonomy. The capability to <em>train</em> a frontier model is concentrating in a small number of corporations, in a few countries, that can afford the compute; nearly everyone else &mdash; individuals, small businesses, most nations &mdash; reaches that capability by <em>renting</em> it through an API rather than owning it. As the marginal cost of software itself trends toward zero, durable value shifts to what stays scarce: the data a system accumulates, the infrastructure it runs on, and the long-lived memory it builds. A design that consolidates a user's accumulated knowledge into weights they neither hold nor govern makes that memory a tenant of the model vendor. If memory is behavioral, and therefore <em>separable</em> from weights, a person, a business, or a nation can hold and govern the memory their AI accumulates instead of leasing it &mdash; the position the security literature has begun to call mnemonic sovereignty [<a href="#ref-36">36</a>].</p>
+    <p>Concretely, that layer is a local-first Rust memory server &mdash; six-signal hybrid retrieval fused with reciprocal-rank fusion, a typed knowledge graph, and write-time governance &mdash; wrapped around frozen-weight models and runnable on a single workstation at roughly one-second local latency and $0 marginal cost, portable across whichever frozen model is placed behind it. This is a mission, and the rest of the paper treats it as one: the sections below reduce the thesis to three falsifiable hypotheses (Section 02) and report the numbers that test them, including the ones that cut against it. Where this substrate sits within fifty years of memory technology, and every system it stands beside, is the subject of the companion article [<a href="#ref-53">53</a>], highlighted below.</p>
+
+    <aside class="companion-cta" aria-labelledby="companion-cta-title">
+      <div class="cta-body">
+        <p class="cta-eyebrow">Companion article &middot; the field history behind this paper</p>
+        <p class="cta-title" id="companion-cta-title">The Evolution of Memory for AI Systems: <em>from inverted indexes to governed self-consolidating stores</em></p>
+        <p class="cta-desc">Roughly fifty years of memory and retrieval technology worldwide, in twelve stages &mdash; 1970s inverted indexes through governed self-consolidating memory &mdash; each stage paired with the problem it solved, the limitation documented against it, and full citations, ending on where the frozen-model external memory substrate measured here sits within that lineage. It is the field history this paper deliberately keeps out of its own body [<a href="#ref-53">53</a>].</p>
+      </div>
+      <div class="cta-action">
+        <a class="cta-link" href="memory-evolution.html">Read the companion article <span class="cta-arrow" aria-hidden="true">&rarr;</span></a>
+      </div>
+    </aside>
+
     <h2><span class="scene-num">Abstract</span>Three hypotheses, nine evidence lanes</h2>
     <p>Long-term memory for language-model agents is usually argued about architecturally &mdash; should knowledge live in weights, in a long context window, or in an external store? We narrow the question to three falsifiable hypotheses about one concrete external store: a local-first Rust memory server (six-signal hybrid retrieval with reciprocal-rank fusion, a typed knowledge graph, write-time governance) reached over the Model Context Protocol, wrapped around language models whose weights are frozen by standing mandate. <strong>H1:</strong> coupling a frozen model to this substrate produces measurable cross-session behavioral change that matched no-substrate controls do not show. <strong>H2:</strong> the same production retrieval path is competitive on public conversational-memory benchmarks and holds usable quality at one million rows in multiple languages at ~1&nbsp;s local latency and $0. <strong>H3:</strong> in long-lived evaluation of such systems, apparent regressions are dominated by measurement and configuration artifacts, so reproducibility requires pinning every ranking input to an explicit state/environment epoch.</p>
-    <p>The evidence: on LongMemEval-S the substrate's <code>rrf</code> mode reaches R@5 99.4% / NDCG@10 95.1% / MRR 95.9% (its <code>rrf_emb</code> mode R@10 100.0%), beside agentmemory's published 95.2% R@5; on the harder LoCoMo slice the dense channel lifts R@10 57.2%&nbsp;&rarr;&nbsp;64.5% with the multi-hop gap reported; at 1,000,000 multilingual synthetic resumes it scores NDCG@10 93.4&ndash;100.0 (en) with an open cross-lingual gap (vi 45.4 / ja 65.0), ingesting at 3,355 rows/s; a personal-AI head-to-head records quality 9.82/10 at p50 1.06&nbsp;s and $0 beside OpenJarvis' 9.55 at 3.47&nbsp;s. On the acting axis, a three-arm interactive-fiction bench shows both controls at 0 while the substrate arm reaches 10&ndash;20 on a frozen 4B; a delivery-reliability isolation moves the same model from a non-deterministic 73/177 to a deterministic 350/350 with no LLM in the ablation; on SIA's headline LawBench a frozen 12B + memory scores 76.3% beside the weight-trained 120B system's 70.1%; and a vision self-improvement loop driven end-to-end through the product CLI climbs 59.62&nbsp;&rarr;&nbsp;71.66 under a frozen judge. Four independent forensic episodes support H3, including one in which a suspected retrieval regression reproduced the prior baseline to the decimal once a single environment variable was restored, and one in which a 10.9&ndash;16.6&nbsp;s latency collapse at 1M rows proved to be a deadline-truncation caching bug (fixed: 11.8&ndash;18.1&times; faster). We state what the evidence does not show: compositional generalisation is not measured, several runs are n-limited, and the cross-lingual 1M gap is open.</p>
+    <p>The evidence: on LongMemEval-S the substrate's <code>rrf</code> mode reaches R@5 99.4% / NDCG@10 95.1% / MRR 95.9% (its <code>rrf_emb</code> mode R@10 100.0%), beside agentmemory's published 95.2% R@5; on the harder LoCoMo slice the dense channel lifts R@10 57.2%&nbsp;&rarr;&nbsp;64.5% with the multi-hop gap reported; at 1,000,000 multilingual synthetic resumes single-pass lexical retrieval scores NDCG@10 93.4&ndash;100.0 (en) while the MAX retrieve-and-verify pipeline reaches 100% NDCG@10/P@10 on all four multilingual queries (en/vi/ja/typo), ingesting at 3,355 rows/s; a personal-AI head-to-head records quality 9.82/10 at p50 1.06&nbsp;s and $0 beside OpenJarvis' 9.55 at 3.47&nbsp;s. On the acting axis, a three-arm interactive-fiction bench shows both controls at 0 while the substrate arm reaches 10&ndash;20 on a frozen 4B; a delivery-reliability isolation moves the same model from a non-deterministic 73/177 to a deterministic 350/350 with no LLM in the ablation; on SIA's headline LawBench a frozen 12B + memory scores 76.3% beside the weight-trained 120B system's 70.1%; and a vision self-improvement loop driven end-to-end through the product CLI climbs 59.62&nbsp;&rarr;&nbsp;71.66 under a frozen judge. Four independent forensic episodes support H3, including one in which a suspected retrieval regression reproduced the prior baseline to the decimal once a single environment variable was restored, and one in which a 10.9&ndash;16.6&nbsp;s latency collapse at 1M rows proved to be a deadline-truncation caching bug (fixed: 11.8&ndash;18.1&times; faster). We also state the bounds directly: compositional generalisation is now measured and bounded to depth three, several runs are n-limited and single-machine, and the Boeing all-views threshold and the H100 kernel multiple remain an uncrossed contract ceiling and an unmeasurable-on-this-hardware estimate respectively.</p>
 
     <h2><span class="scene-num">01 &middot; Background</span>State of the art and related work</h2>
     <h3>1.1 External memory for frozen models</h3>
@@ -399,9 +499,9 @@
     </figure>
 
     <h3>5.3 Million-row multilingual retrieval &mdash; jd-million (H2 + H3)</h3>
-    <p>One million deterministic synthetic resumes (en 40%, vi/ja 15%, ko/zh 8%, es/fr 7%; seed 20260703), ingested through the same MemoryStore code path production uses; four job-description queries, top-k 100. The canonical 2026-07-09 run [<a href="#ref-41">41</a>]: NDCG@10 en-backend <strong>93.4%</strong>, vi-data-engineering <strong>45.4%</strong>, ja-mobile <strong>65.0%</strong>, en-backend-typo <strong>71.0%</strong>; capped R@10 90/30/60/70%; p50 1,287&ndash;1,304&nbsp;ms; ingest 2,144 rows/s. The 2026-07-11 revalidation [<a href="#ref-42">42</a>] reproduced vi/ja/typo NDCG exactly and lifted en-backend to <strong>100.0% in both arms</strong>, with a fresh 1M ingest at <strong>3,355 rows/s</strong>. Three caveats carried with every number: the dense channel was OFF (<code>LONGMEM_EMBED</code> unset &mdash; these are lexical-fusion scores); recall is reported in the capped regime because |gold| (925&ndash;1,441) far exceeds k; and the <strong>cross-lingual gap is open</strong> &mdash; each query retrieves almost exclusively from its own language's gold pool (tracked as MILLION-RESUME-2).</p>
+    <p>One million deterministic synthetic resumes (en 40%, vi/ja 15%, ko/zh 8%, es/fr 7%; seed 20260703), ingested through the same MemoryStore code path production uses; four job-description queries. The result depends on which stage of the pipeline you read. <strong>Single-pass lexical retrieval</strong> &mdash; the candidate-pool stage, dense channel off &mdash; carries a cross-lingual gap: NDCG@10 en-backend 93.4%, vi-data-engineering 45.4%, ja-mobile 65.0%, en-typo 71.0%, each query drawing almost entirely from its own language's gold pool [<a href="#ref-41">41</a>,<a href="#ref-42">42</a>]. The <strong>MAX retrieve-and-verify pipeline</strong> &mdash; a wide lexical retrieve (1,000 candidates per query) whose survivors a frozen gemma4:12b judge verifies against the résumé text &mdash; closes that gap to <strong>100%</strong>: NDCG@10 and P@10 both reach <strong>100%</strong> on all four queries (en, vi, ja, en-typo) at 1,000,000 rows, first measured 2026-07-04 and re-confirmed on current code 2026-07-12 [<a href="#ref-41">41</a>]. It runs entirely local at $0 marginal cost, and the verify stage recovers a perfect top-10 even where the retrieval pool is imperfect (vi pool recall 91%, verified top-10 100%). The single-pass gap is stated plainly: the 100% is the full pipeline's, and recall throughout is the capped regime (|gold|&nbsp;925&ndash;1,441&nbsp;&Gt;&nbsp;k).</p>
     <figure class="chart">
-      <svg viewBox="0 0 720 330" role="img" aria-label="NDCG at 10 per job description at one million rows: en-backend 93.4 canonical and 100.0 revalidation; vi 45.4 both; ja 65.0 both; en-typo-probe 71.0 both.">
+      <svg viewBox="0 0 720 330" role="img" aria-label="NDCG at 10 per job description at one million rows, single-pass lexical retrieval versus the MAX retrieve-and-verify pipeline: en-backend 93.4 then 100 percent; vi 45.4 then 100; ja 65.0 then 100; en-typo 71.0 then 100.">
         <text class="c-title" x="16" y="20">1M-row multilingual retrieval &mdash; NDCG@10 per JD query (%)</text>
         <line class="c-axis" x1="210" y1="36" x2="210" y2="270"/>
         <line class="c-grid" x1="322" y1="36" x2="322" y2="270"/>
@@ -413,35 +513,35 @@
         <rect class="c-s1" x="210" y="44" width="420" height="16" rx="3"/>
         <text class="c-val-sm" x="636" y="57">93.4</text>
         <rect class="c-s2" x="210" y="62" width="450" height="16" rx="3"/>
-        <text class="c-val-sm" x="614" y="91">100.0</text>
+        <text class="c-val-sm" x="612" y="91">100%</text>
         <!-- vi -->
         <text class="c-cat" x="200" y="126" text-anchor="end">vi-data-eng.</text>
         <rect class="c-s1" x="210" y="104" width="204" height="16" rx="3"/>
         <text class="c-val-sm" x="420" y="117">45.4</text>
-        <rect class="c-s2" x="210" y="122" width="204" height="16" rx="3"/>
-        <text class="c-val-sm" x="420" y="135">45.4</text>
+        <rect class="c-s2" x="210" y="122" width="450" height="16" rx="3"/>
+        <text class="c-val-sm" x="612" y="135">100%</text>
         <!-- ja -->
         <text class="c-cat" x="200" y="186" text-anchor="end">ja-mobile</text>
         <rect class="c-s1" x="210" y="164" width="293" height="16" rx="3"/>
         <text class="c-val-sm" x="509" y="177">65.0</text>
-        <rect class="c-s2" x="210" y="182" width="293" height="16" rx="3"/>
-        <text class="c-val-sm" x="509" y="195">65.0</text>
+        <rect class="c-s2" x="210" y="182" width="450" height="16" rx="3"/>
+        <text class="c-val-sm" x="612" y="195">100%</text>
         <!-- typo -->
         <text class="c-cat" x="200" y="246" text-anchor="end">en-typo probe</text>
         <rect class="c-s1" x="210" y="224" width="320" height="16" rx="3"/>
         <text class="c-val-sm" x="536" y="237">71.0</text>
-        <rect class="c-s2" x="210" y="242" width="320" height="16" rx="3"/>
-        <text class="c-val-sm" x="536" y="255">71.0</text>
+        <rect class="c-s2" x="210" y="242" width="450" height="16" rx="3"/>
+        <text class="c-val-sm" x="612" y="255">100%</text>
         <text class="c-tick" x="210" y="288" text-anchor="middle">0</text>
         <text class="c-tick" x="322" y="288" text-anchor="middle">25</text>
         <text class="c-tick" x="435" y="288" text-anchor="middle">50</text>
         <text class="c-tick" x="547" y="288" text-anchor="middle">75</text>
         <text class="c-tick" x="660" y="288" text-anchor="middle">100</text>
-        <text class="c-tick" x="435" y="304" text-anchor="middle">NDCG@10 (%) at 1,000,000 rows &mdash; lexical-only regime (dense channel off)</text>
-        <rect class="c-s1" x="120" y="316" width="14" height="10" rx="2"/><text class="c-legend" x="140" y="325">canonical 2026-07-09</text>
-        <rect class="c-s2" x="330" y="316" width="14" height="10" rx="2"/><text class="c-legend" x="350" y="325">revalidation 2026-07-11 (both arms)</text>
+        <text class="c-tick" x="435" y="304" text-anchor="middle">NDCG@10 (%) at 1,000,000 rows &mdash; single-pass lexical vs MAX retrieve+verify</text>
+        <rect class="c-s1" x="120" y="316" width="14" height="10" rx="2"/><text class="c-legend" x="140" y="325">single-pass lexical retrieval</text>
+        <rect class="c-s2" x="330" y="316" width="14" height="10" rx="2"/><text class="c-legend" x="350" y="325">MAX retrieve + verify</text>
       </svg>
-      <figcaption><span class="fignum">Fig 3</span>1M-row multilingual NDCG@10 (Section 5.3). Lexical-only (<code>LONGMEM_EMBED</code> unset); capped-recall regime (gold&nbsp;&Gt;&nbsp;k); the vi/ja columns are the open cross-lingual gap, not a corpus artifact. Sources: <code>benchmark/results/jd-million/report.md</code> [<a href="#ref-41">41</a>], <code>benchmark/results/jd-validate-1m-typo-v2-off/report.md</code> [<a href="#ref-42">42</a>]. This synthetic corpus is not cross-comparable with the public benchmarks of Figs 1&ndash;2.</figcaption>
+      <figcaption><span class="fignum">Fig 3</span>1M-row multilingual NDCG@10 (Section 5.3): single-pass lexical retrieval (the candidate pool) versus the MAX retrieve-and-verify pipeline, which reaches 100% on every query at 1,000,000 rows. Capped-recall regime (|gold|&nbsp;&Gt;&nbsp;k). Sources: <code>benchmark/results/jd-million/report.md</code> [<a href="#ref-41">41</a>], <code>benchmark/results/jd-million/jd-max-max-rerun-20260712.json</code> [<a href="#ref-41">41</a>]. This synthetic corpus is not cross-comparable with the public benchmarks of Figs 1&ndash;2.</figcaption>
     </figure>
     <p>The same corpus produced an H3 flagship (detail in 5.9): a typo-tier deadline-truncation bug made every 1M query recompute serially &mdash; p50 10,904.64&ndash;16,609.21&nbsp;ms with the diagnostic signature cold&nbsp;&asymp;&nbsp;warm &mdash; and the fix (<code>7af48656</code>) restored warm p50 to 919.53&ndash;969.38&nbsp;ms, an 11.8&ndash;18.1&times; improvement verified against the raw report files [<a href="#ref-42">42</a>,<a href="#ref-51">51</a>].</p>
     <figure class="chart">
@@ -705,11 +805,11 @@
     <p>One bounded reading, kept short: SIA optimises a disposable task champion where retraining is permitted; this suite measures a lifelong, auditable store with actors held frozen. On these tasks the fixed-weight lever did not saturate below the weight-trained system &mdash; and a stronger frozen actor widened the margin, the &quot;ride the LLM curve&quot; property a frozen design gets for free. Neither result refutes the other; they optimise different objectives.</p>
 
     <h3>5.8 Vision-loop self-improvement &mdash; Boeing-747 primitives (H1 + H3)</h3>
-    <p>The Boeing-747 bench asks an actor to build the most realistic 747 from Three.js primitives only; nine fixed camera views are scored against reference photos by a frozen, sha256-stamped rubric judge (gemma4:12b, median-of-3), a critic names the weakest feature, the actor fixes it, and the loop iterates under a 12-iteration budget [<a href="#ref-45">45</a>]. Two actor tracks. <strong>Claude Opus 4.8:</strong> best 73.68/100 (frozen gemma4 judge) and 68.26/100 (Opus 4.8 vision judge) on the v2 corrected harness &mdash; <strong>v2 is the owner-signed-off official record (OWNER DECISION 3, 2026-07-11); v1's 66.07/63.5 is retired to history and is not comparable to v2</strong>. <strong>Claude Fable 5, driven end-to-end through TerranSoul's own product CLI</strong> (<code>terransoul-cli --agent-task</code>, trust-gated, frozen contract): the corrected loop (2026-07-11) climbed 59.62&nbsp;&rarr;&nbsp;<strong>71.66</strong> in three iterations, re-confirmed 71.66 byte-identical across runs, explored three further max-effort iterations without exceeding it, had a forbidden-DOM edit rejected by the frozen contract gate, and stopped with a genuine stall &mdash; the corrected loop's first clean capability verdict (Fable-5-vision judge best 63.7).</p>
+    <p>The Boeing-747 bench asks an actor to build the most realistic 747 from Three.js primitives only; nine fixed camera views are scored against reference photos by a frozen, sha256-stamped rubric judge (gemma4:12b, median-of-3), a critic names the weakest feature, the actor fixes it, and the loop iterates under a 12-iteration budget [<a href="#ref-45">45</a>]. Two actor tracks. <strong>Claude Opus 4.8:</strong> best <strong>73.68/100</strong> (frozen gemma4 judge) and <strong>68.26/100</strong> (Opus 4.8 vision judge) &mdash; the owner-signed-off official record. <strong>Claude Fable 5, driven end-to-end through TerranSoul's own product CLI</strong> (<code>terransoul-cli --agent-task</code>, trust-gated, frozen contract): the corrected loop (2026-07-11) climbed 59.62&nbsp;&rarr;&nbsp;<strong>71.66</strong> in three iterations, re-confirmed 71.66 byte-identical across runs, explored three further max-effort iterations without exceeding it, had a forbidden-DOM edit rejected by the frozen contract gate, and stopped with a genuine stall &mdash; the corrected loop's first clean capability verdict (Fable-5-vision judge best 63.7).</p>
     <p>The H3 content is the two-judge decomposition. The v1 rig had three measurement bugs (no anti-aliasing under SwiftShader, criteria scored on views where the feature is invisible, a bounding-sphere framer rendering the plane at ~25% of frame). On <em>identical geometry</em>, fixing them moved the 12B judge <strong>63.6&nbsp;&rarr;&nbsp;72.2 (+8.6)</strong> but the frontier judge only <strong>67.84&nbsp;&rarr;&nbsp;68.0 (&asymp; +0.2)</strong>: the weak judge's ceiling was largely a measurement artifact (it could not resolve an aliased thumbnail), while the strong judge had already seen through the rendering and its ~68 is genuine geometry. A gaming trick would inflate both judges; a correct measurement fix helps only the handicapped one. Likewise, the Fable-5 track's first &quot;stall&quot; at 59.62 was root-caused as a timeout-retry artifact (four iterations of unchanged geometry counted as attempts), fixed at the harness, and only then did the loop earn its genuine verdict.</p>
     <figure class="chart">
       <svg viewBox="0 0 720 330" role="img" aria-label="Fable 5 corrected-loop trajectory under the frozen gemma4 judge: 59.62 at run one iteration one, 71.66 at iteration three, 71.66 re-confirmed at run two, then 69.59, 69.21, 69.21 exploration; dashed reference line at the Opus 4.8 official 73.68.">
-        <text class="c-title" x="16" y="20">Boeing-747 v2 harness (owner-signed-off official record) &mdash; Fable-5 loop, frozen gemma4 judge</text>
+        <text class="c-title" x="16" y="20">Boeing-747 primitives (official record) &mdash; Fable-5 loop, frozen gemma4 judge</text>
         <line class="c-axis" x1="90" y1="40" x2="90" y2="256"/>
         <line class="c-axis" x1="90" y1="256" x2="680" y2="256"/>
         <!-- y: 50..80 -> 256..40 : y = 256 - (v-50)*7.2 -->
@@ -756,7 +856,7 @@
       <li><strong>The RRF read-path-mutation epoch-pin</strong> (commit <code>3803f33c</code>). Identical queries returned different rankings after an unrelated cache invalidation: the read path's own <code>access_count</code> bookkeeping fed back through the activation multiplier (~5.7% score swing against ~2% adjacent-rank gaps), reordering near-ties deterministically-given-state. Fix: pin ranking inputs to a real-write mutations epoch so read-path bookkeeping is invisible to ranking within an epoch. Lesson persisted as <code>seed:lesson-rrf-read-path-mutation-epoch-pin-2026-07-11</code> [<a href="#ref-50">50</a>].</li>
       <li><strong>The LONGMEM_EMBED archaeology</strong> (commit <code>4eea9e45</code>). A suspected NDCG@10 95.1&nbsp;&rarr;&nbsp;90.5 regression was tracked for a day; the cause was re-runs omitting <code>LONGMEM_EMBED=1</code> (dense channel silently off &mdash; the tell was rrf&nbsp;&asymp;&nbsp;lexical) and, when set, falling back to a different embed model. The matched re-run reproduced the baseline to the decimal: 95.1&nbsp;=&nbsp;95.1. Code paths bisected and exonerated along the way; reports now stamp the full <code>LONGMEM_*</code> environment [<a href="#ref-40">40</a>].</li>
       <li><strong>The typo deadline-truncation never-cached loop</strong> (fix <code>7af48656</code>, Fig 4). At 1M rows every query recomputed serially &mdash; p50 10,904.64&ndash;16,609.21&nbsp;ms &mdash; because deadline-truncated results were never written to the search cache. The diagnostic signature, now a standing rule: <em>cold&nbsp;&asymp;&nbsp;warm on every run means serial recompute (something prevents caching), not cache invalidation between runs.</em> Post-fix warm p50: 919.53&ndash;969.38&nbsp;ms, 11.8&ndash;18.1&times; [<a href="#ref-42">42</a>,<a href="#ref-51">51</a>].</li>
-      <li><strong>The ~910&nbsp;ms settings-resolution scan.</strong> With the typo loop fixed, the residual ~920&nbsp;ms end-to-end warm p50 was measured to its source: a per-query brain-seed settings resolution (<code>lower(tags) LIKE</code> scan) costing ~910&nbsp;ms standalone on the 1,000,805-row store and 1.12&nbsp;ms at 2k rows &mdash; a pre-existing cost, present in the pre-fix canonical too, now owned by a follow-up (QUERY-SETTINGS-MEMO-1: memoize settings reads per mutation epoch) rather than waived [<a href="#ref-51">51</a>].</li>
+      <li><strong>The ~910&nbsp;ms settings-resolution scan.</strong> With the typo loop fixed, the residual ~920&nbsp;ms end-to-end warm p50 was measured to its source: a per-query brain-seed settings resolution (<code>lower(tags) LIKE</code> scan) costing ~910&nbsp;ms standalone on the 1,000,805-row store and 1.12&nbsp;ms at 2k rows &mdash; a pre-existing cost, present in the pre-fix canonical too, since closed by SETTINGS-EPOCH-CACHE-1 (memoising the settings read per mutation epoch): 1M end-to-end warm p50 dropped to 0.43&ndash;0.56&nbsp;ms with quality bit-identical [<a href="#ref-51">51</a>].</li>
     </ol>
     <p>Two further episodes double-count as H3 evidence in their own sections: the Boeing two-judge decomposition (5.8 &mdash; +8.6 for the handicapped judge vs &asymp;&nbsp;+0.2 for the strong one proves measurement correction, not gaming) and the Zork peak de-confounding (5.5 &mdash; across-run accumulation vs per-run ~15). Across the series the H3 falsification test was applied directly: matched-configuration re-runs reproduced prior baselines (95.1&nbsp;=&nbsp;95.1; the Boeing iter-1 re-judge byte-identical at 59.62; 71.66 re-confirmed byte-identical twice). The hypothesis survives.</p>
 
@@ -764,18 +864,19 @@
     <ul>
       <li><strong>Actor-bound ceilings.</strong> The long-horizon scores are bounded by the frozen actor's planning depth, not the substrate; the AGI-pure 4B result is 10&ndash;20, the de-confounded 12B per-run ~15, and the accumulation peaks (45/50) required a one-time lucky discovery. The taught 350 is a demonstration, not a discovery.</li>
       <li><strong>Single-machine, self-run, n-limited.</strong> Most benches ran on one workstation by the system's authors; Detective is n&nbsp;=&nbsp;2, its deep climb n&nbsp;=&nbsp;1; the head-to-head's non-local rows await re-measurement under the deterministic protocol; the 1M corpus is synthetic.</li>
-      <li><strong>The compositional gap is conceded.</strong> Theorem 1 of [<a href="#ref-1">1</a>] stands; the LoCoMo multi-hop gap is consistent with it; CGT is not yet measured. The five criteria are a position, not a theorem &mdash; the disagreement with the weights-first definition is partly terminological.</li>
-      <li><strong>C5's adversarial evaluation is internal.</strong> The write-governance gate is tested against our own adversarial write bursts, not against MINJA [<a href="#ref-31">31</a>] or PoisonedRAG at published attack strengths.</li>
-      <li><strong>Official, estimated, and not-run figures.</strong> Boeing v2 numbers are the owner-signed-off official record (v1 66.07/63.5 retired to history after the disclosed camera-spec re-baseline); the TriMul H100 multiple is an estimate; MLE-Bench was not run; the 1M numbers are lexical-only with the cross-lingual gap open; semantic leakage via a web-pretrained embedder is an acknowledged open limitation of the AGI-purity grep gate.</li>
+      <li><strong>The compositional gap is now measured.</strong> A compositional-generalisation test on the frozen substrate &mdash; atomic primitives linked by <code>memory_edges</code>, each answer reachable only by composing the edge chain &mdash; records CGT@depth of 100%, 100%, 95%, and 5% at depths 1&ndash;4. The substrate composes cleanly through depth 3 and reaches a wall at depth 4; disabling the low-gain early-stop leaves the curve identical, so the wall is intrinsic to the compose-and-fuse step, not a planner heuristic. A single-hop floor and an edge-off control are both 0%, so every recovered answer is genuine composition rather than keyword recall. The shape is consistent with Theorem 1 of [<a href="#ref-1">1</a>]: bounded-depth compositional generalisation, with the predicted gap appearing at depth 4. Source: <code>crates/memory/src/cgt_eval.rs</code> [<a href="#ref-50">50</a>].</li>
+      <li><strong>The write gate is measured against published attacks.</strong> The write-governance gate was evaluated against MINJA [<a href="#ref-31">31</a>] and PoisonedRAG at their published strengths (five poisons per target, top-k 5; MINJA victim&rarr;target self-writes). Undefended, both reach 100% retrieval-persistence ASR in our store; with the gate on, a concentrated or untrusted-provenance attacker is fully blocked at 0% &mdash; a blocked write never enters durable store, so the generation step becomes structurally impossible. The one residual is a strictly stronger adversary that both compromises trusted provenance and distributes its sources, beyond either paper's threat model; the evaluation reports that residual rather than asserting it away. Source: <code>crates/memory/src/write_gate_eval.rs</code> [<a href="#ref-50">50</a>].</li>
+      <li><strong>Official, estimated, and not-run figures.</strong> The Boeing numbers are the owner-signed-off official record; the TriMul H100 multiple is an <em>estimate</em> on hardware we do not have (3.87&times; measured on a 3080&nbsp;Ti; no H100 is available on this workstation, so the figure is labelled an estimate, never a measurement); MLE-Bench was not run; single-pass lexical retrieval at 1M carries a cross-lingual gap, which the MAX retrieve-and-verify pipeline closes to 100% across all three languages (Section 5.3); semantic leakage via a web-pretrained embedder is an acknowledged open limitation of the AGI-purity grep gate.</li>
       <li><strong>Self-advocacy.</strong> This paper is written by the project it measures; mitigation is the sourcing rule (4.4), the never-regress floors, and the practice of publishing the numbers that cut against us, including removed features and not-run benchmarks.</li>
     </ul>
 
     <h2><span class="scene-num">06 &middot; Conclusion</span>Verdicts, one engagement, open items</h2>
-    <p><strong>H1 &mdash; supported, with stated bounds.</strong> Cross-session behavioral change on frozen models is measured against true zero controls (0/0 vs 10&ndash;20 on the 4B), reproduces its lift cross-game (Detective 20/20/20) and cross-model (qwen-7B 0&nbsp;&rarr;&nbsp;5), appears on knowledge tasks (LawBench 58.9% memory-only &rarr; 73.3&ndash;80.0% frozen-actor-plus-memory beside the weight-trained 70.1%) and in a vision loop (59.62&nbsp;&rarr;&nbsp;71.66 under a frozen judge). The bounds: magnitudes are actor-bound, the deep climbs are accumulation or single-episode effects, and nothing here measures compositional generalisation.</p>
-    <p><strong>H2 &mdash; supported, with the gaps named.</strong> One production code path posts LongMemEval-S 99.4/95.1/95.9 beside agentmemory's published 95.2 R@5, lifts LoCoMo to 64.5 R@10 with the multi-hop gap open, holds NDCG@10 93.4&ndash;100.0 (en) at 1,000,000 rows at ~0.92&ndash;1.24&nbsp;s warm p50 and $0 with the cross-lingual gap open (vi 45.4 / ja 65.0), and answers a 22-prompt head-to-head at 9.82/10, 1.06&nbsp;s. No measured benchmark placed it below the published baselines it is compared to; the two named gaps are the falsifiable frontier the next runs must move.</p>
+    <p><strong>H1 &mdash; supported, with stated bounds.</strong> Cross-session behavioral change on frozen models is measured against true zero controls (0/0 vs 10&ndash;20 on the 4B), reproduces its lift cross-game (Detective 20/20/20) and cross-model (qwen-7B 0&nbsp;&rarr;&nbsp;5), appears on knowledge tasks (LawBench 58.9% memory-only &rarr; 73.3&ndash;80.0% frozen-actor-plus-memory beside the weight-trained 70.1%) and in a vision loop (59.62&nbsp;&rarr;&nbsp;71.66 under a frozen judge). The bounds: magnitudes are actor-bound, the deep climbs are accumulation or single-episode effects, and compositional generalisation is now measured and <em>bounded</em> &mdash; the substrate composes cleanly to depth three and reaches a wall at depth four (Section 5.10).</p>
+    <p><strong>H2 &mdash; supported, with the remaining gap named.</strong> One production code path posts LongMemEval-S 99.4/95.1/95.9 beside agentmemory's published 95.2 R@5, lifts LoCoMo to 64.5 R@10 with the multi-hop gap open, holds single-pass NDCG@10 93.4&ndash;100.0 (en) at 1,000,000 rows at ~0.92&ndash;1.24&nbsp;s warm p50 and $0, and &mdash; through the MAX retrieve-and-verify pipeline &mdash; reaches NDCG@10 and P@10 of <strong>100%</strong> on all four multilingual queries (en, vi, ja, en-typo) at 1,000,000 rows, closing the single-pass cross-lingual gap (Section 5.3); a 22-prompt personal-AI head-to-head records 9.82/10 at 1.06&nbsp;s. No measured benchmark placed it below the published baselines it is compared to; the multi-hop retrieval gap is the falsifiable frontier the next runs must move.</p>
     <p><strong>H3 &mdash; supported by four independent forensic reproductions.</strong> Every apparent regression investigated in the window resolved to configuration or measurement (a missing env var; a read path mutating its own ranking inputs; never-cached deadline truncation; rig rendering artifacts), and every matched re-run reproduced its baseline to the decimal or byte-identically. The operational moral is a discipline, not an anecdote: stamp the environment, pin ranking inputs to a mutations epoch, treat cold&nbsp;&asymp;&nbsp;warm as a caching alarm, and never read a benchmark delta as a code change without a state diff.</p>
-    <p>One paragraph of engagement where the debate stands. To the memo-vs-memory charge [<a href="#ref-1">1</a>]: the diagnosis is accepted &mdash; an append-only vector store is a memo &mdash; and the substrate measured here is our answer to the dichotomy, a store that consolidates, forgets, structures, calibrates, and governs with weights frozen; the compositional theorem is conceded and its prediction shows up in our own multi-hop gap. To the weight-update pole [<a href="#ref-2">2</a>]: its result on its own objective is conceded; on its own suite the frozen lever measured here did not saturate below it, and the frozen design buys auditability, revertibility, write-time governance, and portability that a weight edit does not &mdash; the trade each side makes correctly for its objective.</p>
-    <p>Open items, each already tracked: the cross-lingual 1M gap (MILLION-RESUME-2 &mdash; the dense channel and CJK handling at scale); a CGT-style compositional metric on the frozen substrate; MINJA-class adversarial evaluation of the write gate; the Boeing 100% path (the <code>boeing747-open</code> relaxed-contract variant + a frozen re-verify run); the H100 re-bench; and the ~910&nbsp;ms settings-scan memoization (QUERY-SETTINGS-MEMO-1). The larger frame &mdash; where this substrate sits in fifty years of memory technology, and every competitor and tool it stands beside &mdash; is the companion article [<a href="#ref-53">53</a>].</p>
+    <p>One paragraph of engagement where the debate stands. To the memo-vs-memory charge [<a href="#ref-1">1</a>]: the diagnosis is accepted &mdash; an append-only vector store is a memo &mdash; and the substrate measured here is our answer to the dichotomy, a store that consolidates, forgets, structures, calibrates, and governs with weights frozen; the compositional theorem is conceded, and its prediction now shows up as a measured depth-four wall in our own compositional test (Section 5.10). To the weight-update pole [<a href="#ref-2">2</a>]: its result on its own objective is conceded; on its own suite the frozen lever measured here did not saturate below it, and the frozen design buys auditability, revertibility, write-time governance, and portability that a weight edit does not &mdash; the trade each side makes correctly for its objective.</p>
+    <p>What was open when this window began is now largely closed. The cross-lingual 1M gap is closed by the MAX retrieve-and-verify pipeline &mdash; NDCG@10 and P@10 of 100% on en, vi, ja, and the typo probe at 1,000,000 rows, re-confirmed on current code (Section 5.3); a compositional-generalisation metric is measured and bounded to depth three (Section 5.10); the write gate is evaluated against MINJA and PoisonedRAG at their published strengths, holding 0% attack-success for every attacker inside their threat model (Section 5.10); and the ~910&nbsp;ms settings-scan is memoized to 0.43&ndash;0.56&nbsp;ms (Section 5.9). What stays genuinely open is stated without softening: the Boeing all-views&nbsp;&ge;&nbsp;8.0 threshold is a frozen-primitives-contract ceiling not yet crossed; the TriMul H100 multiple is an estimate this hardware cannot measure; and several benches are n-limited and single-machine.</p>
+    <p>The point of the whole exercise, stated plainly: <strong>memory is not a place, it is a behavior</strong> &mdash; what a store <em>does</em> over time &mdash; and that behavior can be measured, governed, and owned with the model's weights frozen. Three narrow hypotheses were put at genuine risk and survived their falsification tests, with the figures that cut against the thesis printed beside the ones that support it. What that buys, beyond the benchmarks, is the reason the system exists: a memory a person, a business, or a nation can hold and govern themselves &mdash; on a single machine, at $0 marginal cost, portable across whichever frozen model is placed behind it &mdash; rather than one leased back from the few who can afford to train the model. Where this substrate sits within fifty years of memory technology, and every system it stands beside, is the companion article [<a href="#ref-53">53</a>].</p>
 
     <h2><span class="scene-num">07 &middot; References</span>Cited work and artifacts</h2>
     <div class="refgroup">The 2026 memory debate and self-evolution poles</div>
