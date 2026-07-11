@@ -360,6 +360,33 @@ async function ingest(client, { resumesPath, startIndex, count, questionId }) {
 // Queries + metrics
 // ---------------------------------------------------------------------------
 
+/**
+ * TYPESENSE-ADAPT-6-CACHE-SCALE-GAP-1 (2026-07-11): read the shim's
+ * process-wide metrics snapshot (`op: metrics_snapshot`), notably
+ * `typo_dict_cache` (hits / miss-cause split / rebuild+expansion timers),
+ * so per-phase counter deltas prove or refute the cache mechanism at
+ * scale. Returns null on an older shim without the op — never fails the
+ * bench over observability.
+ */
+async function fetchMetricsSnapshot(client) {
+  try {
+    return await client.send({ op: 'metrics_snapshot' });
+  } catch (err) {
+    if (/unsupported op/i.test(err.message)) return null;
+    throw err;
+  }
+}
+
+function typoCacheLine(snap) {
+  const c = snap?.typo_dict_cache;
+  if (!c) return 'typo_dict_cache: (unavailable)';
+  const rate = c.hit_rate == null ? 'n/a' : `${(c.hit_rate * 100).toFixed(1)}%`;
+  return `typo_dict_cache: hits=${c.hits} miss_cold=${c.misses_cold} `
+    + `miss_mut=${c.misses_mutations_changed} miss_dv=${c.misses_data_version_changed} `
+    + `hit_rate=${rate} rebuilds=${c.rebuild.count} (p50=${c.rebuild.p50_ms}ms) `
+    + `expansions=${c.expansion.count} (p50=${c.expansion.p50_ms}ms)`;
+}
+
 async function runQueries(client, { systems, topK, gold }) {
   const results = [];
   for (const system of systems) {
@@ -381,6 +408,12 @@ async function runQueries(client, { systems, topK, gold }) {
         return (response.results ?? []).map(hit => hit.session_id).filter(Boolean);
       };
       const { coldMs, latencies, lastResult: lastRetrieved } = await warmupThenMeasure(sendOnce, QUERY_RUNS);
+
+      // TYPESENSE-ADAPT-6-CACHE-SCALE-GAP-1: snapshot the typo-dictionary
+      // cache counters after this query's cold+warm block so the report
+      // carries the between-phase counter evidence (cumulative process-wide
+      // values; diff consecutive rows for per-query deltas).
+      const metricsSnap = await fetchMetricsSnapshot(client);
 
       // Accuracy from the LAST timed run (warm store, stable caches).
       const r10 = recallAtK(lastRetrieved, goldIds, 10);
@@ -413,12 +446,16 @@ async function runQueries(client, { systems, topK, gold }) {
         ndcg_at_10: ndcgAtK(lastRetrieved, goldIds, 10),
         gold_hits_by_lang: hitLangs,
         retrieved_top_20: lastRetrieved.slice(0, 20),
+        // Cumulative process-wide typo-dictionary cache counters as of the
+        // end of this query block (null on shims without metrics_snapshot).
+        typo_dict_cache: metricsSnap?.typo_dict_cache ?? null,
       });
       const r = results[results.length - 1];
       console.log(`[jd-bench] ${system} ${jd.id}: R@10=${pct(r.recall_at_10.capped)} `
         + `R@100=${pct(r.recall_at_100.capped)} P@10=${pct(r.precision_at_10)} `
         + `NDCG@10=${pct(r.ndcg_at_10)} p50=${r.latency_ms.p50}ms p95=${r.latency_ms.p95}ms `
         + `cold=${r.latency_ms.cold_ms}ms`);
+      console.log(`[jd-bench] ${system} ${jd.id}: ${typoCacheLine(metricsSnap)}`);
     }
   }
   return results;
@@ -509,6 +546,31 @@ function markdownReport(report) {
     }
   }
   w('');
+  const anyTypoCounters = report.metrics?.after_ingest?.typo_dict_cache
+    || report.results.some(r => r.typo_dict_cache);
+  if (anyTypoCounters) {
+    w('## Typo-dictionary cache counters (TYPESENSE-ADAPT-6-CACHE-SCALE-GAP-1)');
+    w('');
+    w('Cumulative process-wide values snapshotted after each query block');
+    w('(diff consecutive rows for per-query deltas). `after ingest` is the');
+    w('pre-query baseline.');
+    w('');
+    w('| Phase | Hits | Miss cold | Miss mutations | Miss data_version | Hit rate | Rebuilds (p50 ms) | Expansions (p50 ms) |');
+    w('|---|---:|---:|---:|---:|---:|---:|---:|');
+    const typoRow = (label, c) => {
+      if (!c) return `| ${label} | — | — | — | — | — | — | — |`;
+      const rate = c.hit_rate == null ? 'n/a' : pct(c.hit_rate);
+      return `| ${label} | ${c.hits} | ${c.misses_cold} | ${c.misses_mutations_changed} `
+        + `| ${c.misses_data_version_changed} | ${rate} `
+        + `| ${c.rebuild.count} (${c.rebuild.p50_ms ?? '—'}) `
+        + `| ${c.expansion.count} (${c.expansion.p50_ms ?? '—'}) |`;
+    };
+    w(typoRow('after ingest', report.metrics?.after_ingest?.typo_dict_cache));
+    for (const row of report.results) {
+      w(typoRow(`${row.system} ${row.jd_id}`, row.typo_dict_cache));
+    }
+    w('');
+  }
   w('## Per-language gold composition and hits');
   w('');
   w('Gold composition = where the gold resumes live per language (corpus fact).');
@@ -616,7 +678,17 @@ async function run(options) {
       console.log(`[jd-bench] set_hybrid_weights ${JSON.stringify(hybridWeights)}`);
     }
 
+    // TYPESENSE-ADAPT-6-CACHE-SCALE-GAP-1: baseline counter snapshot after
+    // ingest / before the query phase, so the first query row's delta is
+    // attributable to queries alone (ingest can bump mutation counters).
+    const metricsAfterIngest = await fetchMetricsSnapshot(client);
+    if (metricsAfterIngest) {
+      console.log(`[jd-bench] after-ingest ${typoCacheLine(metricsAfterIngest)}`);
+    }
+
     const results = await runQueries(client, { systems, topK, gold });
+
+    const metricsFinal = await fetchMetricsSnapshot(client);
 
     report = {
       benchmark: 'MILLION-RESUME-BENCH',
@@ -640,6 +712,13 @@ async function run(options) {
       ingest: { ...ingestStats, start_index: startIndex, write_engine_finalize: writeEngineFinalize },
       gold_summary: gold.jds,
       results,
+      // Full MetricsSnapshot at the phase boundaries (null on shims without
+      // the metrics_snapshot op). Per-query cumulative typo_dict_cache
+      // values live on each results[] row.
+      metrics: {
+        after_ingest: metricsAfterIngest,
+        final: metricsFinal,
+      },
     };
   } finally {
     await client.close();
