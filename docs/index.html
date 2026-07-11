@@ -4,9 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>TerranSoul in Six Scenes — A non-technical primer on LLMs, RAG, memory, reasoning and TerranSoul</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<!-- Fonts: self-contained (system-font stacks, no external fetch) -->
+
 <style>
   :root{
     --bg: oklch(0.985 0.008 80);
@@ -1258,12 +1257,10 @@
     'ru':'family=Noto+Sans:wght@400;500;600',
   };
   function ensureFont(lang){
-    const param = FONT_LINKS[lang]; if (!param) return;
-    if (document.querySelector('link[data-font="'+lang+'"]')) return;
-    const link = document.createElement('link');
-    link.rel='stylesheet'; link.dataset.font=lang;
-    link.href='https://fonts.googleapis.com/css2?'+param+'&display=swap';
-    document.head.appendChild(link);
+    // Self-contained: no external webfont fetch. The per-language CSS var
+    // stacks (:root html[lang=...]) already fall back to locally-installed
+    // Noto / system fonts, so there is nothing to load over the network.
+    void lang; void FONT_LINKS;
   }
 
   // snapshot + collect
