@@ -78,6 +78,12 @@ import { evaluateStopConditions } from './lib/stop-conditions.mjs';
 import { runRig } from './rig/render-rig.mjs';
 
 const BENCH_DIR = path.dirname(fileURLToPath(import.meta.url));
+// Relaxed-contract track (OPEN-VARIANT-DESIGN.md). `--contract open` swaps ONLY
+// the candidate contract validator + the actor-prompt contract text passed to
+// runActorEdit; every measurement artifact (rig, rubric, cameras, scoring,
+// judges, stop conditions) is byte-identical to the frozen track. Default is
+// frozen — the frozen path never references this module.
+const CONTRACT_OPEN_PATH = path.join(BENCH_DIR, 'lib', 'contract-open.mjs');
 const DEFAULT_ACTOR = 'terransoul-fable5';
 const DEFAULT_MODEL = 'claude-fable-5';
 const DEFAULT_EFFORT = 'max';
@@ -294,6 +300,8 @@ export async function runIterationTerransoul({
   maxActorRetries,
   cliBinary,
   cliDataDir,
+  contractModulePath,
+  contractLabel,
 }) {
   const { rubric, rubricSha256 } = loadRubric();
   const actorName = actor || DEFAULT_ACTOR;
@@ -388,6 +396,8 @@ export async function runIterationTerransoul({
     priorAttemptsSection,
     cliBinary,
     cliDataDir,
+    contractModulePath,
+    contractLabel,
   });
   console.log(
     `actor status: ${actorResult.status} (changed=${actorResult.changed}, $${actorResult.cost_usd}, ` +
@@ -477,12 +487,24 @@ export async function runLoopTerransoul({
   maxActorRetries,
   cliBinary,
   cliDataDir,
+  contractModulePath,
+  contractLabel,
 }) {
   const { rubric } = loadRubric();
   const hardCap = Math.min(maxIter || rubric.iteration_budget, rubric.iteration_budget);
   let last = null;
   for (let i = 0; i < hardCap; i++) {
-    last = await runIterationTerransoul({ planePath, actor, model, effort, maxActorRetries, cliBinary, cliDataDir });
+    last = await runIterationTerransoul({
+      planePath,
+      actor,
+      model,
+      effort,
+      maxActorRetries,
+      cliBinary,
+      cliDataDir,
+      contractModulePath,
+      contractLabel,
+    });
     if (last.stop.stop) break;
   }
   return last;
@@ -504,10 +526,21 @@ if (isMain) {
   if (!args.plane) {
     console.error(
       'usage: node loop-runner-terransoul.mjs --plane <plane.js> [--actor terransoul-fable5] [--model claude-fable-5] ' +
-        '[--effort max] [--max-iter N] [--max-actor-retries N] [--cli-bin <path>] [--cli-data-dir <dir>]',
+        '[--effort max] [--max-iter N] [--max-actor-retries N] [--cli-bin <path>] [--cli-data-dir <dir>] [--contract open|frozen]',
     );
     process.exit(2);
   }
+  // --contract open swaps ONLY the candidate contract validator + actor-prompt
+  // contract text (OPEN-VARIANT-DESIGN.md); default frozen leaves both undefined
+  // so runActorEdit takes its byte-identical frozen path.
+  const contractChoice = typeof args.contract === 'string' ? args.contract.toLowerCase() : 'frozen';
+  if (contractChoice !== 'open' && contractChoice !== 'frozen') {
+    console.error(`--contract must be 'open' or 'frozen' (got: ${args.contract})`);
+    process.exit(2);
+  }
+  const contractModulePath = contractChoice === 'open' ? CONTRACT_OPEN_PATH : undefined;
+  const contractLabel = contractChoice === 'open' ? 'lib/contract-open.mjs' : undefined;
+  console.log(`contract track: ${contractChoice}${contractModulePath ? ` (${contractModulePath})` : ''}`);
   runLoopTerransoul({
     planePath: args.plane,
     actor: args.actor,
@@ -517,6 +550,8 @@ if (isMain) {
     maxActorRetries: args['max-actor-retries'] ? Number(args['max-actor-retries']) : undefined,
     cliBinary: typeof args['cli-bin'] === 'string' ? args['cli-bin'] : undefined,
     cliDataDir: typeof args['cli-data-dir'] === 'string' ? args['cli-data-dir'] : undefined,
+    contractModulePath,
+    contractLabel,
   })
     .then((last) => {
       console.log('\nLOOP DONE');

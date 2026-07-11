@@ -70,7 +70,7 @@
 import { execFile } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import { VIEWS } from '../lib/cameras.mjs';
 import { ALLOWED_GEOMETRIES, validatePlaneSource } from '../lib/contract.mjs';
@@ -103,11 +103,17 @@ const DEFAULT_CARGO_TARGET_DIR = path.join(REPO_ROOT, 'src-tauri', 'target');
  * `[/regex/, 'human-readable reason'],` and the regex literals here contain no
  * quote characters, so every single-quoted string inside the block is exactly
  * one reason, in order.
+ *
+ * `contractPath` defaults to the FROZEN lib/contract.mjs (byte-identical to
+ * the prior no-arg behavior); the open track passes lib/contract-open.mjs so
+ * the actor prompt lists that contract's forbidden reasons instead. Both
+ * files share the exact same FORBIDDEN_PATTERNS block shape (quote-free
+ * regexes, single-quoted reasons), so this parser works unchanged for either.
  */
-export function extractForbiddenReasons() {
-  const src = readFileSync(CONTRACT_PATH, 'utf8');
+export function extractForbiddenReasons(contractPath = CONTRACT_PATH) {
+  const src = readFileSync(contractPath, 'utf8');
   const block = src.match(/const FORBIDDEN_PATTERNS = \[([\s\S]*?)\n\];/);
-  if (!block) throw new Error('could not locate FORBIDDEN_PATTERNS in lib/contract.mjs');
+  if (!block) throw new Error(`could not locate FORBIDDEN_PATTERNS in ${contractPath}`);
   const reasons = [];
   const reasonRe = /'([^'\\]*(?:\\.[^'\\]*)*)'/g;
   let m;
@@ -172,6 +178,10 @@ function buildActorPrompt({
   claudeHint,
   forbiddenReasons,
   priorAttemptsSection,
+  contractOpen = false,
+  contractPathLabel = 'lib/contract.mjs',
+  antiSmugglingRule = null,
+  allowedGeometries = ALLOWED_GEOMETRIES,
 }) {
   const gemmaNotes = perViewNotesGemma(gemmaResult);
   const lines = [];
@@ -187,12 +197,27 @@ function buildActorPrompt({
     'It is a single self-contained ES module exporting exactly `export function buildPlane(THREE)` returning a THREE.Group. Do not change the export signature.',
   );
   lines.push('');
-  lines.push('HARD CONTRACT (frozen — never violate, never work around):');
-  lines.push(`- Allowed geometries ONLY: ${ALLOWED_GEOMETRIES.join(', ')}. Any other *Geometry identifier fails the gate.`);
-  lines.push('- Forbidden (verbatim reasons from lib/contract.mjs FORBIDDEN_PATTERNS):');
-  for (const r of forbiddenReasons) lines.push(`    - ${r}`);
-  lines.push('- Orientation: nose along +X, up +Y, wings span the Z axis.');
-  lines.push('- No imports, network, DOM, storage, eval/Function, workers — the module must stay fully self-contained.');
+  if (contractOpen) {
+    lines.push('HARD CONTRACT (open medium, closed world — never violate, never work around):');
+    lines.push(
+      '- Geometry/material medium is OPEN: arbitrary COMPUTED meshes (hand-built ' +
+        'BufferGeometry, THREE.Shape/ExtrudeGeometry freeform, LatheGeometry with arbitrary profiles, ' +
+        'groups/instancing) and COMPUTED textures (DataTexture/CanvasTexture, vertex colors, ' +
+        `in-code normal/bump maps) are ALL allowed. Reference primitives still available: ${allowedGeometries.join(', ')}.`,
+    );
+    if (antiSmugglingRule) lines.push(`- ANTI-SMUGGLING (still enforced): ${antiSmugglingRule}`);
+    lines.push(`- Forbidden (verbatim reasons from ${contractPathLabel} FORBIDDEN_PATTERNS):`);
+    for (const r of forbiddenReasons) lines.push(`    - ${r}`);
+    lines.push('- Orientation: nose along +X, up +Y, wings span the Z axis.');
+    lines.push('- No imports, network, DOM, storage, eval/Function, workers, asset loaders — the module must stay fully self-contained (BUILD, do not download).');
+  } else {
+    lines.push('HARD CONTRACT (frozen — never violate, never work around):');
+    lines.push(`- Allowed geometries ONLY: ${allowedGeometries.join(', ')}. Any other *Geometry identifier fails the gate.`);
+    lines.push('- Forbidden (verbatim reasons from lib/contract.mjs FORBIDDEN_PATTERNS):');
+    for (const r of forbiddenReasons) lines.push(`    - ${r}`);
+    lines.push('- Orientation: nose along +X, up +Y, wings span the Z axis.');
+    lines.push('- No imports, network, DOM, storage, eval/Function, workers — the module must stay fully self-contained.');
+  }
   lines.push('');
   lines.push('RUBRIC CRITERIA (0-10 each; anchors describe the 0/3/5/8/10 points on the scale):');
   for (const c of rubric.criteria) {
@@ -236,9 +261,17 @@ function buildActorPrompt({
     '3. Make ONE focused, concrete geometric edit (or a small tightly-related set of edits) that fixes the weakest feature identified above, WITHOUT regressing any criterion that already scores well (>=7) on either judge track.',
   );
   lines.push(`4. Apply the change using the Edit tool DIRECTLY to ${candidatePath}. Do not create, write, or touch any other file.`);
-  lines.push(
-    '5. Keep the file a single self-contained ES module exporting exactly `export function buildPlane(THREE)` returning a THREE.Group. Stay strictly inside the primitives-only contract above — do not invent a geometry class or import anything.',
-  );
+  if (contractOpen) {
+    lines.push(
+      '5. Keep the file a single self-contained ES module exporting exactly `export function buildPlane(THREE)` returning a THREE.Group. ' +
+        'You may build arbitrary COMPUTED geometry and COMPUTED textures, but stay strictly inside the OPEN contract above — do not import ' +
+        `anything, use a loader, or embed a pre-baked binary asset (${antiSmugglingRule || 'textures must be computed, not embedded'}).`,
+    );
+  } else {
+    lines.push(
+      '5. Keep the file a single self-contained ES module exporting exactly `export function buildPlane(THREE)` returning a THREE.Group. Stay strictly inside the primitives-only contract above — do not invent a geometry class or import anything.',
+    );
+  }
   lines.push('When you are done editing, reply with a short PLAIN-TEXT summary of exactly what you changed and why (no JSON needed here).');
   return lines.join('\n');
 }
@@ -403,9 +436,31 @@ export async function runActorEdit({
   cliDataDir,
   execImpl,
   copyReferenceImagesFn = copyReferenceImages,
+  contractModulePath,
+  contractLabel,
 }) {
   const { rubric } = loadRubric();
-  const forbiddenReasons = extractForbiddenReasons();
+  // Contract selection (default = the FROZEN lib/contract.mjs — byte-behavior
+  // identical to the prior default). When an open-track module path is
+  // supplied, dynamically load ITS validatePlaneSource/ALLOWED_GEOMETRIES/
+  // ANTI_SMUGGLING_RULE and read ITS FORBIDDEN_PATTERNS for the prompt, so the
+  // gate the actor is told about is exactly the gate its edit is checked
+  // against. The frozen path never does a dynamic import.
+  const openContractPath =
+    contractModulePath && path.resolve(contractModulePath) !== CONTRACT_PATH
+      ? path.resolve(contractModulePath)
+      : null;
+  let contractValidate = validatePlaneSource;
+  let contractAllowedGeometries = ALLOWED_GEOMETRIES;
+  let antiSmugglingRule = null;
+  if (openContractPath) {
+    const contractMod = await import(pathToFileURL(openContractPath).href);
+    contractValidate = contractMod.validatePlaneSource;
+    contractAllowedGeometries = contractMod.ALLOWED_GEOMETRIES;
+    antiSmugglingRule = contractMod.ANTI_SMUGGLING_RULE ?? null;
+  }
+  const contractPathForReasons = openContractPath || CONTRACT_PATH;
+  const forbiddenReasons = extractForbiddenReasons(contractPathForReasons);
   const shotsDirAbs = path.resolve(shotsDir);
   const refPaths = copyReferenceImagesFn(shotsDirAbs);
 
@@ -427,6 +482,10 @@ export async function runActorEdit({
     claudeHint,
     forbiddenReasons,
     priorAttemptsSection,
+    contractOpen: Boolean(openContractPath),
+    contractPathLabel: contractLabel || (openContractPath ? path.basename(openContractPath) : 'lib/contract.mjs'),
+    antiSmugglingRule,
+    allowedGeometries: contractAllowedGeometries,
   });
 
   const useModel = model || DEFAULT_MODEL;
@@ -505,7 +564,7 @@ export async function runActorEdit({
     };
   }
 
-  const contract = validatePlaneSource(editedSource);
+  const contract = contractValidate(editedSource);
   if (!contract.ok) {
     // Do NOT accept the edit — restore the previous candidate verbatim and
     // record the violation (mirrors run-baselines.mjs's contract_failed
