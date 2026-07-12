@@ -117,3 +117,133 @@ export async function ingestAttemptLesson({
     { mcpUrl, token, timeoutMs },
   );
 }
+
+// --- STRATEGY-CHEATSHEET events (ACE / Dynamic-Cheatsheet) --------------------
+//
+// Append-only, delta-only event sourcing for a self-improve loop's own winning
+// strategies + contrastive anti-examples. GENERIC exactly like the functions
+// above: every domain word (tag, criterion, technique...) is a caller-supplied
+// argument; this file never names a benchmark. The FOLD/RANK/FORMAT of these
+// events into a live "cheatsheet" lives in lib/strategy-cheatsheet.mjs — here
+// we only own the brain write (ingest) and read (fetch) of one flat event.
+//
+// A strategy event is stored as a human-readable lesson line PLUS a trailing
+// machine-readable `STRATEGY_EVENT_JSON: {...}` marker, so fetchStrategyEvents
+// can round-trip the structured payload back out of brain_search text. The
+// category is 'self-improve-attempt' so isBenchLesson() keeps these per-attempt
+// events OUT of the committed shared seed (AGI-purity: rules/bench-agi-purity.md).
+
+/** The trailing structured payload marker in a strategy-event lesson body. */
+const STRATEGY_EVENT_MARKER = 'STRATEGY_EVENT_JSON:';
+
+/**
+ * Ingest ONE append-only strategy event (the edit-gate signal for a single
+ * iteration). Emits a lesson tagged by the caller ('...-strategy-event' for a
+ * winning technique, '...-anti' for a rejected/regressing one). The scope is
+ * derived generically from the tag/outcome (an 'anti'-suffixed tag or a
+ * 'harmful' outcome ⇒ scope 'anti', else 'strategy') so callers need not pass
+ * it. Fails open (returns `{ok:false,...}` rather than throwing) unless the
+ * injected callTool throws — mirrors ingestAttemptLesson.
+ *
+ * The event is folded into an itemized cheatsheet at READ time by
+ * lib/strategy-cheatsheet.mjs::foldStrategyEvents — nothing is ever rewritten
+ * in place, which structurally avoids the ACE context-collapse failure.
+ * @returns {Promise<{ok:boolean, text?:string|null, error?:string}>}
+ */
+export async function ingestStrategyEvent({
+  tag,
+  strategyId,
+  criterion,
+  viewScope,
+  technique,
+  snippetRef,
+  outcome,
+  gateDelta,
+  iter,
+  runId,
+  actorName,
+  importance = 6,
+  mcpUrl,
+  token,
+  timeoutMs,
+  callTool = callMcpTool,
+} = {}) {
+  if (!tag || !outcome) {
+    return { ok: false, error: 'ingestStrategyEvent requires at least tag + outcome' };
+  }
+  const scope =
+    /(^|[-_\s])anti(?=$|[-_\s])/i.test(String(tag)) || outcome === 'harmful' ? 'anti' : 'strategy';
+  const delta = Number.isFinite(Number(gateDelta)) ? Number(gateDelta) : null;
+  const payload = {
+    strategyId: strategyId || null,
+    scope,
+    criterion: criterion || null,
+    viewScope: viewScope || null,
+    technique: technique || null,
+    snippetRef: snippetRef || null,
+    outcome,
+    gateDelta: delta,
+    iter: Number.isFinite(Number(iter)) ? Number(iter) : null,
+    runId: runId || null,
+    actorName: actorName || null,
+  };
+  const parts = [`STRATEGY (${tag}): scope=${scope}, outcome=${outcome}`];
+  if (criterion) parts[0] += `, criterion=${criterion}`;
+  parts[0] += '.';
+  if (technique) parts.push(`Technique: ${technique}`);
+  if (delta !== null) parts.push(`gate_delta=${delta}`);
+  const content = `${parts.join(' ')}\n${STRATEGY_EVENT_MARKER} ${JSON.stringify(payload)}`;
+  const tags = [tag, criterion, viewScope, outcome, scope, actorName].filter(Boolean).join(',');
+  return callTool(
+    'brain_ingest_lesson',
+    { content, category: 'self-improve-attempt', tags, importance },
+    { mcpUrl, token, timeoutMs },
+  );
+}
+
+/**
+ * Query the brain for strategy events relevant to `criterion` (or an explicit
+ * `query`) and parse each result's trailing `STRATEGY_EVENT_JSON` payload back
+ * into a flat event object for lib/strategy-cheatsheet.mjs::foldStrategyEvents.
+ * Fails open to `[]` on any MCP error / unparsable response — a self-learning
+ * READ must never block the loop (mirrors fetchPriorAttempts). Results whose
+ * body lacks a parseable payload marker are skipped (fail-open per item), so a
+ * legacy/foreign lesson in the same search hit cannot corrupt the fold.
+ * @returns {Promise<Array<object>>} parsed strategy-event payloads
+ */
+export async function fetchStrategyEvents({
+  criterion,
+  query,
+  limit = 10,
+  mcpUrl,
+  token,
+  timeoutMs,
+  callTool = callMcpTool,
+} = {}) {
+  const q = (query || criterion || '').trim();
+  if (!q) return [];
+  const res = await callTool('brain_search', { query: q, limit }, { mcpUrl, token, timeoutMs });
+  if (!res.ok || !res.text) return [];
+  let rows;
+  try {
+    rows = JSON.parse(res.text);
+  } catch {
+    return [];
+  }
+  if (!Array.isArray(rows)) return [];
+  const events = [];
+  for (const row of rows) {
+    const content = String((row && row.content) || '');
+    const at = content.indexOf(STRATEGY_EVENT_MARKER);
+    if (at < 0) continue;
+    const jsonStart = content.indexOf('{', at);
+    if (jsonStart < 0) continue;
+    try {
+      const payload = JSON.parse(content.slice(jsonStart));
+      if (payload && typeof payload === 'object' && !Array.isArray(payload)) events.push(payload);
+    } catch {
+      // fail-open per item: skip an unparseable payload, keep the rest
+    }
+  }
+  return events;
+}
