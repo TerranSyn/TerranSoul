@@ -1,0 +1,210 @@
+{
+  "config_version": 1,
+  "protocol": "boeing747-primitives-vision-bench",
+  "judge_model": "claude-opus-4-8",
+  "created_at": "2026-07-12T20:33:58.567Z",
+  "reference_plane": "benchmark/boeing747/candidates/terransoul-opus48/plane.js",
+  "reference_plane_sha256": "92f5e42a445e5dc92179c933be846c4626649c7a5c5dc4a677858acdf8a77d18",
+  "ref_shots_dir": "benchmark/boeing747/calibration/ref-shots",
+  "reference_rig": {
+    "camera_spec_version": 2,
+    "three_revision": "175",
+    "supersample": 3
+  },
+  "K": 1,
+  "base_margin": 0.03,
+  "z": 2,
+  "bar_floor": 4.5,
+  "epsilon_anchor": 0.1,
+  "discrimination_drop": 0.7,
+  "view_threshold_calibrated_pairwise": [
+    4.7,
+    4.7,
+    4.7,
+    4.7,
+    4.7,
+    4.7,
+    4.7,
+    4.7,
+    4.7
+  ],
+  "bar_margins_score": [
+    0.3,
+    0.3,
+    0.3,
+    0.3,
+    0.3,
+    0.3,
+    0.3,
+    0.3,
+    0.3
+  ],
+  "per_view_sigma": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "epsilon_total": 0,
+  "epsilon_view": 0.3,
+  "gemma_reference_per_view": [
+    5.99,
+    8.69,
+    6.39,
+    6.26,
+    6.8,
+    8.75,
+    6.45,
+    6.82,
+    7.35
+  ],
+  "gemma_veto_band": 1,
+  "anchor_check": {
+    "passed": true,
+    "epsilon_anchor": 0.1,
+    "smallest_bar_margin": 0.3,
+    "epsilon_below_bars": true,
+    "p_hat_per_view": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "per_view": [
+      {
+        "view": 1,
+        "pHat": 5,
+        "residual": 0,
+        "withinEpsilon": true,
+        "withinMargin": true
+      },
+      {
+        "view": 2,
+        "pHat": 5,
+        "residual": 0,
+        "withinEpsilon": true,
+        "withinMargin": true
+      },
+      {
+        "view": 3,
+        "pHat": 5,
+        "residual": 0,
+        "withinEpsilon": true,
+        "withinMargin": true
+      },
+      {
+        "view": 4,
+        "pHat": 5,
+        "residual": 0,
+        "withinEpsilon": true,
+        "withinMargin": true
+      },
+      {
+        "view": 5,
+        "pHat": 5,
+        "residual": 0,
+        "withinEpsilon": true,
+        "withinMargin": true
+      },
+      {
+        "view": 6,
+        "pHat": 5,
+        "residual": 0,
+        "withinEpsilon": true,
+        "withinMargin": true
+      },
+      {
+        "view": 7,
+        "pHat": 5,
+        "residual": 0,
+        "withinEpsilon": true,
+        "withinMargin": true
+      },
+      {
+        "view": 8,
+        "pHat": 5,
+        "residual": 0,
+        "withinEpsilon": true,
+        "withinMargin": true
+      },
+      {
+        "view": 9,
+        "pHat": 5,
+        "residual": 0,
+        "withinEpsilon": true,
+        "withinMargin": true
+      }
+    ]
+  },
+  "discrimination_check": {
+    "passed": true,
+    "drop": 0.7,
+    "per_view": [
+      {
+        "view": 1,
+        "weakScore": 0.11,
+        "ceiling": 4,
+        "below": true
+      },
+      {
+        "view": 2,
+        "weakScore": 0.11,
+        "ceiling": 4,
+        "below": true
+      },
+      {
+        "view": 3,
+        "weakScore": 0.42,
+        "ceiling": 4,
+        "below": true
+      },
+      {
+        "view": 4,
+        "weakScore": 0.8,
+        "ceiling": 4,
+        "below": true
+      },
+      {
+        "view": 5,
+        "weakScore": 0.37,
+        "ceiling": 4,
+        "below": true
+      },
+      {
+        "view": 6,
+        "weakScore": 0.23,
+        "ceiling": 4,
+        "below": true
+      },
+      {
+        "view": 7,
+        "weakScore": 0.23,
+        "ceiling": 4,
+        "below": true
+      },
+      {
+        "view": 8,
+        "weakScore": 0.18,
+        "ceiling": 4,
+        "below": true
+      },
+      {
+        "view": 9,
+        "weakScore": 0.23,
+        "ceiling": 4,
+        "below": true
+      }
+    ]
+  },
+  "note": "Clearing every per-view bar == \">= the best build found, photo-anchored; converges to the actor's own ceiling, not photo-parity\" — NOT \"indistinguishable from a real 747 photograph\". The reference build's own residual gap to a real 747 is a disclosed methodological bound. Sidecar keeps rubric.json byte-identical (the frozen gemma primitives record is unaffected)."
+}
