@@ -176,6 +176,25 @@
   .c-lbl{font-family:var(--sans);font-size:13px;font-weight:600;fill:var(--ink-soft)}
   .c-val{font-family:var(--sans);font-size:14px;font-weight:700;fill:var(--accent-ink)}
   .c-ax{font-family:var(--sans);font-size:11px;font-weight:500;fill:var(--ink-faint);letter-spacing:0.02em}
+
+  /* Why-us: wide charts-only grid */
+  .slide.wide{justify-content:flex-start;padding-top:clamp(58px,8.5vh,82px);padding-bottom:clamp(28px,4vh,48px)}
+  .slide.wide .kicker{margin:0 0 clamp(10px,2vh,18px)}
+  .slide.wide .slide-inner{max-width:1160px}
+  .chartgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
+    gap:clamp(12px,1.8vw,20px);margin:clamp(10px,2vh,18px) 0 0}
+  .chartgrid .chart{padding:clamp(13px,2vw,17px)}
+  .chartgrid .ct{font-family:var(--serif);font-weight:600;font-size:clamp(15px,2vw,17px);
+    color:var(--ink);margin:0 0 2px;letter-spacing:-0.01em}
+  .chartgrid .csrc{font-family:var(--sans);font-size:11px;font-weight:500;color:var(--ink-faint);
+    margin:0 0 clamp(9px,1.6vh,13px)}
+  .c-us{fill:var(--accent)}
+  .c-other{fill:color-mix(in oklab, var(--ink-faint) 62%, var(--rule))}
+  .c-lo{fill:color-mix(in oklab, var(--ink-faint) 34%, var(--rule))}
+  .c-name{font-family:var(--sans);font-size:11.5px;font-weight:600;fill:var(--ink-soft)}
+  .c-name-us{fill:var(--accent-ink)}
+  .c-num{font-family:var(--sans);font-size:12px;font-weight:700;fill:var(--ink-soft)}
+  .c-num-us{font-family:var(--sans);font-size:12.5px;font-weight:800;fill:var(--accent-ink)}
 </style>
 </head>
 <body>
@@ -295,76 +314,16 @@
     </div>
   </section>
 
-  <!-- Slide 6 (new): Why us / Unfair advantage (charts) -->
-  <section class="slide alt" id="s-why">
+  <!-- Slide 6 (new): Why us / Unfair advantage (charts-only grid) -->
+  <section class="slide alt wide" id="s-why">
     <div class="slide-inner">
       <div data-lang="en">
         <p class="kicker">05 / Why us · Unfair advantage</p>
-        <p class="big" style="max-width:22ch">We already built both layers - and the memory holds at scale.</p>
-        <div class="charts">
-          <div class="chart">
-            <p class="ct">Recall at one million rows</p>
-            <p class="cs">Exact retrieval, in every language, at 1,000,000 records.</p>
-            <svg viewBox="0 0 320 158" role="img" aria-label="Retrieval recall by language at one million rows: English, Vietnamese, Japanese and noisy-typo queries all reach 100 percent.">
-              <line x1="272" y1="2" x2="272" y2="132" stroke="var(--rule)" stroke-width="1" stroke-dasharray="3 3"/>
-              <text class="c-lbl" x="0" y="20">EN</text><rect x="42" y="8" width="230" height="16" rx="8" fill="var(--accent)"/><text class="c-val" x="278" y="21">100%</text>
-              <text class="c-lbl" x="0" y="54">VI</text><rect x="42" y="42" width="230" height="16" rx="8" fill="var(--accent)"/><text class="c-val" x="278" y="55">100%</text>
-              <text class="c-lbl" x="0" y="88">JA</text><rect x="42" y="76" width="230" height="16" rx="8" fill="var(--accent)"/><text class="c-val" x="278" y="89">100%</text>
-              <text class="c-lbl" x="0" y="122">Typo</text><rect x="42" y="110" width="230" height="16" rx="8" fill="var(--accent)"/><text class="c-val" x="278" y="123">100%</text>
-              <text class="c-ax" x="42" y="150">0</text><text class="c-ax" x="205" y="150">100% recall · 1M rows</text>
-            </svg>
-            <p class="cc">English · Vietnamese · Japanese · noisy-typo queries - all at full recall.</p>
-          </div>
-          <div class="chart">
-            <p class="ct">Owning vs renting, over time</p>
-            <p class="cs">Rented intelligence compounds in cost. Owned intelligence is a foundation.</p>
-            <svg viewBox="0 0 320 158" role="img" aria-label="Cumulative cost over time: renting rises steeply without bound; owning stays low and flat.">
-              <line x1="40" y1="14" x2="40" y2="132" stroke="var(--rule)" stroke-width="1"/>
-              <line x1="40" y1="132" x2="304" y2="132" stroke="var(--rule)" stroke-width="1"/>
-              <path d="M40,127 C 150,121 214,80 300,26" fill="none" stroke="var(--ink-faint)" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M40,120 L300,108" fill="none" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/>
-              <circle cx="300" cy="26" r="4" fill="var(--ink-faint)"/><circle cx="300" cy="108" r="4" fill="var(--accent)"/>
-              <text class="c-lbl" x="250" y="44" style="fill:var(--ink-soft)">Rent</text>
-              <text class="c-val" x="252" y="101">Own</text>
-              <text class="c-ax" x="150" y="152">Time &#8594;</text><text class="c-ax" x="44" y="12">Cumulative cost</text>
-            </svg>
-            <p class="cc">Rent is a bill that never stops. Ownership is paid once, then compounds for you.</p>
-          </div>
-        </div>
+        <div class="chartgrid"><div class="chart"><p class="ct">Memory recall — LongMemEval-S R@5</p><p class="csrc">% · retrieval-only, same table · axis 90-100</p><svg viewBox="0 0 300 98" role="img" aria-label="Memory recall — LongMemEval-S R@5"><text class="c-name-us" x="3" y="12">TerranSoul</text><rect class="c-us" x="3" y="16" width="184.2" height="12" rx="6"/><text class="c-num-us" x="193.2" y="26">99.4</text><text class="c-name" x="3" y="44">MemoryPalace</text><rect class="c-other" x="3" y="48" width="129.4" height="12" rx="6"/><text class="c-num" x="138.4" y="58">~96.6</text><text class="c-name" x="3" y="76">agentmemory</text><rect class="c-other" x="3" y="80" width="101.9" height="12" rx="6"/><text class="c-num" x="110.9" y="90">95.2</text></svg></div><div class="chart"><p class="ct">Personal-AI answer quality</p><p class="csrc">/10 · same local model + judge · 22 prompts</p><svg viewBox="0 0 300 162" role="img" aria-label="Personal-AI answer quality"><text class="c-name-us" x="3" y="12">TerranSoul</text><rect class="c-us" x="3" y="16" width="192.5" height="12" rx="6"/><text class="c-num-us" x="201.5" y="26">9.82</text><text class="c-name" x="3" y="44">OpenJarvis</text><rect class="c-other" x="3" y="48" width="187.2" height="12" rx="6"/><text class="c-num" x="196.2" y="58">9.55</text><text class="c-name" x="3" y="76">OpenClaw</text><rect class="c-other" x="3" y="80" width="163.9" height="12" rx="6"/><text class="c-num" x="172.9" y="90">8.36</text><text class="c-name" x="3" y="108">Claude + GENesis</text><rect class="c-other" x="3" y="112" width="161.5" height="12" rx="6"/><text class="c-num" x="170.5" y="122">8.24</text><text class="c-name" x="3" y="140">Hermes</text><rect class="c-other" x="3" y="144" width="135.2" height="12" rx="6"/><text class="c-num" x="144.2" y="154">6.9</text></svg></div><div class="chart"><p class="ct">Response latency</p><p class="csrc">seconds · inference · same local model · lower is better</p><svg viewBox="0 0 300 66" role="img" aria-label="Response latency"><text class="c-name-us" x="3" y="12">TerranSoul  ·  $0 local</text><rect class="c-us" x="3" y="16" width="51.9" height="12" rx="6"/><text class="c-num-us" x="60.9" y="26">1.06s</text><text class="c-name" x="3" y="44">OpenJarvis  ·  $0 local</text><rect class="c-other" x="3" y="48" width="170.0" height="12" rx="6"/><text class="c-num" x="179.0" y="58">3.47s</text></svg></div><div class="chart"><p class="ct">Self-improvement — SIA LawBench top-1</p><p class="csrc">% · frozen model + memory vs weight-trained 120B</p><svg viewBox="0 0 300 162" role="img" aria-label="Self-improvement — SIA LawBench top-1"><text class="c-name-us" x="3" y="12">frozen DeepSeek + memory</text><rect class="c-us" x="3" y="16" width="156.8" height="12" rx="6"/><text class="c-num-us" x="165.8" y="26">80%</text><text class="c-name-us" x="3" y="44">frozen 12B + memory</text><rect class="c-us" x="3" y="48" width="149.5" height="12" rx="6"/><text class="c-num-us" x="158.5" y="58">76.3%</text><text class="c-name" x="3" y="76">weight-trained 120B (SIA)</text><rect class="c-other" x="3" y="80" width="137.4" height="12" rx="6"/><text class="c-num" x="146.4" y="90">70.1%</text><text class="c-name" x="3" y="108">prior SOTA</text><rect class="c-lo" x="3" y="112" width="88.2" height="12" rx="6"/><text class="c-num" x="97.2" y="122">45%</text><text class="c-name" x="3" y="140">unimproved baseline</text><rect class="c-lo" x="3" y="144" width="26.5" height="12" rx="6"/><text class="c-num" x="35.5" y="154">13.5%</text></svg></div><div class="chart"><p class="ct">1M-row multilingual retrieval</p><p class="csrc">NDCG@10 % · single-pass -> MAX retrieve+verify · local</p><svg viewBox="0 0 300 130" role="img" aria-label="1M-row multilingual retrieval"><text class="c-name-us" x="3" y="12">English</text><rect class="c-us" x="3" y="15" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="22">100</text><rect class="c-lo" x="3" y="25" width="183.1" height="8" rx="4"/><text class="c-num" x="192.1" y="32">93.4</text><text class="c-name-us" x="3" y="44">Vietnamese</text><rect class="c-us" x="3" y="47" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="54">100</text><rect class="c-lo" x="3" y="57" width="89.0" height="8" rx="4"/><text class="c-num" x="98.0" y="64">45.4</text><text class="c-name-us" x="3" y="76">Japanese</text><rect class="c-us" x="3" y="79" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="86">100</text><rect class="c-lo" x="3" y="89" width="127.4" height="8" rx="4"/><text class="c-num" x="136.4" y="96">65</text><text class="c-name-us" x="3" y="108">typo-noisy</text><rect class="c-us" x="3" y="111" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="118">100</text><rect class="c-lo" x="3" y="121" width="139.2" height="8" rx="4"/><text class="c-num" x="148.2" y="128">71</text></svg></div><div class="chart"><p class="ct">Résumés one query can search</p><p class="csrc">log scale · cloud context window vs local substrate</p><svg viewBox="0 0 300 66" role="img" aria-label="Résumés one query can search"><text class="c-name-us" x="3" y="12">TerranSoul</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">1,000,000</text><text class="c-name" x="3" y="44">cloud in-context LLM</text><rect class="c-other" x="3" y="48" width="37.9" height="12" rx="6"/><text class="c-num" x="46.9" y="58">~3,800</text></svg></div></div>
       </div>
       <div data-lang="vi" hidden>
         <p class="kicker">05 / Vì sao là chúng tôi · Lợi thế riêng</p>
-        <p class="big" style="max-width:22ch">Chúng tôi đã xây cả hai lớp - và bộ nhớ vẫn vững ở quy mô lớn.</p>
-        <div class="charts">
-          <div class="chart">
-            <p class="ct">Truy hồi trên một triệu bản ghi</p>
-            <p class="cs">Truy hồi chính xác, ở mọi ngôn ngữ, tại 1.000.000 bản ghi.</p>
-            <svg viewBox="0 0 320 158" role="img" aria-label="Truy hồi theo ngôn ngữ tại một triệu bản ghi: tiếng Anh, tiếng Việt, tiếng Nhật và truy vấn sai chính tả đều đạt 100 phần trăm.">
-              <line x1="272" y1="2" x2="272" y2="132" stroke="var(--rule)" stroke-width="1" stroke-dasharray="3 3"/>
-              <text class="c-lbl" x="0" y="20">EN</text><rect x="42" y="8" width="230" height="16" rx="8" fill="var(--accent)"/><text class="c-val" x="278" y="21">100%</text>
-              <text class="c-lbl" x="0" y="54">VI</text><rect x="42" y="42" width="230" height="16" rx="8" fill="var(--accent)"/><text class="c-val" x="278" y="55">100%</text>
-              <text class="c-lbl" x="0" y="88">JA</text><rect x="42" y="76" width="230" height="16" rx="8" fill="var(--accent)"/><text class="c-val" x="278" y="89">100%</text>
-              <text class="c-lbl" x="0" y="122">Sai</text><rect x="42" y="110" width="230" height="16" rx="8" fill="var(--accent)"/><text class="c-val" x="278" y="123">100%</text>
-              <text class="c-ax" x="42" y="150">0</text><text class="c-ax" x="196" y="150">100% truy hồi · 1 triệu</text>
-            </svg>
-            <p class="cc">Tiếng Anh · Tiếng Việt · Tiếng Nhật · truy vấn sai chính tả - tất cả đều truy hồi đầy đủ.</p>
-          </div>
-          <div class="chart">
-            <p class="ct">Sở hữu và đi thuê, theo thời gian</p>
-            <p class="cs">Trí tuệ đi thuê dồn chi phí. Trí tuệ sở hữu là nền tảng.</p>
-            <svg viewBox="0 0 320 158" role="img" aria-label="Chi phí tích lũy theo thời gian: đi thuê tăng dốc không giới hạn; sở hữu giữ mức thấp và phẳng.">
-              <line x1="40" y1="14" x2="40" y2="132" stroke="var(--rule)" stroke-width="1"/>
-              <line x1="40" y1="132" x2="304" y2="132" stroke="var(--rule)" stroke-width="1"/>
-              <path d="M40,127 C 150,121 214,80 300,26" fill="none" stroke="var(--ink-faint)" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M40,120 L300,108" fill="none" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/>
-              <circle cx="300" cy="26" r="4" fill="var(--ink-faint)"/><circle cx="300" cy="108" r="4" fill="var(--accent)"/>
-              <text class="c-lbl" x="240" y="44" style="fill:var(--ink-soft)">Thuê</text>
-              <text class="c-val" x="240" y="101">Sở hữu</text>
-              <text class="c-ax" x="150" y="152">Thời gian &#8594;</text><text class="c-ax" x="44" y="12">Chi phí tích lũy</text>
-            </svg>
-            <p class="cc">Đi thuê là hóa đơn không bao giờ dừng. Sở hữu trả một lần, rồi tích lũy cho bạn.</p>
-          </div>
-        </div>
+        <div class="chartgrid"><div class="chart"><p class="ct">Truy hồi bộ nhớ — LongMemEval-S R@5</p><p class="csrc">% · chỉ truy hồi, cùng bảng · trục 90-100</p><svg viewBox="0 0 300 98" role="img" aria-label="Truy hồi bộ nhớ — LongMemEval-S R@5"><text class="c-name-us" x="3" y="12">TerranSoul</text><rect class="c-us" x="3" y="16" width="184.2" height="12" rx="6"/><text class="c-num-us" x="193.2" y="26">99.4</text><text class="c-name" x="3" y="44">MemoryPalace</text><rect class="c-other" x="3" y="48" width="129.4" height="12" rx="6"/><text class="c-num" x="138.4" y="58">~96.6</text><text class="c-name" x="3" y="76">agentmemory</text><rect class="c-other" x="3" y="80" width="101.9" height="12" rx="6"/><text class="c-num" x="110.9" y="90">95.2</text></svg></div><div class="chart"><p class="ct">Chất lượng trả lời AI cá nhân</p><p class="csrc">/10 · cùng mô hình + giám khảo · 22 câu</p><svg viewBox="0 0 300 162" role="img" aria-label="Chất lượng trả lời AI cá nhân"><text class="c-name-us" x="3" y="12">TerranSoul</text><rect class="c-us" x="3" y="16" width="192.5" height="12" rx="6"/><text class="c-num-us" x="201.5" y="26">9.82</text><text class="c-name" x="3" y="44">OpenJarvis</text><rect class="c-other" x="3" y="48" width="187.2" height="12" rx="6"/><text class="c-num" x="196.2" y="58">9.55</text><text class="c-name" x="3" y="76">OpenClaw</text><rect class="c-other" x="3" y="80" width="163.9" height="12" rx="6"/><text class="c-num" x="172.9" y="90">8.36</text><text class="c-name" x="3" y="108">Claude + GENesis</text><rect class="c-other" x="3" y="112" width="161.5" height="12" rx="6"/><text class="c-num" x="170.5" y="122">8.24</text><text class="c-name" x="3" y="140">Hermes</text><rect class="c-other" x="3" y="144" width="135.2" height="12" rx="6"/><text class="c-num" x="144.2" y="154">6.9</text></svg></div><div class="chart"><p class="ct">Độ trễ phản hồi</p><p class="csrc">giây · suy luận · cùng mô hình · thấp hơn tốt hơn</p><svg viewBox="0 0 300 66" role="img" aria-label="Độ trễ phản hồi"><text class="c-name-us" x="3" y="12">TerranSoul  ·  $0 nội bộ</text><rect class="c-us" x="3" y="16" width="51.9" height="12" rx="6"/><text class="c-num-us" x="60.9" y="26">1.06s</text><text class="c-name" x="3" y="44">OpenJarvis  ·  $0 nội bộ</text><rect class="c-other" x="3" y="48" width="170.0" height="12" rx="6"/><text class="c-num" x="179.0" y="58">3.47s</text></svg></div><div class="chart"><p class="ct">Tự cải thiện — SIA LawBench top-1</p><p class="csrc">% · mô hình đóng băng + bộ nhớ vs 120B huấn luyện</p><svg viewBox="0 0 300 162" role="img" aria-label="Tự cải thiện — SIA LawBench top-1"><text class="c-name-us" x="3" y="12">DeepSeek đóng băng + bộ nhớ</text><rect class="c-us" x="3" y="16" width="156.8" height="12" rx="6"/><text class="c-num-us" x="165.8" y="26">80%</text><text class="c-name-us" x="3" y="44">12B đóng băng + bộ nhớ</text><rect class="c-us" x="3" y="48" width="149.5" height="12" rx="6"/><text class="c-num-us" x="158.5" y="58">76.3%</text><text class="c-name" x="3" y="76">120B huấn luyện trọng số (SIA)</text><rect class="c-other" x="3" y="80" width="137.4" height="12" rx="6"/><text class="c-num" x="146.4" y="90">70.1%</text><text class="c-name" x="3" y="108">SOTA trước đây</text><rect class="c-lo" x="3" y="112" width="88.2" height="12" rx="6"/><text class="c-num" x="97.2" y="122">45%</text><text class="c-name" x="3" y="140">khởi điểm chưa cải thiện</text><rect class="c-lo" x="3" y="144" width="26.5" height="12" rx="6"/><text class="c-num" x="35.5" y="154">13.5%</text></svg></div><div class="chart"><p class="ct">Truy hồi đa ngôn ngữ 1 triệu dòng</p><p class="csrc">NDCG@10 % · một lượt -> MAX truy hồi+kiểm chứng · nội bộ</p><svg viewBox="0 0 300 130" role="img" aria-label="Truy hồi đa ngôn ngữ 1 triệu dòng"><text class="c-name-us" x="3" y="12">Tiếng Anh</text><rect class="c-us" x="3" y="15" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="22">100</text><rect class="c-lo" x="3" y="25" width="183.1" height="8" rx="4"/><text class="c-num" x="192.1" y="32">93.4</text><text class="c-name-us" x="3" y="44">Tiếng Việt</text><rect class="c-us" x="3" y="47" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="54">100</text><rect class="c-lo" x="3" y="57" width="89.0" height="8" rx="4"/><text class="c-num" x="98.0" y="64">45.4</text><text class="c-name-us" x="3" y="76">Tiếng Nhật</text><rect class="c-us" x="3" y="79" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="86">100</text><rect class="c-lo" x="3" y="89" width="127.4" height="8" rx="4"/><text class="c-num" x="136.4" y="96">65</text><text class="c-name-us" x="3" y="108">sai chính tả</text><rect class="c-us" x="3" y="111" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="118">100</text><rect class="c-lo" x="3" y="121" width="139.2" height="8" rx="4"/><text class="c-num" x="148.2" y="128">71</text></svg></div><div class="chart"><p class="ct">Số hồ sơ một truy vấn quét được</p><p class="csrc">thang log · cửa sổ ngữ cảnh đám mây vs nền nội bộ</p><svg viewBox="0 0 300 66" role="img" aria-label="Số hồ sơ một truy vấn quét được"><text class="c-name-us" x="3" y="12">TerranSoul</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">1,000,000</text><text class="c-name" x="3" y="44">LLM đám mây trong ngữ cảnh</text><rect class="c-other" x="3" y="48" width="37.9" height="12" rx="6"/><text class="c-num" x="46.9" y="58">~3,800</text></svg></div></div>
       </div>
     </div>
   </section>
