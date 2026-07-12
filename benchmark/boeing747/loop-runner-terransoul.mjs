@@ -107,6 +107,11 @@ import { evaluateStopConditions } from './lib/stop-conditions.mjs';
 import { runRig, sha256 } from './rig/render-rig.mjs';
 
 const BENCH_DIR = path.dirname(fileURLToPath(import.meta.url));
+// Repo root — the base the opus-pairwise SIDECAR stores its ref_shots_dir
+// relative to (calibrate-opus-pairwise.mjs writes a REPO_ROOT-relative path so
+// the committed sidecar is portable). Resolve against this, NOT the CWD, or the
+// path doubles when the loop runs from benchmark/boeing747.
+const REPO_ROOT = path.resolve(BENCH_DIR, '..', '..');
 // Relaxed-contract track (OPEN-VARIANT-DESIGN.md). `--contract open` swaps ONLY
 // the candidate contract validator + the actor-prompt contract text passed to
 // runActorEdit; every measurement artifact (rig, rubric, cameras, scoring,
@@ -610,7 +615,7 @@ export async function runIterationTerransoul({
   const claudeJudged = pairwiseMode
     ? await judgeShotsPairwise({
         shotsDir: rig.outDir,
-        referenceShotsDir: pairwiseCfg.ref_shots_dir,
+        referenceShotsDir: path.resolve(REPO_ROOT, pairwiseCfg.ref_shots_dir),
         samples: opusSamples,
         model: opusJudgeModel,
       })
