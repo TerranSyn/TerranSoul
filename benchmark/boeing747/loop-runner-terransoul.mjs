@@ -374,7 +374,7 @@ export async function runIterationTerransoul({
   const runId = `${actorName}-iter-${iterNum}-${Date.now().toString(36)}`;
   console.log(`\n=== ITER ${iterNum} (${actorName}) ===`);
   console.log(`rig: rendering ${planePath} as ${runId}`);
-  const rig = await runRig({ planePath, runId });
+  const rig = await runRig({ planePath, runId, contractModulePath });
 
   console.log(
     `judge (gemma4${opusPanel ? ', reported diversity cross-check' : ', frozen primary'}): scoring 9 views (median of seeds ${rubric.judge_seeds.join('/')})`,

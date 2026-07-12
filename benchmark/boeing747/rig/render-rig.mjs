@@ -11,7 +11,7 @@
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { chromium } from '@playwright/test';
 import sharp from 'sharp';
 import { validatePlaneSource } from '../lib/contract.mjs';
@@ -84,7 +84,19 @@ export async function runRig(opts) {
   const outDir = path.join(outRoot, runId);
 
   const source = readFileSync(planePath, 'utf8');
-  const contract = validatePlaneSource(source);
+  // Validate against the SAME contract the track uses: the frozen contract by
+  // default, or the open-track contract (lib/contract-open.mjs) when
+  // opts.contractModulePath is supplied. The open contract permits computed
+  // meshes (BufferGeometry etc.) the frozen validator rejects — without this an
+  // open-track mesh crashes the rig even though runActorEdit already accepted it
+  // under the open contract. The frozen track passes no override → byte-identical.
+  let validate = validatePlaneSource;
+  const frozenContractPath = path.join(BENCH_DIR, 'lib', 'contract.mjs');
+  if (opts.contractModulePath && path.resolve(opts.contractModulePath) !== frozenContractPath) {
+    const mod = await import(pathToFileURL(path.resolve(opts.contractModulePath)).href);
+    validate = mod.validatePlaneSource;
+  }
+  const contract = validate(source);
   if (!contract.ok) {
     const err = new Error(
       `candidate violates the primitives contract:\n- ${contract.violations.join('\n- ')}`,
