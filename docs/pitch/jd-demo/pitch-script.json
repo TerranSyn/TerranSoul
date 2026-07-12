@@ -1,0 +1,65 @@
+{
+  "event": "jd-demo",
+  "title": "TerranSoul — TechTalk (full 30-min pitch + live demo)",
+  "voiceNote": "Spoken by the TerranSoul pet (window.__tsPitch.say). No time limit — the presenter walks slides 1-14 by hand (TerranSoul stays hidden); the moment slide 15 (brain architecture) is reached, deck.js auto-fires the reveal and these beats play in full, unhurried detail — every brain region on slide 15, every comparison panel on slide 16 — then present.mjs hands off into Real-E2E/jd/run-demo.mjs (the live /demo jd flow) via the postPitch field below. EMOTION POLICY: at most ONE emotion per slide — only the first beat of each slide carries an `emotion`. Language is factual — no beat/win/outperform.",
+  "revealHint": "deck open. Present slides 1-14 by hand (arrow keys / click) for as long as you like — TerranSoul stays hidden and auto-appears the moment you reach slide 15.",
+  "postPitch": "Real-E2E/jd/run-demo.mjs",
+  "beats": [
+    { "slide": 15, "emotion": "happy", "action": "appear",
+      "text": "Thanks for sticking with me through the whole pipeline. Now let me show you what's actually running under the hood — this is my brain, mapped onto the same regions a human brain uses." },
+
+    { "slide": 15, "action": "highlight:core",
+      "text": "Right at the center is the LLM core — the neocortex. This is raw thought: any model, local or cloud, gemma, llama, even Claude or GPT if you point it there. On its own, though, it's stateless — the moment a chat ends, it forgets everything." },
+
+    { "slide": 15, "action": "highlight:memory",
+      "text": "So I wrap it in a hippocampus — the memory faculty. Every conversation, every document you teach me, gets filed here across three tiers: short-term working memory, then episodic, then long-term semantic memory. This is what lets me remember you tomorrow, not just for the next five minutes." },
+
+    { "slide": 15, "action": "highlight:kg",
+      "text": "Next to it, in the parietal lobe, is the knowledge graph. It doesn't just store facts in isolation — it links them: this person works at that company, this project depends on that library. So when you ask a multi-hop question, I can walk the graph instead of just matching keywords." },
+
+    { "slide": 15, "action": "highlight:rag",
+      "text": "In the occipital lobe sits recall — a six-signal hybrid retrieval system: lexical search, vector embeddings, the knowledge-graph hop, HyDE, contextual retrieval, and an LLM-as-judge rerank, all fused together. That's how I find the right memory even when you phrase the question completely differently than how it was stored." },
+
+    { "slide": 15, "action": "highlight:prefrontal",
+      "text": "Up front, the prefrontal lobe is Focus — it weighs every incoming task and decides how much effort and which faculties to spend on it, the same way your own attention triages a busy inbox." },
+
+    { "slide": 15, "action": "highlight:amygdala",
+      "text": "The amygdala — Affect — colors every memory with emotion. A memory tied to something that mattered to you gets recalled differently than a flat fact, exactly like human memory works." },
+
+    { "slide": 15, "action": "highlight:procedural",
+      "text": "The cerebellum handles Skills — practiced procedures get compiled and stored here, so the next time I do something similar, I don't reason from scratch, I just run the skill." },
+
+    { "slide": 15, "action": "highlight:mcp",
+      "text": "And every one of these faculties is reachable through one nerve — the MCP, the brainstem. It's a single protocol: one door in, for any app or any model." },
+
+    { "slide": 15, "action": "highlight:ch-claude",
+      "text": "Claude can plug into that door directly and reason using my memory as its own external brain." },
+
+    { "slide": 15, "action": "highlight:ch-openclaw",
+      "text": "So can OpenClaw — same memory, no retraining, no fine-tuning." },
+
+    { "slide": 15, "action": "highlight:ch-hermes",
+      "text": "Same for Hermes. Any LLM in your stack can share this one brain instead of every agent starting from zero. That's the different problem I'm solving — not a smarter chatbot, but better memory and knowledge representation, retrieval, and updating, shared across every AI you use." },
+
+    { "slide": 16, "emotion": "surprised",
+      "text": "Now — does this actually work, or is it just a nice diagram? Let's look at the numbers, panel by panel, against the real field." },
+
+    { "slide": 16,
+      "text": "First panel: self-improvement, on SIA's own LawBench — predicting the criminal charge from a court case across a hundred ninety one charge classes. SIA trains new weights into a hundred twenty billion parameter model to hit seventy point one percent. I do it with a completely frozen twelve billion parameter model plus memory — no retraining at all — and score seventy six point three percent. A model an order of magnitude smaller, doing zero weight training, beats the weight-trained giant, just by remembering what worked before." },
+
+    { "slide": 16,
+      "text": "Second: memory retrieval, on LongMemEval-S, the four standard metrics — recall at five, recall at ten, NDCG at ten, and MRR — against the top two published memory systems. I lead on every one: ninety nine point four, a hundred, ninety four point four, ninety five point two. The nearest competitors, agentmemory and MemPalace, are both a few points behind across the board." },
+
+    { "slide": 16,
+      "text": "Third: I actually played Zork One, the classic text adventure, on that same local twelve billion model. Alone, with no memory, it scores essentially zero — it just wanders in circles. With the brain, self-play alone gets it to a peak of forty five. But watch this: after it watches a stronger model, Opus four point eight, play through once, and then replays from memory — it gets a perfect three fifty out of three fifty. That's the difference between reasoning from scratch every time, and learning a solution once and keeping it." },
+
+    { "slide": 16,
+      "text": "Fourth: pure retrieval, same corpus, same embedder as everyone else, so this is a completely fair fight. Recall at ten: I hit sixty six point eight percent. RAGFlow and LangChain are both at sixty one, LlamaIndex fifty eight, Obsidian fifty three, and Hermes-Agent, which only does exact keyword matching, falls to fifteen point eight." },
+
+    { "slide": 16,
+      "text": "And last: the head-to-head that matters most for a personal AI — answer quality, judged zero to ten, same harness, same corpus, same judge, for every system. I score nine point eight, and I answer in one second, for free. OpenJarvis is close behind at nine point six but takes three times as long. OpenClaw, Claude Code plus GENesis, and Hermes all score lower and take anywhere from about eighteen to thirty eight seconds per answer." },
+
+    { "slide": 16,
+      "text": "The full research paper's on the QR code if you want to verify every one of those numbers yourself. But talk's cheap — let me just show you this live.", "action": "clear" }
+  ]
+}

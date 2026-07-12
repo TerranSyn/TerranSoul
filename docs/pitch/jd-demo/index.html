@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TerranSoul — TechTalk Pitch</title>
+  <meta name="description" content="TerranSoul TechTalk pitch deck — the AI that becomes part of your team, and how it actually learns from your documents under the hood." />
+  <link rel="stylesheet" href="deck.css" />
+</head>
+<body>
+  <main id="deck" aria-live="polite">
+
+    <!-- 1 — INTRO (pptx: dark #241B35 + hero gif) -->
+    <section class="slide slide--hero slide--dark" data-slide="1">
+      <div class="hero-media" aria-hidden="true"><img src="assets/image1.gif" alt="" /></div>
+      <div class="hero-glow" aria-hidden="true"></div>
+      <p class="kicker">TECH TALK</p>
+      <h1 class="hero-title">The AI That Becomes<br />Part of Your Team</h1>
+      <p class="lede">
+        Meet a real, human-like companion that lives inside your computer —
+        <em>remembers you, grows with you, and does your daily work alongside you.</em>
+      </p>
+      <p class="muted">Your staff. Your companion. Your virtual friend.</p>
+    </section>
+
+    <!-- 2 — TABLE OF CONTENTS (new; transcribed from the TechTalk pptx; dark bg
+         with light "chapter card" panels, matching the source slide) -->
+    <section class="slide slide--dark" data-slide="2">
+      <p class="kicker">TABLE OF CONTENTS</p>
+      <h2>What we'll cover today</h2>
+      <p class="lede">Two parts — first the big idea, then how it actually works.</p>
+      <div class="toc-grid">
+        <div class="toc-col">
+          <p class="toc-eyebrow">01</p>
+          <h3>Part One — Overview</h3>
+          <p class="muted">The vision — what TerranSoul is and why it matters.</p>
+          <ul class="toc-list">
+            <li>The problem we're solving</li>
+            <li>The product: a companion on your computer</li>
+            <li>What makes it different</li>
+            <li>What it does for you</li>
+          </ul>
+        </div>
+        <div class="toc-col">
+          <p class="toc-eyebrow">02</p>
+          <h3>Part Two — Technical</h3>
+          <p class="muted">Under the hood — how it learns from your documents.</p>
+          <ul class="toc-list">
+            <li>Read — parse PDFs, Office files &amp; images</li>
+            <li>Understand — turn passages into meaning</li>
+            <li>Remember — a connected brain of memories</li>
+            <li>Recall — find the right answer</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 — THE PROBLEM (identical prose to southwest2026 slide 3) -->
+    <section class="slide slide--dark" data-slide="3">
+      <p class="kicker">THE PROBLEM</p>
+      <h2>We live inside your screens<br />but your screens don't know us.</h2>
+      <p class="lede">Hours every day at the computer, yet the software stays a cold tool. It forgets us the moment we close it, never learns how we work, and leaves a lot of people doing repetitive tasks alone.</p>
+      <div class="cards cards--3">
+        <div class="card"><img class="card-icon" src="assets/image6.png" alt="" /><h3>It forgets you</h3><p>Every app starts from zero. No memory, no relationship, no growth.</p></div>
+        <div class="card"><img class="card-icon" src="assets/image7.png" alt="" /><h3>It doesn't help</h3><p>You still do the dull, repetitive computer chores by hand.</p></div>
+        <div class="card"><img class="card-icon" src="assets/image8.png" alt="" /><h3>It's lonely</h3><p>Screens connect us to everything and leave many of us isolated.</p></div>
+      </div>
+    </section>
+
+    <!-- 4 — THE PRODUCT (southwest2026 slide 4 minus the reveal CTA — TerranSoul
+         reveals itself automatically on slide 15 in this deck) -->
+    <section class="slide slide--cream" data-slide="4">
+      <p class="kicker">THE PRODUCT</p>
+      <h2>TerranSoul is a companion that lives on your computer.</h2>
+      <div class="product-cta">
+        <p class="lede">
+          Not another chatbot in a tab. A <em>presence</em>, with a face and a voice, that you see, talk to,
+          and work beside every day. The more you live together, the more it becomes <em>yours</em>.
+        </p>
+      </div>
+      <p class="quote-line">"Good morning. Want me to clear your inbox first?"</p>
+      <p>Call it what you need it to be: <strong>a staff, a friend, a companion.</strong></p>
+    </section>
+
+    <!-- 5 — WHAT MAKES IT DIFFERENT (identical prose to southwest2026 slide 5) -->
+    <section class="slide slide--cream" data-slide="5">
+      <p class="kicker">WHAT MAKES IT DIFFERENT</p>
+      <h2>Three things no ordinary app does</h2>
+      <div class="cards cards--3">
+        <div class="card"><img class="card-icon" src="assets/image3.png" alt="" /><h3>Lives &amp; grows with you</h3><p>Real, lasting memory. It learns your habits, your style, your world — and gets better the longer you're together.</p></div>
+        <div class="card"><img class="card-icon" src="assets/image9.png" alt="" /><h3>Sees &amp; speaks to you</h3><p>An embodied avatar with a face and a voice. You don't type at it — you talk with it, like a real companion.</p></div>
+        <div class="card"><img class="card-icon" src="assets/image7.png" alt="" /><h3>Actually does the work</h3><p>It runs tasks on your computer — email, files, research, the daily chores — so you don't have to.</p></div>
+      </div>
+      <p class="footnote">Runs on your own machine. Your companion, your memories, your data — private and yours, not sitting on someone else's server.</p>
+    </section>
+
+    <!-- 6 — WHAT IT DOES FOR YOU (TechTalk pptx slide 6; card 3 swapped to its
+         "works like a teammate" copy, same icon slot as southwest2026 card 3) -->
+    <section class="slide slide--cream" data-slide="6">
+      <p class="kicker">WHAT IT DOES FOR YOU</p>
+      <h2>A companion that works with you</h2>
+      <div class="cards cards--2x2">
+        <div class="card"><img class="card-icon" src="assets/image4.png" alt="" /><h3>Companionship for the isolated</h3><p>An always-present, patient companion for older residents, people living alone, and anyone who finds technology hard.</p></div>
+        <div class="card"><img class="card-icon" src="assets/image8.png" alt="" /><h3>Levels the playing field</h3><p>Affordable, private AI help for small businesses, students and families — not just big companies with big budgets.</p></div>
+        <div class="card"><img class="card-icon" src="assets/image11.png" alt="" /><h3>Works like a teammate</h3><p>More than an app — a self-employed companion that works alongside you, taking on the daily computer chores so you're free for what matters.</p></div>
+        <div class="card"><img class="card-icon" src="assets/image10.png" alt="" /><h3>Private by design</h3><p>It runs on the user's own computer — important for families, elders and anyone wary of sharing their life with the cloud.</p></div>
+      </div>
+    </section>
+
+    <!-- 7 — PART TWO divider (new; title-slide pattern like southwest2026 slide 7) -->
+    <section class="slide slide--title slide--dark" data-slide="7">
+      <p class="kicker">02 · PART TWO</p>
+      <h1 class="title-line">Technical — under the hood.<br />How TerranSoul learns from your documents.</h1>
+      <div class="pipeline-strip">
+        <span class="pipeline-pill">Read</span><span class="pipeline-arrow">→</span>
+        <span class="pipeline-pill">Understand</span><span class="pipeline-arrow">→</span>
+        <span class="pipeline-pill">Remember</span><span class="pipeline-arrow">→</span>
+        <span class="pipeline-pill">Recall</span><span class="pipeline-arrow">→</span>
+        <span class="pipeline-pill">Architecture</span>
+      </div>
+    </section>
+
+    <!-- 8 — PIPELINE BANNER (new; TechTalk pptx slide 8; dark, matching source) -->
+    <section class="slide slide--dark" data-slide="8">
+      <p class="kicker">TECH TALK</p>
+      <h2>Teaching an App to Read</h2>
+      <p class="lede">How TerranSoul turns documents into knowledge it can recall.</p>
+      <div class="pipeline-strip">
+        <span class="pipeline-pill">Read</span><span class="pipeline-arrow">→</span>
+        <span class="pipeline-pill">Understand</span><span class="pipeline-arrow">→</span>
+        <span class="pipeline-pill">Remember</span><span class="pipeline-arrow">→</span>
+        <span class="pipeline-pill">Recall</span>
+      </div>
+      <p class="footnote">A document-learning pipeline · Vue + Tauri + Rust · on-device first</p>
+    </section>
+
+    <!-- 9 — THE CHALLENGE (new; TechTalk pptx slide 9) -->
+    <section class="slide slide--dark" data-slide="9">
+      <p class="kicker">THE CHALLENGE</p>
+      <h2>A document is not knowledge — yet</h2>
+      <p class="lede">When you hand the app a PDF, a scan, or a photo, it sees pixels and characters — not meaning. To actually be useful, it has to do what a person does when they study:</p>
+      <div class="steps steps--row">
+        <div class="step"><span class="step-num">1</span><div class="step-body"><h3>Read it</h3><p>Even messy scans and photos — in any language.</p></div></div>
+        <div class="step"><span class="step-num">2</span><div class="step-body"><h3>Understand it</h3><p>Grasp what each passage actually means.</p></div></div>
+        <div class="step"><span class="step-num">3</span><div class="step-body"><h3>Connect it</h3><p>Link new facts to what it already knows.</p></div></div>
+        <div class="step"><span class="step-num">4</span><div class="step-body"><h3>Recall it</h3><p>Find the right passage later, by meaning.</p></div></div>
+      </div>
+      <div class="callout">
+        <span class="callout-icon">!</span>
+        <div>
+          <p><strong>The hard part isn't storing text.</strong> It's turning text into something the app can recognize again when you ask a question worded completely differently.</p>
+          <p class="muted">This is the "learning from documents" problem.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 — THE BIG PICTURE (new; TechTalk pptx slide 10) -->
+    <section class="slide slide--cream" data-slide="10">
+      <p class="kicker">THE BIG PICTURE</p>
+      <h2>The journey of a document</h2>
+      <p class="lede">Every file travels the same four steps — automatically, in the background.</p>
+      <div class="steps steps--row">
+        <div class="step"><span class="step-num">1</span><div class="step-body"><h3>Read</h3><p>Parse PDFs, Office files &amp; images. Scanned pages go through OCR.</p></div></div>
+        <span class="step-arrow">→</span>
+        <div class="step"><span class="step-num">2</span><div class="step-body"><h3>Understand</h3><p>Split into bite-size passages and capture each one's meaning.</p></div></div>
+        <span class="step-arrow">→</span>
+        <div class="step"><span class="step-num">3</span><div class="step-body"><h3>Remember</h3><p>Store in the brain and auto-link it to related knowledge.</p></div></div>
+        <span class="step-arrow">→</span>
+        <div class="step"><span class="step-num">4</span><div class="step-body"><h3>Recall</h3><p>Answer questions by finding passages by meaning, not keywords.</p></div></div>
+      </div>
+      <p class="footnote">Slides ahead zoom into the heart of it: the brain.</p>
+    </section>
+
+    <!-- 11 — OCR / VIETNAMESE SPOTLIGHT (new; TechTalk pptx slide 11; cream, matching source) -->
+    <section class="slide slide--cream" data-slide="11">
+      <p class="kicker">READ → UNDERSTAND → REMEMBER → RECALL</p>
+      <h2>Reading anything — even a phone photo</h2>
+      <p class="lede">Clean digital text is easy. The real world isn't: scanned contracts, screenshots, and photos where the text lives inside an image.</p>
+      <div class="cards cards--3">
+        <div class="card"><h3>Optical character recognition</h3><p>An on-device engine looks at the image and reads the letters back out as text.</p></div>
+        <div class="card"><h3>Multilingual by design</h3><p>Including Vietnamese — accented characters that trip up most off-the-shelf readers.</p></div>
+        <div class="card"><h3>Built for speed</h3><p>Models load once and stay warm — turning a 45-minute job into minutes.</p></div>
+      </div>
+      <div class="spotlight">
+        <p class="kicker">SPOTLIGHT: VIETNAMESE</p>
+        <p class="spotlight-quote">"Tôi học tiếng Việt"</p>
+        <p class="muted">Those marks above the letters carry meaning. Drop one and the word changes — or the reader crashes.</p>
+        <p class="footnote">What we fixed: consistent character handling, a Vietnamese-trained reader, and crash-proof text trimming.</p>
+      </div>
+    </section>
+
+    <!-- 12 — WHAT I LEARNED (new; TechTalk pptx slide 12) -->
+    <section class="slide slide--cream" data-slide="12">
+      <p class="kicker">WHAT I LEARNED</p>
+      <h2>Lessons from building the brain</h2>
+      <div class="cards cards--2x2">
+        <div class="card"><h3>Real data is messy</h3><p>The hardest bugs came from real input — accented text, phone photos, scans. Design for the edge cases, not the demo.</p></div>
+        <div class="card"><h3>Never lose a memory</h3><p>If embedding fails, work is queued and retried — nothing learned is silently dropped.</p></div>
+        <div class="card"><h3>Warm beats cold</h3><p>Loading models once and keeping them warm turned 45-minute jobs into minutes.</p></div>
+        <div class="card"><h3>Meaning + connection wins</h3><p>Storing meaning and linking related memories is what makes recall feel intelligent.</p></div>
+      </div>
+      <div class="pipeline-strip">
+        <span class="pipeline-pill">Read</span><span class="pipeline-arrow">→</span>
+        <span class="pipeline-pill">Understand</span><span class="pipeline-arrow">→</span>
+        <span class="pipeline-pill">Remember</span><span class="pipeline-arrow">→</span>
+        <span class="pipeline-pill">Recall</span>
+      </div>
+      <p class="footnote">That's how an app learns from what you give it.</p>
+    </section>
+
+    <!-- 13 — TECH STACK (new; TechTalk pptx slide 13) -->
+    <section class="slide slide--dark" data-slide="13">
+      <p class="kicker">TECH STACK</p>
+      <h2>What it's built with</h2>
+      <p class="lede">A modern, on-device stack — fast, private, and self-contained.</p>
+      <div class="stack-list">
+        <div class="stack-row"><span class="stack-label">Frontend</span><span class="stack-value">Vue 3 · TypeScript · Vite · Pinia</span></div>
+        <div class="stack-row"><span class="stack-label">3D Avatar</span><span class="stack-value">Three.js · VRM</span></div>
+        <div class="stack-row"><span class="stack-label">Desktop shell</span><span class="stack-value">Tauri 2</span></div>
+        <div class="stack-row"><span class="stack-label">Backend</span><span class="stack-value">Rust · Tokio (async)</span></div>
+        <div class="stack-row"><span class="stack-label">Data &amp; memory</span><span class="stack-value">SQLite · vector embeddings · knowledge graph</span></div>
+        <div class="stack-row"><span class="stack-label">AI / models</span><span class="stack-value">Ollama (local LLM) · on-device OCR &amp; embeddings</span></div>
+      </div>
+      <p class="footnote">On-device first — runs on your machine, private by default; no cloud required.</p>
+    </section>
+
+    <!-- 14 — ARCHITECTURE (new; TechTalk pptx slide 14) -->
+    <section class="slide slide--cream" data-slide="14">
+      <p class="kicker">ARCHITECTURE</p>
+      <h2>How the brain is built</h2>
+      <p class="lede">Five layers working together — every one of them on your own machine.</p>
+      <div class="steps steps--col">
+        <div class="step"><span class="step-num">1</span><div class="step-body"><h3>Ingest</h3><p>Parse PDFs, Office files &amp; images — OCR reads scans and phone photos.</p></div></div>
+        <span class="step-arrow">↓</span>
+        <div class="step"><span class="step-num">2</span><div class="step-body"><h3>Understand</h3><p>Split documents into passages and embed each into "meaning space."</p></div></div>
+        <span class="step-arrow">↓</span>
+        <div class="step"><span class="step-num">3</span><div class="step-body"><h3>The brain</h3><p>Store as memory linked by a knowledge graph — extends · supports · refines · contradicts.</p></div></div>
+        <span class="step-arrow">↓</span>
+        <div class="step"><span class="step-num">4</span><div class="step-body"><h3>Retrieve</h3><p>Hybrid recall: search by meaning + keywords + walk the links, then merge &amp; rank.</p></div></div>
+        <span class="step-arrow">↓</span>
+        <div class="step"><span class="step-num">5</span><div class="step-body"><h3>Companion</h3><p>The avatar you see and talk to — a Vue + Tauri desktop app.</p></div></div>
+      </div>
+      <p class="footnote">On-device first — every layer runs locally; your documents never leave your computer.</p>
+    </section>
+
+    <!-- 15 — BRAIN ARCHITECTURE (reused verbatim from southwest2026 slide 8;
+         TerranSoul auto-reveals itself the instant this slide is reached —
+         see deck.js AUTO_REVEAL_SLIDE — and drives the highlights) -->
+    <section class="slide slide--brainfull slide--dark" data-slide="15">
+      <div class="brain-stage brain-stage--full">
+        <iframe
+          id="brain-frame"
+          class="brain-frame"
+          title="TerranSoul brain architecture"
+          src="../../brain-architecture/index.html"
+          loading="eager"
+        ></iframe>
+        <!-- Offline-safe fallback: shown only if the live diagram can't load
+             (no network for its CDN runtime). The pet's highlights still light
+             these region cards, so slide 15 is never blank at a pitch. -->
+        <div id="brain-fallback" class="brain-fallback" hidden>
+          <div class="brain-region-card" data-fallback-id="prefrontal"><span class="brc-dot" style="background:#818cf8"></span><b>Focus</b><span class="brc-region">frontal lobe</span><span class="brc-note">weighs each task, sets effort</span></div>
+          <div class="brain-region-card" data-fallback-id="kg"><span class="brc-dot" style="background:#34d399"></span><b>Graph</b><span class="brc-region">parietal lobe</span><span class="brc-note">links facts · multi-hop</span></div>
+          <div class="brain-region-card" data-fallback-id="rag"><span class="brc-dot" style="background:#22d3ee"></span><b>Recall</b><span class="brc-region">occipital lobe</span><span class="brc-note">six-signal hybrid retrieval</span></div>
+          <div class="brain-region-card brain-region-card--core" data-fallback-id="core"><span class="brc-dot" style="background:#22d3ee"></span><b>LLM Core</b><span class="brc-region">neocortex</span><span class="brc-note">raw thought · any model, local or cloud</span></div>
+          <div class="brain-region-card" data-fallback-id="memory"><span class="brc-dot" style="background:#a78bfa"></span><b>Memory</b><span class="brc-region">hippocampus</span><span class="brc-note">forms &amp; files memories · 3 tiers</span></div>
+          <div class="brain-region-card" data-fallback-id="amygdala"><span class="brc-dot" style="background:#f472b6"></span><b>Affect</b><span class="brc-region">amygdala · limbic</span><span class="brc-note">colours memory with emotion</span></div>
+          <div class="brain-region-card" data-fallback-id="procedural"><span class="brc-dot" style="background:#fbbf24"></span><b>Skills</b><span class="brc-region">cerebellum</span><span class="brc-note">stores &amp; runs practised skills</span></div>
+          <div class="brain-region-card brain-region-card--mcp" data-fallback-id="mcp"><span class="brc-dot" style="background:#7de4ff"></span><b>MCP nerve</b><span class="brc-region">brainstem</span><span class="brc-note">one protocol · any app or AI</span></div>
+          <div class="brain-region-card brain-region-card--client" data-fallback-id="ch-claude"><span class="brc-dot" style="background:#7de4ff"></span><b>Claude</b><span class="brc-region">external client</span><span class="brc-note">plugs into the brain over MCP</span></div>
+          <div class="brain-region-card brain-region-card--client" data-fallback-id="ch-openclaw"><span class="brc-dot" style="background:#7de4ff"></span><b>OpenClaw</b><span class="brc-region">external client</span><span class="brc-note">reasons over the shared memory</span></div>
+          <div class="brain-region-card brain-region-card--client" data-fallback-id="ch-hermes"><span class="brc-dot" style="background:#7de4ff"></span><b>Hermes</b><span class="brc-region">external client</span><span class="brc-note">grows smarter on the same brain</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 16 — COMPARISON (reused verbatim from southwest2026 slide 9; charts
+         rendered by deck.js buildCompareSlide()) -->
+    <section class="slide slide--compare slide--dark" data-slide="16">
+      <p class="kicker">BY THE NUMBERS</p>
+      <h2>Smarter than memory, RAG &amp; self-improving tools in its category</h2>
+      <div id="compare-grid" class="compare-grid"><!-- charts injected by deck.js --></div>
+      <div class="footnote compare-foot" id="compare-foot"></div>
+    </section>
+
+  </main>
+
+  <nav id="deck-nav" class="deck-nav" aria-label="Slide navigation">
+    <div id="deck-dots" class="deck-dots"></div>
+    <div class="deck-counter"><span id="deck-cur">1</span> / <span id="deck-total">16</span></div>
+  </nav>
+
+  <script src="deck.js" defer></script>
+</body>
+</html>
