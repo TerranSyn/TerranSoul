@@ -178,6 +178,15 @@ function buildActorPrompt({
   claudeHint,
   forbiddenReasons,
   priorAttemptsSection,
+  // opus-pairwise-only additive sections (loop-runner-terransoul.mjs pairwise
+  // path). Each defaults to null so the FROZEN / opus-panel / gemma actor prompt
+  // is BYTE-IDENTICAL when they are omitted (they are only ever passed on the
+  // `--judge opus-pairwise` path): the ACE strategy-cheatsheet ("your own proven
+  // techniques"), its contrastive anti-patterns bank, and the backtracked
+  // rejected-edit ledger ("do not repeat these").
+  strategyCheatsheetSection = null,
+  badAttemptsSection = null,
+  rejectedEditsSection = null,
   plateauEscalation = null,
   contractOpen = false,
   contractPathLabel = 'lib/contract.mjs',
@@ -253,6 +262,18 @@ function buildActorPrompt({
   lines.push('');
   if (priorAttemptsSection) {
     lines.push(priorAttemptsSection);
+    lines.push('');
+  }
+  if (strategyCheatsheetSection) {
+    lines.push(strategyCheatsheetSection);
+    lines.push('');
+  }
+  if (badAttemptsSection) {
+    lines.push(badAttemptsSection);
+    lines.push('');
+  }
+  if (rejectedEditsSection) {
+    lines.push(rejectedEditsSection);
     lines.push('');
   }
   if (plateauEscalation) {
@@ -439,6 +460,9 @@ export async function runActorEdit({
   effort,
   timeoutMs,
   priorAttemptsSection,
+  strategyCheatsheetSection,
+  badAttemptsSection,
+  rejectedEditsSection,
   plateauEscalation,
   cliBinary,
   cliDataDir,
@@ -490,6 +514,9 @@ export async function runActorEdit({
     claudeHint,
     forbiddenReasons,
     priorAttemptsSection,
+    strategyCheatsheetSection,
+    badAttemptsSection,
+    rejectedEditsSection,
     plateauEscalation,
     contractOpen: Boolean(openContractPath),
     contractPathLabel: contractLabel || (openContractPath ? path.basename(openContractPath) : 'lib/contract.mjs'),

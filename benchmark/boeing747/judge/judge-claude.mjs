@@ -48,7 +48,7 @@ const CLAUDE_TIMEOUT_MS = Number(process.env.CLAUDE_JUDGE_TIMEOUT_MS || 180000);
 const DEFAULT_MODEL_LABEL = 'claude-opus-4-8';
 
 /** Reference image FILE PATHS (Opus reads the files, not base64 blobs). */
-function loadReferencePaths(rubric) {
+export function loadReferencePaths(rubric) {
   const metaPath = path.join(BENCH_DIR, 'references', 'prepared', 'meta.json');
   if (!existsSync(metaPath)) {
     throw new Error(
@@ -103,10 +103,25 @@ function buildClaudePrompt(rubric, view, shotPath, refA, refB) {
   return lines.join('\n');
 }
 
-/** ONE Opus 4.8 vision call for one view. Returns { parsed, cost, ms }. */
-async function callClaudeVision({ rubric, view, shotPath, refA, refB, model }) {
-  const criteriaIds = rubric.criteria.map((c) => c.id);
-  const prompt = buildClaudePrompt(rubric, view, shotPath, refA, refB);
+/**
+ * ONE `claude` CLI vision spawn — the SOLE transport seam, shared by the
+ * pointwise judge (this file) and the `--judge opus-pairwise` gating judge
+ * (judge/judge-pairwise.mjs). It sends `prompt` (which already names the image
+ * files the model must Read) and returns the RAW `.result` string, cost and ms
+ * — it does NOT parse, so each judge track owns its own reply grammar
+ * (parseJudgeReply for pointwise, lib/pairwise-parse.mjs for pairwise).
+ *
+ * `execImpl` defaults to the real `execFileAsync` and is the injectable test
+ * seam (mirrors actor-claude's pattern) so both judge tracks are unit-testable
+ * with canned CLI JSON and no network. The argv (allowed/disallowed tools,
+ * strict empty MCP config, --add-dir BENCH_DIR) and the per-call CLI timeout
+ * are IDENTICAL to the shape this judge has always spawned — the extraction is
+ * pure factoring, not a behavior change.
+ *
+ * @param {{prompt:string, model?:string, execImpl?:Function}} params
+ * @returns {Promise<{resultText:string, cost:number, ms:number}>}
+ */
+export async function callClaudeCliVision({ prompt, model, execImpl = execFileAsync }) {
   const args = [
     '-p',
     prompt,
@@ -123,7 +138,7 @@ async function callClaudeVision({ rubric, view, shotPath, refA, refB, model }) {
     BENCH_DIR,
   ];
   if (model) args.push('--model', model);
-  const { stdout } = await execFileAsync('claude', args, {
+  const { stdout } = await execImpl('claude', args, {
     cwd: REPO_ROOT,
     timeout: CLAUDE_TIMEOUT_MS,
     maxBuffer: 16 * 1024 * 1024,
@@ -138,8 +153,20 @@ async function callClaudeVision({ rubric, view, shotPath, refA, refB, model }) {
   if (outer.is_error || outer.subtype !== 'success' || typeof outer.result !== 'string') {
     throw new Error(`claude judge error (subtype=${outer.subtype}): ${String(outer.result).slice(0, 200)}`);
   }
-  const parsed = parseJudgeReply(outer.result, criteriaIds);
-  return { parsed, cost: Number(outer.total_cost_usd) || 0, ms: Number(outer.duration_ms) || 0 };
+  return { resultText: outer.result, cost: Number(outer.total_cost_usd) || 0, ms: Number(outer.duration_ms) || 0 };
+}
+
+/**
+ * ONE Opus 4.8 vision call for one view (pointwise track). Thin wrapper: build
+ * the per-view pointwise prompt, spawn via callClaudeCliVision, then parse with
+ * the frozen parseJudgeReply. Returns { parsed, cost, ms } exactly as before.
+ */
+async function callClaudeVision({ rubric, view, shotPath, refA, refB, model, execImpl }) {
+  const criteriaIds = rubric.criteria.map((c) => c.id);
+  const prompt = buildClaudePrompt(rubric, view, shotPath, refA, refB);
+  const { resultText, cost, ms } = await callClaudeCliVision({ prompt, model, execImpl });
+  const parsed = parseJudgeReply(resultText, criteriaIds);
+  return { parsed, cost, ms };
 }
 
 async function judgeOneViewClaude({ rubric, refs, model, shotsDir, view, samples }) {
