@@ -13,6 +13,29 @@
 import { callMcpTool } from './mcp-client.mjs';
 
 /**
+ * True when a memory row is a per-attempt self-improve BENCH lesson — the kind
+ * that must live in the RUNTIME brain but must NEVER be baked into the committed
+ * shared seed (mcp-data/shared/memory-seed.sql), because such lessons carry the
+ * actor's own answer-derived, benchmark-specific geometry/detail (AGI-purity:
+ * rules/bench-agi-purity.md). GENERIC by convention — it matches the
+ * 'self-improve-attempt' category and the '<bench>-actor-attempt' tag/prefix
+ * pattern every bench loop-runner uses, with NO benchmark name hardcoded here.
+ * The seed-purity regression test uses this to keep the committed seed clean
+ * (a stale MCP-brain binary once appended a Boeing geometry lesson to the seed
+ * on 2026-07-13; this guard makes that class of leak fail CI).
+ */
+export function isBenchLesson({ content = '', tags = '', category = '' } = {}) {
+  const cat = String(category);
+  const tagStr = String(tags);
+  const body = String(content).trimStart();
+  return (
+    cat === 'self-improve-attempt' ||
+    /(^|[,\s])[a-z0-9]+(?:-[a-z0-9]+)*-actor-attempt(?=$|[,\s])/i.test(tagStr) ||
+    /^LESSON \([a-z0-9-]*-actor-attempt\)/i.test(body)
+  );
+}
+
+/**
  * Query the brain for prior attempts relevant to `query`. Fails open: any
  * MCP error, unreachable tray, or unparsable response returns `[]` rather
  * than throwing — a self-learning READ must never block the caller's loop.
