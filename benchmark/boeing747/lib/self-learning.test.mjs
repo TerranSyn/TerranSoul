@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
-import { fetchPriorAttempts, formatPriorAttemptsSection, ingestAttemptLesson } from './self-learning.mjs';
+import {
+  fetchPriorAttempts,
+  fetchStrategyEvents,
+  formatPriorAttemptsSection,
+  ingestAttemptLesson,
+  ingestStrategyEvent,
+} from './self-learning.mjs';
 
 // These tests inject a fake `callTool` (mirrors lib/judge-parse.mjs's
 // callWithParseRetry(call, ...) pattern) so the OWN logic of
@@ -139,5 +145,117 @@ describe('ingestAttemptLesson', () => {
     const src = ingestAttemptLesson.toString() + fetchPriorAttempts.toString();
     expect(src.toLowerCase()).not.toContain('boeing');
     expect(src.toLowerCase()).not.toContain('747');
+  });
+});
+
+describe('ingestStrategyEvent', () => {
+  it('refuses (without calling the tool) when tag or outcome is missing', async () => {
+    const callTool = vi.fn();
+    expect((await ingestStrategyEvent({ outcome: 'helpful', callTool })).ok).toBe(false);
+    expect((await ingestStrategyEvent({ tag: 't', callTool })).ok).toBe(false);
+    expect(callTool).not.toHaveBeenCalled();
+  });
+
+  it('assembles a lesson with a machine-readable STRATEGY_EVENT_JSON payload', async () => {
+    const callTool = vi.fn().mockResolvedValue({ ok: true, text: '{"memory_id":1}' });
+    await ingestStrategyEvent({
+      tag: 'some-bench-strategy-event',
+      strategyId: 'split-nacelles-into-groups',
+      criterion: 'engines',
+      viewScope: 'v1',
+      technique: 'split nacelles into groups',
+      snippetRef: 'sha-abc',
+      outcome: 'helpful',
+      gateDelta: 2.1,
+      iter: 4,
+      runId: 'run-9',
+      actorName: 'actorX',
+      callTool,
+    });
+    const [toolName, args] = callTool.mock.calls[0];
+    expect(toolName).toBe('brain_ingest_lesson');
+    expect(args.category).toBe('self-improve-attempt');
+    expect(args.tags).toBe('some-bench-strategy-event,engines,v1,helpful,strategy,actorX');
+    expect(args.content).toContain('STRATEGY (some-bench-strategy-event): scope=strategy, outcome=helpful');
+    expect(args.content).toContain('Technique: split nacelles into groups');
+    const marker = 'STRATEGY_EVENT_JSON:';
+    const payload = JSON.parse(args.content.slice(args.content.indexOf(marker) + marker.length));
+    expect(payload).toMatchObject({
+      strategyId: 'split-nacelles-into-groups',
+      scope: 'strategy',
+      criterion: 'engines',
+      technique: 'split nacelles into groups',
+      snippetRef: 'sha-abc',
+      outcome: 'helpful',
+      gateDelta: 2.1,
+      iter: 4,
+      runId: 'run-9',
+    });
+  });
+
+  it('derives scope=anti from an anti-suffixed tag OR a harmful outcome', async () => {
+    const callTool = vi.fn().mockResolvedValue({ ok: true, text: null });
+    await ingestStrategyEvent({ tag: 'some-bench-anti', outcome: 'harmful', technique: 't', callTool });
+    expect(callTool.mock.calls[0][1].content).toContain('scope=anti');
+
+    await ingestStrategyEvent({ tag: 'some-bench-strategy-event', outcome: 'harmful', technique: 't', callTool });
+    expect(callTool.mock.calls[1][1].content).toContain('scope=anti');
+  });
+
+  it('is generic: no benchmark name appears in the emitted code', () => {
+    const src = ingestStrategyEvent.toString() + fetchStrategyEvents.toString();
+    expect(src.toLowerCase()).not.toContain('boeing');
+    expect(src.toLowerCase()).not.toContain('747');
+  });
+});
+
+describe('fetchStrategyEvents', () => {
+  it('returns [] without calling the tool when neither query nor criterion is given', async () => {
+    const callTool = vi.fn();
+    expect(await fetchStrategyEvents({ callTool })).toEqual([]);
+    expect(callTool).not.toHaveBeenCalled();
+  });
+
+  it('round-trips ingested events back into parsed payloads', async () => {
+    const ingestCalls = [];
+    const ingestTool = vi.fn(async (_name, args) => {
+      ingestCalls.push(args.content);
+      return { ok: true, text: null };
+    });
+    await ingestStrategyEvent({
+      tag: 'bench-strategy-event',
+      strategyId: 's1',
+      criterion: 'engines',
+      technique: 'split nacelles into groups',
+      outcome: 'helpful',
+      gateDelta: 1.5,
+      iter: 2,
+      callTool: ingestTool,
+    });
+    const fetchTool = vi.fn().mockResolvedValue({
+      ok: true,
+      text: JSON.stringify([
+        { content: ingestCalls[0], tags: 'bench-strategy-event', score: 0.9 },
+        { content: 'a foreign lesson with no marker', tags: 'x', score: 0.2 },
+      ]),
+    });
+    const events = await fetchStrategyEvents({ criterion: 'engines', callTool: fetchTool });
+    expect(fetchTool).toHaveBeenCalledWith('brain_search', { query: 'engines', limit: 10 }, expect.any(Object));
+    expect(events).toHaveLength(1);
+    expect(events[0]).toMatchObject({ strategyId: 's1', scope: 'strategy', technique: 'split nacelles into groups', outcome: 'helpful', gateDelta: 1.5 });
+  });
+
+  it('fails open to [] on tool failure, non-JSON, or non-array', async () => {
+    expect(await fetchStrategyEvents({ criterion: 'c', callTool: vi.fn().mockResolvedValue({ ok: false, text: null }) })).toEqual([]);
+    expect(await fetchStrategyEvents({ criterion: 'c', callTool: vi.fn().mockResolvedValue({ ok: true, text: 'not json' }) })).toEqual([]);
+    expect(await fetchStrategyEvents({ criterion: 'c', callTool: vi.fn().mockResolvedValue({ ok: true, text: '{"not":"array"}' }) })).toEqual([]);
+  });
+
+  it('skips a search hit whose payload marker is present but malformed (fail-open per item)', async () => {
+    const callTool = vi.fn().mockResolvedValue({
+      ok: true,
+      text: JSON.stringify([{ content: 'STRATEGY_EVENT_JSON: {broken json', tags: '', score: 1 }]),
+    });
+    expect(await fetchStrategyEvents({ criterion: 'c', callTool })).toEqual([]);
   });
 });
