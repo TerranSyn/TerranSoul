@@ -40,9 +40,27 @@
 // an injectable read seam) so every bar/margin/probe rule is directly vitest-
 // covered offline — no GPU, no CLI, no network (see lib/pairwise-config.test.mjs).
 import { existsSync, readFileSync } from 'node:fs';
+import {
+  DEFAULT_ALPHA,
+  DEFAULT_K_CONFIRM,
+  DEFAULT_P_FLOOR,
+  DEFAULT_STRATEGY_MIN_EPISODES,
+  DEFAULT_STRATEGY_WINRATE_FLOOR,
+} from './certification-stats.mjs';
 
 /** Sidecar schema version (bump only on an incompatible field change). */
 export const PAIRWISE_CONFIG_VERSION = 1;
+
+// Statistical-rigor certification knobs (July-2026 findings; see
+// lib/certification-stats.mjs for the math + citations). Re-exported from the
+// pure stats module so the sidecar and the certifier share ONE source of truth.
+export {
+  DEFAULT_ALPHA,
+  DEFAULT_P_FLOOR,
+  DEFAULT_K_CONFIRM,
+  DEFAULT_STRATEGY_MIN_EPISODES,
+  DEFAULT_STRATEGY_WINRATE_FLOOR,
+};
 
 /** True-parity per-view score: candidate exactly ties the reference build. */
 export const PARITY_ANCHOR_SCORE = 5.0;
@@ -414,6 +432,11 @@ export function buildPairwiseSidecar({
     epsilonAnchor = DEFAULT_EPSILON_ANCHOR,
     drop = DEFAULT_DISCRIMINATION_DROP,
     gemmaVetoBand = DEFAULT_GEMMA_VETO_BAND,
+    alpha = DEFAULT_ALPHA,
+    pFloor = DEFAULT_P_FLOOR,
+    kConfirm = DEFAULT_K_CONFIRM,
+    strategyMinEpisodes = DEFAULT_STRATEGY_MIN_EPISODES,
+    strategyWinrateFloor = DEFAULT_STRATEGY_WINRATE_FLOOR,
   } = options;
   const meta = referenceMeta || {};
   return {
@@ -448,6 +471,16 @@ export function buildPairwiseSidecar({
     // Cross-family gemma reference scores + veto band.
     gemma_reference_per_view: Array.isArray(gemmaReferencePerView) ? gemmaReferencePerView : null,
     gemma_veto_band: gemmaVetoBand,
+    // Statistical-rigor certification knobs (worst-view LCB / IUT / e-process /
+    // strategy-persistence). Consumed on the opus-pairwise path ONLY; additive, so
+    // the frozen gemma track and its rubric.json stay byte-identical.
+    certification: {
+      alpha,
+      p_floor: pFloor,
+      k_confirm: kConfirm,
+      strategy_min_episodes: strategyMinEpisodes,
+      strategy_winrate_floor: strategyWinrateFloor,
+    },
     // Standing judge-health probe verdicts.
     anchor_check: {
       passed: calibration.anchor.passed,

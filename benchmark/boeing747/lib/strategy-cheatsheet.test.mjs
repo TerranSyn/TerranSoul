@@ -4,6 +4,7 @@ import {
   foldStrategyEvents,
   formatBadAttemptsSection,
   formatStrategyCheatsheetSection,
+  promoteStrategy,
   rankStrategies,
   sanitizeStrategyForPurity,
   strategyFingerprint,
@@ -102,6 +103,76 @@ describe('foldStrategyEvents', () => {
   it('returns [] for a non-array input', () => {
     expect(foldStrategyEvents(null)).toEqual([]);
   });
+
+  it('buckets retrieved-precedent recalls separately and INERT to the certified counts (R5 trap guard)', () => {
+    const folded = foldStrategyEvents([
+      { strategyId: 's1', technique: 't', outcome: 'helpful', gateDelta: 2, iter: 1 },
+      // Four recalled past-successes of the SAME strategy — must NOT inflate helpful_count.
+      { strategyId: 's1', technique: 't', outcome: 'helpful', gateDelta: 2, iter: 2, precedent: true },
+      { strategyId: 's1', technique: 't', outcome: 'helpful', gateDelta: 2, iter: 3, recalled: true },
+      { strategyId: 's1', technique: 't', outcome: 'helpful', gateDelta: 2, iter: 4, source: 'precedent' },
+      { strategyId: 's1', technique: 't', outcome: 'precedent', iter: 5 },
+    ]);
+    const s1 = folded.find((f) => f.id === 's1');
+    expect(s1.helpful_count).toBe(1); // only the ONE fresh gate observation
+    expect(s1.neutral_count).toBe(0); // outcome:'precedent' must not leak into neutral
+    expect(s1.precedent_count).toBe(4);
+  });
+});
+
+describe('promoteStrategy (R5 strategy-persistence promotion gate)', () => {
+  it('PROMOTES a strategy certified over N>=3 unanimous fresh observations', () => {
+    const r = promoteStrategy({ helpful_count: 3, harmful_count: 0, neutral_count: 0 });
+    expect(r.promoted).toBe(true);
+    expect(r.n).toBe(3);
+    expect(r.winRateLCB).toBeGreaterThan(0.5);
+  });
+
+  it('does NOT promote below the N-episode threshold (insufficient evidence)', () => {
+    const r = promoteStrategy({ helpful_count: 2, harmful_count: 0, neutral_count: 0 });
+    expect(r.promoted).toBe(false);
+    expect(r.reasons.join(' ')).toMatch(/independent observations/);
+  });
+
+  it('DEMOTES a strategy whose net effect regresses (harmful > helpful)', () => {
+    const r = promoteStrategy({ helpful_count: 1, harmful_count: 3, neutral_count: 0 });
+    expect(r.demoted).toBe(true);
+    expect(r.promoted).toBe(false);
+  });
+
+  it('does NOT promote when the win-rate LCB is below the floor even with enough non-regressing episodes', () => {
+    const r = promoteStrategy({ helpful_count: 3, harmful_count: 2, neutral_count: 0 });
+    expect(r.demoted).toBe(false); // 2 harmful !> 3 helpful
+    expect(r.promoted).toBe(false); // but LCB(3/5) < 0.5
+    expect(r.deflatedLCB).toBeLessThan(0.5);
+  });
+
+  it('DEFLATES by the number of candidate strategies (selection premium flips a borderline win)', () => {
+    const item = { helpful_count: 6, harmful_count: 1, neutral_count: 0 };
+    expect(promoteStrategy(item, { numCandidates: 1 }).promoted).toBe(true);
+    const many = promoteStrategy(item, { numCandidates: 5 });
+    expect(many.promoted).toBe(false);
+    expect(many.selectionPenalty).toBeGreaterThan(0);
+    expect(many.deflatedLCB).toBeLessThan(promoteStrategy(item, { numCandidates: 1 }).deflatedLCB);
+  });
+
+  it('counts neutral (within-noise) results in the denominator so a mostly-neutral strategy cannot pose as a winner', () => {
+    const r = promoteStrategy({ helpful_count: 3, harmful_count: 0, neutral_count: 5 });
+    expect(r.n).toBe(8);
+    expect(r.winRate).toBeCloseTo(0.375, 3);
+    expect(r.promoted).toBe(false);
+  });
+
+  it('honors custom minEpisodes / winrateFloor knobs', () => {
+    const item = { helpful_count: 3, harmful_count: 0, neutral_count: 0 };
+    expect(promoteStrategy(item, { minEpisodes: 5 }).promoted).toBe(false);
+    expect(promoteStrategy(item, { winrateFloor: 0.9 }).promoted).toBe(false);
+  });
+
+  it('is inert on a non-object / empty item (never invents a promotion)', () => {
+    expect(promoteStrategy(null).promoted).toBe(false);
+    expect(promoteStrategy({}).promoted).toBe(false);
+  });
 });
 
 describe('rankStrategies', () => {
@@ -136,6 +207,22 @@ describe('rankStrategies', () => {
   it('honors the limit and returns [] for non-array input', () => {
     expect(rankStrategies(items, { scope: 'strategy', limit: 1 })[0].id).toBe('a');
     expect(rankStrategies(null)).toEqual([]);
+  });
+
+  it('with promote:true keeps ONLY R5-certified strategies (uncertified ones filtered out)', () => {
+    const pool = [
+      { id: 'strong', scope: 'strategy', criterion: 'engines', helpful_count: 8, harmful_count: 0, neutral_count: 0 },
+      { id: 'thin', scope: 'strategy', criterion: 'engines', helpful_count: 2, harmful_count: 0, neutral_count: 0 },
+    ];
+    // Legacy (no gate): both pass the demote filter and rank.
+    expect(rankStrategies(pool, { scope: 'strategy' }).map((r) => r.id)).toEqual(['strong', 'thin']);
+    // Gated: only the certified strategy survives.
+    expect(rankStrategies(pool, { scope: 'strategy', promote: true }).map((r) => r.id)).toEqual(['strong']);
+  });
+
+  it('promote:true does not affect the anti scope (bad attempts still surface)', () => {
+    const ranked = rankStrategies(items, { scope: 'anti', criterion: 'engines', promote: true });
+    expect(ranked.map((r) => r.id)).toContain('anti1');
   });
 });
 

@@ -19,6 +19,28 @@
 // ACE "context-collapse" failure that a full-cheatsheet rewrite causes, and
 // respects rules/mcp-single-source-of-truth.md (the brain is authoritative;
 // there is no private persistent client cache substituting for it).
+//
+// R5 STRATEGY-PERSISTENCE PROMOTION GATE (July-2026 statistical-rigor findings;
+// SkillOpt 2605.23904, SkillFoundry 2604.03964, memory-precedent caution
+// 2606.04315): a strategy is only PROMOTED into the re-injected "winning" set
+// after a CERTIFIED improvement — a Wilson lower bound on its win-rate-vs-
+// baseline (successes = the fresh 'helpful' gate observations) over N>=3
+// INDEPENDENT observations, above a floor (default LCB>0.5), DEFLATED by the
+// number of candidate strategies considered (the selection premium / winner's
+// curse — trying many strategies and re-injecting the best inflates the
+// observed win-rate). A strategy whose net effect regresses (harmful>helpful) is
+// DEMOTED. This closes the "memory-as-precedent" trap (2606.04315): a RETRIEVED
+// past success must never by itself raise promotion confidence — only certified
+// FRESH gate observations count toward the win-rate, so a recalled precedent
+// event is bucketed separately (precedent_count) and is inert to the gate.
+
+import {
+  DEFAULT_ALPHA,
+  DEFAULT_STRATEGY_MIN_EPISODES,
+  DEFAULT_STRATEGY_WINRATE_FLOOR,
+  selectionPremiumCharge,
+  wilsonLCB,
+} from './certification-stats.mjs';
 
 /**
  * Generic English stopwords stripped when building a stable strategy slug.
@@ -79,6 +101,24 @@ function eventId(ev) {
 }
 
 /**
+ * True when an event is a RETRIEVED PRECEDENT (a recalled past success surfaced
+ * from memory), NOT a fresh certified gate observation. Blocks the memory-as-
+ * precedent trap (R5, 2606.04315): such an event is counted separately and is
+ * INERT to the promotion gate — only fresh gate observations move the win-rate.
+ * Recognised markers: `precedent === true`, `recalled === true`, `source ===
+ * 'precedent'`, or `outcome === 'precedent'`.
+ */
+function isPrecedentEvent(ev) {
+  return Boolean(
+    ev &&
+      (ev.precedent === true ||
+        ev.recalled === true ||
+        ev.source === 'precedent' ||
+        ev.outcome === 'precedent'),
+  );
+}
+
+/**
  * Fold an append-only event list into itemized strategy bullets at READ time
  * (never in-place — no stored monolith, no context-collapse). Groups by
  * strategy id and derives helpful/harmful/neutral counts + avg_gate_delta from
@@ -109,6 +149,10 @@ export function foldStrategyEvents(events) {
         helpful_count: 0,
         harmful_count: 0,
         neutral_count: 0,
+        // Retrieved-precedent recalls (R5 memory-as-precedent guard): counted but
+        // INERT to promotion — they never touch the certified helpful/harmful/
+        // neutral buckets the win-rate gate reads.
+        precedent_count: 0,
         _deltaSum: 0,
         _deltaN: 0,
         avg_gate_delta: null,
@@ -117,6 +161,22 @@ export function foldStrategyEvents(events) {
         _lastIter: -Infinity,
       };
       groups.set(id, item);
+    }
+    // A retrieved precedent recall is bucketed separately and left INERT to the
+    // certified counts / delta / last-outcome (R5 memory-as-precedent guard):
+    // only fresh gate observations may move the win-rate that drives promotion.
+    if (isPrecedentEvent(ev)) {
+      item.precedent_count += 1;
+      const pIter = Number.isFinite(Number(ev.iter)) ? Number(ev.iter) : null;
+      if (pIter !== null) {
+        if (item.provenance.first_iter === null || pIter < item.provenance.first_iter) {
+          item.provenance.first_iter = pIter;
+        }
+        if (item.provenance.last_iter === null || pIter > item.provenance.last_iter) {
+          item.provenance.last_iter = pIter;
+        }
+      }
+      continue;
     }
     const outcome = String(ev.outcome || 'neutral');
     if (outcome === 'helpful') item.helpful_count += 1;
@@ -164,6 +224,84 @@ export function foldStrategyEvents(events) {
 }
 
 /**
+ * R5 STRATEGY-PERSISTENCE PROMOTION GATE. Decide whether ONE folded strategy item
+ * has earned a place in the re-injected "winning" set. A strategy is PROMOTED only
+ * on a CERTIFIED improvement:
+ *   - it has N >= `minEpisodes` INDEPENDENT fresh gate observations
+ *     (n = helpful + harmful + neutral; retrieved-precedent recalls are excluded
+ *     upstream by foldStrategyEvents, closing the memory-as-precedent trap);
+ *   - its net effect does NOT regress (harmful <= helpful) — else it is DEMOTED;
+ *   - the one-sided WILSON lower bound on its win-rate-vs-baseline (successes =
+ *     the 'helpful' observations), DEFLATED by the selection-premium charge for
+ *     having been chosen as the best of `numCandidates` noisy candidates, sits
+ *     STRICTLY above `winrateFloor` (default 0.5).
+ * The selection-premium deflation is `E[max of numCandidates std-normals]` times
+ * the win-rate's own binomial standard error (winner's-curse; SkillOpt 2605.23904)
+ * — so cherry-picking the best of many strategies is charged back before promotion.
+ *
+ * @param {object} item folded strategy item (from foldStrategyEvents).
+ * @param {object} [opts]
+ * @param {number} [opts.minEpisodes]  min independent observations (default 3).
+ * @param {number} [opts.winrateFloor] win-rate LCB floor (default 0.5).
+ * @param {number} [opts.alpha]        one-sided level for the Wilson LCB (default 0.05).
+ * @param {number} [opts.numCandidates] candidates the item was selected among (default 1).
+ * @returns {{promoted:boolean, demoted:boolean, n:number, winRate:number,
+ *   winRateLCB:number, deflatedLCB:number, selectionPenalty:number,
+ *   numCandidates:number, minEpisodes:number, winrateFloor:number, reasons:string[]}}
+ */
+export function promoteStrategy(item, opts = {}) {
+  const {
+    minEpisodes = DEFAULT_STRATEGY_MIN_EPISODES,
+    winrateFloor = DEFAULT_STRATEGY_WINRATE_FLOOR,
+    alpha = DEFAULT_ALPHA,
+    numCandidates = 1,
+  } = opts;
+  const it = item && typeof item === 'object' ? item : {};
+  const helpful = Math.max(0, Number(it.helpful_count) || 0);
+  const harmful = Math.max(0, Number(it.harmful_count) || 0);
+  const neutral = Math.max(0, Number(it.neutral_count) || 0);
+  // Independent CERTIFIED-FRESH observations only (precedent recalls excluded at
+  // fold time). A neutral (within-noise) result is a non-win — it stays in the
+  // denominator so a mostly-neutral strategy cannot masquerade as a proven winner.
+  const n = helpful + harmful + neutral;
+  const winRate = n > 0 ? helpful / n : 0;
+  const winRateLCB = wilsonLCB(helpful, n, alpha);
+  // Winner's-curse deflation in win-rate units: charge E[max of numCandidates
+  // std-normals] * the win-rate's binomial standard error.
+  const se = n > 0 ? Math.sqrt((winRate * (1 - winRate)) / n) : 0;
+  const selectionPenalty = selectionPremiumCharge({ sigma: se, numCandidates });
+  const deflatedLCB = Math.max(0, winRateLCB - selectionPenalty);
+  const demoted = harmful > helpful; // net-negative effect => flip out of the set
+  const enoughEpisodes = n >= minEpisodes;
+  const clearsFloor = deflatedLCB > winrateFloor;
+  const promoted = enoughEpisodes && !demoted && clearsFloor;
+  const reasons = [];
+  if (!enoughEpisodes) {
+    reasons.push(`only ${n} of ${minEpisodes} required independent observations`);
+  }
+  if (demoted) reasons.push(`regressing (harmful ${harmful} > helpful ${helpful}) — demote`);
+  if (!clearsFloor) {
+    reasons.push(
+      `win-rate LCB ${deflatedLCB.toFixed(3)} (deflated by ${selectionPenalty.toFixed(3)} for ` +
+        `${numCandidates} candidate(s)) not above floor ${winrateFloor}`,
+    );
+  }
+  return {
+    promoted,
+    demoted,
+    n,
+    winRate: Math.round(winRate * 1e4) / 1e4,
+    winRateLCB: Math.round(winRateLCB * 1e4) / 1e4,
+    deflatedLCB: Math.round(deflatedLCB * 1e4) / 1e4,
+    selectionPenalty: Math.round(selectionPenalty * 1e4) / 1e4,
+    numCandidates,
+    minEpisodes,
+    winrateFloor,
+    reasons,
+  };
+}
+
+/**
  * Rank folded strategy items for re-injection. Sort key: (helpful - harmful)
  * descending, tie-broken by avg_gate_delta descending, then id for stability.
  * Options:
@@ -175,6 +313,12 @@ export function foldStrategyEvents(events) {
  *                harmful_count >= helpful_count + threshold — the
  *                Dynamic-Cheatsheet counter loop that flips a soured bullet out
  *                of re-injection (default 2; disabled for scope==='anti').
+ *  - promote   : for scope!=='anti', apply the R5 PROMOTION GATE — keep ONLY
+ *                strategies with a CERTIFIED win-rate LCB above floor over
+ *                >= minEpisodes independent observations, deflated by the pool
+ *                size as the selection premium (default false ⇒ byte-identical
+ *                legacy ranking for every existing caller/test).
+ *  - minEpisodes / winrateFloor / alpha : promotion-gate knobs (see promoteStrategy).
  *  - limit     : cap the returned count.
  * @param {Array<object>} items
  * @param {object} [opts]
@@ -182,7 +326,17 @@ export function foldStrategyEvents(events) {
  */
 export function rankStrategies(items, opts = {}) {
   if (!Array.isArray(items)) return [];
-  const { scope, criterion, includeGlobal = true, demoteThreshold = 2, limit } = opts;
+  const {
+    scope,
+    criterion,
+    includeGlobal = true,
+    demoteThreshold = 2,
+    limit,
+    promote = false,
+    minEpisodes,
+    winrateFloor,
+    alpha,
+  } = opts;
   let pool = items.filter((it) => it && typeof it === 'object');
   if (scope) pool = pool.filter((it) => it.scope === scope);
   if (criterion !== undefined && criterion !== null) {
@@ -192,6 +346,15 @@ export function rankStrategies(items, opts = {}) {
   }
   if (scope !== 'anti' && Number.isFinite(demoteThreshold)) {
     pool = pool.filter((it) => (it.harmful_count || 0) < (it.helpful_count || 0) + demoteThreshold);
+  }
+  // R5 promotion gate (opt-in; scope!=='anti'). numCandidates == the surviving
+  // candidate pool size at selection time, so a larger field of contenders is
+  // charged a larger winner's-curse premium before any one is promoted.
+  if (promote && scope !== 'anti') {
+    const numCandidates = pool.length;
+    pool = pool.filter(
+      (it) => promoteStrategy(it, { minEpisodes, winrateFloor, alpha, numCandidates }).promoted,
+    );
   }
   const score = (it) => (Number(it.helpful_count) || 0) - (Number(it.harmful_count) || 0);
   pool = [...pool].sort((a, b) => {

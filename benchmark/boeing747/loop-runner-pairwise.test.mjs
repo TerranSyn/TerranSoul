@@ -13,6 +13,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   CONTESTED_PERSIST_THRESHOLD,
+  certifyPairwiseConfirmed,
   certifyPairwiseStop,
   computePairwiseStop,
 } from './loop-runner-terransoul.mjs';
@@ -237,5 +238,209 @@ describe('computePairwiseStop — certification-gated threshold', () => {
     const out = computePairwiseStop({ claudeStop: { reasons: [] }, certify: certified });
     expect(out.stop).toBe(false);
     expect(out.reasons).toEqual([]);
+  });
+});
+
+// --- STEP 2: CONFIRMATION RE-JUDGE + LCB CERTIFICATION ---------------------
+// certifyPairwiseConfirmed pools per-view cleared-counts across (1 + k_confirm)
+// INDEPENDENT pairwise passes and certifies on the worst view's Agresti-Coull
+// LCB (R1 IUT), escalating straddling views to the e-process (R2), reporting on
+// the LCB never the peak (R3), with a paired-test resolution + flip-rate noise
+// budget (R7). PURE — the k confirmation passes are mocked as arrays of per-view
+// scores; NO live judge/GPU/network.
+
+/** Build one pairwise pass: 9 per-view score objects at a uniform score. */
+function pass(score, { inconclusiveViews = [] } = {}) {
+  return Array.from({ length: 9 }, (_, i) => ({
+    view: i + 1,
+    key: `view-${i + 1}`,
+    score,
+    inconclusive: inconclusiveViews.includes(i + 1),
+  }));
+}
+
+/** N identical unanimous passes at `score`. */
+function passes(nPasses, score, opts) {
+  return Array.from({ length: nPasses }, () => pass(score, opts));
+}
+
+describe('certifyPairwiseConfirmed — pooled worst-view LCB certification (R1/R2/R3/R7)', () => {
+  it('certifies when enough unanimous passes push the worst-view AC-LCB above the floor', () => {
+    // 6 unanimous clears => AC-LCB(6,6) ~= 0.64 >= 0.5 for every view (IUT).
+    const c = certifyPairwiseConfirmed({ passes: passes(6, 5.0), bars: BARS });
+    expect(c.certified).toBe(true);
+    expect(c.passesUsed).toBe(6);
+    expect(c.worstViewLCB).toBeGreaterThanOrEqual(0.5);
+    expect(c.inconclusiveViews).toEqual([]);
+    expect(c.blockingViews).toEqual([]);
+    expect(c.resolution.resolvable).toBe(true);
+    expect(c.resolution.n).toBe(6);
+    expect(Number.isFinite(c.resolution.mde)).toBe(true);
+  });
+
+  it('does NOT certify at the default k_confirm=2 (n=3) even on a unanimous sweep — underpowered => inconclusive', () => {
+    // R3 deflation: AC-LCB(3,3) ~= 0.47 < 0.5 and the e-process cannot reach
+    // 1/alpha on 3 draws, so every view straddles and is marked inconclusive.
+    const c = certifyPairwiseConfirmed({ passes: passes(3, 5.0), bars: BARS });
+    expect(c.certified).toBe(false);
+    expect(c.passesUsed).toBe(3);
+    expect(c.inconclusiveViews).toHaveLength(9);
+    expect(c.escalatedViews).toEqual([]);
+    expect(c.blockingViews).toHaveLength(9);
+    expect(c.perView.every((v) => v.straddles)).toBe(true);
+  });
+
+  it('a view that clears on only some passes lowers its count and blocks certification', () => {
+    // view 4 clears 4/6 (below bar on 2 passes) — its LCB stays under the floor.
+    const list = passes(6, 5.0).map((p, k) => {
+      if (k >= 4) p[3].score = 4.0; // 2 of 6 below the 4.7 bar for view 4
+      return p;
+    });
+    const c = certifyPairwiseConfirmed({ passes: list, bars: BARS });
+    expect(c.clearedCounts[3]).toBe(4);
+    expect(c.certified).toBe(false);
+    expect(c.blockingViews).toContain(4);
+  });
+
+  it('a null / inconclusive per-pass score never counts as a clear', () => {
+    const list = passes(6, 5.0);
+    list[0][2].score = null; // view 3 unscored on pass 1
+    list[1][2].inconclusive = true; // view 3 coin-flip on pass 2
+    const c = certifyPairwiseConfirmed({ passes: list, bars: BARS });
+    expect(c.clearedCounts[2]).toBe(4); // 4 of 6 passes cleared view 3
+  });
+
+  it('a persistently gemma-CONTESTED view blocks even when it clears every pass', () => {
+    const c = certifyPairwiseConfirmed({ passes: passes(6, 5.0), bars: BARS, contestedViews: [3] });
+    expect(c.certified).toBe(false);
+    expect(c.contestedViews).toEqual([3]);
+    expect(c.blockingViews).toContain(3);
+    expect(c.perView[2].cleared).toBe(false);
+    // the other eight views still certify by LCB.
+    expect(c.perView.filter((v) => v.cleared)).toHaveLength(8);
+  });
+
+  it('broadcasts a scalar bar across all views', () => {
+    const c = certifyPairwiseConfirmed({ passes: passes(6, 4.8), bars: 4.7 });
+    expect(c.certified).toBe(true);
+    const below = certifyPairwiseConfirmed({ passes: passes(6, 4.6), bars: 4.7 });
+    expect(below.certified).toBe(false);
+    expect(below.blockingViews).toHaveLength(9);
+  });
+
+  it('is not certified on an empty confirmation set', () => {
+    const c = certifyPairwiseConfirmed({ passes: [], bars: BARS });
+    expect(c.certified).toBe(false);
+    expect(c.passesUsed).toBe(0);
+    expect(c.totalViews).toBe(0);
+  });
+
+  it('attaches an R7 resolution + flip-rate noise budget record', () => {
+    const c = certifyPairwiseConfirmed({ passes: passes(6, 5.0), bars: BARS });
+    expect(c.resolution).toMatchObject({ alpha: 0.05, power: 0.8, n: 6 });
+    expect(typeof c.resolution.flipRate).toBe('number');
+    expect(typeof c.resolution.worstViewMargin).toBe('number');
+    // a supplied flip rate overrides the empirical estimate.
+    const withFlip = certifyPairwiseConfirmed({ passes: passes(6, 5.0), bars: BARS, flipRate: 0.2 });
+    expect(withFlip.resolution.flipRate).toBe(0.2);
+    expect(withFlip.resolution.mde).toBeGreaterThan(0);
+  });
+});
+
+describe('computePairwiseStop — CONFIRMATION-gated threshold (R2/R3)', () => {
+  const singlePassCertified = { certified: true, allCleared: true, inconclusiveViews: [], contestedViews: [] };
+
+  function confirmedVerdict(over = {}) {
+    return {
+      certified: false,
+      worstViewLCB: 0.64,
+      passesUsed: 6,
+      inconclusiveViews: [],
+      contestedViews: [],
+      blockingViews: [],
+      resolution: { alpha: 0.05, power: 0.8, n: 6, flipRate: 0.1, mde: 0.05, worstViewMargin: 0.5, resolvable: true },
+      ...over,
+    };
+  }
+
+  it('banks a threshold stop when the CONFIRMATION set certified', () => {
+    const out = computePairwiseStop({
+      claudeStop: { reasons: ['threshold: all 9 views >= bars on iteration 8'] },
+      certify: singlePassCertified,
+      confirmed: confirmedVerdict({ certified: true }),
+    });
+    expect(out.stop).toBe(true);
+    expect(out.certified).toBe(true);
+    expect(out.reasons[0]).toContain('CONFIRMED');
+    expect(out.reasons[0]).toContain('resolution');
+  });
+
+  it('downgrades to "NOT confirmed (continuing)" when the confirmation failed (inconclusive views)', () => {
+    const out = computePairwiseStop({
+      claudeStop: { reasons: ['threshold: all 9 views >= bars on iteration 8'] },
+      certify: singlePassCertified,
+      confirmed: confirmedVerdict({ certified: false, inconclusiveViews: [3, 7], blockingViews: [3, 7] }),
+    });
+    expect(out.stop).toBe(false);
+    expect(out.certified).toBe(false);
+    expect(out.reasons[0]).toContain('NOT confirmed');
+    expect(out.reasons[0]).toContain('inconclusive after e-process [3, 7]');
+  });
+
+  it('reports below-LCB-floor unresolved views (distinct from inconclusive/contested)', () => {
+    const out = computePairwiseStop({
+      claudeStop: { reasons: ['threshold: all 9 views >= bars on iteration 8'] },
+      certify: singlePassCertified,
+      confirmed: confirmedVerdict({ certified: false, blockingViews: [4, 5] }),
+    });
+    expect(out.stop).toBe(false);
+    expect(out.reasons[0]).toContain('views below the LCB floor [4, 5]');
+  });
+
+  it('reports a resolution-limited block when the worst-view margin is below the MDE', () => {
+    const out = computePairwiseStop({
+      claudeStop: { reasons: ['threshold: all 9 views >= bars on iteration 8'] },
+      certify: singlePassCertified,
+      confirmed: confirmedVerdict({
+        certified: false,
+        blockingViews: [],
+        resolution: { alpha: 0.05, power: 0.8, n: 3, flipRate: 0.4, mde: 0.71, worstViewMargin: 0.17, resolvable: false },
+      }),
+    });
+    expect(out.stop).toBe(false);
+    expect(out.reasons[0]).toContain('below resolution 0.710');
+  });
+
+  it('the confirmation verdict OVERRIDES a passing single-pass certify', () => {
+    const out = computePairwiseStop({
+      claudeStop: { reasons: ['threshold: all 9 views >= bars on iteration 8'] },
+      certify: singlePassCertified, // single pass said certified...
+      confirmed: confirmedVerdict({ certified: false, inconclusiveViews: [1] }), // ...confirmation says no
+    });
+    expect(out.stop).toBe(false);
+    expect(out.certified).toBe(false);
+  });
+
+  it('still stops on budget while downgrading an unconfirmed threshold in the same batch', () => {
+    const out = computePairwiseStop({
+      claudeStop: {
+        reasons: ['threshold: all 9 views >= bars on iteration 12', 'budget: 12/12 iterations used'],
+      },
+      certify: singlePassCertified,
+      confirmed: confirmedVerdict({ certified: false, inconclusiveViews: [2] }),
+    });
+    expect(out.stop).toBe(true); // budget still stops
+    expect(out.reasons[0]).toContain('NOT confirmed');
+    expect(out.reasons[1]).toMatch(/^budget:/);
+  });
+
+  it('is byte-identical to the legacy single-pass gate when no confirmed verdict is supplied', () => {
+    const withoutConfirmed = computePairwiseStop({
+      claudeStop: { reasons: ['threshold: all 9 views >= bars on iteration 5'] },
+      certify: singlePassCertified,
+    });
+    expect(withoutConfirmed.stop).toBe(true);
+    expect(withoutConfirmed.certified).toBe(true);
+    expect(withoutConfirmed.reasons[0]).toMatch(/^threshold:/);
   });
 });

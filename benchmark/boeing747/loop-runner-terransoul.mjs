@@ -88,6 +88,21 @@ import {
   snapshotBest,
 } from './lib/edit-gate.mjs';
 import { PARITY_ANCHOR_SCORE, loadPairwiseConfig } from './lib/pairwise-config.mjs';
+// PURE statistical-rigor certification primitives (July-2026 findings): the
+// worst-view Agresti-Coull LCB / IUT (R1), the sequential betting e-process for
+// straddling views (R2), and the paired-test resolution + judge flip-rate noise
+// budget (R7). Consumed ONLY on the opus-pairwise CONFIRMATION path below; the
+// frozen gemma and opus-panel tracks never reach it, so they stay byte-identical.
+import {
+  DEFAULT_ALPHA,
+  DEFAULT_K_CONFIRM,
+  DEFAULT_P_FLOOR,
+  agrestiCoullInterval,
+  agrestiCoullLCB,
+  certifyIUT,
+  eProcess,
+  pairedResolution,
+} from './lib/certification-stats.mjs';
 import {
   classifyOutcome,
   foldStrategyEvents,
@@ -329,17 +344,55 @@ export function certifyPairwiseStop({
  * (continuing)" note naming the blocking views, so a hollow / gemma-contested /
  * coin-flip "all bars met" can never bank a false 100%.
  *
+ * When a `confirmed` verdict (certifyPairwiseConfirmed) is supplied — the loop
+ * computes it ONLY after a single all-cleared pass, the candidate-100% event — the
+ * threshold banks a stop iff the pooled (1 + k_confirm) LCB CONFIRMATION passes
+ * (R2/R3): we report the FRESH confirmation verdict at its stated resolution, never
+ * the triggering peak. Absent `confirmed`, the legacy single-pass certify gate is
+ * used unchanged (byte-identical for every non-confirmed caller/test).
+ *
  * @param {{reasons:string[]}} p.claudeStop  the evaluateStopConditions result (calibrated bar).
  * @param {{certified:boolean, allCleared:boolean, inconclusiveViews:number[], contestedViews:number[]}} p.certify
+ * @param {Object} [p.confirmed]  certifyPairwiseConfirmed() output (R2/R3/R7); optional.
  * @returns {{stop:boolean, reasons:string[], certified:boolean}}
  */
-export function computePairwiseStop({ claudeStop, certify }) {
+export function computePairwiseStop({ claudeStop, certify, confirmed }) {
   const reasons = [];
   let stop = false;
   const cert = certify || { certified: false, allCleared: false, inconclusiveViews: [], contestedViews: [] };
   for (const r of (claudeStop && Array.isArray(claudeStop.reasons) ? claudeStop.reasons : [])) {
     if (String(r).startsWith('threshold:')) {
-      if (cert.certified) {
+      if (confirmed) {
+        // R2/R3: gate the threshold on the CONFIRMATION-set certification (LCB over
+        // 1+k_confirm independent passes), never the single-pass peak.
+        if (confirmed.certified) {
+          reasons.push(
+            `${r} — CONFIRMED (worst-view AC LCB ${confirmed.worstViewLCB.toFixed(3)} over ` +
+              `${confirmed.passesUsed} independent passes; 100% at resolution ${formatResolution(confirmed.resolution)})`,
+          );
+          stop = true;
+        } else {
+          const inc = new Set(confirmed.inconclusiveViews);
+          const con = new Set(confirmed.contestedViews);
+          const unresolved = confirmed.blockingViews.filter((v) => !inc.has(v) && !con.has(v));
+          const blockers = [];
+          if (unresolved.length > 0) blockers.push(`views below the LCB floor [${unresolved.join(', ')}]`);
+          if (confirmed.inconclusiveViews.length > 0) {
+            blockers.push(`inconclusive after e-process [${confirmed.inconclusiveViews.join(', ')}]`);
+          }
+          if (confirmed.contestedViews.length > 0) {
+            blockers.push(`gemma-contested views [${confirmed.contestedViews.join(', ')}]`);
+          }
+          if (!confirmed.resolution.resolvable) {
+            const mde = Number.isFinite(confirmed.resolution.mde) ? confirmed.resolution.mde.toFixed(3) : 'inf';
+            blockers.push(`worst-view margin ${confirmed.resolution.worstViewMargin.toFixed(3)} below resolution ${mde}`);
+          }
+          reasons.push(
+            `threshold NOT confirmed over ${confirmed.passesUsed} passes ` +
+              `(${blockers.join('; ') || 'confirmation failed'}) — continuing`,
+          );
+        }
+      } else if (cert.certified) {
         reasons.push(r);
         stop = true;
       } else {
@@ -355,7 +408,198 @@ export function computePairwiseStop({ claudeStop, certify }) {
       stop = true;
     }
   }
-  return { stop, reasons, certified: cert.certified };
+  return { stop, reasons, certified: confirmed ? confirmed.certified : cert.certified };
+}
+
+/** Human-readable one-liner for an R7 resolution record (log/report only). */
+function formatResolution(res) {
+  if (!res) return 'n/a';
+  const mde = Number.isFinite(res.mde) ? res.mde.toFixed(3) : 'inf';
+  const flip = _isNum(res.flipRate) ? res.flipRate.toFixed(3) : '?';
+  return `MDE ${mde} (n=${res.n}, flip~=${flip}, power=${res.power})`;
+}
+
+/**
+ * PURE + exported: the R2/R3/R7 CONFIRMATION-SET certifier. A single all-cleared
+ * pass is a candidate-100% EVENT, not a certified 100% — the loop re-judges the
+ * SAME rendered candidate with (1 + k_confirm) INDEPENDENT pairwise passes (fresh
+ * Opus order-swaps/seeds) and hands the pooled per-view results here.
+ *
+ * The rule (all math in lib/certification-stats.mjs; citations in that header):
+ *   - Per view, count how many of the n passes CLEARED the calibrated bar (a
+ *     null/inconclusive score never counts — a coin-flip clear is void).
+ *   - R1 IUT: certify a view on its one-sided AGRESTI-COULL lower bound — no
+ *     cross-view Bonferroni; the worst view's LCB is the max-p statistic. A view
+ *     whose AC-LCB >= p_floor is certified outright.
+ *   - R2: a view whose AC-LCB is below the floor but whose two-sided interval
+ *     STILL reaches above it STRADDLES — escalate to the sequential betting
+ *     e-process. If E_t reaches 1/alpha it is certified (escalated); otherwise it
+ *     is INCONCLUSIVE (never passes on an underpowered coin-flip). A view whose
+ *     whole interval sits below the floor is a plain uncleared fail.
+ *   - Persistently gemma-CONTESTED views (from the single-pass certify) BLOCK.
+ *   - R3: certification is on the LCB, never the raw peak — the loop reports THIS
+ *     fresh confirmation verdict, not the triggering peak score.
+ *   - R7: attach the paired-test resolution (alpha, power) over the judge flip-
+ *     rate noise budget; the worst-view margin above the floor must exceed it, so
+ *     a "100%" is reported at a stated resolution rather than bare.
+ *
+ * NOTE (honest, by design): at the default k_confirm=2 (n=3 total passes) even a
+ * unanimous 3/3 sweep sits below the AC-LCB floor (0.47 < 0.5) and the e-process
+ * cannot reach 1/alpha, so it reports INCONCLUSIVE and the loop CONTINUES — LCB
+ * certification needs roughly five unanimous passes. That underpowered-at-n=3
+ * behavior is the intended R3 deflation, not a bug.
+ *
+ * @param {Object} p
+ * @param {Array<Array<{view?:number, score:number|null, inconclusive?:boolean}>>} p.passes
+ *   (1 + k_confirm) independent pairwise passes, each a per-view score array.
+ * @param {number|number[]} p.bars   per-view calibrated bar(s) (a scalar broadcasts).
+ * @param {number[]} [p.contestedViews]  1-based view numbers persistently gemma-contested.
+ * @param {number} [p.pFloor]  pass-probability floor (default 0.5).
+ * @param {number} [p.alpha]   one-sided level (default 0.05).
+ * @param {number} [p.power]   R7 target power (default 0.8).
+ * @param {number} [p.flipRate]  measured judge flip rate; omit to estimate from the passes.
+ * @returns {{certified:boolean, worstViewLCB:number, worstViewIndex:number|null,
+ *   passesUsed:number, totalViews:number, clearedCounts:number[], perView:Array<Object>,
+ *   inconclusiveViews:number[], contestedViews:number[], escalatedViews:number[],
+ *   blockingViews:number[], resolution:Object}}
+ */
+export function certifyPairwiseConfirmed({
+  passes = [],
+  bars,
+  contestedViews = [],
+  pFloor = DEFAULT_P_FLOOR,
+  alpha = DEFAULT_ALPHA,
+  power = 0.8,
+  flipRate,
+} = {}) {
+  const passList = (Array.isArray(passes) ? passes : []).filter((p) => Array.isArray(p));
+  const n = passList.length;
+  const nViews = passList.reduce((m, p) => Math.max(m, p.length), 0);
+  const barFor = (i) => (Array.isArray(bars) ? bars[i] : bars);
+  const contestedSet = new Set(
+    (Array.isArray(contestedViews) ? contestedViews : [])
+      .map((v) => v - 1)
+      .filter((i) => Number.isInteger(i) && i >= 0),
+  );
+
+  // Per-view 0/1 "cleared the bar this pass" observations. A null or inconclusive
+  // (decided_fraction < 0.5) score is NOT a clear — a clear on coin-flips is void.
+  const perViewObs = [];
+  for (let i = 0; i < nViews; i++) {
+    perViewObs.push(
+      passList.map((pass) => {
+        const v = pass[i];
+        const score = v && _isNum(v.score) ? v.score : null;
+        const bar = barFor(i);
+        const inconclusive = Boolean(v && v.inconclusive) || !_isNum(score);
+        return !inconclusive && _isNum(bar) && score >= bar ? 1 : 0;
+      }),
+    );
+  }
+  const clearedCounts = perViewObs.map((obs) => obs.reduce((a, b) => a + b, 0));
+
+  const perView = perViewObs.map((obs, i) => {
+    const clearedCount = clearedCounts[i];
+    const passRate = n > 0 ? clearedCount / n : 0;
+    const lcb = agrestiCoullLCB(clearedCount, n, alpha);
+    const interval = agrestiCoullInterval(clearedCount, n, alpha);
+    const certifiedByLCB = n > 0 && lcb + 1e-9 >= pFloor;
+    let straddles = false;
+    let escalated = false;
+    let eValue = null;
+    let inconclusive = false;
+    let cleared = certifiedByLCB;
+    if (!certifiedByLCB && n > 0) {
+      // AC-LCB below the floor, but the two-sided interval still reaches above it
+      // => AMBIGUOUS. Escalate to the e-process instead of rejecting on a small-n
+      // bound. If the whole interval sits below the floor it is a plain fail.
+      straddles = interval.upper + 1e-9 >= pFloor;
+      if (straddles) {
+        const ep = eProcess({ observations: obs, pFloor, alpha });
+        eValue = ep.eValue;
+        if (ep.aboveBar) {
+          cleared = true;
+          escalated = true;
+        } else {
+          inconclusive = true;
+        }
+      }
+    }
+    const contested = contestedSet.has(i);
+    return {
+      view: i + 1,
+      clearedCount,
+      n,
+      passRate,
+      lcb,
+      intervalLower: interval.lower,
+      intervalUpper: interval.upper,
+      certifiedByLCB,
+      straddles,
+      escalated,
+      eValue,
+      inconclusive,
+      contested,
+      cleared: cleared && !contested,
+    };
+  });
+
+  // R1 IUT worst-view (max-p) statistic — reused for the reported worst-view LCB /
+  // index (contested views flagged so the report matches the block decision).
+  const iut = certifyIUT({
+    perViewClearedCounts: clearedCounts,
+    n,
+    pFloor,
+    alpha,
+    contestedViews: [...contestedSet],
+  });
+
+  const inconclusiveViews = perView.filter((v) => v.inconclusive).map((v) => v.view);
+  const escalatedViews = perView.filter((v) => v.escalated).map((v) => v.view);
+  const contestedOut = perView.filter((v) => v.contested).map((v) => v.view);
+  const blockingViews = perView.filter((v) => !v.cleared).map((v) => v.view);
+
+  // R7 resolution + judge flip-rate noise budget. With no supplied flip rate,
+  // estimate it EMPIRICALLY from these very draws — the probability two
+  // independent Bernoulli(passRate) draws disagree is 2p(1-p), averaged over views
+  // (no hardcoded noise number; AGI-pure). The worst view (smallest LCB) sets the
+  // margin above the floor a "100%" must resolve.
+  const empiricalFlip =
+    perView.length > 0
+      ? perView.reduce((s, v) => s + 2 * v.passRate * (1 - v.passRate), 0) / perView.length
+      : 0;
+  const usedFlip = _isNum(flipRate) ? flipRate : empiricalFlip;
+  const mde = pairedResolution({ n, alpha, power, flipRate: usedFlip });
+  const worstView = iut.worstViewIndex !== null ? perView[iut.worstViewIndex] : null;
+  const worstViewPassRate = worstView ? worstView.passRate : 0;
+  const worstViewMargin = worstViewPassRate - pFloor;
+  const resolvable = Number.isFinite(mde) && worstViewMargin + 1e-9 >= mde;
+
+  const certified = perView.length > 0 && n > 0 && perView.every((v) => v.cleared) && resolvable;
+
+  return {
+    certified,
+    worstViewLCB: iut.worstViewLCB,
+    worstViewIndex: iut.worstViewIndex,
+    passesUsed: n,
+    totalViews: nViews,
+    clearedCounts,
+    perView,
+    inconclusiveViews,
+    contestedViews: contestedOut,
+    escalatedViews,
+    blockingViews,
+    resolution: {
+      alpha,
+      power,
+      n,
+      flipRate: usedFlip,
+      mde,
+      worstViewPassRate,
+      worstViewMargin,
+      resolvable,
+    },
+  };
 }
 
 function bookkeepTrack({ actorDir, iterNum, runId, judged, judgeTrack, rubric, rubricSha256 }) {
@@ -840,13 +1084,28 @@ export async function runIterationTerransoul({
     try {
       const events = await fetchStrategyEvents({ criterion: weakestId, limit: 20 });
       const folded = foldStrategyEvents(events);
-      strategyCheatsheetSection = formatStrategyCheatsheetSection(
-        rankStrategies(folded, { scope: 'strategy', criterion: weakestId, limit: 5 }),
-      );
+      // R5 strategy-persistence PROMOTION GATE: only re-inject a strategy once it
+      // has a CERTIFIED win-rate LCB above floor over >= N independent fresh gate
+      // observations, deflated by the candidate-pool size (selection premium). The
+      // gate reads its knobs from the calibrated sidecar's certification block.
+      const strategyCertCfg = pairwiseCfg.certification || {};
+      const promoted = rankStrategies(folded, {
+        scope: 'strategy',
+        criterion: weakestId,
+        limit: 5,
+        promote: true,
+        minEpisodes: strategyCertCfg.strategy_min_episodes,
+        winrateFloor: strategyCertCfg.strategy_winrate_floor,
+        alpha: strategyCertCfg.alpha,
+      });
+      strategyCheatsheetSection = formatStrategyCheatsheetSection(promoted);
       badAttemptsSection = formatBadAttemptsSection(
         rankStrategies(folded, { scope: 'anti', criterion: weakestId, limit: 3 }),
       );
-      console.log(`  strategy cheatsheet: folded ${folded.length} strategy item(s) for '${weakestId || 'general'}'`);
+      console.log(
+        `  strategy cheatsheet: folded ${folded.length} strategy item(s), ${promoted.length} PROMOTED ` +
+          `(certified R5 win-rate LCB) for '${weakestId || 'general'}'`,
+      );
     } catch (err) {
       console.log(`  strategy cheatsheet fold skipped: ${String(err.message || err)}`);
     }
@@ -977,7 +1236,57 @@ export async function runIterationTerransoul({
     // bar with NO inconclusive (coin-flip) view and NO persistently gemma-
     // CONTESTED view ("100%" definition). stall/budget still stop the loop; gemma
     // is reported (its persistence-gated veto already folded into pairwiseCertify).
-    const pw = computePairwiseStop({ claudeStop, certify: pairwiseCertify });
+    //
+    // R2/R3 CONFIRMATION RE-JUDGE: a single all-cleared pass is a candidate-100%
+    // EVENT, not a certified 100%. Before banking a threshold stop we re-judge the
+    // SAME rendered candidate with k_confirm ADDITIONAL independent pairwise passes
+    // (fresh Opus order-swaps/seeds; force:true so the per-view cache is NOT reused)
+    // and certify on the pooled worst-view Agresti-Coull LCB (never the peak). Only
+    // fired on an all-cleared pass, so the extra judge cost is paid at most once per
+    // 100% event; the extra passes overwrite the disposable shots-dir judge cache
+    // AFTER bookkeeping already recorded the true pass-1 totals, so no measurement
+    // artifact is mutated.
+    let pairwiseConfirmed = null;
+    if (pairwiseCertify.allCleared) {
+      const certCfg = pairwiseCfg.certification || {};
+      const kConfirm =
+        Number.isInteger(certCfg.k_confirm) && certCfg.k_confirm >= 0 ? certCfg.k_confirm : DEFAULT_K_CONFIRM;
+      const refShotsDir = path.resolve(REPO_ROOT, pairwiseCfg.ref_shots_dir);
+      const confirmPasses = [claudeJudged.per_view];
+      console.log(
+        `  CONFIRMATION: candidate-100% single pass — running ${kConfirm} independent confirmation pass(es) on the SAME render`,
+      );
+      for (let c = 0; c < kConfirm; c++) {
+        const extra = await judgeShotsPairwise({
+          shotsDir: rig.outDir,
+          referenceShotsDir: refShotsDir,
+          samples: opusSamples,
+          model: opusJudgeModel,
+          force: true,
+        });
+        if (extra && Array.isArray(extra.per_view)) {
+          confirmPasses.push(extra.per_view);
+          console.log(`    confirmation pass ${c + 1}/${kConfirm}: ${extra.total_0_100}/100`);
+        } else {
+          console.log(`    confirmation pass ${c + 1}/${kConfirm}: judge returned no per_view — skipped`);
+        }
+      }
+      pairwiseConfirmed = certifyPairwiseConfirmed({
+        passes: confirmPasses,
+        bars: calibratedBar,
+        contestedViews: pairwiseCertify.contestedViews,
+        pFloor: _isNum(certCfg.p_floor) ? certCfg.p_floor : DEFAULT_P_FLOOR,
+        alpha: _isNum(certCfg.alpha) ? certCfg.alpha : DEFAULT_ALPHA,
+      });
+      console.log(
+        `  CONFIRMATION VERDICT: certified=${pairwiseConfirmed.certified} ` +
+          `worst-view LCB=${pairwiseConfirmed.worstViewLCB.toFixed(3)} over ${pairwiseConfirmed.passesUsed} passes` +
+          `${pairwiseConfirmed.inconclusiveViews.length ? ` inconclusive[${pairwiseConfirmed.inconclusiveViews.join(',')}]` : ''}` +
+          `${pairwiseConfirmed.escalatedViews.length ? ` escalated[${pairwiseConfirmed.escalatedViews.join(',')}]` : ''}` +
+          ` — resolution ${formatResolution(pairwiseConfirmed.resolution)}`,
+      );
+    }
+    const pw = computePairwiseStop({ claudeStop, certify: pairwiseCertify, confirmed: pairwiseConfirmed });
     stop = {
       stop: pw.stop || exhaustionCapped,
       reasons: [
@@ -988,6 +1297,9 @@ export async function runIterationTerransoul({
       gemma: gemmaStop,
       claude: claudeStop,
       certify: pairwiseCertify,
+      // R7: the fresh confirmation resolution + noise-budget record travels with
+      // the stop so a certified "100%" is reported at its stated resolution.
+      confirmed: pairwiseConfirmed,
       actor_exhausted_retries_cap: exhaustionCapped,
     };
     console.log(
@@ -995,7 +1307,8 @@ export async function runIterationTerransoul({
         `${pairwiseCertify.inconclusiveViews.length ? ` inconclusive[${pairwiseCertify.inconclusiveViews.join(',')}]` : ''}` +
         `${pairwiseCertify.contestedViews.length ? ` contested[${pairwiseCertify.contestedViews.join(',')}]` : ''}` +
         `${pairwiseCertify.softFlaggedViews.length ? ` soft-flag[${pairwiseCertify.softFlaggedViews.join(',')}]` : ''}` +
-        ` -> certified=${pairwiseCertify.certified}`,
+        ` -> single-pass allCleared=${pairwiseCertify.allCleared}` +
+        `${pairwiseConfirmed ? ` confirmed=${pairwiseConfirmed.certified}` : ''}`,
     );
   } else {
     const primaryStop = opusPanel ? claudeStop : { stop: gemmaStop.stop || claudeStop.stop };
