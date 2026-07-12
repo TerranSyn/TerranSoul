@@ -33,14 +33,24 @@ export function evaluateStopConditions(iterations, cfg) {
     }
   }
 
+  // viewThreshold may be a single NUMBER (uniform bar — the frozen gemma/Fable
+  // tracks, byte-identical to before) OR a per-view ARRAY [t_1..t_viewCount]
+  // (the Opus-4.8-panel CALIBRATED bar): each view i must clear its own
+  // calibrated threshold t_i. This is how "100% = as good as a real-747
+  // reference on every view" is expressed without an arbitrary uniform 8.0.
+  const thresholdFor = (i) =>
+    Array.isArray(cfg.viewThreshold) ? cfg.viewThreshold[i] : cfg.viewThreshold;
   const latest = iterations.length > 0 ? iterations[iterations.length - 1] : null;
   if (latest && Array.isArray(latest.perView) && latest.perView.length === viewCount) {
     const allScored = latest.perView.every(
       (v) => typeof v === 'number' && Number.isFinite(v),
     );
-    if (allScored && latest.perView.every((v) => v >= cfg.viewThreshold)) {
+    if (allScored && latest.perView.every((v, i) => v >= thresholdFor(i))) {
+      const barDesc = Array.isArray(cfg.viewThreshold)
+        ? `their per-view calibrated bars [${cfg.viewThreshold.join(', ')}]`
+        : `${cfg.viewThreshold}/10`;
       reasons.push(
-        `threshold: all ${viewCount} views >= ${cfg.viewThreshold}/10 on iteration ${latest.iter}`,
+        `threshold: all ${viewCount} views >= ${barDesc} on iteration ${latest.iter}`,
       );
     }
   }

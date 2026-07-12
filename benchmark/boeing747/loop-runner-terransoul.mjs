@@ -339,10 +339,25 @@ export async function runIterationTerransoul({
   contractLabel,
   patience,
   budget,
+  judgeMode,
+  judgeSamples,
 }) {
   const { rubric, rubricSha256 } = loadRubric();
   const effPatience = patience || rubric.stall_patience;
   const effBudget = budget || rubric.iteration_budget;
+  // Opus-4.8 PANEL judge mode (owner decision 2026-07-12): Opus 4.8 vision
+  // (reference-anchored, judge/judge-claude.mjs) becomes the GATING judge, run
+  // as a median-of-N panel, with a per-view CALIBRATED bar; gemma4:12b stays a
+  // reported, non-gating diversity cross-check. Default 'gemma' keeps the frozen
+  // track byte-identical.
+  const opusPanel = judgeMode === 'opus-panel';
+  const opusSamples =
+    Number.isInteger(judgeSamples) && judgeSamples > 0 ? judgeSamples : opusPanel ? 3 : CLAUDE_JUDGE_SAMPLES;
+  const opusJudgeModel = opusPanel ? 'claude-opus-4-8' : model || DEFAULT_MODEL;
+  const calibratedBar =
+    opusPanel && Array.isArray(rubric.view_threshold_calibrated)
+      ? rubric.view_threshold_calibrated
+      : rubric.view_threshold;
   const actorName = actor || DEFAULT_ACTOR;
   const gemmaDir = path.join(BENCH_DIR, 'results', actorName);
   const claudeDir = path.join(BENCH_DIR, 'results', `${actorName}-claude`);
@@ -361,15 +376,19 @@ export async function runIterationTerransoul({
   console.log(`rig: rendering ${planePath} as ${runId}`);
   const rig = await runRig({ planePath, runId });
 
-  console.log(`judge (gemma4, frozen): scoring 9 views (median of seeds ${rubric.judge_seeds.join('/')})`);
+  console.log(
+    `judge (gemma4${opusPanel ? ', reported diversity cross-check' : ', frozen primary'}): scoring 9 views (median of seeds ${rubric.judge_seeds.join('/')})`,
+  );
   const gemmaJudged = await judgeShots({ shotsDir: rig.outDir });
   if (!gemmaJudged) throw new Error('gemma judge did not complete all 9 views');
 
-  console.log(`judge (${model || DEFAULT_MODEL} vision): scoring 9 views (samples=${CLAUDE_JUDGE_SAMPLES})`);
+  console.log(
+    `judge (${opusJudgeModel} vision${opusPanel ? ' PANEL, gating' : ''}): scoring 9 views (samples=${opusSamples})`,
+  );
   const claudeJudged = await judgeShotsClaude({
     shotsDir: rig.outDir,
-    samples: CLAUDE_JUDGE_SAMPLES,
-    model: model || DEFAULT_MODEL,
+    samples: opusSamples,
+    model: opusJudgeModel,
   });
   if (!claudeJudged) throw new Error('claude vision judge did not complete all 9 views');
 
@@ -414,17 +433,27 @@ export async function runIterationTerransoul({
     console.log(`  self-learning lesson ingest skipped: ${String(err.message || err)}`);
   }
 
+  // Primary (gating) vs secondary (reported) judge track. In opus-panel mode the
+  // Opus 4.8 vision panel gates the loop (weakest feature, critic, escalation,
+  // stop threshold); gemma4:12b is the reported diversity cross-check. Default:
+  // gemma gates (frozen behavior).
+  const primaryJudged = opusPanel ? claudeJudged : gemmaJudged;
+  const primaryRecord = opusPanel ? claudeRecord : gemmaRecord;
+  const primaryHistory = opusPanel ? claudeHistory : gemmaHistory;
+
   // Fix 4 (read half): surface prior attempts on this weakest feature.
-  const weakestId = gemmaJudged.weakest_feature?.id || claudeJudged.weakest_feature?.id;
+  const weakestId =
+    primaryJudged.weakest_feature?.id || gemmaJudged.weakest_feature?.id || claudeJudged.weakest_feature?.id;
   const priorAttemptsSection = await buildPriorAttemptsSection({ weakestId });
 
   // Plateau -> mesh escalation (open track ONLY). Uses the SAME genuine-iteration
   // filter the stop conditions use, so an infra-failed iteration never counts.
+  // Driven by the PRIMARY (gating) judge's weakest feature.
   let plateauEscalation = null;
   if (contractModulePath) {
-    const weakest = gemmaJudged.weakest_feature;
+    const weakest = primaryJudged.weakest_feature;
     if (weakest && typeof weakest.mean === 'number') {
-      const genuineChain = filterGenuineIterationsForStopConditions([...gemmaHistory, gemmaRecord]);
+      const genuineChain = filterGenuineIterationsForStopConditions([...primaryHistory, primaryRecord]);
       const streak = meshEscalationStreak(genuineChain, weakest.id);
       const gap = rubric.view_threshold - weakest.mean;
       if (gap > MESH_ESCALATION_GAP || streak >= Math.max(2, effPatience - 1)) {
@@ -494,9 +523,12 @@ export async function runIterationTerransoul({
 
   const gemmaIterations = filterGenuineIterationsForStopConditions([...gemmaHistory, gemmaRecord]);
   const claudeIterations = filterGenuineIterationsForStopConditions([...claudeHistory, claudeRecord]);
-  const stopCfg = { viewThreshold: rubric.view_threshold, patience: effPatience, budget: effBudget };
-  const gemmaStop = evaluateStopConditions(gemmaIterations, stopCfg);
-  const claudeStop = evaluateStopConditions(claudeIterations, stopCfg);
+  // gemma always uses its uniform bar; the Opus track uses the per-view
+  // CALIBRATED bar in opus-panel mode (else the same uniform bar).
+  const gemmaStopCfg = { viewThreshold: rubric.view_threshold, patience: effPatience, budget: effBudget };
+  const claudeStopCfg = { viewThreshold: calibratedBar, patience: effPatience, budget: effBudget };
+  const gemmaStop = evaluateStopConditions(gemmaIterations, gemmaStopCfg);
+  const claudeStop = evaluateStopConditions(claudeIterations, claudeStopCfg);
 
   // A SEPARATE, explicit exhaustion cap — distinct from `stall` — so a
   // genuinely broken/unreachable `claude` CLI cannot spin the loop forever,
@@ -511,15 +543,18 @@ export async function runIterationTerransoul({
       ]
     : [];
 
-  // Stop when EITHER track's own stop condition fires (threshold on either
-  // judge is a legitimate "done"; a stall/budget on either is a legitimate
-  // "stop looping"), OR the exhaustion cap fires — printed per-track, never
-  // silently enforced.
+  // GATING. Default (gemma primary): stop when EITHER track's own stop fires
+  // (a threshold on either judge is a legitimate "done"; a stall/budget on
+  // either legitimately stops the loop). opus-panel: the Opus 4.8 vision panel
+  // is the SOLE gating judge (threshold on its per-view calibrated bar / stall /
+  // budget); gemma is reported only and never gates. The exhaustion cap always
+  // applies. Nothing is silently enforced — every reason is printed.
+  const primaryStop = opusPanel ? claudeStop : { stop: gemmaStop.stop || claudeStop.stop };
   const stop = {
-    stop: gemmaStop.stop || claudeStop.stop || exhaustionCapped,
+    stop: primaryStop.stop || exhaustionCapped,
     reasons: [
-      ...gemmaStop.reasons.map((r) => `gemma4: ${r}`),
-      ...claudeStop.reasons.map((r) => `${claudeJudged.judge_track}: ${r}`),
+      ...gemmaStop.reasons.map((r) => `gemma4${opusPanel ? ' (reported)' : ''}: ${r}`),
+      ...claudeStop.reasons.map((r) => `${claudeJudged.judge_track}${opusPanel ? ' (gating)' : ''}: ${r}`),
       ...exhaustionReason,
     ],
     gemma: gemmaStop,
@@ -550,6 +585,8 @@ export async function runLoopTerransoul({
   contractLabel,
   patience,
   budget,
+  judgeMode,
+  judgeSamples,
 }) {
   const { rubric } = loadRubric();
   const effBudget = budget || rubric.iteration_budget;
@@ -568,6 +605,8 @@ export async function runLoopTerransoul({
       contractLabel,
       patience,
       budget,
+      judgeMode,
+      judgeSamples,
     });
     if (last.stop.stop) break;
   }
@@ -590,7 +629,7 @@ if (isMain) {
   if (!args.plane) {
     console.error(
       'usage: node loop-runner-terransoul.mjs --plane <plane.js> [--actor terransoul-fable5] [--model claude-fable-5] ' +
-        '[--effort max] [--max-iter N] [--max-actor-retries N] [--cli-bin <path>] [--cli-data-dir <dir>] [--contract open|frozen] [--budget N] [--patience N]',
+        '[--effort max] [--max-iter N] [--max-actor-retries N] [--cli-bin <path>] [--cli-data-dir <dir>] [--contract open|frozen] [--budget N] [--patience N] [--judge gemma|opus-panel] [--judge-samples N]',
     );
     process.exit(2);
   }
@@ -618,11 +657,13 @@ if (isMain) {
     contractLabel,
     patience: args.patience ? Number(args.patience) : undefined,
     budget: args.budget ? Number(args.budget) : undefined,
+    judgeMode: args.judge === 'opus-panel' ? 'opus-panel' : 'gemma',
+    judgeSamples: args['judge-samples'] ? Number(args['judge-samples']) : undefined,
   })
     .then((last) => {
       console.log('\nLOOP DONE');
       if (last) {
-        console.log(`final iter=${last.iterNum} gemma4=${last.gemmaRecord.total_0_100}/100 fable5-vision=${last.claudeRecord.total_0_100}/100`);
+        console.log(`final iter=${last.iterNum} gemma4=${last.gemmaRecord.total_0_100}/100 opus/claude-vision=${last.claudeRecord.total_0_100}/100`);
       }
     })
     .catch((err) => {
