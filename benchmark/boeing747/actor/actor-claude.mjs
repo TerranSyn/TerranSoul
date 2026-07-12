@@ -178,6 +178,7 @@ function buildActorPrompt({
   claudeHint,
   forbiddenReasons,
   priorAttemptsSection,
+  plateauEscalation = null,
   contractOpen = false,
   contractPathLabel = 'lib/contract.mjs',
   antiSmugglingRule = null,
@@ -254,11 +255,17 @@ function buildActorPrompt({
     lines.push(priorAttemptsSection);
     lines.push('');
   }
+  if (plateauEscalation) {
+    lines.push(plateauEscalation);
+    lines.push('');
+  }
   lines.push('YOUR TASK:');
   lines.push('1. Use the Read tool to open several rendered view PNGs above yourself, plus the reference photos most relevant to the weakest-scoring feature named above.');
   lines.push(`2. Use the Read tool to open the current source: ${candidatePath}`);
   lines.push(
-    '3. Make ONE focused, concrete geometric edit (or a small tightly-related set of edits) that fixes the weakest feature identified above, WITHOUT regressing any criterion that already scores well (>=7) on either judge track.',
+    plateauEscalation
+      ? '3. As directed by the PLATEAU ESCALATION above, REBUILD the weakest feature from scratch as COMPUTED MESH geometry (do NOT merely nudge the existing primitive). A bold re-architecture of THIS ONE feature is expected: you MAY briefly touch adjacent geometry to blend it and accept a small transient dip in an already-good view, provided you do NOT regress the overall aggregate score across the nine views.'
+      : '3. Make ONE focused, concrete geometric edit (or a small tightly-related set of edits) that fixes the weakest feature identified above, WITHOUT regressing any criterion that already scores well (>=7) on either judge track.',
   );
   lines.push(`4. Apply the change using the Edit tool DIRECTLY to ${candidatePath}. Do not create, write, or touch any other file.`);
   if (contractOpen) {
@@ -432,6 +439,7 @@ export async function runActorEdit({
   effort,
   timeoutMs,
   priorAttemptsSection,
+  plateauEscalation,
   cliBinary,
   cliDataDir,
   execImpl,
@@ -482,6 +490,7 @@ export async function runActorEdit({
     claudeHint,
     forbiddenReasons,
     priorAttemptsSection,
+    plateauEscalation,
     contractOpen: Boolean(openContractPath),
     contractPathLabel: contractLabel || (openContractPath ? path.basename(openContractPath) : 'lib/contract.mjs'),
     antiSmugglingRule,

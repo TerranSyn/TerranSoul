@@ -154,4 +154,53 @@ describe('runActorEdit --contract open wiring (fake execImpl, no spawn)', () => 
     // Frozen path restores the seed verbatim.
     expect(readFileSync(candidatePath, 'utf8')).toBe(FROZEN_SEED_SOURCE);
   });
+
+  // Plateau -> mesh escalation wiring: when the runner supplies a
+  // plateauEscalation string, it must reach the actor verbatim AND flip
+  // task-step 3 from the conservative "one edit, don't regress >=7" form to
+  // the bold "rebuild this feature as a computed mesh" form.
+  it('injects the PLATEAU ESCALATION and switches task-step 3 to a mesh rebuild', async () => {
+    let capturedPrompt;
+    const execImpl = vi.fn(async (binary, args) => {
+      capturedPrompt = args[1];
+      return { stdout: okOutcome(), stderr: '' };
+    });
+
+    await runActorEdit({
+      candidatePath,
+      shotsDir,
+      gemmaResult,
+      claudeResult,
+      cliBinary: 'fake',
+      execImpl,
+      contractModulePath: OPEN_CONTRACT_PATH,
+      plateauEscalation: 'PLATEAU ESCALATION (open medium -- change of strategy required):\nrebuild as a computed mesh',
+    });
+
+    expect(capturedPrompt).toContain('PLATEAU ESCALATION (open medium');
+    expect(capturedPrompt).toContain('REBUILD the weakest feature from scratch as COMPUTED MESH geometry');
+    // The timid form must be GONE when escalating.
+    expect(capturedPrompt).not.toContain('WITHOUT regressing any criterion that already scores well (>=7)');
+  });
+
+  it('CONTROL: without plateauEscalation, task-step 3 stays the conservative one-edit form', async () => {
+    let capturedPrompt;
+    const execImpl = vi.fn(async (binary, args) => {
+      capturedPrompt = args[1];
+      return { stdout: okOutcome(), stderr: '' };
+    });
+
+    await runActorEdit({
+      candidatePath,
+      shotsDir,
+      gemmaResult,
+      claudeResult,
+      cliBinary: 'fake',
+      execImpl,
+      contractModulePath: OPEN_CONTRACT_PATH,
+    });
+
+    expect(capturedPrompt).not.toContain('PLATEAU ESCALATION');
+    expect(capturedPrompt).toContain('WITHOUT regressing any criterion that already scores well (>=7)');
+  });
 });

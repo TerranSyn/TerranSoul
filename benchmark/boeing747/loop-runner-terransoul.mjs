@@ -119,6 +119,41 @@ function anchorHint(rubric, weakest) {
   };
 }
 
+// --- Plateau -> computed-mesh escalation (AGI-pure, open-track ONLY) --------
+// A GENERIC loop-engineering escalation: when the single weakest feature sits
+// far below the view target, or has stayed weakest across several primitive
+// edits, a parameter tweak is the wrong tool -- the actor is told to change
+// strategy and REBUILD that one feature as a computed mesh. It names only the
+// strategy and the rubric's own feature id; it seeds NO geometry, coordinates,
+// or 747-specific shape -- the actor must derive the profile from the reference
+// photos itself. Fires only under the open contract; the frozen track never
+// sees it (plateauEscalation stays null), so the frozen number is untouched.
+export const MESH_ESCALATION_GAP = 2.0; // a feature > 2/10 below the view target is a structural gap, not a tweakable one
+
+export function meshEscalationStreak(genuineChain, weakestId) {
+  if (!weakestId) return 0;
+  let streak = 0;
+  for (let i = genuineChain.length - 1; i >= 0; i--) {
+    if (genuineChain[i]?.weakest_feature?.id !== weakestId) break;
+    streak += 1;
+  }
+  return streak;
+}
+
+export function buildMeshEscalation({ weakest, streak, gap, viewThreshold }) {
+  const persisted =
+    streak >= 2
+      ? ` It has stayed the single weakest feature for ${streak} consecutive iterations of primitive edits -- primitive-tweaking has plateaued on it.`
+      : '';
+  return [
+    'PLATEAU ESCALATION (open medium -- change of strategy required):',
+    `The weakest feature '${weakest.id}' is at mean ${weakest.mean}/10, ${gap.toFixed(1)} below the ${viewThreshold}/10 view target.${persisted}`,
+    'A gap this size is STRUCTURAL, not a parameter you can nudge. STOP adjusting primitive dimensions/positions for this feature.',
+    'REBUILD this one feature from scratch as COMPUTED MESH geometry -- a hand-built THREE.BufferGeometry, a THREE.LatheGeometry sweeping a 2-D profile you define, or a THREE.Shape + ExtrudeGeometry (all permitted by the open contract).',
+    'Derive the profile/cross-section YOURSELF by inspecting the reference photos for this view -- there are no coordinates in these instructions to copy. A bold re-architecture of THIS feature is expected and will NOT be scored as a regression.',
+  ].join('\n');
+}
+
 function bookkeepTrack({ actorDir, iterNum, runId, judged, judgeTrack, rubric, rubricSha256 }) {
   mkdirSync(actorDir, { recursive: true });
   const bestFile = path.join(actorDir, 'best.json');
@@ -302,8 +337,12 @@ export async function runIterationTerransoul({
   cliDataDir,
   contractModulePath,
   contractLabel,
+  patience,
+  budget,
 }) {
   const { rubric, rubricSha256 } = loadRubric();
+  const effPatience = patience || rubric.stall_patience;
+  const effBudget = budget || rubric.iteration_budget;
   const actorName = actor || DEFAULT_ACTOR;
   const gemmaDir = path.join(BENCH_DIR, 'results', actorName);
   const claudeDir = path.join(BENCH_DIR, 'results', `${actorName}-claude`);
@@ -379,6 +418,25 @@ export async function runIterationTerransoul({
   const weakestId = gemmaJudged.weakest_feature?.id || claudeJudged.weakest_feature?.id;
   const priorAttemptsSection = await buildPriorAttemptsSection({ weakestId });
 
+  // Plateau -> mesh escalation (open track ONLY). Uses the SAME genuine-iteration
+  // filter the stop conditions use, so an infra-failed iteration never counts.
+  let plateauEscalation = null;
+  if (contractModulePath) {
+    const weakest = gemmaJudged.weakest_feature;
+    if (weakest && typeof weakest.mean === 'number') {
+      const genuineChain = filterGenuineIterationsForStopConditions([...gemmaHistory, gemmaRecord]);
+      const streak = meshEscalationStreak(genuineChain, weakest.id);
+      const gap = rubric.view_threshold - weakest.mean;
+      if (gap > MESH_ESCALATION_GAP || streak >= Math.max(2, effPatience - 1)) {
+        plateauEscalation = buildMeshEscalation({ weakest, streak, gap, viewThreshold: rubric.view_threshold });
+        console.log(
+          `  PLATEAU ESCALATION armed for '${weakest.id}' (mean ${weakest.mean}/10, gap ${gap.toFixed(1)}, streak ${streak}) ` +
+            `-- actor directed to rebuild it as a computed mesh`,
+        );
+      }
+    }
+  }
+
   // Fix 1: retry-with-backoff instead of a single all-or-nothing call.
   const retryCfg = loadActorRetryConfig({ overrideMaxRetries: maxActorRetries });
   console.log(
@@ -394,6 +452,7 @@ export async function runIterationTerransoul({
     model: model || DEFAULT_MODEL,
     effort: effort || DEFAULT_EFFORT,
     priorAttemptsSection,
+    plateauEscalation,
     cliBinary,
     cliDataDir,
     contractModulePath,
@@ -435,7 +494,7 @@ export async function runIterationTerransoul({
 
   const gemmaIterations = filterGenuineIterationsForStopConditions([...gemmaHistory, gemmaRecord]);
   const claudeIterations = filterGenuineIterationsForStopConditions([...claudeHistory, claudeRecord]);
-  const stopCfg = { viewThreshold: rubric.view_threshold, patience: rubric.stall_patience, budget: rubric.iteration_budget };
+  const stopCfg = { viewThreshold: rubric.view_threshold, patience: effPatience, budget: effBudget };
   const gemmaStop = evaluateStopConditions(gemmaIterations, stopCfg);
   const claudeStop = evaluateStopConditions(claudeIterations, stopCfg);
 
@@ -468,8 +527,8 @@ export async function runIterationTerransoul({
     actor_exhausted_retries_cap: exhaustionCapped,
   };
   console.log(
-    `STOP-CHECK stop=${stop.stop} gemma[nonImproving=${gemmaStop.consecutiveNonImproving}/${rubric.stall_patience} budget=${gemmaIterations.length}/${rubric.iteration_budget}] ` +
-      `${claudeJudged.judge_track}[nonImproving=${claudeStop.consecutiveNonImproving}/${rubric.stall_patience} budget=${claudeIterations.length}/${rubric.iteration_budget}] ` +
+    `STOP-CHECK stop=${stop.stop} gemma[nonImproving=${gemmaStop.consecutiveNonImproving}/${effPatience} budget=${gemmaIterations.length}/${effBudget}] ` +
+      `${claudeJudged.judge_track}[nonImproving=${claudeStop.consecutiveNonImproving}/${effPatience} budget=${claudeIterations.length}/${effBudget}] ` +
       `exhaustionStreak=${exhaustionStreak}/${retryCfg.exhaustionCap}`,
   );
   for (const reason of stop.reasons) console.log(`  STOP REASON: ${reason}`);
@@ -489,9 +548,12 @@ export async function runLoopTerransoul({
   cliDataDir,
   contractModulePath,
   contractLabel,
+  patience,
+  budget,
 }) {
   const { rubric } = loadRubric();
-  const hardCap = Math.min(maxIter || rubric.iteration_budget, rubric.iteration_budget);
+  const effBudget = budget || rubric.iteration_budget;
+  const hardCap = maxIter ? Math.min(maxIter, effBudget) : effBudget;
   let last = null;
   for (let i = 0; i < hardCap; i++) {
     last = await runIterationTerransoul({
@@ -504,6 +566,8 @@ export async function runLoopTerransoul({
       cliDataDir,
       contractModulePath,
       contractLabel,
+      patience,
+      budget,
     });
     if (last.stop.stop) break;
   }
@@ -526,7 +590,7 @@ if (isMain) {
   if (!args.plane) {
     console.error(
       'usage: node loop-runner-terransoul.mjs --plane <plane.js> [--actor terransoul-fable5] [--model claude-fable-5] ' +
-        '[--effort max] [--max-iter N] [--max-actor-retries N] [--cli-bin <path>] [--cli-data-dir <dir>] [--contract open|frozen]',
+        '[--effort max] [--max-iter N] [--max-actor-retries N] [--cli-bin <path>] [--cli-data-dir <dir>] [--contract open|frozen] [--budget N] [--patience N]',
     );
     process.exit(2);
   }
@@ -552,6 +616,8 @@ if (isMain) {
     cliDataDir: typeof args['cli-data-dir'] === 'string' ? args['cli-data-dir'] : undefined,
     contractModulePath,
     contractLabel,
+    patience: args.patience ? Number(args.patience) : undefined,
+    budget: args.budget ? Number(args.budget) : undefined,
   })
     .then((last) => {
       console.log('\nLOOP DONE');
