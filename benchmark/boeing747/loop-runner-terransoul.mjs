@@ -60,7 +60,7 @@
 //   node loop-runner-terransoul.mjs --plane <plane.js> [--actor terransoul-fable5]
 //     [--model claude-fable-5] [--effort max] [--max-iter N] [--max-actor-retries N]
 //     [--cli-bin <path>] [--cli-data-dir <dir>]
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runActorEdit } from './actor/actor-claude.mjs';
@@ -87,6 +87,7 @@ import {
   restoreBest,
   snapshotBest,
 } from './lib/edit-gate.mjs';
+import { acquireRunLock } from './lib/run-lock.mjs';
 import { PARITY_ANCHOR_SCORE, loadPairwiseConfig } from './lib/pairwise-config.mjs';
 // PURE statistical-rigor certification primitives (July-2026 findings): the
 // worst-view Agresti-Coull LCB / IUT (R1), the sequential betting e-process for
@@ -191,6 +192,59 @@ function loadGateState(claudeDir) {
   } catch {
     return null;
   }
+}
+
+/**
+ * snapshotBest fails open and returns { ok:false, error } rather than throwing, so the
+ * bench loop cannot die on a copy error. Both call sites used to DISCARD that result,
+ * which made a failed snapshot indistinguishable from a successful one — and a silent
+ * miss leaves best-plane.js holding geometry that was never rendered or judged, which
+ * is precisely the state the corrupted run was found in (its best-plane.js sha matched
+ * none of the 55 recorded shots across every track). Fail open, but say so.
+ */
+function reportSnapshot(result, iterNum) {
+  if (result && result.ok === false) {
+    console.log(`  WARNING: best-plane snapshot FAILED at iter ${iterNum}: ${result.error} — the backtrack anchor is now stale`);
+  }
+  return result;
+}
+
+/**
+ * What to do with gate-state when this iteration CANNOT be gated.
+ *
+ * `canGate` is false whenever the previous iteration produced no genuine actor attempt:
+ * the actor exhausted its retries, the run was resumed so the iterations are not
+ * contiguous, or an actor record is missing. None of those says anything about whether
+ * the CURRENT geometry is good.
+ *
+ * The bug this replaces: the branch re-baselined unconditionally, overwriting best_total
+ * with the current iteration's score and taking a fresh snapshot, with no comparison
+ * against the best it already held. On run bjke07o2u, iter-9's actor exhausted its
+ * retries, so iter-10 took this branch and a 56.49 replaced a 59.39 best. gate-state is
+ * the acceptance baseline, the backtrack target and the best-of-N promotion floor, so a
+ * downward leak lowers the bar for every subsequent iteration and un-protects the
+ * per-view bars already cleared.
+ *
+ * Baseline only when there is genuinely no best to protect; otherwise HOLD.
+ * @returns {{action:'baseline'|'hold', state:object}}
+ */
+export function resolveUngatedGateState({ gateState, gateTotal, gatePerView, gemmaTotal, contestedStreaks, iterNum }) {
+  const haveBest = Boolean(gateState) && _isNum(gateState.best_total);
+  if (!haveBest) {
+    return {
+      action: 'baseline',
+      state: {
+        best_total: gateTotal,
+        best_per_view: gatePerView,
+        best_gemma_total: gemmaTotal,
+        gemma_downside_streak: 0,
+        contested_streaks: contestedStreaks,
+        best_iter: iterNum,
+      },
+    };
+  }
+  // hold every best_* field; only the streaks are iteration-local bookkeeping
+  return { action: 'hold', state: { ...gateState, contested_streaks: contestedStreaks } };
 }
 
 /** Persist the edit-gate state (fail-open — a write miss never breaks the loop). */
@@ -430,7 +484,7 @@ function formatResolution(res) {
   return `MDE ${mde} (n=${res.n}, flip~=${flip}, power=${res.power})`;
 }
 
-function bookkeepTrack({ actorDir, iterNum, runId, judged, judgeTrack, rubric, rubricSha256 }) {
+export function bookkeepTrack({ actorDir, iterNum, runId, judged, judgeTrack, rubric, rubricSha256, planePath }) {
   mkdirSync(actorDir, { recursive: true });
   const bestFile = path.join(actorDir, 'best.json');
   const prevBest = existsSync(bestFile) ? JSON.parse(readFileSync(bestFile, 'utf8')) : null;
@@ -469,6 +523,27 @@ function bookkeepTrack({ actorDir, iterNum, runId, judged, judgeTrack, rubric, r
         2,
       ),
     );
+    // Snapshot the geometry that PRODUCED the record, next to the record itself.
+    //
+    // best.json is the all-time high and is correctly monotone. best-plane.js is a
+    // different thing: the edit-gate's BACKTRACK ANCHOR, advanced only when the gate
+    // ACCEPTS an edit. Those two came apart on a real run and the record was lost:
+    // iter-8 scored an all-time-high 61.29, but the gemma-downside veto demoted the
+    // accept to `within_noise`, and within_noise takes no snapshot — so the record
+    // geometry existed only in the working plane.js and iter-9's actor overwrote it
+    // in place. best.json still names a sha256 that now matches no file on disk.
+    //
+    // A record you cannot re-render is not a record. Persist it here, on exactly the
+    // condition that defines the record, and never through the gate.
+    if (planePath && existsSync(planePath)) {
+      try {
+        copyFileSync(planePath, path.join(actorDir, 'record-plane.js'));
+      } catch (err) {
+        // Loud, not fatal: losing the loop over a failed copy would be worse, but a
+        // silent failure here is what cost us the 61.29 geometry in the first place.
+        console.log(`  WARNING: could not snapshot the record plane for iter ${iterNum}: ${String(err?.message || err)}`);
+      }
+    }
   }
   return record;
 }
@@ -707,6 +782,7 @@ export async function runIterationTerransoul({
     judgeTrack: undefined,
     rubric,
     rubricSha256,
+    planePath,
   });
   let claudeRecord = bookkeepTrack({
     actorDir: claudeDir,
@@ -716,6 +792,7 @@ export async function runIterationTerransoul({
     judgeTrack: claudeJudged.judge_track,
     rubric,
     rubricSha256,
+    planePath,
   });
 
   console.log(
@@ -787,19 +864,39 @@ export async function runIterationTerransoul({
     const canGate = Boolean(gateState) && hasPriorIter && prevActor && GENUINE_ACTOR_STATUSES.has(prevActor.status);
 
     if (!canGate) {
-      // BASELINE: nothing genuine to gate yet — snapshot the current geometry as
-      // best so a later backtrack always has a target (EDIT_GATE_SPEC init).
-      snapshotBest({ candidatePath: planePath, bestPlanePath });
-      gateState = {
-        best_total: gateTotal,
-        best_per_view: gatePerView,
-        best_gemma_total: gemmaTotal,
-        gemma_downside_streak: 0,
-        contested_streaks: pairwiseCertify.contestedStreaks,
-        best_iter: iterNum,
-      };
+      // Nothing genuine to gate against this iteration. canGate goes false for
+      // several innocuous reasons — the previous actor exhausted its retries, the
+      // run was resumed and the iterations are not contiguous, an actor record is
+      // missing — none of which is evidence that the current geometry is good.
+      //
+      // This branch used to re-baseline UNCONDITIONALLY: it overwrote best_total
+      // with the current iteration's score, with no comparison. On a real run
+      // iter-9's actor exhausted its retries, so iter-10 took this branch and a
+      // 56.49 silently replaced a 59.39 best — the ratchet leaked downward, which
+      // lowers the acceptance bar for every later iteration and un-protects the
+      // per-view bars already cleared.
+      //
+      // Establish a baseline only when there is genuinely no best to protect.
+      // Otherwise HOLD the existing best and refresh nothing but the streaks.
+      const resolved = resolveUngatedGateState({
+        gateState,
+        gateTotal,
+        gatePerView,
+        gemmaTotal,
+        contestedStreaks: pairwiseCertify.contestedStreaks,
+        iterNum,
+      });
+      gateState = resolved.state;
+      if (resolved.action === 'baseline') {
+        reportSnapshot(snapshotBest({ candidatePath: planePath, bestPlanePath }), iterNum);
+        console.log(`  EDIT-GATE: baseline established (best=${gateTotal}/100 from iter ${iterNum})`);
+      } else {
+        console.log(
+          `  EDIT-GATE: cannot gate this iter (no genuine prior actor) — HOLDING best=${gateState.best_total}/100 ` +
+            `from iter ${gateState.best_iter} (this iter scored ${gateTotal}/100)`,
+        );
+      }
       saveGateState(claudeDir, gateState);
-      console.log(`  EDIT-GATE: baseline established (best=${gateTotal}/100 from iter ${iterNum})`);
     } else {
       const decision = decideEditAcceptance({
         gateTotal,
@@ -846,7 +943,7 @@ export async function runIterationTerransoul({
 
       if (decision.decision === 'accept') {
         // Advance best: the current geometry becomes the new backtrack anchor.
-        snapshotBest({ candidatePath: planePath, bestPlanePath });
+        reportSnapshot(snapshotBest({ candidatePath: planePath, bestPlanePath }), iterNum);
         gateState.best_total = gateTotal;
         gateState.best_per_view = gatePerView;
         gateState.best_gemma_total = gemmaTotal;
@@ -1237,30 +1334,53 @@ export async function runLoopTerransoul({
   judgeSamples,
   bestOfN,
 }) {
-  const { rubric } = loadRubric();
-  const effBudget = budget || rubric.iteration_budget;
-  const hardCap = maxIter ? Math.min(maxIter, effBudget) : effBudget;
-  let last = null;
-  for (let i = 0; i < hardCap; i++) {
-    last = await runIterationTerransoul({
-      planePath,
-      actor,
-      model,
-      effort,
-      maxActorRetries,
-      cliBinary,
-      cliDataDir,
-      contractModulePath,
-      contractLabel,
-      patience,
-      budget,
-      judgeMode,
-      judgeSamples,
-      bestOfN,
-    });
-    if (last.stop.stop) break;
+  // ONE WRITER PER CANDIDATE PLANE. Two concurrent runs sharing this file corrupted a
+  // real run: an actor's Read and Edit interleaved with the other process's write, and
+  // both processes clobbered gate-state.json. Refuse to start rather than produce
+  // iterations nobody can trust.
+  const lock = acquireRunLock({ candidatePath: planePath, actorName: actor });
+  if (!lock.ok) {
+    throw new Error(`refusing to start a second bench run on the same candidate: ${lock.reason}`);
   }
-  return last;
+  // Nothing in this harness handles SIGINT/SIGTERM, so a Ctrl-C on a multi-hour bench
+  // would otherwise leave the lock behind and block the next run.
+  const onSignal = (sig) => {
+    lock.release();
+    process.exit(sig === 'SIGINT' ? 130 : 143);
+  };
+  process.once('SIGINT', onSignal);
+  process.once('SIGTERM', onSignal);
+
+  try {
+    const { rubric } = loadRubric();
+    const effBudget = budget || rubric.iteration_budget;
+    const hardCap = maxIter ? Math.min(maxIter, effBudget) : effBudget;
+    let last = null;
+    for (let i = 0; i < hardCap; i++) {
+      last = await runIterationTerransoul({
+        planePath,
+        actor,
+        model,
+        effort,
+        maxActorRetries,
+        cliBinary,
+        cliDataDir,
+        contractModulePath,
+        contractLabel,
+        patience,
+        budget,
+        judgeMode,
+        judgeSamples,
+        bestOfN,
+      });
+      if (last.stop.stop) break;
+    }
+    return last;
+  } finally {
+    process.off('SIGINT', onSignal);
+    process.off('SIGTERM', onSignal);
+    lock.release();
+  }
 }
 
 function parseArgs(argv) {
