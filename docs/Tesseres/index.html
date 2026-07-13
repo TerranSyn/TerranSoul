@@ -21,6 +21,13 @@
     --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --serif: "Newsreader", Georgia, "Times New Roman", serif;
     --maxw: 720px;
+    /* Comfortable line length. Prose past ~70 characters per line is measurably
+       harder to read, so widening the page must NOT widen the paragraphs — the
+       container grows, the measure does not, and the extra room goes to the cards. */
+    --measure: 68ch;
+  }
+  @media (min-width: 1100px){
+    :root{ --maxw: 1000px; }
   }
   /* Georgia carries no Vietnamese glyphs, so a letter like "ầ" is composed from a
      base glyph plus a mark taken from a fallback font - the tone mark visibly
@@ -80,6 +87,11 @@
 
   /* Article */
   main{max-width:var(--maxw);margin:0 auto;padding:0 clamp(16px,5vw,40px) clamp(64px,10vw,120px)}
+  /* The container widens on desktop; running text does not. Paragraphs, the lead-ins
+     and quotes hold a readable measure, while full-width blocks (the card grid, the
+     CTA) take the room that frees up — that is what makes the page feel less narrow
+     without hurting the reading. */
+  main > p, main > .lead, main > blockquote, main > ul, main > ol{ max-width:var(--measure) }
   h2{font-family:var(--serif);font-weight:600;letter-spacing:-0.015em;
     font-size:clamp(26px,6.5vw,38px);line-height:1.12;
     margin:clamp(40px,7vw,64px) 0 6px;padding-top:clamp(24px,5vw,40px);
