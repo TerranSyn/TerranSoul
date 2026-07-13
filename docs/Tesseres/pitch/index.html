@@ -201,9 +201,12 @@
   .whydek{font-size:clamp(15px,2.3vw,18px);color:var(--ink-soft);max-width:66ch;
     margin:0 0 clamp(4px,1vh,10px);line-height:1.45}
   .whydek strong{color:var(--ink);font-weight:600}
-  .chartgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
-    gap:clamp(12px,1.8vw,20px);margin:clamp(10px,2vh,18px) 0 0}
-  .chartgrid .chart{padding:clamp(13px,2vw,17px)}
+  /* Masonry columns: each card sizes to its own content (no equal-row voids). */
+  .chartgrid{columns:290px;column-gap:clamp(12px,1.8vw,20px);
+    margin:clamp(10px,2vh,18px) 0 0}
+  .chartgrid .chart{padding:clamp(13px,2vw,17px);
+    break-inside:avoid;-webkit-column-break-inside:avoid;
+    margin:0 0 clamp(12px,1.8vw,20px)}
   .chartgrid .ct{font-family:var(--serif);font-weight:600;font-size:clamp(15px,2vw,17px);
     color:var(--ink);margin:0 0 2px;letter-spacing:-0.01em}
   .chartgrid .csrc{font-family:var(--sans);font-size:11px;font-weight:500;color:var(--ink-faint);
