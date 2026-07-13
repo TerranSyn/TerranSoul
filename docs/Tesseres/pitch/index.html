@@ -23,6 +23,14 @@
     --serif: "Newsreader", Georgia, "Times New Roman", serif;
     --maxw: 780px;
   }
+  /* Georgia has no Vietnamese glyphs: "ầ" gets composed from a Georgia base plus a
+     fallback mark and the tone mark detaches ("Hạ tâ` ng"). Measured: Georgia
+     advances 'ầ' at 1.84x its own 'a'; Cambria/Constantia/Times New Roman at 1.00x.
+     Swap the serif inside the Vietnamese block only - English keeps Georgia, and
+     --sans is fine (Segoe UI covers Vietnamese). */
+  [data-lang="vi"]{
+    --serif: "Newsreader", Cambria, Constantia, "Times New Roman", serif;
+  }
   @media (prefers-color-scheme: dark){
     :root{
       --bg: oklch(0.19 0.012 260);

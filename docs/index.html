@@ -32,7 +32,12 @@
   html[lang="ar"]{--sans: "Noto Sans Arabic", "IBM Plex Sans", system-ui, sans-serif; --serif: "Noto Naskh Arabic", "Newsreader", Georgia, serif; direction: rtl;}
   html[lang="hi"]{--sans: "Noto Sans Devanagari", "IBM Plex Sans", system-ui, sans-serif; --serif: "Noto Serif Devanagari", "Newsreader", Georgia, serif;}
   html[lang="th"]{--sans: "Noto Sans Thai", "IBM Plex Sans", system-ui, sans-serif; --serif: "Noto Serif Thai", "Newsreader", Georgia, serif;}
-  html[lang="vi"]{--sans: "Be Vietnam Pro", "IBM Plex Sans", "Noto Sans", system-ui, sans-serif; --serif: "Be Vietnam Pro", "Newsreader", Georgia, serif;}
+  /* Georgia MUST NOT appear in the Vietnamese serif stack: it has no Vietnamese
+     glyphs, so "ầ" is composed from a Georgia base plus a mark from a fallback
+     font and the tone mark visibly detaches. Because Georgia does cover basic
+     Latin, the stack never falls through to a font that would render it whole.
+     Cambria/Constantia/Times New Roman carry the glyphs natively. */
+  html[lang="vi"]{--sans: "Be Vietnam Pro", "IBM Plex Sans", "Noto Sans", system-ui, sans-serif; --serif: "Be Vietnam Pro", "Newsreader", Cambria, Constantia, "Times New Roman", serif;}
   html[lang="ru"]{--sans: "Noto Sans", "IBM Plex Sans", system-ui, sans-serif;}
   html[lang="ar"] .sidenav a{border-left:0;border-right:2px solid transparent;padding-left:0;padding-right:12px;margin-left:0;margin-right:-12px;background:linear-gradient(270deg, var(--accent-soft), transparent 80%);background-image:none;}
   html[lang="ar"] .sidenav a.active{border-right-color:var(--accent);background:linear-gradient(270deg, var(--accent-soft), transparent 80%)}
