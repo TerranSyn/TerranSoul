@@ -226,6 +226,46 @@
   .c-name-us{fill:var(--accent-ink)}
   .c-num{font-family:var(--sans);font-size:12px;font-weight:700;fill:var(--ink-soft)}
   .c-num-us{font-family:var(--sans);font-size:12.5px;font-weight:800;fill:var(--accent-ink)}
+
+  /* Statistic cards. Every figure carries its own attribution line - a number on a
+     public deck without a source is a liability, not evidence. */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:clamp(12px,1.8vw,18px);margin:clamp(14px,2.8vh,24px) 0 0}
+  .stat{background:var(--bg-card);border:1px solid var(--rule);border-radius:14px;
+    padding:clamp(15px,2.4vw,20px)}
+  .stat .fig{font-family:var(--serif);font-weight:600;letter-spacing:-0.02em;
+    font-size:clamp(30px,4.6vw,42px);line-height:1.05;color:var(--accent-ink);margin:0 0 10px}
+  .stat .lab{font-family:var(--sans);font-weight:600;font-size:clamp(13.5px,2.1vw,15px);
+    line-height:1.35;color:var(--ink);margin:0 0 7px;max-width:none}
+  .stat .src{font-size:clamp(11.5px,1.8vw,12.5px);line-height:1.35;color:var(--ink-faint);
+    margin:0;max-width:none}
+  /* The "so what" - dark, so the eye lands on it last and hardest. */
+  .takeaway{background:var(--ink);color:var(--bg);border-radius:14px;
+    padding:clamp(16px,2.6vw,22px);margin:clamp(14px,2.6vh,22px) 0 0}
+  .takeaway .tt{font-family:var(--sans);font-weight:700;font-size:clamp(15px,2.3vw,17px);
+    margin:0 0 7px;color:var(--bg)}
+  .slide .takeaway p{font-size:clamp(13.5px,2.1vw,15.5px);line-height:1.45;margin:0;max-width:none;
+    color:color-mix(in oklab, var(--bg) 84%, var(--ink))}
+  /* the deck's global strong is dark ink - on the dark panel that renders invisible */
+  .takeaway strong{color:var(--bg);font-weight:700}
+  /* Wide context panel (used where a chart would carry no information). */
+  .notebox{background:var(--bg-card);border:1px solid var(--rule);border-radius:14px;
+    padding:clamp(16px,2.6vw,22px);margin:clamp(14px,2.6vh,22px) 0 0}
+  .notebox .tt{font-family:var(--sans);font-weight:700;font-size:clamp(15px,2.3vw,17px);
+    color:var(--accent-ink);margin:0 0 7px}
+  .notebox p{font-size:clamp(13.5px,2.1vw,15.5px);line-height:1.5;margin:0;max-width:none;color:var(--ink-soft)}
+  /* .slide p sets a font-size and a reading max-width; out-specify both or the
+     source line renders as body copy and wraps to three lines. */
+  .slide .srcfoot{font-size:clamp(11px,1.7vw,12px);font-style:italic;color:var(--ink-faint);
+    margin:clamp(12px,2.2vh,18px) 0 0;max-width:none;line-height:1.4}
+  .slide .notebox p, .slide .stat .lab, .slide .stat .src{max-width:none}
+  /* Chart beside its conclusion, so a stats slide fits one screen without shrinking
+     the numbers (the deck snap-scrolls; an overflowing slide silently clips). */
+  .duo{display:grid;grid-template-columns:1.3fr 1fr;gap:clamp(12px,1.8vw,18px);
+    align-items:stretch;margin:clamp(14px,2.6vh,22px) 0 0}
+  .duo > *{margin:0}
+  .duo .takeaway{display:flex;flex-direction:column;justify-content:center}
+  @media (max-width:820px){.duo{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -266,57 +306,147 @@
   </section>
 
   <!-- Slide 2: The moment -->
-  <section class="slide alt" id="s2">
+  <section class="slide alt wide" id="s2">
     <div class="slide-inner">
       <div data-lang="en">
         <p class="kicker">01 / The moment</p>
         <p class="big">AI is becoming an essential infrastructure of society.</p>
         <p>Yet almost all AI capability today sits in the hands of a very few companies - and the advantage is compounding fast.</p>
-        <div class="charts"><div class="chart">
-          <p class="ct">The AI advantage is concentrating</p>
-          <p class="cs">Avg revenue uplift · organisations that scaled AI vs early-stage pilots</p>
-          <svg viewBox="0 0 300 66" role="img" aria-label="The AI advantage is concentrating"><text class="c-name-us" x="3" y="12">Scaled AI across the org</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">$380M</text><text class="c-name" x="3" y="44">Early-stage pilots only</text><rect class="c-other" x="3" y="48" width="39.2" height="12" rx="6"/><text class="c-num" x="48.2" y="58">~$76M</text></svg>
-          <p class="cc">~5&times; more for those who own AI capability, not those who rent it. Source: Capgemini Research Institute, 2025.</p>
-        </div></div>
+        <div class="stats">
+          <div class="stat">
+            <p class="fig">~$200B</p>
+            <p class="lab">One company's planned capital spend for a single year</p>
+            <p class="src">Amazon, 2026 guidance &mdash; Q4 2025 results, Feb 2026</p>
+          </div>
+          <div class="stat">
+            <p class="fig">~25%</p>
+            <p class="lab">Of all the AI computing power on Earth is owned by one company</p>
+            <p class="src">Google &mdash; Epoch AI, AI Chip Owners, Q4 2025</p>
+          </div>
+          <div class="stat">
+            <p class="fig">1</p>
+            <p class="lab">Company fabricates essentially every leading AI chip in the world</p>
+            <p class="src">TSMC &mdash; Stanford HAI, AI Index Report 2026</p>
+          </div>
+        </div>
+        <div class="duo">
+          <div class="chart">
+            <p class="ct">The compute itself sits in one country</p>
+            <p class="cs">Share of tracked global GPU cluster performance, May 2025</p>
+            <svg viewBox="0 0 520 104" role="img" aria-label="Share of tracked global GPU cluster performance, May 2025: United States 75 percent, China 15 percent, everyone else about 10 percent"><text class="c-name" x="2" y="12">United States</text><rect class="c-us" x="2" y="18" width="380" height="14" rx="7"/><text class="c-num-us" x="390" y="29">75%</text><text class="c-name" x="2" y="48">China</text><rect class="c-other" x="2" y="54" width="76" height="14" rx="7"/><text class="c-num" x="86" y="65">15%</text><text class="c-name" x="2" y="84">Everyone else</text><rect class="c-lo" x="2" y="90" width="51" height="14" rx="7"/><text class="c-num" x="61" y="101">~10%</text></svg>
+            <p class="cc">Epoch AI tracks publicly known clusters, so this is share of <em>tracked</em> performance.</p>
+          </div>
+          <div class="takeaway">
+            <p class="tt">The divide is not AI versus people.</p>
+            <p>It is the few who <strong>own</strong> AI capability and everyone else, who rents it - and the gap compounds every year the renting continues.</p>
+          </div>
+        </div>
+        <p class="srcfoot">Sources: Amazon Q4 2025 results (Feb 2026); Epoch AI, AI Chip Owners and GPU Clusters datasets (2025-26); Stanford HAI, AI Index Report 2026.</p>
       </div>
       <div data-lang="vi" hidden>
         <p class="kicker">01 / Bối cảnh</p>
         <p class="big">AI đang trở thành một hạ tầng thiết yếu của xã hội.</p>
         <p>Nhưng gần như toàn bộ năng lực AI hiện nay lại nằm trong tay một số rất ít công ty - và lợi thế đang dồn lại rất nhanh.</p>
-        <div class="charts"><div class="chart">
-          <p class="ct">Lợi thế AI đang tập trung</p>
-          <p class="cs">Doanh thu tăng thêm trung bình · tổ chức triển khai AI toàn diện vs thử nghiệm ban đầu</p>
-          <svg viewBox="0 0 300 66" role="img" aria-label="Lợi thế AI đang tập trung"><text class="c-name-us" x="3" y="12">Triển khai AI toàn tổ chức</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">$380M</text><text class="c-name" x="3" y="44">Chỉ thử nghiệm ban đầu</text><rect class="c-other" x="3" y="48" width="39.2" height="12" rx="6"/><text class="c-num" x="48.2" y="58">~$76M</text></svg>
-          <p class="cc">Cao hơn ~5 lần cho ai sở hữu năng lực AI, thay vì đi thuê. Nguồn: Capgemini Research Institute, 2025.</p>
-        </div></div>
+        <div class="stats">
+          <div class="stat">
+            <p class="fig">~200 tỷ $</p>
+            <p class="lab">Vốn đầu tư của một công ty duy nhất, chỉ trong một năm</p>
+            <p class="src">Amazon, kế hoạch 2026 &mdash; báo cáo Q4/2025, 02/2026</p>
+          </div>
+          <div class="stat">
+            <p class="fig">~25%</p>
+            <p class="lab">Toàn bộ năng lực tính toán AI của thế giới thuộc về một công ty</p>
+            <p class="src">Google &mdash; Epoch AI, AI Chip Owners, Q4/2025</p>
+          </div>
+          <div class="stat">
+            <p class="fig">1</p>
+            <p class="lab">Công ty sản xuất gần như toàn bộ chip AI hàng đầu thế giới</p>
+            <p class="src">TSMC &mdash; Stanford HAI, AI Index Report 2026</p>
+          </div>
+        </div>
+        <div class="duo">
+          <div class="chart">
+            <p class="ct">Sức mạnh tính toán nằm ở một quốc gia</p>
+            <p class="cs">Tỷ trọng hiệu năng cụm GPU toàn cầu được ghi nhận, 05/2025</p>
+            <svg viewBox="0 0 520 104" role="img" aria-label="Tỷ trọng hiệu năng cụm GPU toàn cầu, 05/2025: Hoa Kỳ 75 phần trăm, Trung Quốc 15 phần trăm, phần còn lại khoảng 10 phần trăm"><text class="c-name" x="2" y="12">Hoa Kỳ</text><rect class="c-us" x="2" y="18" width="380" height="14" rx="7"/><text class="c-num-us" x="390" y="29">75%</text><text class="c-name" x="2" y="48">Trung Quốc</text><rect class="c-other" x="2" y="54" width="76" height="14" rx="7"/><text class="c-num" x="86" y="65">15%</text><text class="c-name" x="2" y="84">Phần còn lại</text><rect class="c-lo" x="2" y="90" width="51" height="14" rx="7"/><text class="c-num" x="61" y="101">~10%</text></svg>
+            <p class="cc">Epoch AI chỉ theo dõi các cụm GPU công khai, nên đây là tỷ trọng trên phần <em>được ghi nhận</em>.</p>
+          </div>
+          <div class="takeaway">
+            <p class="tt">Ranh giới không phải là AI với con người.</p>
+            <p>Mà là số ít <strong>sở hữu</strong> năng lực AI và tất cả những người còn lại phải đi thuê - khoảng cách đó lớn dần theo từng năm tiếp tục đi thuê.</p>
+          </div>
+        </div>
+        <p class="srcfoot">Nguồn: Báo cáo Q4/2025 của Amazon (02/2026); Epoch AI, bộ dữ liệu AI Chip Owners và GPU Clusters (2025-26); Stanford HAI, AI Index Report 2026.</p>
       </div>
     </div>
   </section>
 
   <!-- Slide 3: The real risk -->
-  <section class="slide" id="s3">
+  <section class="slide wide" id="s3">
     <div class="slide-inner">
       <div data-lang="en">
         <p class="kicker">02 / The real risk</p>
         <p class="big">The greatest risk is not AI replacing people. It is the <strong>concentration of power</strong>.</p>
         <p>The rest of the world is left to rent intelligence rather than own it - paying every time for a system it cannot control.</p>
-        <div class="charts"><div class="chart">
-          <p class="ct">Rent it, or own it</p>
-          <p class="cs">Cost to run the same task again · after the first solve</p>
-          <svg viewBox="0 0 300 66" role="img" aria-label="Cost to run the same task again"><text class="c-name" x="3" y="12">Rent — cloud AI, every run</text><rect class="c-other" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num" x="205.0" y="26">$$$</text><text class="c-name-us" x="3" y="44">Own — local reuse after 1st solve</text><rect class="c-us" x="3" y="48" width="15.0" height="12" rx="6"/><text class="c-num-us" x="24.0" y="58">~$0</text></svg>
-          <p class="cc">Solve once on a powerful cloud model; TerranSoul saves the result so local models reuse it at almost no cost.</p>
-        </div></div>
+        <div class="stats">
+          <div class="stat">
+            <p class="fig">$12.5B</p>
+            <p class="lab">Spent in 2025 renting foundation models by the token</p>
+            <p class="src">Menlo Ventures, State of Generative AI in the Enterprise, Dec 2025</p>
+          </div>
+          <div class="stat">
+            <p class="fig">40%</p>
+            <p class="lab">Of all enterprise spend on language models goes to a single vendor</p>
+            <p class="src">Menlo Ventures, Dec 2025</p>
+          </div>
+          <div class="stat">
+            <p class="fig">91%</p>
+            <p class="lab">Of enterprises would keep sensitive AI work on their own infrastructure</p>
+            <p class="src">Cloudian Enterprise AI Infrastructure Survey, Feb 2026 (n=203)</p>
+          </div>
+          <div class="stat">
+            <p class="fig">$500-600B</p>
+            <p class="lab">Of AI spending could be shaped by sovereignty rules by 2030</p>
+            <p class="src">30-40% of the total &mdash; McKinsey, Sovereign AI, 2026</p>
+          </div>
+        </div>
+        <div class="notebox">
+          <p class="tt">What renting actually costs</p>
+          <p>Frontier capability is billed per million tokens, for as long as you use it - and even keeping your data in your own country is a paid add-on. You cannot control the system, cannot customise it, and cannot keep what it learns. Tesseres exists so a business can own that capability instead.</p>
+        </div>
+        <p class="srcfoot">Sources: Menlo Ventures, 2025: The State of Generative AI in the Enterprise (Dec 2025); Cloudian Enterprise AI Infrastructure Survey (Feb 2026, n=203); McKinsey, Sovereign AI ecosystems (2026); published frontier-model API pricing (accessed July 2026).</p>
       </div>
       <div data-lang="vi" hidden>
         <p class="kicker">02 / Rủi ro thực sự</p>
         <p class="big">Rủi ro lớn nhất không phải là AI thay thế con người. Mà là <strong>sự tập trung quyền lực</strong>.</p>
         <p>Phần còn lại của thế giới buộc phải đi thuê trí tuệ thay vì sở hữu nó - trả tiền mỗi lần dùng một hệ thống mà họ không thể kiểm soát.</p>
-        <div class="charts"><div class="chart">
-          <p class="ct">Đi thuê, hay sở hữu</p>
-          <p class="cs">Chi phí chạy lại cùng tác vụ · sau lần giải đầu tiên</p>
-          <svg viewBox="0 0 300 66" role="img" aria-label="Chi phí chạy lại cùng tác vụ"><text class="c-name" x="3" y="12">Thuê — AI đám mây, mỗi lần chạy</text><rect class="c-other" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num" x="205.0" y="26">$$$</text><text class="c-name-us" x="3" y="44">Sở hữu — tái dùng nội bộ sau lần đầu</text><rect class="c-us" x="3" y="48" width="15.0" height="12" rx="6"/><text class="c-num-us" x="24.0" y="58">~0đ</text></svg>
-          <p class="cc">Giải một lần trên mô hình đám mây mạnh; TerranSoul lưu lại kết quả để mô hình nội bộ tái dùng gần như miễn phí.</p>
-        </div></div>
+        <div class="stats">
+          <div class="stat">
+            <p class="fig">12,5 tỷ $</p>
+            <p class="lab">Chi trong năm 2025 để thuê mô hình nền, tính theo từng token</p>
+            <p class="src">Menlo Ventures, State of Generative AI in the Enterprise, 12/2025</p>
+          </div>
+          <div class="stat">
+            <p class="fig">40%</p>
+            <p class="lab">Chi tiêu cho mô hình ngôn ngữ của doanh nghiệp chảy về một nhà cung cấp duy nhất</p>
+            <p class="src">Menlo Ventures, 12/2025</p>
+          </div>
+          <div class="stat">
+            <p class="fig">91%</p>
+            <p class="lab">Doanh nghiệp muốn giữ dữ liệu AI nhạy cảm trên hạ tầng của chính mình</p>
+            <p class="src">Khảo sát Cloudian Enterprise AI Infrastructure, 02/2026 (n=203)</p>
+          </div>
+          <div class="stat">
+            <p class="fig">500-600 tỷ $</p>
+            <p class="lab">Chi tiêu AI có thể chịu chi phối bởi yêu cầu chủ quyền dữ liệu vào 2030</p>
+            <p class="src">30-40% tổng chi tiêu &mdash; McKinsey, Sovereign AI, 2026</p>
+          </div>
+        </div>
+        <div class="notebox">
+          <p class="tt">Cái giá thật sự của việc đi thuê</p>
+          <p>Năng lực AI hàng đầu được tính tiền theo từng triệu token, chừng nào bạn còn dùng - và ngay cả việc giữ dữ liệu trong nước cũng là một khoản phụ phí. Bạn không kiểm soát được hệ thống, không tùy chỉnh được, và cũng không giữ lại được những gì nó học. Tesseres ra đời để doanh nghiệp sở hữu năng lực đó.</p>
+        </div>
+        <p class="srcfoot">Nguồn: Menlo Ventures, 2025: The State of Generative AI in the Enterprise (12/2025); Khảo sát Cloudian Enterprise AI Infrastructure (02/2026, n=203); McKinsey, Sovereign AI ecosystems (2026); bảng giá API mô hình nền công bố (truy cập 07/2026).</p>
       </div>
     </div>
   </section>

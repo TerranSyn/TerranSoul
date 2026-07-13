@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Memory Is What a Store Does - Falsifiable Behavioral Criteria and a Multi-Benchmark Measurement of Frozen-Model External Memory</title>
+<title>Three Falsifiable Hypotheses About External Memory for Frozen Language Models - Behavioral Change, Single-Substrate Retrieval, and Measurement Discipline</title>
 <meta name="description" content="Three falsifiable hypotheses about external memory for frozen language models - behavioral change without weight edits (H1), one-substrate retrieval competitiveness across benchmarks, scales, and languages (H2), and the dominance of measurement discipline over apparent regressions (H3) - measured across LongMemEval-S, LoCoMo, a 1M-row multilingual corpus, latency ladders, interactive fiction, a delivery-reliability isolation, the SIA suite, and a vision self-improvement loop. Every number sourced to a committed file." />
 <style>
   :root{
@@ -201,8 +201,7 @@
   <div class="topbar-in">
     <div class="brand"><span class="brand-mark"></span> <a href="../" style="color:var(--ink);text-decoration:none">TerranSoul</a></div>
     <div class="crumbs">
-      <span>Papers</span> <span>/</span> <em>Memory Is What a Store Does</em>
-    </div>
+      <span>Papers</span> <span>/</span> <em>Three Falsifiable Hypotheses About External Memory for Frozen Language Models</em>    </div>
     <div class="spacer"></div>
     <a class="lnk" href="memory-evolution.html">Companion: memory evolution &rarr;</a>
     <a class="lnk" href="https://github.com/TerranSyn/TerranSoul/blob/main/benchmark/COMPARISON.md">Results matrix</a>
@@ -213,7 +212,7 @@
 <div class="page">
   <article>
     <div class="eyebrow"><span class="dot"></span>Research &middot; hypotheses + measurement</div>
-    <h1>Memory Is What a Store Does: <em>falsifiable behavioral criteria and a multi-benchmark measurement of frozen-model external memory.</em></h1>
+    <h1>Three Falsifiable Hypotheses About External Memory for Frozen Language Models: <em>behavioral change, single-substrate retrieval, and measurement discipline.</em></h1>
     <p class="deck">Three narrow hypotheses about external memory for language models whose weights never change &mdash; behavioral change without weight edits, one-substrate retrieval competitiveness across benchmarks, scales, and languages, and the dominance of measurement discipline over apparent regressions &mdash; each stated with its falsification condition and tested across nine evidence lanes, May&ndash;July 2026.</p>
 
     <div class="summary-card">
@@ -342,11 +341,11 @@
 
     <h2><span class="scene-num">01 &middot; Background</span>State of the art and related work</h2>
     <h3>1.1 External memory for frozen models</h3>
-    <p>The model-external lineage factors an agent's memory into a queryable store: MemGPT/Letta's OS-style paging [<a href="#ref-12">12</a>], Mem0's extract-consolidate-update pipeline [<a href="#ref-11">11</a>], spatial schemes such as MemoryPalace [<a href="#ref-13">13</a>], HippoRAG's neurobiologically-motivated multi-hop recall [<a href="#ref-14">14</a>], and temporal typed-edge knowledge graphs in Zep/Graphiti [<a href="#ref-15">15</a>]. Du formalises agent memory as a <em>&quot;write-manage-read loop tightly coupled with perception and action&quot;</em> [<a href="#ref-9">9</a>]. On the retrieval side, the methods this paper's instrument composes are all published: reciprocal-rank fusion [<a href="#ref-16">16</a>], HyDE query expansion [<a href="#ref-17">17</a>], Contextual Retrieval [<a href="#ref-18">18</a>], and LLM-as-judge reranking; the reasoning-side lineage is ReAct [<a href="#ref-19">19</a>], Reflexion [<a href="#ref-20">20</a>], and Voyager's skill library [<a href="#ref-21">21</a>]. The agentic-RAG survey [<a href="#ref-22">22</a>] names memory management and governance as open challenges.</p>
+    <p>The model-external lineage factors an agent's memory into a queryable store: MemGPT/Letta's OS-style paging [<a href="#ref-12">12</a>], Mem0's extract-consolidate-update pipeline [<a href="#ref-11">11</a>], spatial schemes such as MemPalace [<a href="#ref-13">13</a>], HippoRAG's neurobiologically-motivated multi-hop recall [<a href="#ref-14">14</a>], and temporal typed-edge knowledge graphs in Zep/Graphiti [<a href="#ref-15">15</a>]. Du formalises agent memory as a <em>&quot;write-manage-read loop tightly coupled with perception and action&quot;</em> [<a href="#ref-9">9</a>]. On the retrieval side, the methods this paper's instrument composes are all published: reciprocal-rank fusion [<a href="#ref-16">16</a>], HyDE query expansion [<a href="#ref-17">17</a>], Contextual Retrieval [<a href="#ref-18">18</a>], and LLM-as-judge reranking; the reasoning-side lineage is ReAct [<a href="#ref-19">19</a>], Reflexion [<a href="#ref-20">20</a>], and Voyager's skill library [<a href="#ref-21">21</a>]. The agentic-RAG survey [<a href="#ref-22">22</a>] names memory management and governance as open challenges.</p>
     <h3>1.2 The 2026 debates</h3>
     <p>Three live disputes frame our hypotheses. First, the <strong>memo-vs-memory charge</strong>: Xu, Dai &amp; Zhang [<a href="#ref-1">1</a>] argue that per-turn retrieve-and-paste &quot;agentic memory&quot; is a memo, not a memory &mdash; lookup, not learning &mdash; and prove a compositional sample-complexity separation between context-engineering and weight-based memory, prescribing consolidation into weights. We accept the diagnosis (a flat, append-only vector store is a memo) and contest the dichotomy: the memo/memory distinction is behavioral, not locational, and Section 03 states the behaviors. We concede the compositional theorem stands; nothing here contests it on its own ground, and our own multi-hop retrieval gap (Section 5.2) is consistent with its prediction. Second, the <strong>weight-update counter-pole</strong>: SIA [<a href="#ref-2">2</a>] co-evolves a task agent's scaffold and weights and reports that combining both levers exceeds scaffold-iteration alone on its benchmarks; Section 5.7 measures the frozen alternative on SIA's own suite. Third, the <strong>frozen-harness school</strong>: A-Evolve [<a href="#ref-3">3</a>] evolves skills, memory, and prompts around a frozen model with git-gated rollback, reporting deltas of +2.2 to +15.2&nbsp;pp across ten public benchmarks [<a href="#ref-46">46</a>]; the caution literature warns that harness updating is not automatically harness benefit &mdash; weak actors fail to load or follow the skills their evolver writes [<a href="#ref-4">4</a>] &mdash; and that evolved harnesses grow brittle under ungated corpus growth [<a href="#ref-5">5</a>]. The same group's weight-training line [<a href="#ref-6">6</a>] is the deliberate opposite of our design choice. The dual-process (DCPM [<a href="#ref-7">7</a>]) and governance (SSGM [<a href="#ref-8">8</a>]) lines, and SGS's frozen-guide curriculum [<a href="#ref-10">10</a>], each contribute one adopted mechanism, noted where used.</p>
     <h3>1.3 Benchmark state of the art</h3>
-    <p>Conversational-memory retrieval is anchored by LongMemEval [<a href="#ref-23">23</a>] and LoCoMo [<a href="#ref-24">24</a>]; MemoryAgentBench [<a href="#ref-25">25</a>] grounds evaluation cognitively; MemoryArena [<a href="#ref-26">26</a>] shows systems scoring near-perfectly on LoCoMo collapse to 40&ndash;60% on interdependent multi-session tasks &mdash; a standing warning against reading any single benchmark as sufficient. On the long-horizon <em>acting</em> side, Jericho [<a href="#ref-27">27</a>] exposes interactive-fiction games with ground-truth state; BALROG [<a href="#ref-28">28</a>] and TALES [<a href="#ref-29">29</a>] report broad model struggle on them &mdash; TALES calls Zork I, one game in our Section 5.5 experiment, <em>&quot;insurmountable &hellip; even for modern state-of-the-art LLMs&quot;</em>; the upstream ZorkGPT agent we run unmodified is [<a href="#ref-30">30</a>]. On the adversarial side, MINJA [<a href="#ref-31">31</a>] demonstrates &gt;95% memory-injection success against unguarded write paths &mdash; the threat model our substrate's write gate is designed against but not yet evaluated against at published attack strength (Section 5.10).</p>
+    <p>Conversational-memory retrieval is anchored by LongMemEval [<a href="#ref-23">23</a>] and LoCoMo [<a href="#ref-24">24</a>]; MemoryAgentBench [<a href="#ref-25">25</a>] grounds evaluation cognitively; MemoryArena [<a href="#ref-26">26</a>] reports that agents near-saturated on LoCoMo perform poorly on its interdependent multi-session tasks &mdash; a standing warning against reading any single benchmark as sufficient. On the long-horizon <em>acting</em> side, Jericho [<a href="#ref-27">27</a>] exposes interactive-fiction games with ground-truth state; BALROG [<a href="#ref-28">28</a>] and TALES [<a href="#ref-29">29</a>] report broad model struggle on them &mdash; TALES calls Zork I, one game in our Section 5.5 experiment, <em>&quot;insurmountable &hellip; even for modern state-of-the-art LLMs&quot;</em>; the upstream ZorkGPT agent we run unmodified is [<a href="#ref-30">30</a>]. On the adversarial side, MINJA [<a href="#ref-31">31</a>] demonstrates a &gt;95% injection success rate (ISR; its end-to-end attack success rate averages 76.8%) against unguarded write paths &mdash; the threat model our substrate's write gate is designed against but not yet evaluated against at published attack strength (Section 5.10).</p>
     <h3>1.4 Companion article</h3>
     <p>The worldwide evolution of memory and retrieval technology &mdash; twelve stages from 1970s inverted indexes to governed self-consolidating memory, each with the problem it solved, the limitation documented against it, and full citations &mdash; is narrated in the companion article, <a href="memory-evolution.html"><em>The Evolution of Memory for AI Systems</em></a> [<a href="#ref-53">53</a>]. This paper keeps only the four-row engagement summary below; the per-work adopt/contest/concede detail lives in the companion.</p>
     <div class="tablewrap"><table class="compare">
@@ -401,9 +400,9 @@
     <h2><span class="scene-num">05 &middot; Experiments</span>Nine evidence lanes</h2>
 
     <h3>5.1 Conversational-memory retrieval &mdash; LongMemEval-S (H2)</h3>
-    <p>The full 500-question LongMemEval-S cleaned set [<a href="#ref-23">23</a>], retrieval-only recall matching agentmemory's published methodology; run 2026-07-03 with the environment stamped (<code>LONGMEM_EMBED=1</code>, <code>LONGMEM_EMBED_MODEL=embeddinggemma</code>) [<a href="#ref-40">40</a>]. TerranSoul <code>rrf</code>: R@5 99.4% / R@10 99.8% / R@20 100.0% / NDCG@10 95.1% / MRR 95.9%. TerranSoul <code>rrf_emb</code>: R@5 99.4% / R@10 100.0% / R@20 100.0% / NDCG@10 94.5% / MRR 95.3%. Published baselines on the same retrieval-only table: agentmemory R@5 95.2% / R@10 98.6% / R@20 99.4% / NDCG@10 87.9% / MRR 88.2%; MemoryPalace ~96.6% R@5 / ~97.6% R@10, a vendor self-report with no primary paper [<a href="#ref-39">39</a>].</p>
+    <p>The full 500-question LongMemEval-S cleaned set [<a href="#ref-23">23</a>], retrieval-only recall matching agentmemory's published methodology; run 2026-07-03 with the environment stamped (<code>LONGMEM_EMBED=1</code>, <code>LONGMEM_EMBED_MODEL=embeddinggemma</code>) [<a href="#ref-40">40</a>]. TerranSoul <code>rrf</code>: R@5 99.4% / R@10 99.8% / R@20 100.0% / NDCG@10 95.1% / MRR 95.9%. TerranSoul <code>rrf_emb</code>: R@5 99.4% / R@10 100.0% / R@20 100.0% / NDCG@10 94.5% / MRR 95.3%. Published baselines on the same retrieval-only table: agentmemory R@5 95.2% / R@10 98.6% / R@20 99.4% / NDCG@10 87.9% / MRR 88.2%; MemPalace ~96.6% R@5 / ~97.6% R@10, a vendor self-report with no primary paper [<a href="#ref-39">39</a>].</p>
     <figure class="chart">
-      <svg viewBox="0 0 720 372" role="img" aria-label="LongMemEval-S recall at depths 5, 10, and 20: TerranSoul rrf_emb 99.4, 100.0, 100.0 percent; agentmemory 95.2, 98.6, 99.4 percent; MemoryPalace 96.6 and 97.6 percent with no published R at 20. Axis zoomed to 90 to 100 percent.">
+      <svg viewBox="0 0 720 372" role="img" aria-label="LongMemEval-S recall at depths 5, 10, and 20: TerranSoul rrf_emb 99.4, 100.0, 100.0 percent; agentmemory 95.2, 98.6, 99.4 percent; MemPalace 96.6 and 97.6 percent with no published R at 20. Axis zoomed to 90 to 100 percent.">
         <text class="c-title" x="16" y="20">LongMemEval-S retrieval recall by depth (%) &mdash; axis zoomed to 90&ndash;100</text>
         <line class="c-axis" x1="210" y1="36" x2="210" y2="308"/>
         <line class="c-grid" x1="300" y1="36" x2="300" y2="308"/>
@@ -433,7 +432,7 @@
         <text class="c-val-sm" x="612" y="232">100.0</text>
         <rect class="c-s2" x="210" y="254" width="423" height="16" rx="3"/>
         <text class="c-val-sm" x="590" y="284">99.4</text>
-        <text class="c-cat-sm" x="214" y="284">MemoryPalace: R@20 not published</text>
+        <text class="c-cat-sm" x="214" y="284">MemPalace: R@20 not published</text>
         <text class="c-tick" x="210" y="326" text-anchor="middle">90</text>
         <text class="c-tick" x="300" y="326" text-anchor="middle">92</text>
         <text class="c-tick" x="390" y="326" text-anchor="middle">94</text>
@@ -443,9 +442,9 @@
         <text class="c-tick" x="435" y="342" text-anchor="middle">Recall (%) &mdash; axis starts at 90% to resolve the high-recall cluster</text>
         <rect class="c-s1" x="88" y="352" width="14" height="10" rx="2"/><text class="c-legend" x="108" y="361">TerranSoul rrf_emb</text>
         <rect class="c-s2" x="268" y="352" width="14" height="10" rx="2"/><text class="c-legend" x="288" y="361">agentmemory (published)</text>
-        <rect class="c-s3" x="478" y="352" width="14" height="10" rx="2"/><text class="c-legend" x="498" y="361">MemoryPalace (vendor self-report)</text>
+        <rect class="c-s3" x="478" y="352" width="14" height="10" rx="2"/><text class="c-legend" x="498" y="361">MemPalace (vendor self-report)</text>
       </svg>
-      <figcaption><span class="fignum">Fig 1</span>LongMemEval-S recall-depth profile (Section 5.1). All three systems are measured on the same retrieval-only methodology; the MemoryPalace figures are vendor self-reports. The axis is deliberately zoomed to 90&ndash;100% and labeled as such. Sources: <code>benchmark/results/longmemeval_s_terransoul.md</code> [<a href="#ref-40">40</a>], <code>benchmark/COMPARISON.md</code> [<a href="#ref-39">39</a>]. Different benchmarks elsewhere in this paper are not cross-comparable with these numbers.</figcaption>
+      <figcaption><span class="fignum">Fig 1</span>LongMemEval-S recall-depth profile (Section 5.1). All three systems are measured on the same retrieval-only methodology; the MemPalace figures are vendor self-reports. The axis is deliberately zoomed to 90&ndash;100% and labeled as such. Sources: <code>benchmark/results/longmemeval_s_terransoul.md</code> [<a href="#ref-40">40</a>], <code>benchmark/COMPARISON.md</code> [<a href="#ref-39">39</a>]. Different benchmarks elsewhere in this paper are not cross-comparable with these numbers.</figcaption>
     </figure>
 
     <h3>5.2 Harder multi-document retrieval &mdash; LoCoMo (H2)</h3>
@@ -883,10 +882,10 @@
     <ol class="refs">
       <li id="ref-1" value="1">Xu, B., Dai, X., Zhang, K. <cite>Contextual Agentic Memory is a Memo, Not True Memory.</cite> 2026. arXiv:2604.27707.</li>
       <li id="ref-2" value="2">Hebbar, P., Manawat, Y., Verboomen, S., Ivanova, A., Palanimalai, S., Bhatia, K., Baskaran, V. <cite>SIA: Self Improving AI with Harness &amp; Weight Updates.</cite> 2026. arXiv:2605.27276. github.com/hexo-ai/sia (MIT). SIA's LoRA/RL weight path is paper-reported; only the scaffold-editing path is visible in the public source.</li>
-      <li id="ref-3" value="3">A-EVO-Lab. <cite>Position: Agentic Evolution is the Path to Evolving LLMs.</cite> 2026. arXiv:2602.00359. github.com/A-EVO-Lab/a-evolve (MIT).</li>
+      <li id="ref-3" value="3">Lin, M., Lu, H., Shi, Z., et al. <cite>Position: Agentic Evolution is the Path to Evolving LLMs.</cite> 2026. arXiv:2602.00359. github.com/A-EVO-Lab/a-evolve (MIT).</li>
       <li id="ref-4" value="4"><cite>Harness Updating Is Not Harness Benefit.</cite> 2026. arXiv:2605.30621.</li>
-      <li id="ref-5" value="5"><cite>Evolved-harness brittleness under ungated corpus growth.</cite> 2026. arXiv:2606.01770.</li>
-      <li id="ref-6" value="6">A-EVO-Lab. <cite>A-Evolve-Training: Autonomous Post-Training of a 30B Model.</cite> 2026. arXiv:2606.20657. (Weight fine-tuning &mdash; the deliberate opposite of this paper's frozen-actor design.)</li>
+      <li id="ref-5" value="5">Liu, Z., Shi, Z., Sang, Y., He, B., Lin, M., Wei, T., Wang, D., Dumoulin, B., Jin, W., Lu, H. <cite>Adaptive Auto-Harness: Sustained Self-Improvement for Agentic System Deployment on Open-Ended Task Streams.</cite> 2026. arXiv:2606.01770.</li>
+      <li id="ref-6" value="6">Shi, Z., He, B., Sang, Y., Lu, H., Dumoulin, B. <cite>A-Evolve-Training: Autonomous Post-Training of a 30B Model.</cite> 2026. arXiv:2606.20657. (Weight fine-tuning &mdash; the deliberate opposite of this paper's frozen-actor design.)</li>
       <li id="ref-7" value="7"><cite>Memory Beyond Recall: a Dual-Process Cognitive Memory System (DCPM).</cite> 2026. arXiv:2606.09483.</li>
       <li id="ref-8" value="8"><cite>Governing Evolving Memory in LLM Agents: the Stability and Safety Governed Memory framework (SSGM).</cite> 2026. arXiv:2603.11768.</li>
       <li id="ref-9" value="9">Du, P. <cite>Memory for Autonomous LLM Agents: Mechanisms, Evaluation, and Emerging Frontiers.</cite> 2026. arXiv:2603.07670.</li>
@@ -896,12 +895,12 @@
     <ol class="refs">
       <li id="ref-11" value="11"><cite>Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory.</cite> 2025. arXiv:2504.19413.</li>
       <li id="ref-12" value="12">Packer et al. <cite>MemGPT: Towards LLMs as Operating Systems</cite> (Letta). 2023. arXiv:2310.08560.</li>
-      <li id="ref-13" value="13"><cite>MemoryPalace / spatial agent memory.</cite> 2025. arXiv:2503.06868.</li>
+      <li id="ref-13" value="13">MemPalace (spatial agent memory). Vendor self-report: github.com/MemTensor/MemPalace (README, accessed 2026-07-13) &mdash; no self-authored paper. Independent analysis: Dey, R., Viradecha, P. <cite>Spatial Metaphors for LLM Memory: A Critical Analysis of the MemPalace Architecture.</cite> 2026. arXiv:2604.21284, which attributes MemPalace's reported R@5 to verbatim storage plus default embedding search rather than to the palace hierarchy.</li>
       <li id="ref-14" value="14">Guti&eacute;rrez et al. <cite>HippoRAG: Neurobiologically Inspired Long-Term Memory for LLMs.</cite> 2024. arXiv:2405.14831.</li>
       <li id="ref-15" value="15">Zep AI. <cite>Zep / Graphiti: A Temporal Knowledge-Graph Architecture for Agent Memory.</cite> 2025. arXiv:2501.13956.</li>
-      <li id="ref-16" value="16">Cormack, G., Clarke, C., B&uuml;ttcher, S. <cite>Reciprocal Rank Fusion (RRF)</cite> &mdash; the rank-fusion method and its <em>k</em>&nbsp;=&nbsp;60 constant. SIGIR 2009. (Short-form citation; the full published title is available under that venue and year.)</li>
+      <li id="ref-16" value="16">Cormack, G. V., Clarke, C. L. A., B&uuml;ttcher, S. <cite>Reciprocal Rank Fusion outperforms Condorcet and Individual Rank Learning Methods.</cite> SIGIR 2009, pp. 758&ndash;759. doi:10.1145/1571941.1572114. (Source of the rank-fusion method and its k = 60 constant. The comparative verb appears here only as part of a third party's published title, quoted verbatim as a bibliographic fact; it is not a claim of this paper.)</li></em>&nbsp;=&nbsp;60 constant. SIGIR 2009. (Short-form citation; the full published title is available under that venue and year.)</li>
       <li id="ref-17" value="17">Gao et al. <cite>Precise Zero-Shot Dense Retrieval without Relevance Labels (HyDE).</cite> 2022. arXiv:2212.10496.</li>
-      <li id="ref-18" value="18">Anthropic. <cite>Introducing Contextual Retrieval.</cite> 2024.</li>
+      <li id="ref-18" value="18">Anthropic. <cite>Introducing Contextual Retrieval.</cite> Engineering blog, 20 Sep 2024. https://www.anthropic.com/engineering/contextual-retrieval</li>
       <li id="ref-19" value="19">Yao et al. <cite>ReAct: Synergizing Reasoning and Acting in Language Models.</cite> 2022. arXiv:2210.03629.</li>
       <li id="ref-20" value="20">Shinn et al. <cite>Reflexion: Language Agents with Verbal Reinforcement Learning.</cite> 2023. arXiv:2303.11366.</li>
       <li id="ref-21" value="21">Wang et al. <cite>Voyager: An Open-Ended Embodied Agent with LLMs.</cite> 2023. arXiv:2305.16291.</li>
@@ -910,24 +909,24 @@
     <div class="refgroup">Benchmarks, environments, and the adversary</div>
     <ol class="refs">
       <li id="ref-23" value="23">Wu et al. <cite>LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory.</cite> ICLR 2025. arXiv:2410.10813.</li>
-      <li id="ref-24" value="24">Maharana, Lee, Tulyakov, Bansal, Barbieri, Fung. <cite>Evaluating Very Long-Term Conversational Memory of LLM Agents (LoCoMo).</cite> ACL 2024. arXiv:2402.17753.</li>
+      <li id="ref-24" value="24">Maharana, A., Lee, D.-H., Tulyakov, S., Bansal, M., Barbieri, F., Fang, Y. <cite>Evaluating Very Long-Term Conversational Memory of LLM Agents (LoCoMo).</cite> ACL 2024. arXiv:2402.17753.</li>
       <li id="ref-25" value="25"><cite>MemoryAgentBench: Evaluating Memory in LLM Agents via Incremental Multi-Turn Interactions.</cite> 2025. arXiv:2507.05257.</li>
       <li id="ref-26" value="26"><cite>MemoryArena.</cite> 2026. arXiv:2602.16313.</li>
       <li id="ref-27" value="27">Hausknecht et al. <cite>Interactive Fiction Games: A Colossal Adventure (Jericho).</cite> 2019/2020. arXiv:1909.05398.</li>
       <li id="ref-28" value="28">Paglieri et al. <cite>BALROG: Benchmarking Agentic LLM and VLM Reasoning On Games.</cite> 2024. arXiv:2411.13543.</li>
       <li id="ref-29" value="29">Cui, Yuan, Xiao, Ammanabrolu, C&ocirc;t&eacute;. <cite>TALES: Text Adventure Learning Environment Suite.</cite> 2025. arXiv:2504.14128.</li>
       <li id="ref-30" value="30">stickystyle. <cite>ZorkGPT</cite> (upstream agent, MIT, run unmodified). github.com/stickystyle/ZorkGPT; live run at zorkgpt.com.</li>
-      <li id="ref-31" value="31"><cite>MINJA: memory injection attacks on LLM agents.</cite> 2025. arXiv:2503.03704.</li>
+      <li id="ref-31" value="31">Dong, S., Xu, S., He, P., Li, Y., Tang, J., Liu, T., Liu, H., Xiang, Z. <cite>A Practical Memory Injection Attack against LLM Agents (MINJA).</cite> 2025. arXiv:2503.03704.</li>
     </ol>
     <div class="refgroup">Agent-memory surveys (2026)</div>
     <ol class="refs">
       <li id="ref-32" value="32"><cite>Externalization in LLM Agents &mdash; a Unified Review.</cite> 2026. arXiv:2604.08224.</li>
       <li id="ref-33" value="33"><cite>Towards Autonomous Memory Agents.</cite> 2026. arXiv:2602.22406.</li>
       <li id="ref-34" value="34"><cite>Are We Ready For An Agent-Native Memory System?</cite> 2026. arXiv:2606.24775.</li>
-      <li id="ref-35" value="35">DeepMind. <cite>A 10-faculty cognitive framework for LLM-agent memory.</cite> 2026. arXiv:2605.28405.</li>
-      <li id="ref-36" value="36"><cite>A Survey on the Security of Long-Term Memory in LLM Agents: Toward Mnemonic Sovereignty.</cite> 2026. arXiv:2604.16548.</li>
-      <li id="ref-37" value="37"><cite>From Storage to Experience: A Survey on the Evolution of LLM Agent Memory Mechanisms.</cite> 2026. arXiv:2605.06716.</li>
-      <li id="ref-38" value="38"><cite>LLM Agent Memory: A Survey from a Unified Representation-Management Perspective.</cite> 2026. Preprints.org 202603.0359.</li>
+      <li id="ref-35" value="35">Lin, Z., Hao, X., Fu, R., Cui, S., Chen, K., Li, C., Li, Z., Xiong, F. <cite>A Survey on Long-Term Memory Security in LLM Agents: Attacks, Defenses, and Governance Across the Memory Lifecycle.</cite> 2026. arXiv:2604.16548.</li>
+      <li id="ref-36" value="36"><cite>From Storage to Experience: A Survey on the Evolution of LLM Agent Memory Mechanisms.</cite> ACL 2026 Findings. arXiv:2605.06716.</li>
+      <li id="ref-37" value="37"><cite>LLM Agent Memory: A Survey from a Unified Representation-Management Perspective.</cite> 2026. Preprints.org 202603.0359. doi:10.20944/preprints202603.0359.v1</li>
+      <li id="ref-38" value="38">Burnell, R., Yamamori, Y., Firat, O., &hellip; Legg, S. (Google DeepMind). <cite>Measuring Progress Toward AGI: A Cognitive Framework.</cite> 2026. arXiv:2605.28405. (An AGI-measurement taxonomy of ten cognitive faculties &mdash; cited here for its memory faculty, not as an agent-memory survey.)</li>
     </ol>
     <div class="refgroup">Our own runs, code, and artifacts (numbers' sources of truth)</div>
     <ol class="refs">
@@ -948,7 +947,7 @@
       <li id="ref-53" value="53">Companion article: <a href="memory-evolution.html"><cite>The Evolution of Memory for AI Systems: From Inverted Indexes to Governed Self-Consolidating Stores.</cite></a> TerranSoul Research, 2026-07.</li>
     </ol>
 
-    <div class="endmark">Memory Is What a Store Does &middot; TerranSoul Research &middot; 2026</div>
+    <div class="endmark">Three Falsifiable Hypotheses About External Memory for Frozen Language Models &middot; TerranSoul Research &middot; 2026</div>
   </article>
 </div>
 
