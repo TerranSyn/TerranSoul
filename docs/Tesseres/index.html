@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tesseres - Sovereign AI</title>
 <meta name="description" content="Tesseres builds a Sovereign AI platform - TerranSoul (AI memory) and Tessera (AI execution) - so individuals, businesses, and nations can own their own AI. / Nền tảng AI có chủ quyền." />
-<link rel="canonical" href="https://terransyn.github.io/TerranSoul/tesseres/" />
+<link rel="canonical" href="https://terransyn.github.io/TerranSoul/Tesseres/" />
 <style>
   :root{
     --bg: oklch(0.985 0.008 80);
@@ -100,6 +100,18 @@
     font-size:clamp(20px,4.4vw,26px);line-height:1.3;color:var(--accent-ink)}
   .sysnote{font-size:clamp(15px,2.4vw,16.5px);color:var(--ink-soft);font-style:italic}
 
+  /* Subject-matter-expertise boxes (tech vs business) */
+  .smegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;margin:clamp(20px,4vw,28px) 0 clamp(8px,2vw,14px)}
+  .smebox{background:var(--bg-card);border:1px solid var(--rule);border-radius:12px;padding:18px 18px 20px}
+  .smebox .term{font-family:var(--serif);font-weight:600;font-size:20px;color:var(--ink);margin:0 0 6px}
+  .smebox .rlab{display:block;font-family:var(--sans);font-weight:700;font-size:10.5px;
+    letter-spacing:0.09em;text-transform:uppercase;margin:12px 0 3px}
+  .smebox .rlab.tech{color:var(--ink-faint)}
+  .smebox .rlab.biz{color:var(--accent-ink)}
+  .smebox .rtxt{font-size:15px;line-height:1.45;color:var(--ink-soft);margin:0}
+  .smebox .rtxt.tech{color:var(--ink-faint)}
+
   footer{border-top:1px solid var(--rule);max-width:var(--maxw);margin:0 auto;
     padding:28px clamp(16px,5vw,40px) 48px;color:var(--ink-faint);font-size:14px;
     display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between}
@@ -135,6 +147,27 @@
     <p>AI is driving the cost of writing software toward zero. When anyone can produce software from a few prompts, the code itself is no longer scarce or a source of advantage.</p>
     <p>Value shifts to what remains: data, infrastructure, and durable workflows - where the real work happens and is remembered.</p>
     <p>That is exactly what Tesseres builds. TerranSoul retains knowledge and experience so they do not vanish after each session. Tessera turns those workflows into reliable infrastructure that can be operated and traced. When software becomes nearly free, what a business needs to own is not the code, but its own memory and its own capacity to execute.</p>
+
+    <h2>Why AI can't just build the rest</h2>
+    <p class="lead">To a newcomer, "data, infrastructure and workflows" can sound like just more code - so can't AI generate those too? It cannot. Each one is <strong>subject-matter expertise</strong> that has to be lived and earned, not prompted.</p>
+    <div class="smegrid">
+      <div class="smebox">
+        <p class="term">Data</p>
+        <p class="rlab tech">In tech terms</p><p class="rtxt tech">Databases, event logs, embeddings.</p>
+        <p class="rlab biz">In business terms</p><p class="rtxt">Your company's memory - every decision, exception and hard-won lesson, most of it never written down. AI writes code; it cannot invent your history.</p>
+      </div>
+      <div class="smebox">
+        <p class="term">Infrastructure</p>
+        <p class="rlab tech">In tech terms</p><p class="rtxt tech">Brokers, workflows, uptime, security.</p>
+        <p class="rlab biz">In business terms</p><p class="rtxt">The reliability a bank, hospital or airline runs on - proven to survive a data-centre outage, not just to demo. AI drafts it; earning that trust is the hard part.</p>
+      </div>
+      <div class="smebox">
+        <p class="term">Integration &amp; workflow</p>
+        <p class="rlab tech">In tech terms</p><p class="rtxt tech">Wiring ERP, CRM, accounting and APIs; saga &amp; compensation logic.</p>
+        <p class="rlab biz">In business terms</p><p class="rtxt">How your business actually runs - the thousands of rules and edge cases that ARE the business. AI can generate a workflow; it can't know which one is yours.</p>
+      </div>
+    </div>
+    <p>AI makes the code nearly free. It does not hand you your data, your proven infrastructure, or the subject-matter expertise inside your workflows. Those are the moat - and Tesseres helps a business own them.</p>
 
     <h2>Two products, one platform</h2>
     <p>Tesseres brings together two products developed independently, then unified into one complete platform.</p>
@@ -202,6 +235,27 @@
     <p>AI đang khiến chi phí viết phần mềm tiến dần về 0. Khi bất kỳ ai cũng có thể tạo ra phần mềm chỉ bằng vài câu lệnh, bản thân đoạn mã không còn là thứ khan hiếm hay tạo ra lợi thế nữa.</p>
     <p>Giá trị dịch chuyển sang những thứ còn lại: dữ liệu, hạ tầng, và những quy trình bền vững - nơi công việc thực sự diễn ra và được ghi nhớ.</p>
     <p>Đó chính là những gì Tesseres xây dựng. TerranSoul giữ lại tri thức và kinh nghiệm để chúng không biến mất sau mỗi phiên làm việc. Tessera biến những quy trình đó thành hạ tầng đáng tin cậy, có thể vận hành và truy vết. Khi phần mềm trở nên gần như miễn phí, thứ mà doanh nghiệp cần sở hữu không phải là đoạn mã, mà là bộ nhớ và năng lực thực thi của chính mình.</p>
+
+    <h2>Vì sao AI không thể tự tạo ra phần còn lại</h2>
+    <p class="lead">Với người mới, "dữ liệu, hạ tầng và quy trình" nghe như chỉ là thêm mã nguồn - vậy AI cũng tự sinh ra được chứ? Không. Mỗi thứ là một loại <strong>chuyên môn lĩnh vực</strong> (subject-matter expertise) phải trải nghiệm và tích luỹ mới có, không thể chỉ ra lệnh.</p>
+    <div class="smegrid">
+      <div class="smebox">
+        <p class="term">Dữ liệu</p>
+        <p class="rlab tech">Về mặt kỹ thuật</p><p class="rtxt tech">Cơ sở dữ liệu, nhật ký sự kiện, embedding.</p>
+        <p class="rlab biz">Về mặt kinh doanh</p><p class="rtxt">Bộ nhớ của doanh nghiệp bạn - mọi quyết định, ngoại lệ và bài học phải trả giá mới có, phần lớn chưa từng được ghi lại. AI viết được mã; nhưng không thể bịa ra lịch sử của bạn.</p>
+      </div>
+      <div class="smebox">
+        <p class="term">Hạ tầng</p>
+        <p class="rlab tech">Về mặt kỹ thuật</p><p class="rtxt tech">Broker, quy trình, thời gian hoạt động, bảo mật.</p>
+        <p class="rlab biz">Về mặt kinh doanh</p><p class="rtxt">Độ tin cậy mà một ngân hàng, bệnh viện hay hãng bay dựa vào - được chứng minh sống sót qua sự cố trung tâm dữ liệu, không chỉ để demo. AI phác được; giành lấy niềm tin đó mới là phần khó.</p>
+      </div>
+      <div class="smebox">
+        <p class="term">Tích hợp &amp; quy trình</p>
+        <p class="rlab tech">Về mặt kỹ thuật</p><p class="rtxt tech">Kết nối ERP, CRM, kế toán và API; logic saga &amp; bù trừ.</p>
+        <p class="rlab biz">Về mặt kinh doanh</p><p class="rtxt">Cách doanh nghiệp bạn thực sự vận hành - hàng nghìn quy tắc và tình huống ngoại lệ chính LÀ doanh nghiệp. AI tạo được một quy trình; nhưng không biết quy trình nào là của bạn.</p>
+      </div>
+    </div>
+    <p>AI khiến mã nguồn gần như miễn phí. Nhưng nó không trao cho bạn dữ liệu, hạ tầng đã được kiểm chứng, hay chuyên môn lĩnh vực nằm trong các quy trình của bạn. Đó là lợi thế bền vững - và Tesseres giúp doanh nghiệp sở hữu chúng.</p>
 
     <h2>Hai sản phẩm, một nền tảng</h2>
     <p>Tesseres kết hợp hai sản phẩm được phát triển độc lập, sau đó hợp nhất thành một nền tảng hoàn chỉnh.</p>
