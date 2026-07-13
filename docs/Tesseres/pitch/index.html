@@ -172,6 +172,20 @@
     background:var(--accent-soft);border:1px solid color-mix(in oklab,var(--accent) 22%,transparent);
     border-radius:999px;padding:6px 15px}
 
+  /* Point markers — a numbered step inside a slide that carries more than one beat */
+  .pointrow{display:flex;align-items:center;gap:10px;margin:clamp(10px,1.8vh,16px) 0 2px}
+  /* Slide 3 carries two beats (the risk stats + the ownership cards) in the space
+     other slides give one — cap the headline and tighten the second-beat grid so
+     the whole slide still fits one screen. */
+  #s3 .big{font-size:clamp(26px,4.4vw,34px)}
+  #s3 .smegrid{margin-top:clamp(6px,1.2vh,10px)}
+  #s3{padding-top:clamp(36px,5.4vh,56px);padding-bottom:clamp(16px,2.4vh,28px)}
+  .pointrow .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);
+    color:var(--accent-ink);font-family:var(--sans);font-weight:700;font-size:12.5px;
+    display:flex;align-items:center;justify-content:center}
+  .pointrow .pt{font-family:var(--sans);font-weight:700;font-size:11.5px;letter-spacing:0.08em;
+    text-transform:uppercase;color:var(--ink-faint)}
+
   /* Subject-matter-expertise boxes (the moat slide) */
   .smegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));
     gap:clamp(12px,2vw,20px);margin:clamp(12px,2.6vh,22px) 0 0}
@@ -179,12 +193,7 @@
     padding:clamp(15px,2.6vw,20px);display:flex;flex-direction:column;gap:11px}
   .smebox .term{font-family:var(--serif);font-weight:600;font-size:clamp(19px,3.2vw,23px);
     color:var(--ink);letter-spacing:-0.01em;margin:0;line-height:1.1}
-  .smebox .rlab{display:block;font-family:var(--sans);font-weight:700;font-size:10.5px;
-    letter-spacing:0.10em;text-transform:uppercase;margin:0 0 3px}
-  .smebox .rlab.tech{color:var(--ink-faint)}
-  .smebox .rlab.biz{color:var(--accent-ink)}
   .smebox .rtxt{font-size:clamp(13.5px,2.2vw,15.5px);line-height:1.42;color:var(--ink-soft);margin:0;max-width:none}
-  .smebox .rtxt.tech{color:var(--ink-faint)}
   .moat-punch{font-family:var(--serif);font-weight:600;font-size:clamp(20px,3.2vw,28px);
     line-height:1.22;color:var(--ink);letter-spacing:-0.01em;margin:clamp(16px,3vh,26px) 0 0;max-width:36ch}
   .moat-punch strong{color:var(--accent-ink)}
@@ -209,12 +218,27 @@
   .whydek{font-size:clamp(15px,2.3vw,18px);color:var(--ink-soft);max-width:66ch;
     margin:0 0 clamp(4px,1vh,10px);line-height:1.45}
   .whydek strong{color:var(--ink);font-weight:600}
-  /* Masonry columns: each card sizes to its own content (no equal-row voids). */
-  .chartgrid{columns:290px;column-gap:clamp(12px,1.8vw,20px);
-    margin:clamp(10px,2vh,18px) 0 0}
-  .chartgrid .chart{padding:clamp(13px,2vw,17px);
-    break-inside:avoid;-webkit-column-break-inside:avoid;
-    margin:0 0 clamp(12px,1.8vw,20px)}
+  .pillartt{font-family:var(--serif);font-weight:600;font-size:clamp(18px,2.8vw,22px);
+    color:var(--ink);letter-spacing:-0.01em;margin:clamp(8px,1.4vh,12px) 0 2px}
+  .pillarsub{font-size:clamp(13px,1.9vw,14.5px);color:var(--ink-faint);margin:0 0 3px}
+  /* 11 items: denser cards than the 3-item moat grid, smaller term size, more columns. */
+  .pillargrid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:clamp(8px,1.2vw,14px);margin-top:clamp(6px,1vh,10px)}
+  .pillargrid .smebox{padding:clamp(9px,1.3vw,12px);gap:4px}
+  .pillargrid .term{font-size:clamp(14px,1.7vw,15.5px)}
+  .pillargrid .rtxt{font-size:clamp(11.5px,1.5vw,13px);line-height:1.32}
+  /* "Chart wall" slides (06/07): a fixed small card count (6), so a flex-start
+     top-anchored layout leaves a large, lopsided void below on a tall or
+     fullscreen desktop viewport. Center vertically instead, and let the
+     container use more of a wide screen — masonry CSS-columns also produced
+     uneven, ragged column endings; a real grid keeps rows level. */
+  .slide.wide.chartwall{justify-content:center}
+  .chartwall .slide-inner{max-width:min(1360px,94vw)}
+  .chartgrid{display:grid;grid-template-columns:repeat(3,1fr);
+    gap:clamp(14px,2vw,24px);margin:clamp(14px,2.6vh,24px) 0 0}
+  .chartgrid .chart{padding:clamp(15px,2.2vw,20px)}
+  @media (max-width:920px){.chartgrid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:560px){.chartgrid{grid-template-columns:1fr}}
   .chartgrid .ct{font-family:var(--serif);font-weight:600;font-size:clamp(15px,2vw,17px);
     color:var(--ink);margin:0 0 2px;letter-spacing:-0.01em}
   .chartgrid .csrc{font-family:var(--sans);font-size:11px;font-weight:500;color:var(--ink-faint);
@@ -387,7 +411,8 @@
       <div data-lang="en">
         <p class="kicker">02 / The real risk</p>
         <p class="big">The greatest risk is not AI replacing people. It is the <strong>concentration of power</strong>.</p>
-        <p>The rest of the world is left to rent intelligence rather than own it - paying every time for a system it cannot control.</p>
+        <p>The rest of the world rents intelligence instead of owning it - paying every time for a system it cannot control.</p>
+        <div class="pointrow"><span class="n">1</span><span class="pt">What renting costs today</span></div>
         <div class="stats">
           <div class="stat">
             <p class="fig">$12.5B</p>
@@ -410,16 +435,19 @@
             <p class="src">30-40% of the total &mdash; McKinsey, Sovereign AI, 2026</p>
           </div>
         </div>
-        <div class="notebox">
-          <p class="tt">What renting actually costs</p>
-          <p>Frontier capability is billed per million tokens, for as long as you use it - and even keeping your data in your own country is a paid add-on. You cannot control the system, cannot customise it, and cannot keep what it learns. Tesseres exists so a business can own that capability instead.</p>
+        <div class="pointrow"><span class="n">2</span><span class="pt">What's worth owning instead</span></div>
+        <div class="smegrid">
+          <div class="smebox"><p class="term">Data</p><p class="rtxt">Your knowledge - the part no one can replace you on.</p></div>
+          <div class="smebox"><p class="term">Infrastructure</p><p class="rtxt">What the business runs on, proven to survive real failure.</p></div>
+          <div class="smebox"><p class="term">Integration &amp; workflow</p><p class="rtxt">How the business actually runs, rule by rule.</p></div>
         </div>
         <p class="srcfoot">Sources: Menlo Ventures, 2025: The State of Generative AI in the Enterprise (Dec 2025); Cloudian Enterprise AI Infrastructure Survey (Feb 2026, n=203); McKinsey, Sovereign AI ecosystems (2026); published frontier-model API pricing (accessed July 2026).</p>
       </div>
       <div data-lang="vi" hidden>
         <p class="kicker">02 / Rủi ro thực sự</p>
         <p class="big">Rủi ro lớn nhất không phải là AI thay thế con người. Mà là <strong>sự tập trung quyền lực</strong>.</p>
-        <p>Phần còn lại của thế giới buộc phải đi thuê trí tuệ thay vì sở hữu nó - trả tiền mỗi lần dùng một hệ thống mà họ không thể kiểm soát.</p>
+        <p>Phần còn lại của thế giới đi thuê trí tuệ thay vì sở hữu nó - trả tiền mỗi lần dùng một hệ thống mà họ không thể kiểm soát.</p>
+        <div class="pointrow"><span class="n">1</span><span class="pt">Cái giá của việc đi thuê hôm nay</span></div>
         <div class="stats">
           <div class="stat">
             <p class="fig">12,5 tỷ $</p>
@@ -442,96 +470,22 @@
             <p class="src">30-40% tổng chi tiêu &mdash; McKinsey, Sovereign AI, 2026</p>
           </div>
         </div>
-        <div class="notebox">
-          <p class="tt">Cái giá thật sự của việc đi thuê</p>
-          <p>Năng lực AI hàng đầu được tính tiền theo từng triệu token, chừng nào bạn còn dùng - và ngay cả việc giữ dữ liệu trong nước cũng là một khoản phụ phí. Bạn không kiểm soát được hệ thống, không tùy chỉnh được, và cũng không giữ lại được những gì nó học. Tesseres ra đời để doanh nghiệp sở hữu năng lực đó.</p>
+        <div class="pointrow"><span class="n">2</span><span class="pt">Thứ thực sự đáng sở hữu</span></div>
+        <div class="smegrid">
+          <div class="smebox"><p class="term">Dữ liệu</p><p class="rtxt">Tri thức của bạn - phần không ai thay thế được.</p></div>
+          <div class="smebox"><p class="term">Hạ tầng</p><p class="rtxt">Thứ doanh nghiệp vận hành trên đó, đã sống sót qua sự cố thật.</p></div>
+          <div class="smebox"><p class="term">Tích hợp &amp; quy trình</p><p class="rtxt">Phương pháp vận hành doanh nghiệp - tự động hoá và kết nối với đối tác hiệu quả nhất.</p></div>
         </div>
         <p class="srcfoot">Nguồn: Menlo Ventures, 2025: The State of Generative AI in the Enterprise (12/2025); Khảo sát Cloudian Enterprise AI Infrastructure (02/2026, n=203); McKinsey, Sovereign AI ecosystems (2026); bảng giá API mô hình nền công bố (truy cập 07/2026).</p>
       </div>
     </div>
   </section>
 
-  <!-- Slide 4: The question (thesis chain) -->
-  <section class="slide alt" id="s4">
-    <div class="slide-inner">
-      <div data-lang="en">
-        <p class="kicker">03 / The question</p>
-        <p class="big" style="max-width:24ch">Software is becoming free. So value moves to what it runs on.</p>
-        <div class="chain">
-          <div class="step"><span class="n">1</span><p class="st">Software cost trends to <strong>zero</strong>.</p></div>
-          <div class="step"><span class="n">2</span><p class="st">So the source of value becomes <span class="mut">what software runs on:</span></p></div>
-          <div class="pills"><span class="pill">Data</span><span class="pill">Infrastructure</span><span class="pill">Workflow</span><span class="pill">Integration</span></div>
-          <div class="step"><span class="n">3</span><p class="st">Whoever owns these <strong>owns the next decade</strong>.</p></div>
-        </div>
-      </div>
-      <div data-lang="vi" hidden>
-        <p class="kicker">03 / Câu hỏi</p>
-        <p class="big" style="max-width:24ch">Phần mềm đang trở nên miễn phí. Nên giá trị dịch chuyển sang thứ mà nó chạy trên đó.</p>
-        <div class="chain">
-          <div class="step"><span class="n">1</span><p class="st">Chi phí phần mềm tiến về <strong>không</strong>.</p></div>
-          <div class="step"><span class="n">2</span><p class="st">Nên nguồn giá trị trở thành <span class="mut">thứ phần mềm chạy trên đó:</span></p></div>
-          <div class="pills"><span class="pill">Dữ liệu</span><span class="pill">Hạ tầng</span><span class="pill">Quy trình</span><span class="pill">Tích hợp</span></div>
-          <div class="step"><span class="n">3</span><p class="st">Ai sở hữu những thứ này sẽ <strong>sở hữu thập kỷ tới</strong>.</p></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Slide 4b: The moat — Subject-matter expertise (tech vs business) -->
-  <section class="slide wide" id="s-moat">
-    <div class="slide-inner">
-      <div data-lang="en">
-        <p class="kicker">04 / The moat</p>
-        <p class="big" style="max-width:30ch">"But can't AI just make the data, the infrastructure and the workflows too?"</p>
-        <div class="smegrid">
-          <div class="smebox">
-            <p class="term">Data</p>
-            <p class="row"><span class="rlab tech">In tech terms</span><span class="rtxt tech">Databases, event logs, embeddings.</span></p>
-            <p class="row"><span class="rlab biz">In business terms</span><span class="rtxt">Your company's memory - every decision, exception and hard-won lesson, most of it never written down. AI writes code; it cannot invent your history.</span></p>
-          </div>
-          <div class="smebox">
-            <p class="term">Infrastructure</p>
-            <p class="row"><span class="rlab tech">In tech terms</span><span class="rtxt tech">Brokers, workflows, uptime, security.</span></p>
-            <p class="row"><span class="rlab biz">In business terms</span><span class="rtxt">The reliability a bank, hospital or airline runs on - proven to survive a data-centre outage, not just to demo. AI drafts it; earning that trust is the hard part.</span></p>
-          </div>
-          <div class="smebox">
-            <p class="term">Integration &amp; workflow</p>
-            <p class="row"><span class="rlab tech">In tech terms</span><span class="rtxt tech">Wiring ERP, CRM, accounting and APIs; saga &amp; compensation logic.</span></p>
-            <p class="row"><span class="rlab biz">In business terms</span><span class="rtxt">How your business actually runs - the thousands of rules and edge cases that ARE the business. AI can generate a workflow; it can't know which one is yours.</span></p>
-          </div>
-        </div>
-        <p class="moat-punch">AI makes the <strong>code</strong> nearly free. It does not hand you your data, your proven infrastructure, or the <strong>subject-matter expertise</strong> inside your workflows. That is the moat - and Tesseres helps you own it.</p>
-      </div>
-      <div data-lang="vi" hidden>
-        <p class="kicker">04 / Lợi thế bền vững</p>
-        <p class="big" style="max-width:30ch">"Nhưng AI cũng tự tạo ra dữ liệu, hạ tầng và quy trình luôn được chứ?"</p>
-        <div class="smegrid">
-          <div class="smebox">
-            <p class="term">Dữ liệu</p>
-            <p class="row"><span class="rlab tech">Về mặt kỹ thuật</span><span class="rtxt tech">Cơ sở dữ liệu, nhật ký sự kiện, embedding.</span></p>
-            <p class="row"><span class="rlab biz">Về mặt kinh doanh</span><span class="rtxt">Bộ nhớ của doanh nghiệp bạn - mọi quyết định, ngoại lệ và bài học phải trả giá mới có, phần lớn chưa từng được ghi lại. AI viết được mã; nhưng không thể bịa ra lịch sử của bạn.</span></p>
-          </div>
-          <div class="smebox">
-            <p class="term">Hạ tầng</p>
-            <p class="row"><span class="rlab tech">Về mặt kỹ thuật</span><span class="rtxt tech">Broker, quy trình, thời gian hoạt động, bảo mật.</span></p>
-            <p class="row"><span class="rlab biz">Về mặt kinh doanh</span><span class="rtxt">Độ tin cậy mà một ngân hàng, bệnh viện hay hãng bay dựa vào - được chứng minh sống sót qua sự cố trung tâm dữ liệu, không chỉ để demo. AI phác được; giành lấy niềm tin đó mới là phần khó.</span></p>
-          </div>
-          <div class="smebox">
-            <p class="term">Tích hợp &amp; quy trình</p>
-            <p class="row"><span class="rlab tech">Về mặt kỹ thuật</span><span class="rtxt tech">Kết nối ERP, CRM, kế toán và API; logic saga &amp; bù trừ.</span></p>
-            <p class="row"><span class="rlab biz">Về mặt kinh doanh</span><span class="rtxt">Cách doanh nghiệp bạn thực sự vận hành - hàng nghìn quy tắc và tình huống ngoại lệ chính LÀ doanh nghiệp. AI tạo được một quy trình; nhưng không biết quy trình nào là của bạn.</span></p>
-          </div>
-        </div>
-        <p class="moat-punch">AI khiến <strong>mã nguồn</strong> gần như miễn phí. Nhưng nó không trao cho bạn dữ liệu, hạ tầng đã được kiểm chứng, hay <strong>chuyên môn lĩnh vực</strong> (subject-matter expertise) nằm trong các quy trình của bạn. Đó là lợi thế bền vững - và Tesseres giúp bạn sở hữu nó.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Slide 5: Two products -->
+  <!-- Slide 4: Two products -->
   <section class="slide" id="s5">
     <div class="slide-inner">
       <div data-lang="en">
-        <p class="kicker">05 / One platform</p>
+        <p class="kicker">03 / One platform</p>
         <div class="pair">
           <div class="card"><p class="lbl">TerranSoul</p><p class="desc">The memory of AI - long-term memory across sessions, apps, and models.</p></div>
           <div class="card"><p class="lbl">Tessera</p><p class="desc">The doer - an AI-driven integration platform that runs real business workflows across every system, on-premises or in the cloud.</p></div>
@@ -539,7 +493,7 @@
         <p class="big">AI that remembers, and acts - always under human control.</p>
       </div>
       <div data-lang="vi" hidden>
-        <p class="kicker">05 / Một nền tảng</p>
+        <p class="kicker">03 / Một nền tảng</p>
         <div class="pair">
           <div class="card"><p class="lbl">TerranSoul</p><p class="desc">Bộ nhớ của AI - ghi nhớ lâu dài xuyên suốt nhiều phiên, nhiều ứng dụng và nhiều mô hình.</p></div>
           <div class="card"><p class="lbl">Tessera</p><p class="desc">Người thực thi - nền tảng tích hợp do AI dẫn dắt, vận hành quy trình nghiệp vụ thật trên mọi hệ thống, tại chỗ hoặc trên đám mây.</p></div>
@@ -550,31 +504,61 @@
   </section>
 
   <!-- Slide 6 (new): Why us / Unfair advantage (charts-only grid) -->
-  <section class="slide alt wide" id="s-why">
+  <section class="slide alt wide chartwall" id="s-why">
     <div class="slide-inner">
       <div data-lang="en">
-        <p class="kicker">06 / Unfair advantage · TerranSoul</p>
+        <p class="kicker">04 / Unfair advantage · TerranSoul</p>
         <div class="chartgrid"><div class="chart"><p class="ct">Memory recall — LongMemEval-S R@5</p><p class="csrc">% · retrieval-only, same table · axis 90-100</p><svg viewBox="0 0 300 98" role="img" aria-label="Memory recall — LongMemEval-S R@5"><text class="c-name-us" x="3" y="12">TerranSoul</text><rect class="c-us" x="3" y="16" width="184.2" height="12" rx="6"/><text class="c-num-us" x="193.2" y="26">99.4</text><text class="c-name" x="3" y="44">MemoryPalace</text><rect class="c-other" x="3" y="48" width="129.4" height="12" rx="6"/><text class="c-num" x="138.4" y="58">~96.6</text><text class="c-name" x="3" y="76">agentmemory</text><rect class="c-other" x="3" y="80" width="101.9" height="12" rx="6"/><text class="c-num" x="110.9" y="90">95.2</text></svg></div><div class="chart"><p class="ct">Personal-AI answer quality</p><p class="csrc">/10 · same local model + judge · 22 prompts</p><svg viewBox="0 0 300 162" role="img" aria-label="Personal-AI answer quality"><text class="c-name-us" x="3" y="12">TerranSoul</text><rect class="c-us" x="3" y="16" width="192.5" height="12" rx="6"/><text class="c-num-us" x="201.5" y="26">9.82</text><text class="c-name" x="3" y="44">OpenJarvis</text><rect class="c-other" x="3" y="48" width="187.2" height="12" rx="6"/><text class="c-num" x="196.2" y="58">9.55</text><text class="c-name" x="3" y="76">OpenClaw</text><rect class="c-other" x="3" y="80" width="163.9" height="12" rx="6"/><text class="c-num" x="172.9" y="90">8.36</text><text class="c-name" x="3" y="108">Claude + GENesis</text><rect class="c-other" x="3" y="112" width="161.5" height="12" rx="6"/><text class="c-num" x="170.5" y="122">8.24</text><text class="c-name" x="3" y="140">Hermes</text><rect class="c-other" x="3" y="144" width="135.2" height="12" rx="6"/><text class="c-num" x="144.2" y="154">6.9</text></svg></div><div class="chart"><p class="ct">Response latency</p><p class="csrc">seconds · inference · same local model · lower is better</p><svg viewBox="0 0 300 66" role="img" aria-label="Response latency"><text class="c-name-us" x="3" y="12">TerranSoul  ·  $0 local</text><rect class="c-us" x="3" y="16" width="51.9" height="12" rx="6"/><text class="c-num-us" x="60.9" y="26">1.06s</text><text class="c-name" x="3" y="44">OpenJarvis  ·  $0 local</text><rect class="c-other" x="3" y="48" width="170.0" height="12" rx="6"/><text class="c-num" x="179.0" y="58">3.47s</text></svg></div><div class="chart"><p class="ct">Self-improvement — SIA LawBench top-1</p><p class="csrc">% · frozen model + memory vs weight-trained 120B</p><svg viewBox="0 0 300 162" role="img" aria-label="Self-improvement — SIA LawBench top-1"><text class="c-name-us" x="3" y="12">frozen DeepSeek + memory</text><rect class="c-us" x="3" y="16" width="156.8" height="12" rx="6"/><text class="c-num-us" x="165.8" y="26">80%</text><text class="c-name-us" x="3" y="44">frozen 12B + memory</text><rect class="c-us" x="3" y="48" width="149.5" height="12" rx="6"/><text class="c-num-us" x="158.5" y="58">76.3%</text><text class="c-name" x="3" y="76">weight-trained 120B (SIA)</text><rect class="c-other" x="3" y="80" width="137.4" height="12" rx="6"/><text class="c-num" x="146.4" y="90">70.1%</text><text class="c-name" x="3" y="108">prior SOTA</text><rect class="c-lo" x="3" y="112" width="88.2" height="12" rx="6"/><text class="c-num" x="97.2" y="122">45%</text><text class="c-name" x="3" y="140">unimproved baseline</text><rect class="c-lo" x="3" y="144" width="26.5" height="12" rx="6"/><text class="c-num" x="35.5" y="154">13.5%</text></svg></div><div class="chart"><p class="ct">1M-row multilingual retrieval</p><p class="csrc">NDCG@10 % · single-pass -> MAX retrieve+verify · local</p><svg viewBox="0 0 300 130" role="img" aria-label="1M-row multilingual retrieval"><text class="c-name-us" x="3" y="12">English</text><rect class="c-us" x="3" y="15" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="22">100</text><rect class="c-lo" x="3" y="25" width="183.1" height="8" rx="4"/><text class="c-num" x="192.1" y="32">93.4</text><text class="c-name-us" x="3" y="44">Vietnamese</text><rect class="c-us" x="3" y="47" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="54">100</text><rect class="c-lo" x="3" y="57" width="89.0" height="8" rx="4"/><text class="c-num" x="98.0" y="64">45.4</text><text class="c-name-us" x="3" y="76">Japanese</text><rect class="c-us" x="3" y="79" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="86">100</text><rect class="c-lo" x="3" y="89" width="127.4" height="8" rx="4"/><text class="c-num" x="136.4" y="96">65</text><text class="c-name-us" x="3" y="108">typo-noisy</text><rect class="c-us" x="3" y="111" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="118">100</text><rect class="c-lo" x="3" y="121" width="139.2" height="8" rx="4"/><text class="c-num" x="148.2" y="128">71</text></svg></div><div class="chart"><p class="ct">Résumés one query can search</p><p class="csrc">log scale · cloud context window vs local substrate</p><svg viewBox="0 0 300 66" role="img" aria-label="Résumés one query can search"><text class="c-name-us" x="3" y="12">TerranSoul</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">1,000,000</text><text class="c-name" x="3" y="44">cloud in-context LLM</text><rect class="c-other" x="3" y="48" width="37.9" height="12" rx="6"/><text class="c-num" x="46.9" y="58">~3,800</text></svg></div></div>
       </div>
       <div data-lang="vi" hidden>
-        <p class="kicker">06 / Lợi thế riêng · TerranSoul</p>
+        <p class="kicker">04 / Lợi thế riêng · TerranSoul</p>
         <div class="chartgrid"><div class="chart"><p class="ct">Truy hồi bộ nhớ — LongMemEval-S R@5</p><p class="csrc">% · chỉ truy hồi, cùng bảng · trục 90-100</p><svg viewBox="0 0 300 98" role="img" aria-label="Truy hồi bộ nhớ — LongMemEval-S R@5"><text class="c-name-us" x="3" y="12">TerranSoul</text><rect class="c-us" x="3" y="16" width="184.2" height="12" rx="6"/><text class="c-num-us" x="193.2" y="26">99.4</text><text class="c-name" x="3" y="44">MemoryPalace</text><rect class="c-other" x="3" y="48" width="129.4" height="12" rx="6"/><text class="c-num" x="138.4" y="58">~96.6</text><text class="c-name" x="3" y="76">agentmemory</text><rect class="c-other" x="3" y="80" width="101.9" height="12" rx="6"/><text class="c-num" x="110.9" y="90">95.2</text></svg></div><div class="chart"><p class="ct">Chất lượng trả lời AI cá nhân</p><p class="csrc">/10 · cùng mô hình + giám khảo · 22 câu</p><svg viewBox="0 0 300 162" role="img" aria-label="Chất lượng trả lời AI cá nhân"><text class="c-name-us" x="3" y="12">TerranSoul</text><rect class="c-us" x="3" y="16" width="192.5" height="12" rx="6"/><text class="c-num-us" x="201.5" y="26">9.82</text><text class="c-name" x="3" y="44">OpenJarvis</text><rect class="c-other" x="3" y="48" width="187.2" height="12" rx="6"/><text class="c-num" x="196.2" y="58">9.55</text><text class="c-name" x="3" y="76">OpenClaw</text><rect class="c-other" x="3" y="80" width="163.9" height="12" rx="6"/><text class="c-num" x="172.9" y="90">8.36</text><text class="c-name" x="3" y="108">Claude + GENesis</text><rect class="c-other" x="3" y="112" width="161.5" height="12" rx="6"/><text class="c-num" x="170.5" y="122">8.24</text><text class="c-name" x="3" y="140">Hermes</text><rect class="c-other" x="3" y="144" width="135.2" height="12" rx="6"/><text class="c-num" x="144.2" y="154">6.9</text></svg></div><div class="chart"><p class="ct">Độ trễ phản hồi</p><p class="csrc">giây · suy luận · cùng mô hình · thấp hơn tốt hơn</p><svg viewBox="0 0 300 66" role="img" aria-label="Độ trễ phản hồi"><text class="c-name-us" x="3" y="12">TerranSoul  ·  $0 nội bộ</text><rect class="c-us" x="3" y="16" width="51.9" height="12" rx="6"/><text class="c-num-us" x="60.9" y="26">1.06s</text><text class="c-name" x="3" y="44">OpenJarvis  ·  $0 nội bộ</text><rect class="c-other" x="3" y="48" width="170.0" height="12" rx="6"/><text class="c-num" x="179.0" y="58">3.47s</text></svg></div><div class="chart"><p class="ct">Tự cải thiện — SIA LawBench top-1</p><p class="csrc">% · mô hình đóng băng + bộ nhớ vs 120B huấn luyện</p><svg viewBox="0 0 300 162" role="img" aria-label="Tự cải thiện — SIA LawBench top-1"><text class="c-name-us" x="3" y="12">DeepSeek đóng băng + bộ nhớ</text><rect class="c-us" x="3" y="16" width="156.8" height="12" rx="6"/><text class="c-num-us" x="165.8" y="26">80%</text><text class="c-name-us" x="3" y="44">12B đóng băng + bộ nhớ</text><rect class="c-us" x="3" y="48" width="149.5" height="12" rx="6"/><text class="c-num-us" x="158.5" y="58">76.3%</text><text class="c-name" x="3" y="76">120B huấn luyện trọng số (SIA)</text><rect class="c-other" x="3" y="80" width="137.4" height="12" rx="6"/><text class="c-num" x="146.4" y="90">70.1%</text><text class="c-name" x="3" y="108">SOTA trước đây</text><rect class="c-lo" x="3" y="112" width="88.2" height="12" rx="6"/><text class="c-num" x="97.2" y="122">45%</text><text class="c-name" x="3" y="140">khởi điểm chưa cải thiện</text><rect class="c-lo" x="3" y="144" width="26.5" height="12" rx="6"/><text class="c-num" x="35.5" y="154">13.5%</text></svg></div><div class="chart"><p class="ct">Truy hồi đa ngôn ngữ 1 triệu dòng</p><p class="csrc">NDCG@10 % · một lượt -> MAX truy hồi+kiểm chứng · nội bộ</p><svg viewBox="0 0 300 130" role="img" aria-label="Truy hồi đa ngôn ngữ 1 triệu dòng"><text class="c-name-us" x="3" y="12">Tiếng Anh</text><rect class="c-us" x="3" y="15" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="22">100</text><rect class="c-lo" x="3" y="25" width="183.1" height="8" rx="4"/><text class="c-num" x="192.1" y="32">93.4</text><text class="c-name-us" x="3" y="44">Tiếng Việt</text><rect class="c-us" x="3" y="47" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="54">100</text><rect class="c-lo" x="3" y="57" width="89.0" height="8" rx="4"/><text class="c-num" x="98.0" y="64">45.4</text><text class="c-name-us" x="3" y="76">Tiếng Nhật</text><rect class="c-us" x="3" y="79" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="86">100</text><rect class="c-lo" x="3" y="89" width="127.4" height="8" rx="4"/><text class="c-num" x="136.4" y="96">65</text><text class="c-name-us" x="3" y="108">sai chính tả</text><rect class="c-us" x="3" y="111" width="196.0" height="8" rx="4"/><text class="c-num-us" x="205.0" y="118">100</text><rect class="c-lo" x="3" y="121" width="139.2" height="8" rx="4"/><text class="c-num" x="148.2" y="128">71</text></svg></div><div class="chart"><p class="ct">Số hồ sơ một truy vấn quét được</p><p class="csrc">thang log · cửa sổ ngữ cảnh đám mây vs nền nội bộ</p><svg viewBox="0 0 300 66" role="img" aria-label="Số hồ sơ một truy vấn quét được"><text class="c-name-us" x="3" y="12">TerranSoul</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">1,000,000</text><text class="c-name" x="3" y="44">LLM đám mây trong ngữ cảnh</text><rect class="c-other" x="3" y="48" width="37.9" height="12" rx="6"/><text class="c-num" x="46.9" y="58">~3,800</text></svg></div></div>
       </div>
     </div>
   </section>
 
   <!-- Slide 6b: Why us / Unfair advantage — Tessera (charts-only grid) -->
-  <section class="slide alt wide" id="s-why-tessera">
+  <section class="slide alt wide chartwall" id="s-why-tessera">
     <div class="slide-inner">
       <div data-lang="en">
-        <p class="kicker">07 / Unfair advantage · Tessera</p>
-        <p class="whydek">Matillion's <strong>MAIA</strong> raised <strong>$365M at a $1.5B valuation in one year</strong> - to automate <strong>data</strong> pipelines. Tessera automates <strong>all</strong> enterprise integration - every system, local-first and lock-in-free.</p>
-        <div class="chartgrid"><div class="chart"><p class="ct">What the AI actually builds</p><p class="csrc">EIP catalogue · Tessera = all enterprise integration; MAIA = data pipelines</p><svg viewBox="0 0 300 66" role="img" aria-label="What the AI actually builds"><text class="c-name-us" x="3" y="12">Tessera — every system</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">65+</text><text class="c-name" x="3" y="44">MAIA (Matillion) — data only</text><rect class="c-other" x="3" y="48" width="58.8" height="12" rx="6"/><text class="c-num" x="67.8" y="58">data</text></svg></div><div class="chart"><p class="ct">Message brokers, swapped at deploy time</p><p class="csrc">count · zero rewrite · vs single-stack legacy · axis 0–8</p><svg viewBox="0 0 300 98" role="img" aria-label="Message brokers, swapped at deploy time"><text class="c-name-us" x="3" y="12">Tessera</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">8</text><text class="c-name" x="3" y="44">Microsoft BizTalk</text><rect class="c-other" x="3" y="48" width="24.5" height="12" rx="6"/><text class="c-num" x="33.5" y="58">1</text><text class="c-name" x="3" y="76">Cloud iPaaS (vendor-locked)</text><rect class="c-lo" x="3" y="80" width="24.5" height="12" rx="6"/><text class="c-num" x="33.5" y="90">1</text></svg></div><div class="chart"><p class="ct">Worker languages, one contract</p><p class="csrc">via Temporal SDKs · Camel is JVM-only · axis 0–6</p><svg viewBox="0 0 300 98" role="img" aria-label="Worker languages, one contract"><text class="c-name-us" x="3" y="12">Tessera</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">6</text><text class="c-name" x="3" y="44">Apache Camel</text><rect class="c-other" x="3" y="48" width="32.7" height="12" rx="6"/><text class="c-num" x="41.7" y="58">1 · JVM</text><text class="c-name" x="3" y="76">Microsoft BizTalk</text><rect class="c-lo" x="3" y="80" width="32.7" height="12" rx="6"/><text class="c-num" x="41.7" y="90">1 · .NET</text></svg></div><div class="chart"><p class="ct">Downtime budget per year</p><p class="csrc">annual · lower is better · five-nines target</p><svg viewBox="0 0 300 66" role="img" aria-label="Downtime budget per year"><text class="c-name-us" x="3" y="12">Tessera — 99.999% (five nines)</text><rect class="c-us" x="3" y="16" width="15.0" height="12" rx="6"/><text class="c-num-us" x="24.0" y="26">~5 min</text><text class="c-name" x="3" y="44">Typical cloud SLA — 99.9%</text><rect class="c-other" x="3" y="48" width="196.0" height="12" rx="6"/><text class="c-num" x="205.0" y="58">~526 min</text></svg></div><div class="chart"><p class="ct">Legacy migration time</p><p class="csrc">BizTalk → modern · lower is better · *Tessera target, not yet benchmarked</p><svg viewBox="0 0 300 66" role="img" aria-label="Legacy migration time"><text class="c-name" x="3" y="12">Industry timeline (published)</text><rect class="c-other" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num" x="205.0" y="26">6–18 mo</text><text class="c-name-us" x="3" y="44">Tessera AI migration agent</text><rect class="c-us" x="3" y="48" width="15.0" height="12" rx="6"/><text class="c-num-us" x="24.0" y="58">days*</text></svg></div><div class="chart"><p class="ct">Automated tests guarding the platform</p><p class="csrc">core suite (+~45 more) · full stack reproduces on a laptop in &lt;1 min</p><svg viewBox="0 0 300 34" role="img" aria-label="Automated tests guarding the platform"><text class="c-name-us" x="3" y="12">Tessera</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">3,800+</text></svg></div></div>
+        <p class="kicker">05 / Unfair advantage · Tessera</p>
+        <p class="whydek">Matillion's <strong>MAIA</strong> raised <strong>$365M at a $1.5B valuation in one year</strong> - to automate <strong>data</strong> pipelines alone. Tessera automates the <strong>whole</strong> enterprise, held to eleven engineering pillars.</p>
+        <p class="pillartt">The 11-pillar quality bar</p>
+        <p class="pillarsub">Engineered, not assumed - every pillar has its own decision record.</p>
+        <div class="smegrid pillargrid">
+          <div class="smebox"><p class="term">Availability</p><p class="rtxt">~5 min/year down at five-nines, not ~526 min on a typical 99.9% SLA.</p></div>
+          <div class="smebox"><p class="term">Reliability</p><p class="rtxt">Every message delivered or dead-lettered - never silently dropped.</p></div>
+          <div class="smebox"><p class="term">Resilience</p><p class="rtxt">Survives restarts and outages; recovers automatically, no manual replay.</p></div>
+          <div class="smebox"><p class="term">Scalability</p><p class="rtxt">Scales out by default, with no single-vendor lock-in.</p></div>
+          <div class="smebox"><p class="term">Performance</p><p class="rtxt">Throughput and tail latency are measured, not assumed.</p></div>
+          <div class="smebox"><p class="term">Observability</p><p class="rtxt">Ask "where is my message?" in plain language.</p></div>
+          <div class="smebox"><p class="term">Security</p><p class="rtxt">Defence in depth: zero-trust identity, encryption everywhere.</p></div>
+          <div class="smebox"><p class="term">Testability</p><p class="rtxt">The full stack reproduces on a laptop in under a minute.</p></div>
+          <div class="smebox"><p class="term">Maintainability</p><p class="rtxt">Every change ships with its own spec and decision record.</p></div>
+          <div class="smebox"><p class="term">Supportability</p><p class="rtxt">Stuck messages diagnosed in plain language, not log-trawling.</p></div>
+          <div class="smebox"><p class="term">Operational excellence</p><p class="rtxt">AI lowers incident toil; a human approves every rollback.</p></div>
+        </div>
+        <p class="moat-punch">MAIA proved the market wants this. Tessera is engineered to run production, not just a demo.</p>
       </div>
       <div data-lang="vi" hidden>
-        <p class="kicker">07 / Lợi thế riêng · Tessera</p>
-        <p class="whydek"><strong>MAIA</strong> của Matillion huy động <strong>$365M với định giá $1.5 tỷ trong một năm</strong> - để tự động hoá pipeline <strong>dữ liệu</strong>. Tessera tự động hoá <strong>toàn bộ</strong> tích hợp doanh nghiệp - mọi hệ thống, ưu tiên nội bộ và không khoá nhà cung cấp.</p>
-        <div class="chartgrid"><div class="chart"><p class="ct">AI thực sự dựng ra cái gì</p><p class="csrc">bộ EIP · Tessera = toàn bộ tích hợp doanh nghiệp; MAIA = pipeline dữ liệu</p><svg viewBox="0 0 300 66" role="img" aria-label="AI thực sự dựng ra cái gì"><text class="c-name-us" x="3" y="12">Tessera — mọi hệ thống</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">65+</text><text class="c-name" x="3" y="44">MAIA (Matillion) — chỉ dữ liệu</text><rect class="c-other" x="3" y="48" width="58.8" height="12" rx="6"/><text class="c-num" x="67.8" y="58">dữ liệu</text></svg></div><div class="chart"><p class="ct">Message broker, đổi khi triển khai</p><p class="csrc">số lượng · không viết lại · vs hệ cũ đơn khối · trục 0–8</p><svg viewBox="0 0 300 98" role="img" aria-label="Message broker, đổi khi triển khai"><text class="c-name-us" x="3" y="12">Tessera</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">8</text><text class="c-name" x="3" y="44">Microsoft BizTalk</text><rect class="c-other" x="3" y="48" width="24.5" height="12" rx="6"/><text class="c-num" x="33.5" y="58">1</text><text class="c-name" x="3" y="76">iPaaS đám mây (khoá nhà cung cấp)</text><rect class="c-lo" x="3" y="80" width="24.5" height="12" rx="6"/><text class="c-num" x="33.5" y="90">1</text></svg></div><div class="chart"><p class="ct">Ngôn ngữ worker, một hợp đồng</p><p class="csrc">qua Temporal SDK · Camel chỉ chạy JVM · trục 0–6</p><svg viewBox="0 0 300 98" role="img" aria-label="Ngôn ngữ worker, một hợp đồng"><text class="c-name-us" x="3" y="12">Tessera</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">6</text><text class="c-name" x="3" y="44">Apache Camel</text><rect class="c-other" x="3" y="48" width="32.7" height="12" rx="6"/><text class="c-num" x="41.7" y="58">1 · JVM</text><text class="c-name" x="3" y="76">Microsoft BizTalk</text><rect class="c-lo" x="3" y="80" width="32.7" height="12" rx="6"/><text class="c-num" x="41.7" y="90">1 · .NET</text></svg></div><div class="chart"><p class="ct">Thời gian ngừng mỗi năm</p><p class="csrc">hằng năm · thấp hơn tốt hơn · mục tiêu năm số 9</p><svg viewBox="0 0 300 66" role="img" aria-label="Thời gian ngừng mỗi năm"><text class="c-name-us" x="3" y="12">Tessera — 99.999% (năm số 9)</text><rect class="c-us" x="3" y="16" width="15.0" height="12" rx="6"/><text class="c-num-us" x="24.0" y="26">~5 phút</text><text class="c-name" x="3" y="44">SLA đám mây phổ biến — 99.9%</text><rect class="c-other" x="3" y="48" width="196.0" height="12" rx="6"/><text class="c-num" x="205.0" y="58">~526 phút</text></svg></div><div class="chart"><p class="ct">Thời gian di trú hệ thống cũ</p><p class="csrc">BizTalk → hiện đại · thấp hơn tốt hơn · *mục tiêu nội bộ của Tessera, chưa kiểm chứng</p><svg viewBox="0 0 300 66" role="img" aria-label="Thời gian di trú hệ thống cũ"><text class="c-name" x="3" y="12">Mốc thời gian ngành (đã công bố)</text><rect class="c-other" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num" x="205.0" y="26">6–18 th</text><text class="c-name-us" x="3" y="44">Tác nhân di trú AI của Tessera</text><rect class="c-us" x="3" y="48" width="15.0" height="12" rx="6"/><text class="c-num-us" x="24.0" y="58">ngày*</text></svg></div><div class="chart"><p class="ct">Kiểm thử tự động bảo vệ nền tảng</p><p class="csrc">bộ lõi (+~45 bộ khác) · toàn hệ chạy lại trên laptop dưới 1 phút</p><svg viewBox="0 0 300 34" role="img" aria-label="Kiểm thử tự động bảo vệ nền tảng"><text class="c-name-us" x="3" y="12">Tessera</text><rect class="c-us" x="3" y="16" width="196.0" height="12" rx="6"/><text class="c-num-us" x="205.0" y="26">3.800+</text></svg></div></div>
+        <p class="kicker">05 / Lợi thế riêng · Tessera</p>
+        <p class="whydek"><strong>MAIA</strong> của Matillion huy động <strong>$365M với định giá $1.5 tỷ trong một năm</strong> - chỉ để tự động hoá pipeline <strong>dữ liệu</strong>. Tessera tự động hoá <strong>toàn bộ</strong> doanh nghiệp, theo thước đo kỹ thuật mười một trụ cột.</p>
+        <p class="pillartt">Thước đo chất lượng 11 trụ cột</p>
+        <p class="pillarsub">Được kỹ thuật hoá, không phải giả định - mỗi trụ cột có hồ sơ quyết định riêng.</p>
+        <div class="smegrid pillargrid">
+          <div class="smebox"><p class="term">Sẵn sàng hoạt động</p><p class="rtxt">~5 phút ngừng/năm ở mức năm-số-9, không phải ~526 phút như SLA 99.9% phổ biến.</p></div>
+          <div class="smebox"><p class="term">Độ tin cậy</p><p class="rtxt">Mọi tin nhắn được giao hoặc đưa vào hàng chờ lỗi - không bao giờ âm thầm mất.</p></div>
+          <div class="smebox"><p class="term">Khả năng phục hồi</p><p class="rtxt">Sống sót qua khởi động lại và sự cố; tự phục hồi, không cần chạy lại thủ công.</p></div>
+          <div class="smebox"><p class="term">Khả năng mở rộng</p><p class="rtxt">Mở rộng theo chiều ngang mặc định, không khoá vào một nhà cung cấp.</p></div>
+          <div class="smebox"><p class="term">Hiệu năng</p><p class="rtxt">Thông lượng và độ trễ đuôi được đo, không phải giả định.</p></div>
+          <div class="smebox"><p class="term">Khả năng quan sát</p><p class="rtxt">Hỏi "tin nhắn của tôi đang ở đâu?" bằng ngôn ngữ tự nhiên.</p></div>
+          <div class="smebox"><p class="term">Bảo mật</p><p class="rtxt">Phòng thủ nhiều lớp: danh tính zero-trust, mã hoá toàn bộ.</p></div>
+          <div class="smebox"><p class="term">Khả năng kiểm thử</p><p class="rtxt">Toàn bộ hệ thống chạy lại trên laptop trong chưa đầy một phút.</p></div>
+          <div class="smebox"><p class="term">Khả năng bảo trì</p><p class="rtxt">Mọi thay đổi đi kèm spec và quyết định kiến trúc riêng.</p></div>
+          <div class="smebox"><p class="term">Khả năng hỗ trợ</p><p class="rtxt">Chẩn đoán tin nhắn bị kẹt bằng ngôn ngữ tự nhiên, không dò log.</p></div>
+          <div class="smebox"><p class="term">Vận hành xuất sắc</p><p class="rtxt">AI giảm gánh nặng sự cố; con người duyệt mọi lần rollback.</p></div>
+        </div>
+        <p class="moat-punch">MAIA chứng minh thị trường muốn điều này. Tessera được kỹ thuật hoá để chạy sản xuất thật, không chỉ để demo.</p>
       </div>
     </div>
   </section>
