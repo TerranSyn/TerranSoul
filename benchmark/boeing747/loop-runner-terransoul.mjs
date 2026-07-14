@@ -654,7 +654,7 @@ async function maybeIngestPriorIterationLesson({ gemmaDir, gemmaHistory, claudeH
       ? Math.round((gemmaRecord.total_0_100 - prevGemma.total_0_100) * 100) / 100
       : null;
   const claudeDelta =
-    prevClaude && typeof claudeRecord.total_0_100 === 'number' && typeof prevClaude.total_0_100 === 'number'
+    prevClaude && claudeRecord && typeof claudeRecord.total_0_100 === 'number' && typeof prevClaude.total_0_100 === 'number'
       ? Math.round((claudeRecord.total_0_100 - prevClaude.total_0_100) * 100) / 100
       : null;
 
@@ -693,10 +693,17 @@ export async function runIterationTerransoul({
   judgeMode,
   judgeSamples,
   bestOfN,
+  secondaryJudge,
 }) {
   const { rubric, rubricSha256 } = loadRubric();
   const effPatience = patience || rubric.stall_patience;
   const effBudget = budget || rubric.iteration_budget;
+  // --secondary-judge none: skip the Claude/Fable-5 vision judge ENTIRELY —
+  // zero Anthropic API calls for the whole iteration. Only legal when gemma
+  // is already the sole gating judge (default judgeMode); opus-panel and
+  // opus-pairwise REQUIRE Claude to gate, so disable is refused there rather
+  // than silently gating on nothing.
+  const secondaryJudgeDisabled = secondaryJudge === 'none';
   // Opus-4.8 PANEL judge mode (owner decision 2026-07-12): Opus 4.8 vision
   // (reference-anchored, judge/judge-claude.mjs) becomes the GATING judge, run
   // as a median-of-N panel, with a per-view CALIBRATED bar; gemma4:12b stays a
@@ -716,6 +723,11 @@ export async function runIterationTerransoul({
   // gemma4 stays a reported diversity cross-check (pairwise adds the persistence-
   // gated CONTESTED veto on top). Default 'gemma' keeps the frozen track intact.
   const claudeGates = opusPanel || pairwiseMode;
+  if (secondaryJudgeDisabled && claudeGates) {
+    throw new Error(
+      `--secondary-judge none is incompatible with --judge ${judgeMode} — Claude is the GATING judge in that mode, not a skippable secondary`,
+    );
+  }
   const opusSamples =
     Number.isInteger(judgeSamples) && judgeSamples > 0
       ? judgeSamples
@@ -754,25 +766,30 @@ export async function runIterationTerransoul({
   const gemmaJudged = await judgeShots({ shotsDir: rig.outDir });
   if (!gemmaJudged) throw new Error('gemma judge did not complete all 9 views');
 
-  console.log(
-    `judge (${opusJudgeModel} vision${pairwiseMode ? ' PAIRWISE, gating' : opusPanel ? ' PANEL, gating' : ''}): scoring 9 views (samples=${opusSamples})`,
-  );
-  // opus-pairwise: BLIND, ORDER-SWAPPED, candidate-vs-cached-reference-BUILD
-  // judging (the cached reference shots come from the sidecar; judgeShotsPairwise
-  // itself refuses to score against a rig-mismatched stale cache — review fix #6).
-  const claudeJudged = pairwiseMode
-    ? await judgeShotsPairwise({
-        shotsDir: rig.outDir,
-        referenceShotsDir: path.resolve(REPO_ROOT, pairwiseCfg.ref_shots_dir),
-        samples: opusSamples,
-        model: opusJudgeModel,
-      })
-    : await judgeShotsClaude({
-        shotsDir: rig.outDir,
-        samples: opusSamples,
-        model: opusJudgeModel,
-      });
-  if (!claudeJudged) throw new Error('claude vision judge did not complete all 9 views');
+  let claudeJudged = null;
+  if (secondaryJudgeDisabled) {
+    console.log('judge (secondary Claude/Fable-5 vision): SKIPPED (--secondary-judge none — zero Anthropic API calls)');
+  } else {
+    console.log(
+      `judge (${opusJudgeModel} vision${pairwiseMode ? ' PAIRWISE, gating' : opusPanel ? ' PANEL, gating' : ''}): scoring 9 views (samples=${opusSamples})`,
+    );
+    // opus-pairwise: BLIND, ORDER-SWAPPED, candidate-vs-cached-reference-BUILD
+    // judging (the cached reference shots come from the sidecar; judgeShotsPairwise
+    // itself refuses to score against a rig-mismatched stale cache — review fix #6).
+    claudeJudged = pairwiseMode
+      ? await judgeShotsPairwise({
+          shotsDir: rig.outDir,
+          referenceShotsDir: path.resolve(REPO_ROOT, pairwiseCfg.ref_shots_dir),
+          samples: opusSamples,
+          model: opusJudgeModel,
+        })
+      : await judgeShotsClaude({
+          shotsDir: rig.outDir,
+          samples: opusSamples,
+          model: opusJudgeModel,
+        });
+    if (!claudeJudged) throw new Error('claude vision judge did not complete all 9 views');
+  }
 
   let gemmaRecord = bookkeepTrack({
     actorDir: gemmaDir,
@@ -784,20 +801,24 @@ export async function runIterationTerransoul({
     rubricSha256,
     planePath,
   });
-  let claudeRecord = bookkeepTrack({
-    actorDir: claudeDir,
-    iterNum,
-    runId,
-    judged: claudeJudged,
-    judgeTrack: claudeJudged.judge_track,
-    rubric,
-    rubricSha256,
-    planePath,
-  });
+  let claudeRecord = claudeJudged
+    ? bookkeepTrack({
+        actorDir: claudeDir,
+        iterNum,
+        runId,
+        judged: claudeJudged,
+        judgeTrack: claudeJudged.judge_track,
+        rubric,
+        rubricSha256,
+        planePath,
+      })
+    : null;
 
   console.log(
-    `ITER ${iterNum} gemma4=${gemmaRecord.total_0_100}/100 (best ${gemmaRecord.best_total_after}) | ` +
-      `${claudeJudged.judge_track}=${claudeRecord.total_0_100}/100 (best ${claudeRecord.best_total_after})`,
+    `ITER ${iterNum} gemma4=${gemmaRecord.total_0_100}/100 (best ${gemmaRecord.best_total_after})` +
+      (claudeJudged
+        ? ` | ${claudeJudged.judge_track}=${claudeRecord.total_0_100}/100 (best ${claudeRecord.best_total_after})`
+        : ' | secondary judge skipped'),
   );
 
   // Fix 4 (write half): learn from the PREVIOUS iteration's actor edit now
@@ -995,7 +1016,7 @@ export async function runIterationTerransoul({
 
   // Fix 4 (read half): surface prior attempts on this weakest feature.
   const weakestId =
-    primaryJudged.weakest_feature?.id || gemmaJudged.weakest_feature?.id || claudeJudged.weakest_feature?.id;
+    primaryJudged.weakest_feature?.id || gemmaJudged.weakest_feature?.id || claudeJudged?.weakest_feature?.id;
   const priorAttemptsSection = await buildPriorAttemptsSection({ weakestId });
 
   // opus-pairwise strategy-cheatsheet (ACE / Dynamic-Cheatsheet) + rejected-edit
@@ -1181,16 +1202,20 @@ export async function runIterationTerransoul({
   // genuine attempts — an actor_exhausted_retries iteration is excluded from
   // the arrays below, on THIS call and every future loadHistory() call.
   gemmaRecord = patchActorStatus(gemmaDir, iterNum, gemmaRecord, actorResult.status);
-  claudeRecord = patchActorStatus(claudeDir, iterNum, claudeRecord, actorResult.status);
+  claudeRecord = claudeRecord ? patchActorStatus(claudeDir, iterNum, claudeRecord, actorResult.status) : null;
 
   const gemmaIterations = filterGenuineIterationsForStopConditions([...gemmaHistory, gemmaRecord]);
-  const claudeIterations = filterGenuineIterationsForStopConditions([...claudeHistory, claudeRecord]);
   // gemma always uses its uniform bar; the Opus track uses the per-view
   // CALIBRATED bar in opus-panel mode (else the same uniform bar).
   const gemmaStopCfg = { viewThreshold: rubric.view_threshold, patience: effPatience, budget: effBudget };
   const claudeStopCfg = { viewThreshold: calibratedBar, patience: effPatience, budget: effBudget };
   const gemmaStop = evaluateStopConditions(gemmaIterations, gemmaStopCfg);
-  const claudeStop = evaluateStopConditions(claudeIterations, claudeStopCfg);
+  // secondary judge skipped: a harmless placeholder in evaluateStopConditions's
+  // OWN return shape — never contributes a stop/reason, matching "not computed".
+  const claudeIterations = claudeJudged ? filterGenuineIterationsForStopConditions([...claudeHistory, claudeRecord]) : [];
+  const claudeStop = claudeJudged
+    ? evaluateStopConditions(claudeIterations, claudeStopCfg)
+    : { stop: false, reasons: [], bestTotal: null, consecutiveNonImproving: 0, remainingBudget: effBudget };
 
   // A SEPARATE, explicit exhaustion cap — distinct from `stall` — so a
   // genuinely broken/unreachable `claude` CLI cannot spin the loop forever,
@@ -1298,7 +1323,7 @@ export async function runIterationTerransoul({
       stop: primaryStop.stop || exhaustionCapped,
       reasons: [
         ...gemmaStop.reasons.map((r) => `gemma4${opusPanel ? ' (reported)' : ''}: ${r}`),
-        ...claudeStop.reasons.map((r) => `${claudeJudged.judge_track}${opusPanel ? ' (gating)' : ''}: ${r}`),
+        ...claudeStop.reasons.map((r) => `${claudeJudged?.judge_track ?? 'secondary-judge'}${opusPanel ? ' (gating)' : ''}: ${r}`),
         ...exhaustionReason,
       ],
       gemma: gemmaStop,
@@ -1308,7 +1333,7 @@ export async function runIterationTerransoul({
   }
   console.log(
     `STOP-CHECK stop=${stop.stop} gemma[nonImproving=${gemmaStop.consecutiveNonImproving}/${effPatience} budget=${gemmaIterations.length}/${effBudget}] ` +
-      `${claudeJudged.judge_track}[nonImproving=${claudeStop.consecutiveNonImproving}/${effPatience} budget=${claudeIterations.length}/${effBudget}] ` +
+      `${claudeJudged?.judge_track ?? 'secondary-judge(skipped)'}[nonImproving=${claudeStop.consecutiveNonImproving}/${effPatience} budget=${claudeIterations.length}/${effBudget}] ` +
       `exhaustionStreak=${exhaustionStreak}/${retryCfg.exhaustionCap}`,
   );
   for (const reason of stop.reasons) console.log(`  STOP REASON: ${reason}`);
@@ -1333,6 +1358,7 @@ export async function runLoopTerransoul({
   judgeMode,
   judgeSamples,
   bestOfN,
+  secondaryJudge,
 }) {
   // ONE WRITER PER CANDIDATE PLANE. Two concurrent runs sharing this file corrupted a
   // real run: an actor's Read and Edit interleaved with the other process's write, and
@@ -1372,6 +1398,7 @@ export async function runLoopTerransoul({
         judgeMode,
         judgeSamples,
         bestOfN,
+        secondaryJudge,
       });
       if (last.stop.stop) break;
     }
@@ -1399,10 +1426,15 @@ if (isMain) {
   if (!args.plane) {
     console.error(
       'usage: node loop-runner-terransoul.mjs --plane <plane.js> [--actor terransoul-fable5] [--model claude-fable-5] ' +
-        '[--effort max] [--max-iter N] [--max-actor-retries N] [--cli-bin <path>] [--cli-data-dir <dir>] [--contract open|frozen] [--budget N] [--patience N] [--judge gemma|opus-panel|opus-pairwise] [--judge-samples N] [--best-of-n N]',
+        '[--effort max] [--max-iter N] [--max-actor-retries N] [--cli-bin <path>] [--cli-data-dir <dir>] [--contract open|frozen] [--budget N] [--patience N] [--judge gemma|opus-panel|opus-pairwise] [--judge-samples N] [--best-of-n N] [--secondary-judge claude|none]',
     );
     process.exit(2);
   }
+  // --secondary-judge none: zero Anthropic API calls for the whole run — only
+  // legal with the default --judge gemma (Claude gates opus-panel/opus-pairwise,
+  // so it cannot be a skippable secondary there; runIterationTerransoul refuses
+  // that combination with a clear error rather than silently gating on nothing).
+  const secondaryJudge = args['secondary-judge'] === 'none' ? 'none' : 'claude';
   // --contract open swaps ONLY the candidate contract validator + actor-prompt
   // contract text (OPEN-VARIANT-DESIGN.md); default frozen leaves both undefined
   // so runActorEdit takes its byte-identical frozen path.
@@ -1434,11 +1466,15 @@ if (isMain) {
     // current single-edit behavior (byte-identical). Capped to BEST_OF_N_CAP inside
     // planBestOfNBudget; only fires when a worst view has plateaued.
     bestOfN: args['best-of-n'] ? Number(args['best-of-n']) : 0,
+    secondaryJudge,
   })
     .then((last) => {
       console.log('\nLOOP DONE');
       if (last) {
-        console.log(`final iter=${last.iterNum} gemma4=${last.gemmaRecord.total_0_100}/100 opus/claude-vision=${last.claudeRecord.total_0_100}/100`);
+        console.log(
+          `final iter=${last.iterNum} gemma4=${last.gemmaRecord.total_0_100}/100` +
+            (last.claudeRecord ? ` opus/claude-vision=${last.claudeRecord.total_0_100}/100` : ' (secondary judge skipped)'),
+        );
       }
     })
     .catch((err) => {

@@ -170,7 +170,7 @@ export function copyReferenceImages(shotsDir) {
 function buildActorPrompt({
   rubric,
   gemmaResult,
-  claudeResult,
+  claudeResult = null,
   candidatePath,
   shotsDir,
   refPaths,
@@ -254,12 +254,14 @@ function buildActorPrompt({
   }
   if (gemmaHint) lines.push(`  ${gemmaHint}`);
   lines.push('');
-  lines.push(`Claude ${claudeResult.judge_model} vision judge (second track) — per view score /10 + notes:`);
-  for (const v of claudeResult.per_view) {
-    lines.push(`  view ${v.view} (${v.key}): score=${v.score ?? 'null'}  notes="${v.notes || ''}"`);
+  if (claudeResult) {
+    lines.push(`Claude ${claudeResult.judge_model} vision judge (second track) — per view score /10 + notes:`);
+    for (const v of claudeResult.per_view) {
+      lines.push(`  view ${v.view} (${v.key}): score=${v.score ?? 'null'}  notes="${v.notes || ''}"`);
+    }
+    if (claudeHint) lines.push(`  ${claudeHint}`);
+    lines.push('');
   }
-  if (claudeHint) lines.push(`  ${claudeHint}`);
-  lines.push('');
   if (priorAttemptsSection) {
     lines.push(priorAttemptsSection);
     lines.push('');
@@ -455,7 +457,7 @@ export async function runActorEdit({
   candidatePath,
   shotsDir,
   gemmaResult,
-  claudeResult,
+  claudeResult = null,
   model,
   effort,
   timeoutMs,
@@ -502,7 +504,9 @@ export async function runActorEdit({
   const originalSha = sha256(originalSource);
 
   const gemmaHint = anchorHint(rubric, gemmaResult.weakest_feature, 'gemma4');
-  const claudeHint = anchorHint(rubric, claudeResult.weakest_feature, `claude ${claudeResult.judge_model}`);
+  const claudeHint = claudeResult
+    ? anchorHint(rubric, claudeResult.weakest_feature, `claude ${claudeResult.judge_model}`)
+    : null;
   const prompt = buildActorPrompt({
     rubric,
     gemmaResult,

@@ -141,6 +141,17 @@ describe('runActorEdit (terransoul-cli --agent-task wiring)', () => {
     expect(args).toEqual(expect.arrayContaining(['--model', 'claude-opus-4-8', '--effort', 'high']));
   });
 
+  it('omits the Claude judge section from the prompt and does not crash when claudeResult is absent (--secondary-judge none / gemma-only run)', async () => {
+    const execImpl = vi.fn(async () => ({ stdout: okOutcome(), stderr: '' }));
+    await runActorEdit({ candidatePath, shotsDir, gemmaResult, cliBinary: 'fake-terransoul-cli', execImpl });
+
+    expect(execImpl).toHaveBeenCalledTimes(1);
+    const [, args] = execImpl.mock.calls[0];
+    const prompt = args[1];
+    expect(prompt).toContain('gemma4:12b judge');
+    expect(prompt).not.toMatch(/Claude .* vision judge/);
+  });
+
   it('accepts a valid edit: re-reads plane.js from disk, records edited + cost/duration, and tallies reported tool calls', async () => {
     const execImpl = vi.fn(async () => {
       // Simulates the real terransoul-cli process's side effect: its Edit
