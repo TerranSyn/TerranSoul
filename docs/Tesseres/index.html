@@ -35,6 +35,18 @@
   @media (min-width: 1100px){
     :root{ --maxw: 1000px; }
   }
+  /* Large desktop: the 1000px/42.384rem tier above was tuned so the reading
+     column stops growing once it hits a comfortable line length — but on a
+     1440px+ display that leaves nearly half the viewport as bare margin,
+     which reads as "a mobile-width column stretched onto a big screen"
+     rather than a page designed for the space. Widen both the outer
+     container (so card grids/full-width blocks use more of the screen) and
+     the prose measure a further step (still capped well inside the
+     ~50-75-characters-per-line readability guideline — ~74ch at the 18.5px
+     paragraph ceiling, up from 68ch) rather than leaving it flat forever. */
+  @media (min-width: 1440px){
+    :root{ --maxw: 1160px; --measure: 46.15rem; }
+  }
   /* Georgia carries no Vietnamese glyphs, so a letter like "ầ" is composed from a
      base glyph plus a mark taken from a fallback font - the tone mark visibly
      detaches ("Hạ tâ` ng"). Measured: Georgia advances 'ầ' at 1.84x its own 'a',
