@@ -215,12 +215,17 @@
   .slide.wide{justify-content:flex-start;padding-top:clamp(58px,8.5vh,82px);padding-bottom:clamp(28px,4vh,48px)}
   .slide.wide .kicker{margin:0 0 clamp(10px,2vh,18px)}
   .slide.wide .slide-inner{max-width:1160px}
-  .whydek{font-size:clamp(15px,2.3vw,18px);color:var(--ink-soft);max-width:66ch;
+  /* Single-class selectors on a bare <p> lose to ".slide p" (element+class out-specifies
+     class-only) for every shared property - font-size/max-width/margin/color all silently
+     fall back to the generic .slide p values. Same bug already fixed below for .srcfoot /
+     .notebox p / .stat .lab; out-specify here too or whydek/pillartt/pillarsub render at
+     body-copy size wrapped to 38ch, ballooning this slide's height. */
+  .slide .whydek{font-size:clamp(15px,2.3vw,18px);color:var(--ink-soft);max-width:66ch;
     margin:0 0 clamp(4px,1vh,10px);line-height:1.45}
   .whydek strong{color:var(--ink);font-weight:600}
-  .pillartt{font-family:var(--serif);font-weight:600;font-size:clamp(18px,2.8vw,22px);
+  .slide .pillartt{font-family:var(--serif);font-weight:600;font-size:clamp(18px,2.8vw,22px);
     color:var(--ink);letter-spacing:-0.01em;margin:clamp(8px,1.4vh,12px) 0 2px}
-  .pillarsub{font-size:clamp(13px,1.9vw,14.5px);color:var(--ink-faint);margin:0 0 3px}
+  .slide .pillarsub{font-size:clamp(13px,1.9vw,14.5px);color:var(--ink-faint);margin:0 0 3px}
   /* 11 items: denser cards than the 3-item moat grid, smaller term size, more columns. */
   .pillargrid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
     gap:clamp(8px,1.2vw,14px);margin-top:clamp(6px,1vh,10px)}
@@ -290,6 +295,26 @@
   .duo > *{margin:0}
   .duo .takeaway{display:flex;flex-direction:column;justify-content:center}
   @media (max-width:820px){.duo{grid-template-columns:1fr}}
+
+  /* Slide 05 (Tessera) now carries FOUR beats - the whydek hook, the 4-card
+     stats grid, the duo chart/takeaway, and the 10-pillar grid - in the space
+     other slides give two. Same technique as #s3 above: tighten margins so
+     the whole slide gets as close as realistically possible to one screen on
+     common desktop widths (see verification notes: even after fixing the
+     whydek/pillartt/pillarsub specificity bug below, ~15 content blocks still
+     don't fit 900x700/375x812 without illegible cramming - matches the
+     pre-existing precedent set by slides 2/3/4, which already exceed one
+     viewport at those same two breakpoints). */
+  #s-why-tessera .kicker{margin-bottom:clamp(4px,0.8vh,8px)}
+  #s-why-tessera .whydek{margin-bottom:clamp(2px,0.6vh,6px)}
+  #s-why-tessera .stats{margin-top:clamp(8px,1.4vh,14px)}
+  #s-why-tessera .pillartt{margin-top:clamp(4px,0.8vh,8px);margin-bottom:1px}
+  #s-why-tessera .duo{margin-top:clamp(4px,0.8vh,8px)}
+  #s-why-tessera .chart,#s-why-tessera .takeaway{padding:clamp(10px,2vw,14px)}
+  #s-why-tessera .chart .cs{margin-bottom:clamp(4px,0.8vh,8px)}
+  #s-why-tessera .pillargrid{margin-top:clamp(2px,0.5vh,5px);gap:clamp(6px,1vw,11px)}
+  #s-why-tessera .moat-punch{margin-top:clamp(4px,0.8vh,8px);font-size:clamp(18px,2.6vw,22px);max-width:52ch}
+  #s-why-tessera{padding-top:clamp(24px,3.6vh,38px);padding-bottom:clamp(8px,1.4vh,16px)}
 </style>
 </head>
 <body>
@@ -338,9 +363,9 @@
         <p>Yet almost all AI capability today sits in the hands of a very few companies - and the advantage is compounding fast.</p>
         <div class="stats">
           <div class="stat">
-            <p class="fig">~$200B</p>
-            <p class="lab">One company's planned capital spend for a single year</p>
-            <p class="src">Amazon, 2026 guidance &mdash; Q4 2025 results, Feb 2026</p>
+            <p class="fig">~$725B</p>
+            <p class="lab">Combined 2026 capital-spending plans of the handful of companies building most of the world's AI infrastructure</p>
+            <p class="src">Amazon, Microsoft, Alphabet, Meta &mdash; 2026 capex guidance (Q4 2025 &amp; Q1 2026 earnings calls, through Apr 2026)</p>
           </div>
           <div class="stat">
             <p class="fig">~25%</p>
@@ -356,16 +381,16 @@
         <div class="duo">
           <div class="chart">
             <p class="ct">The compute itself sits in one country</p>
-            <p class="cs">Share of tracked global GPU cluster performance, May 2025</p>
-            <svg viewBox="0 0 520 104" role="img" aria-label="Share of tracked global GPU cluster performance, May 2025: United States 75 percent, China 15 percent, everyone else about 10 percent"><text class="c-name" x="2" y="12">United States</text><rect class="c-us" x="2" y="18" width="380" height="14" rx="7"/><text class="c-num-us" x="390" y="29">75%</text><text class="c-name" x="2" y="48">China</text><rect class="c-other" x="2" y="54" width="76" height="14" rx="7"/><text class="c-num" x="86" y="65">15%</text><text class="c-name" x="2" y="84">Everyone else</text><rect class="c-lo" x="2" y="90" width="51" height="14" rx="7"/><text class="c-num" x="61" y="101">~10%</text></svg>
-            <p class="cc">Epoch AI tracks publicly known clusters, so this is share of <em>tracked</em> performance.</p>
+            <p class="cs">Share of the world's top-500 AI supercomputers, by country &middot; UN Scientific Panel on AI, Jul 2026</p>
+            <svg viewBox="0 0 520 104" role="img" aria-label="Share of the world's top-500 AI supercomputers, July 2026: United States 75 percent, China 15 percent, everyone else about 10 percent"><text class="c-name" x="2" y="12">United States</text><rect class="c-us" x="2" y="18" width="380" height="14" rx="7"/><text class="c-num-us" x="390" y="29">75%</text><text class="c-name" x="2" y="48">China</text><rect class="c-other" x="2" y="54" width="76" height="14" rx="7"/><text class="c-num" x="86" y="65">15%</text><text class="c-name" x="2" y="84">Everyone else</text><rect class="c-lo" x="2" y="90" width="51" height="14" rx="7"/><text class="c-num" x="61" y="101">~10%</text></svg>
+            <p class="cc">Corroborates Epoch AI's independent compute-cluster tracker (74.5% US / 14.1% China as of Q4 2025).</p>
           </div>
           <div class="takeaway">
             <p class="tt">The divide is not AI versus people.</p>
             <p>It is the few who <strong>own</strong> AI capability and everyone else, who rents it - and the gap compounds every year the renting continues.</p>
           </div>
         </div>
-        <p class="srcfoot">Sources: Amazon Q4 2025 results (Feb 2026); Epoch AI, AI Chip Owners and GPU Clusters datasets (2025-26); Stanford HAI, AI Index Report 2026.</p>
+        <p class="srcfoot">Sources: Amazon, Microsoft, Alphabet, Meta 2026 capex guidance (Q4 2025-Q1 2026 earnings calls, through Apr 2026); UN Independent International Scientific Panel on AI, Preliminary Report (Jul 2026); Epoch AI, AI Chip Owners dataset (Q4 2025); Stanford HAI, AI Index Report 2026.</p>
       </div>
       <div data-lang="vi" hidden>
         <p class="kicker">01 / Bối cảnh</p>
@@ -373,9 +398,9 @@
         <p>Nhưng gần như toàn bộ năng lực AI hiện nay lại nằm trong tay một số rất ít công ty - và lợi thế đang dồn lại rất nhanh.</p>
         <div class="stats">
           <div class="stat">
-            <p class="fig">~200 tỷ $</p>
-            <p class="lab">Vốn đầu tư của một công ty duy nhất, chỉ trong một năm</p>
-            <p class="src">Amazon, kế hoạch 2026 &mdash; báo cáo Q4/2025, 02/2026</p>
+            <p class="fig">~725 tỷ $</p>
+            <p class="lab">Kế hoạch chi đầu tư 2026 gộp lại của vài công ty xây dựng phần lớn hạ tầng AI thế giới</p>
+            <p class="src">Amazon, Microsoft, Alphabet, Meta &mdash; kế hoạch chi 2026 (báo cáo Q4/2025 &amp; Q1/2026, đến 04/2026)</p>
           </div>
           <div class="stat">
             <p class="fig">~25%</p>
@@ -391,16 +416,16 @@
         <div class="duo">
           <div class="chart">
             <p class="ct">Sức mạnh tính toán nằm ở một quốc gia</p>
-            <p class="cs">Tỷ trọng hiệu năng cụm GPU toàn cầu được ghi nhận, 05/2025</p>
-            <svg viewBox="0 0 520 104" role="img" aria-label="Tỷ trọng hiệu năng cụm GPU toàn cầu, 05/2025: Hoa Kỳ 75 phần trăm, Trung Quốc 15 phần trăm, phần còn lại khoảng 10 phần trăm"><text class="c-name" x="2" y="12">Hoa Kỳ</text><rect class="c-us" x="2" y="18" width="380" height="14" rx="7"/><text class="c-num-us" x="390" y="29">75%</text><text class="c-name" x="2" y="48">Trung Quốc</text><rect class="c-other" x="2" y="54" width="76" height="14" rx="7"/><text class="c-num" x="86" y="65">15%</text><text class="c-name" x="2" y="84">Phần còn lại</text><rect class="c-lo" x="2" y="90" width="51" height="14" rx="7"/><text class="c-num" x="61" y="101">~10%</text></svg>
-            <p class="cc">Epoch AI chỉ theo dõi các cụm GPU công khai, nên đây là tỷ trọng trên phần <em>được ghi nhận</em>.</p>
+            <p class="cs">Tỷ trọng trong 500 siêu máy tính AI hàng đầu thế giới, theo quốc gia &middot; Hội đồng Khoa học AI của UN, 07/2026</p>
+            <svg viewBox="0 0 520 104" role="img" aria-label="Tỷ trọng trong 500 siêu máy tính AI hàng đầu thế giới, tháng 7/2026: Hoa Kỳ 75 phần trăm, Trung Quốc 15 phần trăm, phần còn lại khoảng 10 phần trăm"><text class="c-name" x="2" y="12">Hoa Kỳ</text><rect class="c-us" x="2" y="18" width="380" height="14" rx="7"/><text class="c-num-us" x="390" y="29">75%</text><text class="c-name" x="2" y="48">Trung Quốc</text><rect class="c-other" x="2" y="54" width="76" height="14" rx="7"/><text class="c-num" x="86" y="65">15%</text><text class="c-name" x="2" y="84">Phần còn lại</text><rect class="c-lo" x="2" y="90" width="51" height="14" rx="7"/><text class="c-num" x="61" y="101">~10%</text></svg>
+            <p class="cc">Củng cố số liệu độc lập của Epoch AI (74,5% Mỹ / 14,1% Trung Quốc tính đến Q4/2025).</p>
           </div>
           <div class="takeaway">
             <p class="tt">Ranh giới không phải là AI với con người.</p>
             <p>Mà là số ít <strong>sở hữu</strong> năng lực AI và tất cả những người còn lại phải đi thuê - khoảng cách đó lớn dần theo từng năm tiếp tục đi thuê.</p>
           </div>
         </div>
-        <p class="srcfoot">Nguồn: Báo cáo Q4/2025 của Amazon (02/2026); Epoch AI, bộ dữ liệu AI Chip Owners và GPU Clusters (2025-26); Stanford HAI, AI Index Report 2026.</p>
+        <p class="srcfoot">Nguồn: Kế hoạch chi đầu tư 2026 của Amazon, Microsoft, Alphabet, Meta (báo cáo Q4/2025 &amp; Q1/2026, đến 04/2026); Hội đồng Khoa học AI Độc lập của UN, Báo cáo sơ bộ (07/2026); Epoch AI, bộ dữ liệu AI Chip Owners (Q4/2025); Stanford HAI, AI Index Report 2026.</p>
       </div>
     </div>
   </section>
@@ -522,43 +547,109 @@
     <div class="slide-inner">
       <div data-lang="en">
         <p class="kicker">05 / Unfair advantage · Tessera</p>
-        <p class="whydek">Matillion's <strong>MAIA</strong> raised <strong>$365M at a $1.5B valuation in one year</strong> - to automate <strong>data</strong> pipelines alone. Tessera automates the <strong>whole</strong> enterprise, held to eleven engineering pillars.</p>
-        <p class="pillartt">The 11-pillar quality bar</p>
-        <p class="pillarsub">Engineered, not assumed - every pillar has its own decision record.</p>
-        <div class="smegrid pillargrid">
-          <div class="smebox"><p class="term">Availability</p><p class="rtxt">~5 min/year down at five-nines, not ~526 min on a typical 99.9% SLA.</p></div>
-          <div class="smebox"><p class="term">Reliability</p><p class="rtxt">Every message delivered or dead-lettered - never silently dropped.</p></div>
-          <div class="smebox"><p class="term">Resilience</p><p class="rtxt">Survives restarts and outages; recovers automatically, no manual replay.</p></div>
-          <div class="smebox"><p class="term">Scalability</p><p class="rtxt">Scales out by default, with no single-vendor lock-in.</p></div>
-          <div class="smebox"><p class="term">Performance</p><p class="rtxt">Throughput and tail latency are measured, not assumed.</p></div>
-          <div class="smebox"><p class="term">Observability</p><p class="rtxt">Ask "where is my message?" in plain language.</p></div>
-          <div class="smebox"><p class="term">Security</p><p class="rtxt">Defence in depth: zero-trust identity, encryption everywhere.</p></div>
-          <div class="smebox"><p class="term">Testability</p><p class="rtxt">The full stack reproduces on a laptop in under a minute.</p></div>
-          <div class="smebox"><p class="term">Maintainability</p><p class="rtxt">Every change ships with its own spec and decision record.</p></div>
-          <div class="smebox"><p class="term">Supportability</p><p class="rtxt">Stuck messages diagnosed in plain language, not log-trawling.</p></div>
-          <div class="smebox"><p class="term">Operational excellence</p><p class="rtxt">AI lowers incident toil; a human approves every rollback.</p></div>
+        <p class="whydek">Every enterprise still runs on integrations nobody dares touch, and legacy platforms are running out of runway. AI agents are about to need to orchestrate all of it - and there is no reliable, governed runtime underneath for them to stand on. <strong>Whoever owns that durable execution substrate owns integration for the next decade.</strong> Tessera is built to be it.</p>
+        <div class="stats">
+          <div class="stat">
+            <p class="fig">66</p>
+            <p class="lab">Enterprise Integration Patterns implemented, each with its own test</p>
+            <p class="src">Tessera engineering repo &mdash; pattern coverage manifest</p>
+          </div>
+          <div class="stat">
+            <p class="fig">3,800+</p>
+            <p class="lab">Tests in the core suite alone, plus ~45 specialised CI projects</p>
+            <p class="src">Tessera engineering repo &mdash; CI test estate</p>
+          </div>
+          <div class="stat">
+            <p class="fig">8</p>
+            <p class="lab">Interchangeable brokers behind one abstraction - swap with no rewrite</p>
+            <p class="src">NATS, Kafka, Pulsar, Postgres, Cassandra, RabbitMQ, Azure Service Bus, AWS SQS</p>
+          </div>
+          <div class="stat">
+            <p class="fig">9</p>
+            <p class="lab">Governed AI agent roles, every action authorised and audited</p>
+            <p class="src">Spec &rarr; plan &rarr; tasks &rarr; implement &rarr; analyze, under the Microsoft Agent Governance Toolkit</p>
+          </div>
         </div>
-        <p class="moat-punch">MAIA proved the market wants this. Tessera is engineered to run production, not just a demo.</p>
+        <p class="pillartt">The 11-pillar quality bar</p>
+        <p class="pillarsub">Engineered, not assumed - every pillar has its own decision record, and AI is woven through every one of them.</p>
+        <div class="duo">
+          <div class="chart">
+            <p class="ct">Availability — downtime per year</p>
+            <p class="cs">Minutes down per year, by SLA tier · lower is better</p>
+            <svg viewBox="0 0 520 70" role="img" aria-label="Availability, minutes down per year: Tessera five-nines target 5.26 minutes, typical 99.9% SLA 526 minutes"><text class="c-name-us" x="2" y="12">Tessera · five-nines target</text><rect class="c-us" x="2" y="18" width="14" height="14" rx="7"/><text class="c-num-us" x="24" y="29">5.26 min</text><text class="c-name" x="2" y="48">Typical 99.9% SLA</text><rect class="c-other" x="2" y="54" width="380" height="14" rx="7"/><text class="c-num" x="390" y="65">526 min</text></svg>
+            <p class="cc">Pure SLA-tier arithmetic (365 &times; 24 &times; 60 &times; (1 &minus; uptime)) - an internal target, not yet independently benchmarked.</p>
+          </div>
+          <div class="takeaway">
+            <p class="tt">Every pillar has a decision record. Not every number is benchmarked yet.</p>
+            <p>The ten pillars below are real engineering commitments, each with its own strategy ADR - we publish a measured number the day one exists, not before.</p>
+          </div>
+        </div>
+        <div class="smegrid pillargrid">
+          <div class="smebox"><p class="term">Reliability</p><p class="rtxt">AI observability detects stuck or anomalous messages and proposes DLQ remediation in plain language.</p></div>
+          <div class="smebox"><p class="term">Resilience</p><p class="rtxt">AI diagnoses failure patterns from the event store and recommends the retry or replay action to take.</p></div>
+          <div class="smebox"><p class="term">Scalability</p><p class="rtxt">AI generates broker-agnostic integrations - scaling onto Kafka or Pulsar needs no rewrite.</p></div>
+          <div class="smebox"><p class="term">Performance</p><p class="rtxt">Telemetry is queryable in natural language to surface latency and throughput hotspots.</p></div>
+          <div class="smebox"><p class="term">Observability</p><p class="rtxt">Natural-language AI chat is the primary query interface over the event store - no log-trawling.</p></div>
+          <div class="smebox"><p class="term">Security</p><p class="rtxt">Every AI agent action is authorised by a policy engine and audit log, with AI-assisted security review in CI.</p></div>
+          <div class="smebox"><p class="term">Testability</p><p class="rtxt">AI generates the tests; a five-stage battery plus an independent verifier hold them to a real-behaviour bar.</p></div>
+          <div class="smebox"><p class="term">Maintainability</p><p class="rtxt">A knowledge-graph-indexed repo and AI code generation keep every change convention-compliant.</p></div>
+          <div class="smebox"><p class="term">Supportability</p><p class="rtxt">An AI panel diagnoses stuck messages and proposes fixes - "where is my message?" answered in plain language.</p></div>
+          <div class="smebox"><p class="term">Operational excellence</p><p class="rtxt">AI trend analysis on failure patterns drives continuous improvement; a human approves every rollback.</p></div>
+        </div>
+        <p class="moat-punch">This is not a slide of promises - it is a working engine, engineered to run production, not just a demo.</p>
       </div>
       <div data-lang="vi" hidden>
         <p class="kicker">05 / Lợi thế riêng · Tessera</p>
-        <p class="whydek"><strong>MAIA</strong> của Matillion huy động <strong>$365M với định giá $1.5 tỷ trong một năm</strong> - chỉ để tự động hoá pipeline <strong>dữ liệu</strong>. Tessera tự động hoá <strong>toàn bộ</strong> doanh nghiệp, theo thước đo kỹ thuật mười một trụ cột.</p>
-        <p class="pillartt">Thước đo chất lượng 11 trụ cột</p>
-        <p class="pillarsub">Được kỹ thuật hoá, không phải giả định - mỗi trụ cột có hồ sơ quyết định riêng.</p>
-        <div class="smegrid pillargrid">
-          <div class="smebox"><p class="term">Sẵn sàng hoạt động</p><p class="rtxt">~5 phút ngừng/năm ở mức năm-số-9, không phải ~526 phút như SLA 99.9% phổ biến.</p></div>
-          <div class="smebox"><p class="term">Độ tin cậy</p><p class="rtxt">Mọi tin nhắn được giao hoặc đưa vào hàng chờ lỗi - không bao giờ âm thầm mất.</p></div>
-          <div class="smebox"><p class="term">Khả năng phục hồi</p><p class="rtxt">Sống sót qua khởi động lại và sự cố; tự phục hồi, không cần chạy lại thủ công.</p></div>
-          <div class="smebox"><p class="term">Khả năng mở rộng</p><p class="rtxt">Mở rộng theo chiều ngang mặc định, không khoá vào một nhà cung cấp.</p></div>
-          <div class="smebox"><p class="term">Hiệu năng</p><p class="rtxt">Thông lượng và độ trễ đuôi được đo, không phải giả định.</p></div>
-          <div class="smebox"><p class="term">Khả năng quan sát</p><p class="rtxt">Hỏi "tin nhắn của tôi đang ở đâu?" bằng ngôn ngữ tự nhiên.</p></div>
-          <div class="smebox"><p class="term">Bảo mật</p><p class="rtxt">Phòng thủ nhiều lớp: danh tính zero-trust, mã hoá toàn bộ.</p></div>
-          <div class="smebox"><p class="term">Khả năng kiểm thử</p><p class="rtxt">Toàn bộ hệ thống chạy lại trên laptop trong chưa đầy một phút.</p></div>
-          <div class="smebox"><p class="term">Khả năng bảo trì</p><p class="rtxt">Mọi thay đổi đi kèm spec và quyết định kiến trúc riêng.</p></div>
-          <div class="smebox"><p class="term">Khả năng hỗ trợ</p><p class="rtxt">Chẩn đoán tin nhắn bị kẹt bằng ngôn ngữ tự nhiên, không dò log.</p></div>
-          <div class="smebox"><p class="term">Vận hành xuất sắc</p><p class="rtxt">AI giảm gánh nặng sự cố; con người duyệt mọi lần rollback.</p></div>
+        <p class="whydek">Mọi doanh nghiệp vẫn đang chạy trên những tích hợp không ai dám đụng vào, và các nền tảng cũ đang cạn thời gian. Các AI agent sẽ sớm cần điều phối toàn bộ hệ thống đó - nhưng chưa có một nền vận hành đáng tin cậy, được quản trị để chúng đứng trên. <strong>Ai sở hữu nền thực thi bền vững đó sẽ sở hữu ngành tích hợp trong thập kỷ tới.</strong> Tessera được xây để trở thành nền tảng đó.</p>
+        <div class="stats">
+          <div class="stat">
+            <p class="fig">66</p>
+            <p class="lab">Mẫu tích hợp doanh nghiệp (EIP) đã triển khai, mỗi mẫu có bài kiểm thử riêng</p>
+            <p class="src">Repo kỹ thuật Tessera &mdash; bảng phủ mẫu tích hợp</p>
+          </div>
+          <div class="stat">
+            <p class="fig">3.800+</p>
+            <p class="lab">Bài kiểm thử trong bộ lõi, cộng thêm khoảng 45 dự án CI chuyên biệt</p>
+            <p class="src">Repo kỹ thuật Tessera &mdash; hệ thống kiểm thử CI</p>
+          </div>
+          <div class="stat">
+            <p class="fig">8</p>
+            <p class="lab">Broker có thể hoán đổi sau một lớp trừu tượng - đổi mà không cần viết lại</p>
+            <p class="src">NATS, Kafka, Pulsar, Postgres, Cassandra, RabbitMQ, Azure Service Bus, AWS SQS</p>
+          </div>
+          <div class="stat">
+            <p class="fig">9</p>
+            <p class="lab">Vai trò AI agent được quản trị, mọi hành động được cấp quyền và ghi vết</p>
+            <p class="src">Spec &rarr; plan &rarr; tasks &rarr; implement &rarr; analyze, theo Microsoft Agent Governance Toolkit</p>
+          </div>
         </div>
-        <p class="moat-punch">MAIA chứng minh thị trường muốn điều này. Tessera được kỹ thuật hoá để chạy sản xuất thật, không chỉ để demo.</p>
+        <p class="pillartt">Thước đo chất lượng 11 trụ cột</p>
+        <p class="pillarsub">Được kỹ thuật hoá, không phải giả định - mỗi trụ cột có hồ sơ quyết định riêng, và AI được lồng vào từng trụ cột.</p>
+        <div class="duo">
+          <div class="chart">
+            <p class="ct">Sẵn sàng hoạt động — thời gian ngừng mỗi năm</p>
+            <p class="cs">Số phút ngừng mỗi năm, theo mức SLA · thấp hơn tốt hơn</p>
+            <svg viewBox="0 0 520 70" role="img" aria-label="Thời gian ngừng mỗi năm: mục tiêu năm-số-9 của Tessera 5.26 phút, SLA 99.9% phổ biến 526 phút"><text class="c-name-us" x="2" y="12">Tessera · mục tiêu năm-số-9</text><rect class="c-us" x="2" y="18" width="14" height="14" rx="7"/><text class="c-num-us" x="24" y="29">5.26 phút</text><text class="c-name" x="2" y="48">SLA 99.9% phổ biến</text><rect class="c-other" x="2" y="54" width="380" height="14" rx="7"/><text class="c-num" x="390" y="65">526 phút</text></svg>
+            <p class="cc">Thuần phép tính theo mức SLA (365 &times; 24 &times; 60 &times; (1 &minus; thời gian hoạt động)) - là mục tiêu nội bộ, chưa được đo kiểm độc lập.</p>
+          </div>
+          <div class="takeaway">
+            <p class="tt">Mỗi trụ cột có hồ sơ quyết định. Không phải số liệu nào cũng đã được đo kiểm.</p>
+            <p>Mười trụ cột dưới đây là những cam kết kỹ thuật thật, mỗi trụ cột có ADR chiến lược riêng - chúng tôi công bố số liệu đo được ngay khi có, không sớm hơn.</p>
+          </div>
+        </div>
+        <div class="smegrid pillargrid">
+          <div class="smebox"><p class="term">Độ tin cậy</p><p class="rtxt">AI quan sát phát hiện tin nhắn kẹt hoặc bất thường và đề xuất cách xử lý DLQ bằng ngôn ngữ tự nhiên.</p></div>
+          <div class="smebox"><p class="term">Khả năng phục hồi</p><p class="rtxt">AI chẩn đoán mẫu lỗi từ kho sự kiện và đề xuất hành động thử lại hoặc phát lại phù hợp.</p></div>
+          <div class="smebox"><p class="term">Khả năng mở rộng</p><p class="rtxt">AI tạo ra các tích hợp không phụ thuộc broker - mở rộng sang Kafka hay Pulsar không cần viết lại.</p></div>
+          <div class="smebox"><p class="term">Hiệu năng</p><p class="rtxt">Dữ liệu đo lường có thể truy vấn bằng ngôn ngữ tự nhiên để tìm điểm nghẽn độ trễ và thông lượng.</p></div>
+          <div class="smebox"><p class="term">Khả năng quan sát</p><p class="rtxt">AI chat bằng ngôn ngữ tự nhiên là giao diện truy vấn chính trên kho sự kiện - không cần dò log.</p></div>
+          <div class="smebox"><p class="term">Bảo mật</p><p class="rtxt">Mọi hành động của AI agent được cấp quyền qua bộ máy chính sách và ghi vết kiểm toán, cùng rà soát an ninh có AI hỗ trợ trong CI.</p></div>
+          <div class="smebox"><p class="term">Khả năng kiểm thử</p><p class="rtxt">AI tạo bài kiểm thử; chuỗi kiểm định năm giai đoạn cùng một bộ kiểm chứng độc lập giữ chúng ở mức đánh giá hành vi thật.</p></div>
+          <div class="smebox"><p class="term">Khả năng bảo trì</p><p class="rtxt">Repo được lập chỉ mục bằng đồ thị tri thức và AI sinh mã giữ mọi thay đổi đúng quy ước.</p></div>
+          <div class="smebox"><p class="term">Khả năng hỗ trợ</p><p class="rtxt">Một bảng AI chẩn đoán tin nhắn bị kẹt và đề xuất cách xử lý - "tin nhắn của tôi đang ở đâu?" được trả lời bằng ngôn ngữ tự nhiên.</p></div>
+          <div class="smebox"><p class="term">Vận hành xuất sắc</p><p class="rtxt">Phân tích xu hướng lỗi bằng AI thúc đẩy cải tiến liên tục; con người vẫn duyệt mọi lần rollback.</p></div>
+        </div>
+        <p class="moat-punch">Đây không phải một trang đầy lời hứa - đây là một cỗ máy đang chạy thật, được kỹ thuật hoá để chạy sản xuất, không chỉ để demo.</p>
       </div>
     </div>
   </section>

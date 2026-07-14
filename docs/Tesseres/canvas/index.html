@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tesseres - Lean Canvas</title>
+<meta name="description" content="Tesseres Lean Canvas - Sovereign AI platform (TerranSoul + Tessera). Draft, editable in-browser." />
+<link rel="canonical" href="https://terransyn.github.io/TerranSoul/Tesseres/canvas/" />
+<style>
+  :root{
+    --bg: oklch(0.985 0.008 80);
+    --bg-card: oklch(0.97 0.01 80);
+    --ink: oklch(0.22 0.015 60);
+    --ink-soft: oklch(0.42 0.012 65);
+    --ink-faint: oklch(0.62 0.01 70);
+    --rule: oklch(0.82 0.012 75);
+    --accent: oklch(0.62 0.14 45);
+    --accent-soft: oklch(0.94 0.035 55);
+    --accent-ink: oklch(0.40 0.11 45);
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg: oklch(0.19 0.012 260);
+      --bg-card: oklch(0.23 0.014 260);
+      --ink: oklch(0.93 0.01 250);
+      --ink-soft: oklch(0.74 0.012 250);
+      --ink-faint: oklch(0.58 0.012 255);
+      --rule: oklch(0.34 0.014 258);
+      --accent: oklch(0.72 0.13 55);
+      --accent-soft: oklch(0.30 0.06 50);
+      --accent-ink: oklch(0.82 0.10 60);
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);line-height:1.4;-webkit-font-smoothing:antialiased}
+
+  .page{max-width:1400px;margin:0 auto;padding:clamp(16px,3vw,32px)}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+    flex-wrap:wrap;margin:0 0 clamp(12px,2vw,20px)}
+  h1{font-family:var(--serif);font-weight:600;letter-spacing:-0.01em;
+    font-size:clamp(22px,3.4vw,30px);margin:0}
+  .sub{color:var(--ink-faint);font-size:14px;margin:0}
+  .hint{color:var(--accent-ink);font-size:13px;font-weight:600;margin:0 0 clamp(10px,2vw,16px)}
+
+  /* The canvas grid. Fixed 5 columns / 3 rows on the classic Lean Canvas
+     layout (Problem/Solution+KeyMetrics/UVP+HighLevelConcept/UnfairAdvantage
+     +Channels/CustomerSegments+EarlyAdopters, then Cost Structure/Revenue
+     Streams spanning the full width) - matched to the source PDF's box
+     arrangement, not reinvented. */
+  .canvas{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);
+    border-radius:10px;overflow:hidden;
+    grid-template-columns:repeat(5, 1fr);
+    grid-template-rows:auto auto auto;}
+  .box{background:var(--bg-card);padding:clamp(10px,1.4vw,16px);
+    display:flex;flex-direction:column;gap:8px;
+    /* NO fixed height anywhere - min-height only, so content that needs more
+       room simply grows the row instead of being clipped. This is the fix for
+       "text broken when printed": the source PDF's boxes were a fixed pixel
+       height with overflow clipped, so anything past that height silently
+       vanished (several fields end mid-word/mid-sentence in the source). */
+    min-height:120px}
+  .box.tall{min-height:220px}
+  .term{font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:0.05em;
+    text-transform:uppercase;color:var(--accent-ink);margin:0}
+  .field{flex:1;font-size:13.5px;color:var(--ink-soft);white-space:pre-wrap;
+    overflow-wrap:break-word;outline:none;border-radius:6px;padding:4px 6px;margin:-4px -6px}
+  .field:hover, .field:focus{background:var(--accent-soft)}
+  .field:focus{box-shadow:0 0 0 2px var(--accent)}
+  .field[data-placeholder]:empty::before{content:attr(data-placeholder);color:var(--ink-faint);font-style:italic}
+  .field .gap{background:color-mix(in oklab, var(--accent) 22%, transparent);
+    border-radius:3px;padding:0 2px;color:var(--ink)}
+
+  .problem{grid-column:1;grid-row:1 / 3}
+  .existing-alt{grid-column:1;grid-row:3}
+  .solution{grid-column:2;grid-row:1}
+  .key-metrics{grid-column:2;grid-row:2 / 4}
+  .uvp{grid-column:3;grid-row:1 / 3}
+  .high-level{grid-column:3;grid-row:3}
+  .unfair-adv{grid-column:4;grid-row:1 / 3}
+  .channels{grid-column:4;grid-row:3}
+  .customer-seg{grid-column:5;grid-row:1 / 2}
+  .early-adopt{grid-column:5;grid-row:2 / 4}
+  .cost{grid-column:1 / 4;grid-row:4}
+  .revenue{grid-column:4 / 6;grid-row:4}
+
+  .foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    color:var(--ink-faint);font-size:12px;margin-top:clamp(12px,2vw,18px)}
+
+  .toolbar{display:flex;gap:8px;margin:0 0 clamp(10px,2vw,16px)}
+  .btn{appearance:none;border:1px solid var(--rule);background:var(--bg-card);color:var(--ink);
+    font-family:var(--sans);font-size:13px;font-weight:600;border-radius:8px;
+    padding:8px 14px;cursor:pointer}
+  .btn:hover{background:var(--accent-soft);color:var(--accent-ink)}
+
+  @media (max-width: 900px){
+    .canvas{grid-template-columns:1fr}
+    .problem,.existing-alt,.solution,.key-metrics,.uvp,.high-level,.unfair-adv,
+    .channels,.customer-seg,.early-adopt,.cost,.revenue{grid-column:1;grid-row:auto}
+  }
+
+  /* Print: force a single landscape page, everything visible, no clipping.
+     `overflow:visible` + no fixed heights above already does the real work;
+     this just sets the page geometry and drops interactive-only chrome. */
+  @media print{
+    @page{ size: A4 landscape; margin: 10mm; }
+    .toolbar, .hint{ display:none }
+    body{ background:#fff; color:#111 }
+    .canvas{ border-color:#999; background:#999 }
+    .box{ background:#fff; break-inside:avoid; page-break-inside:avoid }
+    .field:hover, .field:focus{ background:transparent; box-shadow:none }
+    .field .gap{ background:transparent }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="head">
+      <h1>TESSERES &mdash; LEAN CANVAS</h1>
+      <p class="sub">Sovereign AI platform (TerranSoul + Tessera) &mdash; First customer: Freecracy</p>
+    </div>
+    <p class="hint">Draft &mdash; every box below is editable in this page (click into a field and type). Nothing is saved to a server; print or screenshot once it reads right.</p>
+    <div class="toolbar">
+      <button class="btn" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <div class="canvas">
+      <div class="box problem">
+        <p class="term">Problem</p>
+        <div class="field" contenteditable="true">1. AI is replacing people &mdash; and the skilled first: programmers, lawyers, accountants, designers, data analysts.
+2. Governments promise AI will create more jobs than it destroys, but nobody has explained where those jobs come from.
+3. The deeper risk is concentration of power: a few companies own the core AI technology, and everyone else has to rent intelligence instead of owning it.</div>
+      </div>
+
+      <div class="box existing-alt">
+        <p class="term">Existing Alternatives</p>
+        <div class="field" contenteditable="true">Today the choice is: automate and cut jobs, or rent intelligence from a handful of foundation-model providers &mdash; paying monthly for a system you cannot control, cannot customize, and do not own.</div>
+      </div>
+
+      <div class="box solution">
+        <p class="term">Solution</p>
+        <div class="field" contenteditable="true">Reinstate work instead of replacing it &mdash; the mission's three ways:
+1. TerranSoul lets anyone start and run a business just by talking with AI.
+2. Tessera always requires a human to approve and take responsibility for every AI action.
+3. Businesses own their AI capability (memory + execution) instead of renting it.</div>
+      </div>
+
+      <div class="box key-metrics">
+        <p class="term">Key Metrics</p>
+        <div class="field" contenteditable="true">New businesses started via TerranSoul (new economic activity created, not jobs replaced).</div>
+      </div>
+
+      <div class="box uvp">
+        <p class="term">Unique Value Proposition</p>
+        <div class="field" contenteditable="true">Sovereign AI &mdash; owned by people, not rented from Big Tech.</div>
+      </div>
+
+      <div class="box high-level">
+        <p class="term">High-Level Concept</p>
+        <div class="field" contenteditable="true">When code becomes nearly free, own what stays.</div>
+      </div>
+
+      <div class="box unfair-adv">
+        <p class="term">Unfair Advantage</p>
+        <div class="field" contenteditable="true">Published, benchmarked AI-memory research (TerranSoul: 99.4% LongMemEval-S R@5, 9.82/10 personal-AI answer quality at 1.06s latency &mdash; measured, not claimed) plus a working AI-driven integration engine (Tessera: 66 Enterprise Integration Patterns implemented, 3,800+ tests, 8 interchangeable brokers) that a fundraised competitor (Matillion MAIA) is only now building toward.</div>
+      </div>
+
+      <div class="box channels">
+        <p class="term">Channels</p>
+        <div class="field" contenteditable="true" data-placeholder="Founder-led direct sales via existing network (name the specific network/partner here).">Founder-led direct sales via existing network (<span class="gap">AceC&hellip; &mdash; fill in the rest, the source cut off here</span>).</div>
+      </div>
+
+      <div class="box customer-seg">
+        <p class="term">Customer Segments</p>
+        <div class="field" contenteditable="true">The mission's three: (1) Individuals &mdash; knowledge workers whose work AI has displaced, who want to start something new. (2) Businesses that want to own their AI capability instead of renting it. (3) Nations that want sovereign AI infrastructure.</div>
+      </div>
+
+      <div class="box early-adopt">
+        <p class="term">Early Adopters</p>
+        <div class="field" contenteditable="true">Freecracy &mdash; HR AI-agent platform (&ldquo;Talents Force&rdquo;).</div>
+      </div>
+
+      <div class="box cost">
+        <p class="term">Cost Structure</p>
+        <div class="field" contenteditable="true">Founder &amp; engineering time (2 co-founders); cloud + LLM API costs, which fall over time as TerranSoul shifts solved work onto the frozen local model instead of paid inference.</div>
+      </div>
+
+      <div class="box revenue">
+        <p class="term">Revenue Streams</p>
+        <div class="field" contenteditable="true">Primary: equity ownership in partner businesses &mdash; we take a % stake and grow as our partners grow. This is the largest upside, and it only pays off if the partner's business actually succeeds.</div>
+      </div>
+    </div>
+
+    <p class="foot">
+      <span>Lean Canvas adapted from The Business Model Canvas (Ash Maurya / Alexander Osterwalder) &mdash; CC BY-SA 3.0</span>
+      <span>Draft &mdash; all fields are editable</span>
+    </p>
+  </div>
+</body>
+</html>
