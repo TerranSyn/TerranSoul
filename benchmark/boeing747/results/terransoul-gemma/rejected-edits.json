@@ -1,0 +1,42 @@
+[
+  {
+    "iter": 47,
+    "weakest_feature_targeted": "upper_deck_hump",
+    "edit_summary": "The model has been updated to include a structural hump representing the Boeing 747's iconic upper deck. I used a `CylinderGeometry` with a slightly larger radius than the main fuselage, positioned it centered in the front third of the aircraft (x=18), and placed it at an elevation (y=0.7) that allows it to protrude smoothly from the top crown while maintaining some intersection with the fuselage tube for better structural coherence. This directly addresses the primary weakness identified by the judge regarding the hump's presence and its partial-length characteristics.",
+    "rejected_sha256": "0b1ededba3b25a09cedf7dd9b12fc9930f693784fcbf8364e531e252757e1436",
+    "per_view_delta": [
+      -0.12,
+      -1.94,
+      0.17,
+      null,
+      -0.25,
+      0,
+      0,
+      1.74,
+      0
+    ],
+    "gating_delta": -1.02,
+    "reason": "total regression: 49.84 < best 50.86 - epsilonTotal 0 (delta -1.02)",
+    "created_at": "2026-07-14T10:55:08.786Z"
+  },
+  {
+    "iter": 49,
+    "weakest_feature_targeted": "upper_deck_hump",
+    "edit_summary": "The `upper_deck_hump` (weight 1.5) was the weakest feature of this candidate, scoring poorly due to a lack of an iconic 747 hump or having it represented as a crude block. I have added a two-sphere \"hump\" assembly (`humpGroup`) consisting of `mainHump` and `noseHump`. This creates a distinct partial-length upper deck that begins at the nose (around X=28) and blends down smoothly into the crown within the front third of the fuselage. I chose `SphereGeometry` to ensure it is \"smoothly faired\" as requested by the 10-point anchor, rather than using a blocky primitive which had previously regressed the score.\n\nThis edit was targeted specifically at the hump geometry without altering the wings, engines, or other high-scoring components.",
+    "rejected_sha256": "d9b97886d3b0514a5150734d7332bb14149ebe2457daa3535e630fdb1b75a837",
+    "per_view_delta": [
+      -0.12,
+      -1.88,
+      0,
+      0.76,
+      -0.43,
+      -3.75,
+      -0.76,
+      -2.47,
+      0.91
+    ],
+    "gating_delta": -8.6,
+    "reason": "total regression: 42.26 < best 50.86 - epsilonTotal 0 (delta -8.6)",
+    "created_at": "2026-07-14T11:03:51.570Z"
+  }
+]

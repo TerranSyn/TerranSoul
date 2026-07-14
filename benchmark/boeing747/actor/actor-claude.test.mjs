@@ -66,6 +66,21 @@ const RUNTIME_BROKEN_SOURCE = `export function buildPlane(THREE) {
 }
 `;
 
+// A SECOND, distinct runtime-broken class: assigning to an undeclared
+// identifier (missing const/let) is legal in SLOPPY mode (creates an
+// implicit global) but throws in STRICT mode -- and a real ES module (what
+// the rig actually loads the candidate as) is always strict. A live run's
+// smoke check passed exactly this edit (missing `new Function`'s own
+// strict-mode directive) and it crashed the rig one iteration later with
+// `ReferenceError: fusage_rotation is not defined`.
+const IMPLICIT_GLOBAL_SOURCE = `export function buildPlane(THREE) {
+  const group = new THREE.Group();
+  fusage_rotation = -1;
+  group.rotation.z = fusage_rotation;
+  return group;
+}
+`;
+
 function ninePerView(scoreFn) {
   return VIEWS.map((v) => ({
     view: v.id,
@@ -227,6 +242,20 @@ describe('runActorEdit (terransoul-cli --agent-task wiring)', () => {
 
     expect(result.status).toBe('runtime_failed');
     expect(result.runtime_error).toContain('door is not defined');
+    expect(result.changed).toBe(false);
+    expect(readFileSync(candidatePath, 'utf8')).toBe(VALID_PLANE_SOURCE);
+  });
+
+  it('rejects an edit that assigns to an undeclared identifier (sloppy-mode-only, strict-mode-illegal) instead of silently accepting it', async () => {
+    const execImpl = vi.fn(async () => {
+      writeFileSync(candidatePath, IMPLICIT_GLOBAL_SOURCE);
+      return { stdout: okOutcome({ result_text: 'Rotated the fuselage.' }), stderr: '' };
+    });
+
+    const result = await runActorEdit({ candidatePath, shotsDir, gemmaResult, claudeResult, cliBinary: 'fake', execImpl });
+
+    expect(result.status).toBe('runtime_failed');
+    expect(result.runtime_error).toContain('fusage_rotation is not defined');
     expect(result.changed).toBe(false);
     expect(readFileSync(candidatePath, 'utf8')).toBe(VALID_PLANE_SOURCE);
   });

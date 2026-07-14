@@ -680,12 +680,20 @@ function stripExportForEval(source) {
  * JUST passed contractValidate (which itself forbids `new Function`/`eval`
  * — that ban is on what the CANDIDATE may contain, a different trust
  * boundary than the harness evaluating already-validated text).
+ *
+ * MUST run in strict mode: `new Function` defaults to SLOPPY mode, which
+ * silently allows an assignment to an undeclared identifier (creates an
+ * implicit global instead of throwing) — a real ES module (what the rig
+ * actually loads the candidate as) is always strict and throws a
+ * ReferenceError for that exact code. A live run's smoke check passed an
+ * edit containing `fusage_rotation = ...` (missing `const`/`let`) for
+ * exactly this reason, and it crashed the rig one iteration later.
  */
 async function smokeCheckPlane(candidateAbs) {
   try {
     const source = readFileSync(candidateAbs, 'utf8');
     const script = stripExportForEval(source);
-    const buildPlane = new Function('THREE', `${script}\nreturn buildPlane;`)(THREE);
+    const buildPlane = new Function('THREE', `'use strict';\n${script}\nreturn buildPlane;`)(THREE);
     if (typeof buildPlane !== 'function') {
       return { ok: false, error: 'module does not export buildPlane(THREE)' };
     }

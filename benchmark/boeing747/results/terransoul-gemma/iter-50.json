@@ -1,0 +1,82 @@
+{
+  "actor": "terransoul-gemma",
+  "iter": 50,
+  "run_id": "terransoul-gemma-iter-50-mrkjkeva",
+  "plane_sha256": "d9b97886d3b0514a5150734d7332bb14149ebe2457daa3535e630fdb1b75a837",
+  "rubric_sha256": "fc881e55aacfebe892505a8db6e4e5d82865a92fa370119fa15a48ebe83180ff",
+  "total_0_100": 42.26,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 3.78
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.94
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 3.42
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.26
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.31
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.94
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.48
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 3.9
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 2.71,
+    "perCriterion": {
+      "engines_four_underwing": 4.11,
+      "upper_deck_hump": 3.86,
+      "fuselage_proportions": 4,
+      "wing_geometry": 4.22,
+      "empennage": 6,
+      "landing_gear": null,
+      "window_door_lines": 2.71,
+      "livery_coherence": 4.33,
+      "silhouette_747": 4.22,
+      "craftsmanship": 4.11
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Improve 'Window and door lines' (mean 2.71/10). Target the 8 anchor: a consistent passenger-window line along the main deck plus cockpit windows, door hints; then the 10 anchor: clean main-deck window line, separate upper-deck windows on the hump, cockpit windshield shape, evenly spaced doors.",
+    "source": "anchor"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 50.86,
+  "created_at": "2026-07-14T11:03:51.554Z",
+  "actor_status": "no_change"
+}
