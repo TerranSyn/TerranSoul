@@ -207,19 +207,27 @@
   @media (max-width:720px){.bcardgrid{grid-template-columns:1fr}}
   .bcard{background:var(--bg-card);border:1px solid var(--rule);border-radius:14px;
     overflow:hidden;display:flex;flex-direction:column}
-  .bctitle{background:var(--accent);color:var(--on-accent);font-family:var(--sans);
+  /* accent-ink (not accent) as the fill: accent+on-accent measured 3.73:1 in
+     light mode - fails WCAG AA (4.5:1) for bold text this small. accent-ink+
+     on-accent measures 9.37:1 light / 10.88:1 dark. */
+  .bctitle{background:var(--accent-ink);color:var(--on-accent);font-family:var(--sans);
     font-weight:700;font-size:clamp(13.5px,1.8vw,15.5px);letter-spacing:0.005em;
     text-align:center;margin:0;padding:clamp(11px,1.7vw,14px) clamp(14px,2.2vw,20px);
     position:relative}
   .bctitle::after{content:"";position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);
     border-left:9px solid transparent;border-right:9px solid transparent;
-    border-top:9px solid var(--accent)}
+    border-top:9px solid var(--accent-ink)}
   .bcbody{padding:clamp(20px,2.8vw,26px) clamp(15px,2.2vw,20px) clamp(15px,2.2vw,19px);
     display:flex;flex-direction:column;gap:6px;flex:1}
   .bcfig{font-family:var(--serif);font-weight:600;letter-spacing:-0.015em;
     font-size:clamp(21px,2.9vw,27px);color:var(--accent-ink);margin:0;line-height:1.15}
   .slide .bctxt{font-size:clamp(13px,1.9vw,14.5px);line-height:1.42;color:var(--ink-soft);
     margin:0;max-width:none}
+  /* Names the 11 pillars the "11/11 pillars" card refers to - a compact chip
+     row, not a 2nd card grid, so naming them doesn't reintroduce the density
+     the redesign just removed. */
+  .pillnames{display:flex;flex-wrap:wrap;gap:6px;margin:clamp(10px,1.8vh,16px) 0 0}
+  .pillnames .pill{font-size:clamp(11.5px,1.6vw,13px);font-weight:600;padding:4px 11px}
 
   /* Charts (inline SVG, self-contained, theme-aware) */
   .charts{display:flex;flex-wrap:wrap;gap:clamp(16px,3.4vw,24px);margin:clamp(10px,2.4vh,20px) 0 0}
@@ -326,12 +334,17 @@
   .duo .takeaway{display:flex;flex-direction:column;justify-content:center}
   @media (max-width:820px){.duo{grid-template-columns:1fr}}
 
-  /* Slide 05 (Tessera): headline + subhead + a 4-card banner grid + one
-     closing punch line - kept deliberately shallow after "too many info...
-     redo!" feedback on the previous stat-grid+chart+10-pillar-list version. */
+  /* Slide 05 (Tessera): headline + subhead + a 4-card banner grid + the 11
+     named pillars + a platform-comparison note + one closing punch line -
+     kept deliberately shallow after "too many info... redo!" feedback on the
+     previous stat-grid+chart+10-pillar-list version. */
   #s-why-tessera .kicker{margin-bottom:clamp(4px,0.8vh,8px)}
   #s-why-tessera .whydek{margin-bottom:clamp(2px,0.6vh,6px)}
-  #s-why-tessera .moat-punch{margin-top:clamp(14px,2.4vh,22px);font-size:clamp(18px,2.6vw,22px);max-width:52ch}
+  #s-why-tessera .notebox{margin-top:clamp(10px,1.8vh,16px);padding:clamp(12px,2vw,16px)}
+  #s-why-tessera .notebox .tt{font-size:clamp(13.5px,2vw,15.5px)}
+  #s-why-tessera .notebox p{font-size:clamp(12.5px,1.8vw,14px);line-height:1.4}
+  #s-why-tessera .srcfoot{margin-top:clamp(6px,1.2vh,10px)}
+  #s-why-tessera .moat-punch{margin-top:clamp(12px,2vh,18px);font-size:clamp(18px,2.6vw,22px);max-width:52ch}
   #s-why-tessera{padding-top:clamp(24px,3.6vh,38px);padding-bottom:clamp(8px,1.4vh,16px)}
 </style>
 </head>
@@ -597,6 +610,17 @@
             </div>
           </div>
         </div>
+        <div class="pillnames" role="list" aria-label="The 11 pillars">
+          <span class="pill">Reliability</span><span class="pill">Security</span><span class="pill">Scalability</span>
+          <span class="pill">Maintainability</span><span class="pill">Availability</span><span class="pill">Resilience</span>
+          <span class="pill">Supportability</span><span class="pill">Observability</span><span class="pill">Operational Excellence</span>
+          <span class="pill">Testability</span><span class="pill">Performance</span>
+        </div>
+        <div class="notebox">
+          <p class="tt">How this compares to existing integration platforms</p>
+          <p>BizTalk Server 2020 is Microsoft's final version of BizTalk &mdash; no successor is planned, and extended support runs out in 2030. Apache Camel and the cloud iPaaS platforms that followed it (MuleSoft, Azure Logic Apps, Workato) route and transform messages well, but by Camel's own documentation they cover only &ldquo;most&rdquo; of the 65 patterns in the field's reference book, and none of them were built with a governed AI-agent execution layer &mdash; every action authorised, audited, and approvable by a human. That governance layer is Tessera's addition to the category, not a faster version of what already exists.</p>
+        </div>
+        <p class="srcfoot">Sources: Microsoft, BizTalk Server 2020 lifecycle (Microsoft Learn, 2026); Apache Camel, Enterprise Integration Patterns documentation (&ldquo;Camel supports most of the Enterprise Integration Patterns&rdquo;); Hohpe &amp; Woolf, <em>Enterprise Integration Patterns</em> (Addison-Wesley, 2003) &mdash; 65-pattern catalogue.</p>
         <p class="moat-punch">This is not a slide of promises &mdash; it is a working engine, engineered to run production, not just a demo.</p>
       </div>
       <div data-lang="vi" hidden>
@@ -633,6 +657,17 @@
             </div>
           </div>
         </div>
+        <div class="pillnames" role="list" aria-label="11 trụ cột">
+          <span class="pill">Độ tin cậy</span><span class="pill">Bảo mật</span><span class="pill">Khả năng mở rộng</span>
+          <span class="pill">Khả năng bảo trì</span><span class="pill">Tính sẵn sàng</span><span class="pill">Khả năng phục hồi</span>
+          <span class="pill">Khả năng hỗ trợ</span><span class="pill">Khả năng quan sát</span><span class="pill">Vận hành xuất sắc</span>
+          <span class="pill">Khả năng kiểm thử</span><span class="pill">Hiệu năng</span>
+        </div>
+        <div class="notebox">
+          <p class="tt">So với các nền tích hợp hiện có</p>
+          <p>BizTalk Server 2020 là phiên bản BizTalk cuối cùng của Microsoft &mdash; không có phiên bản kế tiếp, và hỗ trợ mở rộng hết hạn vào năm 2030. Apache Camel và các nền tảng iPaaS trên đám mây ra đời sau nó (MuleSoft, Azure Logic Apps, Workato) định tuyến và chuyển đổi thông điệp tốt, nhưng theo chính tài liệu của Camel, họ chỉ triển khai &ldquo;hầu hết&rdquo; trong số 65 mẫu hình của cuốn sách gốc, và không nền tảng nào trong số đó được xây với một lớp thực thi AI agent được quản trị &mdash; mọi hành động được cấp quyền, ghi vết, và cần con người phê duyệt. Lớp quản trị đó là điều Tessera bổ sung cho cả ngành, không phải một phiên bản nhanh hơn của thứ đã tồn tại.</p>
+        </div>
+        <p class="srcfoot">Nguồn: Microsoft, chu kỳ hỗ trợ BizTalk Server 2020 (Microsoft Learn, 2026); Tài liệu Enterprise Integration Patterns của Apache Camel (&ldquo;Camel supports most of the Enterprise Integration Patterns&rdquo;); Hohpe &amp; Woolf, <em>Enterprise Integration Patterns</em> (Addison-Wesley, 2003) &mdash; bộ 65 mẫu hình.</p>
         <p class="moat-punch">Đây không phải một trang đầy lời hứa &mdash; đây là một cỗ máy đang chạy thật, được kỹ thuật hoá để chạy sản xuất, không chỉ để demo.</p>
       </div>
     </div>
