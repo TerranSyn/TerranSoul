@@ -1,0 +1,80 @@
+{
+  "actor": "terransoul-gemma",
+  "iter": 7,
+  "run_id": "terransoul-gemma-iter-7-mrk55att",
+  "plane_sha256": "dfc99a0fcb8deef50ea3248c58b1b3604aa3908f0bd8d753b53dfbe75beb851d",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 38.97,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 2.75
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.96
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 3.2
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.34
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.32
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.44
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.2
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.54
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 2.32
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 1.14,
+    "perCriterion": {
+      "engines_four_underwing": 1.33,
+      "upper_deck_hump": 3.43,
+      "fuselage_proportions": 4.89,
+      "wing_geometry": 4,
+      "empennage": 5.67,
+      "landing_gear": null,
+      "window_door_lines": 1.14,
+      "livery_coherence": 4.11,
+      "silhouette_747": 3.67,
+      "craftsmanship": 6.44
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Improve 'Window and door lines' (mean 1.14/10). Target the 8 anchor: a consistent passenger-window line along the main deck plus cockpit windows, door hints; then the 10 anchor: clean main-deck window line, separate upper-deck windows on the hump, cockpit windshield shape, evenly spaced doors.",
+    "source": "anchor"
+  },
+  "regressed": true,
+  "best_total_after": 38.97,
+  "created_at": "2026-07-14T04:20:03.798Z",
+  "actor_status": "edited"
+}

@@ -157,7 +157,7 @@ const SELF_LEARNING_TAG = 'boeing747-actor-attempt';
 // Statuses actor-claude.mjs/runActorWithRetries can produce that reflect a
 // REAL attempt (as opposed to a pure infra failure never worth learning from
 // or counting toward stall/threshold/budget).
-const GENUINE_ACTOR_STATUSES = new Set(['edited', 'no_change', 'contract_failed']);
+const GENUINE_ACTOR_STATUSES = new Set(['edited', 'no_change', 'contract_failed', 'runtime_failed']);
 
 // --- opus-pairwise track constants (pairwise-only; the frozen gemma and
 // opus-panel paths never read these). ---------------------------------------
@@ -663,7 +663,9 @@ async function maybeIngestPriorIterationLesson({ gemmaDir, gemmaHistory, claudeH
       ? prevActor.claude_result_text || '(no summary text returned)'
       : prevActor.status === 'contract_failed'
         ? `edit rejected by the frozen contract: ${(prevActor.contract_violations || []).join('; ')}`
-        : 'actor made no change to the candidate';
+        : prevActor.status === 'runtime_failed'
+          ? `edit rejected — buildPlane(THREE) threw at runtime: ${prevActor.runtime_error || '(no error captured)'}`
+          : 'actor made no change to the candidate';
 
   await ingestAttemptLesson({
     tag: SELF_LEARNING_TAG,
@@ -941,7 +943,9 @@ export async function runIterationTerransoul({
           ? 'actor made no change to the candidate'
           : prevActor.status === 'contract_failed'
             ? 'edit rejected by the frozen contract'
-            : 'actor edit (no summary)');
+            : prevActor.status === 'runtime_failed'
+              ? 'edit rejected — buildPlane(THREE) threw at runtime'
+              : 'actor edit (no summary)');
       // ONE strategy event from the gate signal (accept/improve -> 'strategy';
       // reject/regress -> 'anti'). classifyOutcome shares the calibration epsilon
       // with the gate so the two can never disagree about noise.
@@ -1172,6 +1176,9 @@ export async function runIterationTerransoul({
   if (actorResult.status === 'contract_failed') {
     console.log(`  CONTRACT VIOLATIONS (edit rejected, previous candidate restored):`);
     for (const v of actorResult.contract_violations) console.log(`    - ${v}`);
+  }
+  if (actorResult.status === 'runtime_failed') {
+    console.log(`  RUNTIME ERROR (edit rejected, previous candidate restored): ${actorResult.runtime_error}`);
   }
   if (actorResult.status === 'actor_exhausted_retries') {
     // WIRE-CLI-PARITY-GAP-3 rewire: distinguish a `action_trust` ledger

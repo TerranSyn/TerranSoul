@@ -26,5 +26,21 @@ export function buildPlane(THREE) {
   tail.position.set(-27, 7, 0);
   group.add(tail);
 
+  // Window and Door Lines
+  const windowGroup = new THREE.Group();
+  for (let i = 0; i < 15; i++) {
+    const w = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.1), grey);
+    w.position.set(-24 + i * 1.8, 1.5, 2.9); // Main deck windows row
+    windowGroup.add(w);
+  }
+  const cockpit = new THREE.Mesh(new THREE.BoxGeometry(3, 1.2, 0.7), grey);
+  cockpit.position.set(26, 1, 2.8); // Cockpit windows
+  windowGroup.add(cockpit);
+  group.add(windowGroup);
+
+  const door = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2, 0.2), dark);
+  door.position.set(5, 0, 3.0); // Door hint
+  group.add(door);
+
   return group;
 }

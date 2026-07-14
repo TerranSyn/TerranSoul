@@ -72,6 +72,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
+import * as THREE from 'three';
 import { VIEWS } from '../lib/cameras.mjs';
 import { ALLOWED_GEOMETRIES, validatePlaneSource } from '../lib/contract.mjs';
 import { loadRubric } from '../judge/judge.mjs';
@@ -621,6 +622,29 @@ export async function runActorEdit({
     };
   }
 
+  // Static contract validation is text-only (forbidden tokens + geometry
+  // whitelist) — it cannot see a runtime bug like an undefined variable
+  // reference, which only throws when buildPlane() actually executes. That
+  // gap let a broken edit reach disk once (`group.add(door)`, `door` never
+  // declared): the edit was accepted as 'edited', and the NEXT iteration's
+  // rig render crashed the whole loop process with an uncaught
+  // ReferenceError. Smoke-test the edit the same way the rig will run it —
+  // actually call buildPlane(THREE) with the real three.js the rig renders
+  // with — before ever accepting it.
+  const smoke = await smokeCheckPlane(candidateAbs);
+  if (!smoke.ok) {
+    writeFileSync(candidateAbs, originalSource);
+    return {
+      ...base,
+      status: 'runtime_failed',
+      runtime_error: smoke.error,
+      plane_sha256_before: originalSha,
+      plane_sha256_after: originalSha,
+      plane_sha256_rejected: editedSha,
+      changed: false,
+    };
+  }
+
   return {
     ...base,
     status: 'edited',
@@ -629,6 +653,51 @@ export async function runActorEdit({
     changed: true,
     claude_result_text: typeof outer?.result === 'string' ? outer.result.slice(0, 2000) : null,
   };
+}
+
+/**
+ * Strip the `export` keyword the contract requires so the source can run as
+ * a plain script body (via `new Function`) instead of an ES module — avoids
+ * a dynamic-import round trip through Node's module cache (this file gets
+ * overwritten every iteration in the same long-lived loop-runner process)
+ * and any bundler/loader that intercepts `import()` in a test environment.
+ * Mirrors validatePlaneSource's own 3 accepted export forms exactly.
+ */
+function stripExportForEval(source) {
+  return source
+    .replace(/^(\s*)export\s+(?=(async\s+)?function\s+buildPlane\b)/m, '$1')
+    .replace(/^(\s*)export\s+(?=const\s+buildPlane\s*=)/m, '$1')
+    .replace(/^\s*export\s*\{[^}]*\}\s*;?\s*$/gm, '');
+}
+
+/**
+ * Actually execute the edited candidate's buildPlane(THREE) to catch runtime
+ * errors (undefined variables, wrong constructor arity, etc.) static
+ * contract validation can't see. The contract already forbids DOM/window/
+ * network/imports, so the module is a plain synchronous function of THREE —
+ * evaluating it harness-side is equivalent to the browser-side rig call for
+ * anything the contract allows. `new Function` here evaluates source that
+ * JUST passed contractValidate (which itself forbids `new Function`/`eval`
+ * — that ban is on what the CANDIDATE may contain, a different trust
+ * boundary than the harness evaluating already-validated text).
+ */
+async function smokeCheckPlane(candidateAbs) {
+  try {
+    const source = readFileSync(candidateAbs, 'utf8');
+    const script = stripExportForEval(source);
+    // eslint-disable-next-line no-new-func -- see doc comment above
+    const buildPlane = new Function('THREE', `${script}\nreturn buildPlane;`)(THREE);
+    if (typeof buildPlane !== 'function') {
+      return { ok: false, error: 'module does not export buildPlane(THREE)' };
+    }
+    const result = buildPlane(THREE);
+    if (!result || result.isObject3D !== true) {
+      return { ok: false, error: 'buildPlane(THREE) did not return a THREE.Object3D' };
+    }
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String((err && err.stack) || err) };
+  }
 }
 
 function parseArgs(argv) {
@@ -665,7 +734,7 @@ if (isMain) {
     });
     if (args.out) writeFileSync(path.resolve(args.out), JSON.stringify(result, null, 2));
     console.log(`ACTOR_${result.status.toUpperCase()} ${JSON.stringify(result)}`);
-    if (result.status === 'actor_failed' || result.status === 'contract_failed') process.exitCode = 1;
+    if (['actor_failed', 'contract_failed', 'runtime_failed'].includes(result.status)) process.exitCode = 1;
   };
   run().catch((err) => {
     console.error(`ACTOR_FAIL ${err.message}`);

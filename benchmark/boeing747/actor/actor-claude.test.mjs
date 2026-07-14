@@ -51,6 +51,21 @@ const CONTRACT_VIOLATING_SOURCE = `export function buildPlane(THREE) {
 }
 `;
 
+// Contract-CLEAN (no forbidden token, no non-primitive geometry — passes
+// validatePlaneSource cleanly) but throws at runtime: door is referenced but
+// never declared. This is the exact bug class that reached disk once and
+// crashed a live 30-iteration run at the next iteration's rig render
+// (ReferenceError: door is not defined) — static contract validation can't
+// see it because it never executes the module.
+const RUNTIME_BROKEN_SOURCE = `export function buildPlane(THREE) {
+  const group = new THREE.Group();
+  const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 10));
+  group.add(fuselage);
+  group.add(door);
+  return group;
+}
+`;
+
 function ninePerView(scoreFn) {
   return VIEWS.map((v) => ({
     view: v.id,
@@ -198,6 +213,20 @@ describe('runActorEdit (terransoul-cli --agent-task wiring)', () => {
 
     expect(result.status).toBe('contract_failed');
     expect(result.contract_violations.length).toBeGreaterThan(0);
+    expect(result.changed).toBe(false);
+    expect(readFileSync(candidatePath, 'utf8')).toBe(VALID_PLANE_SOURCE);
+  });
+
+  it('rejects a contract-clean edit that throws at runtime and restores the previous candidate verbatim', async () => {
+    const execImpl = vi.fn(async () => {
+      writeFileSync(candidatePath, RUNTIME_BROKEN_SOURCE);
+      return { stdout: okOutcome({ result_text: 'Added door geometry.' }), stderr: '' };
+    });
+
+    const result = await runActorEdit({ candidatePath, shotsDir, gemmaResult, claudeResult, cliBinary: 'fake', execImpl });
+
+    expect(result.status).toBe('runtime_failed');
+    expect(result.runtime_error).toContain('door is not defined');
     expect(result.changed).toBe(false);
     expect(readFileSync(candidatePath, 'utf8')).toBe(VALID_PLANE_SOURCE);
   });
