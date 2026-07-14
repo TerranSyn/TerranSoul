@@ -194,16 +194,13 @@
   .smebox .term{font-family:var(--serif);font-weight:600;font-size:clamp(19px,3.2vw,23px);
     color:var(--ink);letter-spacing:-0.01em;margin:0;line-height:1.1}
   .smebox .rtxt{font-size:clamp(13.5px,2.2vw,15.5px);line-height:1.42;color:var(--ink-soft);margin:0;max-width:none}
-  .moat-punch{font-family:var(--serif);font-weight:600;font-size:clamp(20px,3.2vw,28px);
-    line-height:1.22;color:var(--ink);letter-spacing:-0.01em;margin:clamp(16px,3vh,26px) 0 0;max-width:36ch}
-  .moat-punch strong{color:var(--accent-ink)}
 
   /* Banner cards: a colored title banner with a downward notch, sitting above
      short body copy — one scannable claim per card instead of a paragraph.
      Swapped in for the Tessera SME slide, which used to cram a stat grid +
      chart + 10-item pillar list onto one screen ("too many info... redo!"). */
-  .bcardgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(16px,2.4vw,26px);
-    margin:clamp(20px,3.4vh,34px) 0 0}
+  .bcardgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:clamp(16px,2.4vw,26px);margin:clamp(20px,3.4vh,34px) 0 0}
   @media (max-width:720px){.bcardgrid{grid-template-columns:1fr}}
   .bcard{background:var(--bg-card);border:1px solid var(--rule);border-radius:14px;
     overflow:hidden;display:flex;flex-direction:column}
@@ -221,7 +218,7 @@
     display:flex;flex-direction:column;gap:6px;flex:1}
   .bcfig{font-family:var(--serif);font-weight:600;letter-spacing:-0.015em;
     font-size:clamp(21px,2.9vw,27px);color:var(--accent-ink);margin:0;line-height:1.15}
-  .slide .bctxt{font-size:clamp(13px,1.9vw,14.5px);line-height:1.42;color:var(--ink-soft);
+  .slide .bctxt{font-size:clamp(13px,1.9vw,14.5px);line-height:1.42;color:var(--ink);
     margin:0;max-width:none}
   /* Names the 11 pillars the "11/11 pillars" card refers to - a compact chip
      row, not a 2nd card grid, so naming them doesn't reintroduce the density
@@ -334,13 +331,11 @@
   .duo .takeaway{display:flex;flex-direction:column;justify-content:center}
   @media (max-width:820px){.duo{grid-template-columns:1fr}}
 
-  /* Slide 05 (Tessera): headline + subhead + a 4-card banner grid + the 11
-     named pillars + one closing punch line - kept deliberately shallow
-     after "too many info... redo!" feedback on the previous stat-grid+
-     chart+10-pillar-list version. */
+  /* Slide 05 (Tessera): headline + subhead + a banner-card grid + the 11
+     named pillars - kept deliberately shallow after "too many info...
+     redo!" feedback on the previous stat-grid+chart+10-pillar-list version. */
   #s-why-tessera .kicker{margin-bottom:clamp(4px,0.8vh,8px)}
   #s-why-tessera .whydek{margin-bottom:clamp(2px,0.6vh,6px)}
-  #s-why-tessera .moat-punch{margin-top:clamp(12px,2vh,18px);font-size:clamp(18px,2.6vw,22px);max-width:52ch}
   #s-why-tessera{padding-top:clamp(24px,3.6vh,38px);padding-bottom:clamp(8px,1.4vh,16px)}
 </style>
 </head>
@@ -594,8 +589,8 @@
           <div class="bcard">
             <p class="bctitle">Quality bar coverage</p>
             <div class="bcbody">
-              <p class="bcfig">11 / 11 pillars</p>
-              <p class="bctxt">Reliability to operational excellence &mdash; every enterprise quality pillar has AI woven through it, not bolted on after the fact.</p>
+              <p class="bcfig">11/11 pillars, ~90% less manual work</p>
+              <p class="bctxt">Reliability to operational excellence &mdash; AI is woven through every pillar, not bolted on, cutting the manual effort each one used to take by roughly 90%.</p>
             </div>
           </div>
           <div class="bcard">
@@ -605,6 +600,13 @@
               <p class="bctxt">What used to leave with the one person who knew the system now stays as a reusable, audited capability anyone on the team can run.</p>
             </div>
           </div>
+          <div class="bcard">
+            <p class="bctitle">Runtime scale</p>
+            <div class="bcbody">
+              <p class="bcfig">Millions/sec, multi-region</p>
+              <p class="bctxt">Architected to run millions of integrations and workflows per second, spread across regions and failure domains &mdash; a distributed runtime target, not a single-box mediation engine.</p>
+            </div>
+          </div>
         </div>
         <div class="pillnames" role="list" aria-label="The 11 pillars">
           <span class="pill">Reliability</span><span class="pill">Security</span><span class="pill">Scalability</span>
@@ -612,7 +614,6 @@
           <span class="pill">Supportability</span><span class="pill">Observability</span><span class="pill">Operational Excellence</span>
           <span class="pill">Testability</span><span class="pill">Performance</span>
         </div>
-        <p class="moat-punch">This is not a slide of promises &mdash; it is a working engine, engineered to run production, not just a demo.</p>
       </div>
       <div data-lang="vi" hidden>
         <p class="kicker">05 / Lợi thế riêng · Tessera</p>
@@ -636,8 +637,8 @@
           <div class="bcard">
             <p class="bctitle">Độ phủ thước đo chất lượng</p>
             <div class="bcbody">
-              <p class="bcfig">11 / 11 trụ cột</p>
-              <p class="bctxt">Từ độ tin cậy đến vận hành xuất sắc &mdash; mọi trụ cột chất lượng doanh nghiệp đều được lồng AI vào, không phải gắn thêm sau.</p>
+              <p class="bcfig">11/11 trụ cột, giảm ~90% việc thủ công</p>
+              <p class="bctxt">Từ độ tin cậy đến vận hành xuất sắc &mdash; AI được lồng vào từng trụ cột, không gắn thêm sau, cắt giảm khoảng 90% công việc thủ công mỗi trụ cột từng cần.</p>
             </div>
           </div>
           <div class="bcard">
@@ -647,6 +648,13 @@
               <p class="bctxt">Điều từng ra đi cùng người duy nhất hiểu hệ thống, nay là một năng lực có thể tái sử dụng, có ghi vết, ai trong nhóm cũng chạy được.</p>
             </div>
           </div>
+          <div class="bcard">
+            <p class="bctitle">Quy mô vận hành</p>
+            <div class="bcbody">
+              <p class="bcfig">Hàng triệu/giây, đa vùng</p>
+              <p class="bctxt">Được kiến trúc để xử lý hàng triệu tích hợp và luồng công việc mỗi giây, trải trên nhiều vùng và miền lỗi &mdash; một mục tiêu runtime phân tán, không phải một engine trung gian chạy trên một máy đơn.</p>
+            </div>
+          </div>
         </div>
         <div class="pillnames" role="list" aria-label="11 trụ cột">
           <span class="pill">Độ tin cậy</span><span class="pill">Bảo mật</span><span class="pill">Khả năng mở rộng</span>
@@ -654,7 +662,6 @@
           <span class="pill">Khả năng hỗ trợ</span><span class="pill">Khả năng quan sát</span><span class="pill">Vận hành xuất sắc</span>
           <span class="pill">Khả năng kiểm thử</span><span class="pill">Hiệu năng</span>
         </div>
-        <p class="moat-punch">Đây không phải một trang đầy lời hứa &mdash; đây là một cỗ máy đang chạy thật, được kỹ thuật hoá để chạy sản xuất, không chỉ để demo.</p>
       </div>
     </div>
   </section>
