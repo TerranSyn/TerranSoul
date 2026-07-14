@@ -252,7 +252,14 @@
   .c-other{fill:color-mix(in oklab, var(--ink-faint) 62%, var(--rule))}
   .c-lo{fill:color-mix(in oklab, var(--ink-faint) 34%, var(--rule))}
   .c-name{font-family:var(--sans);font-size:11.5px;font-weight:600;fill:var(--ink-soft)}
-  .c-name-us{fill:var(--accent-ink)}
+  /* .c-name-us is used standalone (never combined with .c-name — see the 22 x
+     class="c-name-us" text elements below), so it must restate font-family/
+     font-size/font-weight itself, exactly as .c-num-us already does relative to
+     .c-num. Without them it fell back to the SVG default (16px/400), ~39% larger
+     than the intended 11.5px/600 and eating almost all of the vertical buffer
+     between a row's label and its own bar — invisible in English by a hair,
+     but tipping into a real overlap for longer/taller Vietnamese labels. */
+  .c-name-us{font-family:var(--sans);font-size:11.5px;font-weight:600;fill:var(--accent-ink)}
   .c-num{font-family:var(--sans);font-size:12px;font-weight:700;fill:var(--ink-soft)}
   .c-num-us{font-family:var(--sans);font-size:12.5px;font-weight:800;fill:var(--accent-ink)}
 
