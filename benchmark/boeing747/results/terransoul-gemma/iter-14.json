@@ -1,0 +1,80 @@
+{
+  "actor": "terransoul-gemma",
+  "iter": 14,
+  "run_id": "terransoul-gemma-iter-14-mrk73lf4",
+  "plane_sha256": "2d1c3d7ac707d44e3013eef6121d3b7401ec3b511ffdecdd2d901d8b90a24fa9",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 43.93,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 2.75
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.82
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.39
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.36
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.46
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.8
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.6
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.99
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 2.37
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 1.67,
+    "perCriterion": {
+      "engines_four_underwing": 1.67,
+      "upper_deck_hump": 3.71,
+      "fuselage_proportions": 5,
+      "wing_geometry": 4.44,
+      "empennage": 6.11,
+      "landing_gear": null,
+      "window_door_lines": 2.43,
+      "livery_coherence": 5.11,
+      "silhouette_747": 4.44,
+      "craftsmanship": 6.78
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Improve 'Four engines under swept wings' (mean 1.67/10). Target the 8 anchor: four nacelles hung under the swept wings on visible pylons, plausible inboard/outboard spacing; then the 10 anchor: four underslung pylon-mounted nacelles with correct relative size, spacing, and forward offset ahead of the wing leading edge, inlet visibly open/darker.",
+    "source": "anchor"
+  },
+  "regressed": true,
+  "best_total_after": 43.93,
+  "created_at": "2026-07-14T05:14:44.843Z",
+  "actor_status": "edited"
+}

@@ -1,0 +1,80 @@
+{
+  "actor": "terransoul-gemma",
+  "iter": 10,
+  "run_id": "terransoul-gemma-iter-10-mrk6dvia",
+  "plane_sha256": "8b2524f2d669b5fb1a06b4f17a21e2aa5351f37c1c632f91cabceea075a937db",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 41.99,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 2.75
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.82
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.25
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.36
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.32
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.44
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.85
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.54
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 2.46
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 1.57,
+    "perCriterion": {
+      "engines_four_underwing": 1.67,
+      "upper_deck_hump": 3.71,
+      "fuselage_proportions": 5,
+      "wing_geometry": 4.11,
+      "empennage": 5.78,
+      "landing_gear": null,
+      "window_door_lines": 1.57,
+      "livery_coherence": 4.56,
+      "silhouette_747": 4.33,
+      "craftsmanship": 6.56
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Improve 'Window and door lines' (mean 1.57/10). Target the 8 anchor: a consistent passenger-window line along the main deck plus cockpit windows, door hints; then the 10 anchor: clean main-deck window line, separate upper-deck windows on the hump, cockpit windshield shape, evenly spaced doors.",
+    "source": "anchor"
+  },
+  "regressed": false,
+  "best_total_after": 41.99,
+  "created_at": "2026-07-14T04:54:46.847Z",
+  "actor_status": "edited"
+}

@@ -1,0 +1,80 @@
+{
+  "actor": "terransoul-gemma",
+  "iter": 44,
+  "run_id": "terransoul-gemma-iter-44-mrkca2zm",
+  "plane_sha256": "98f7f98710644618f4edbc9c1f32aeaef9350f3d3a22c7e16d7f75c881d7533f",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 47.65,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.08
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 7.11
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 3.42
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": null
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 2.71
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 7.04
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.63
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.48
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 3.65
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 4.14,
+    "perCriterion": {
+      "engines_four_underwing": 4.5,
+      "upper_deck_hump": 4.29,
+      "fuselage_proportions": 5,
+      "wing_geometry": 4.88,
+      "empennage": 6,
+      "landing_gear": 8,
+      "window_door_lines": 4.14,
+      "livery_coherence": 6.25,
+      "silhouette_747": 4.75,
+      "craftsmanship": 4.38
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Improve 'Window and door lines' (mean 4.14/10). Target the 8 anchor: a consistent passenger-window line along the main deck plus cockpit windows, door hints; then the 10 anchor: clean main-deck window line, separate upper-deck windows on the hump, cockpit windshield shape, evenly spaced doors.",
+    "source": "anchor"
+  },
+  "regressed": true,
+  "best_total_after": 50.86,
+  "created_at": "2026-07-14T07:39:44.694Z",
+  "actor_status": "edited"
+}

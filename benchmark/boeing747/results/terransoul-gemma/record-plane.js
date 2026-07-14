@@ -17,9 +17,32 @@ export function buildPlane(THREE) {
   fuselage.rotation.z = -Math.PI / 2;
   group.add(fuselage);
 
-  // Wings: one flat box straight through the fuselage (no sweep, no taper).
-  const wings = new THREE.Mesh(new THREE.BoxGeometry(10, 0.6, 55), dark);
-  group.add(wings);
+  // Wings: Swept-back configuration with four pylon-mounted engines and dihedral.
+  const wingGroup = new THREE.Group();
+  group.add(wingGroup);
+  const createWingHalf = (side) => {
+    const half = new THREE.Mesh(new THREE.BoxGeometry(1, 0.4, 35), dark);
+    half.position.set(side * 8, -1.2, side * 15);
+    half.rotation.x = Math.PI / 180 * 3; // Dihedral
+    half.rotation.z = -Math.PI / 180 * 30; // Sweep back
+    half.rotation.y = side === 1 ? Math.PI / 2 : -Math.PI / 2; // Align span with Z axis
+    wingGroup.add(half);
+  };
+  createWingHalf(1);
+  createWingHalf(-1);
+  const engineGeo = new THREE.CylinderGeometry(2, 1.5, 5, 8);
+  [18, 36].forEach((zDist, idx) => {
+    [1, -1].forEach(side => {
+      const engine = new THREE.Mesh(engineGeo, dark);
+      engine.rotation.z = Math.PI / 2; // Align with fuselage X axis
+      engine.position.set(side * (idx === 0 ? 14 : 26), -5.0, side * zDist);
+      wingGroup.add(engine);
+
+      const pylon = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.2, 1.8), dark);
+      pylon.position.set(side * (idx === 0 ? 14 : 26), -4.2, side * zDist);
+      wingGroup.add(pylon);
+    });
+  });
 
   // Tail: a small vertical box.
   const tail = new THREE.Mesh(new THREE.BoxGeometry(6, 12, 0.6), dark);
@@ -28,19 +51,38 @@ export function buildPlane(THREE) {
 
   // Window and Door Lines
   const windowGroup = new THREE.Group();
-  for (let i = 0; i < 15; i++) {
-    const w = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.1), grey);
-    w.position.set(-24 + i * 1.8, 1.5, 2.9); // Main deck windows row
-    windowGroup.add(w);
+  // Main deck - consistent row along both sides, on surface of cylinder (y^2 + z^2 ~ 9)
+  for (let i = 0; i < 35; i++) {
+    [1, -1].forEach(side => {
+      const w = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.4, 0.2), dark);
+      w.position.set(-20 + i * 1.2, 1.7, side * 2.6); // Positioned on both sides
+      windowGroup.add(w);
+    });
   }
-  const cockpit = new THREE.Mesh(new THREE.BoxGeometry(3, 1.2, 0.7), grey);
-  cockpit.position.set(26, 1, 2.8); // Cockpit windows
-  windowGroup.add(cockpit);
+  // Upper-deck windows - smaller, higher, and only in the front hump area
+  for (let i = 0; i < 8; i++) {
+    [1, -1].forEach(side => {
+      const wUpper = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.3, 0.2), dark);
+      wUpper.position.set(10 + i * 2, 2.4, side * 1.8); // More visible on both sides, slightly higher/further out
+      windowGroup.add(wUpper);
+    });
+  }
+  // Cockpit - clearer windshield shape at front (+X)
+  const cp = new THREE.Mesh(new THREE.BoxGeometry(6, 2, 0.5), dark);
+  cp.position.set(27, 1.8, 2.4); // Aligned with main deck row but larger
+  windowGroup.add(cp);
+
   group.add(windowGroup);
 
-  const door = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2, 0.2), dark);
-  door.position.set(5, 0, 3.0); // Door hint
-  group.add(door);
+  // Doors - large markings for front and rear cargo/passengers on both sides
+  const doors = [8, -20];
+  doors.forEach(x => {
+    [1, -1].forEach(side => {
+      const d = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.5, 0.3), dark);
+      d.position.set(x, 0.5, side * 2.6); // Positioned on both sides
+      group.add(d);
+    });
+  });
 
   return group;
 }

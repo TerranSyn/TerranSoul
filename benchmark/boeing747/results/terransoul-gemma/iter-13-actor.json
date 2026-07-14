@@ -1,0 +1,75 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 255506,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 11,
+    "tool_calls": {
+      "read_file": 1,
+      "edit_file": 1
+    },
+    "total_tool_calls": 2,
+    "text_chunks": 7,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 1
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "contract_failed",
+  "contract_violations": [
+    "non-primitive geometry `engineGeometry` (allowed: BoxGeometry, CylinderGeometry, SphereGeometry, ConeGeometry, TorusGeometry, CapsuleGeometry, LatheGeometry, ExtrudeGeometry)"
+  ],
+  "plane_sha256_before": "2d1c3d7ac707d44e3013eef6121d3b7401ec3b511ffdecdd2d901d8b90a24fa9",
+  "plane_sha256_after": "2d1c3d7ac707d44e3013eef6121d3b7401ec3b511ffdecdd2d901d8b90a24fa9",
+  "plane_sha256_rejected": "29bb17fb7f668cae0259910b080b88d553fbdd4146c4ad5c13c754c726435056",
+  "changed": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "contract_failed",
+      "ms": 255506,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 11,
+        "tool_calls": {
+          "read_file": 1,
+          "edit_file": 1
+        },
+        "total_tool_calls": 2,
+        "text_chunks": 7,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 1
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}

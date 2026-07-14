@@ -1,0 +1,80 @@
+{
+  "actor": "terransoul-gemma",
+  "iter": 16,
+  "run_id": "terransoul-gemma-iter-16-mrk7ivwo",
+  "plane_sha256": "2ee5004d0ad605e28db4490b9785ee5312e6a444ac652cefc89f28af68f6e3e1",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 43.58,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 2.84
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.62
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 3.59
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": null
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.61
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 8.69
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.42
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.44
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 2.65
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 2.57,
+    "perCriterion": {
+      "engines_four_underwing": 3.88,
+      "upper_deck_hump": 3.57,
+      "fuselage_proportions": 5.38,
+      "wing_geometry": 4.25,
+      "empennage": 5.86,
+      "landing_gear": 8,
+      "window_door_lines": 2.57,
+      "livery_coherence": 5.25,
+      "silhouette_747": 4.38,
+      "craftsmanship": 4.63
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Improve 'Window and door lines' (mean 2.57/10). Target the 8 anchor: a consistent passenger-window line along the main deck plus cockpit windows, door hints; then the 10 anchor: clean main-deck window line, separate upper-deck windows on the hump, cockpit windshield shape, evenly spaced doors.",
+    "source": "anchor"
+  },
+  "regressed": true,
+  "best_total_after": 43.93,
+  "created_at": "2026-07-14T05:26:38.765Z",
+  "actor_status": "edited"
+}

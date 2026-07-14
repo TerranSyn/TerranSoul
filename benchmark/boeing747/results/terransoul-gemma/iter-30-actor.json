@@ -1,0 +1,72 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 589655,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 50,
+    "tool_calls": {
+      "read_file": 3,
+      "edit_file": 7
+    },
+    "total_tool_calls": 10,
+    "text_chunks": 30,
+    "tool_failures": 2,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 3
+      },
+      {
+        "name": "edit_file",
+        "count": 7
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "8c59ede69d0aca7ca645266cd829169713b328562ccea6f62555ad6c6fba916e",
+  "plane_sha256_after": "beaa2b9e8a48e5fb07050e5ba13e376d41873532b06bbd6d48b59263d7157663",
+  "changed": true,
+  "claude_result_text": "",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 589655,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 50,
+        "tool_calls": {
+          "read_file": 3,
+          "edit_file": 7
+        },
+        "total_tool_calls": 10,
+        "text_chunks": 30,
+        "tool_failures": 2,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 3
+          },
+          {
+            "name": "edit_file",
+            "count": 7
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}
