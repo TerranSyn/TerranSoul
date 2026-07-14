@@ -348,10 +348,19 @@
 <script>
 (function(){
   var VALID = ['en','vi'];
+  // Persisted SEPARATELY from docs/index.html's own 'ts5s:lang' (a 17-language
+  // key covering the whole site) -- this Tesseres mini-cluster only ever holds
+  // en/vi, so sharing that key risks an invalid state for a visitor who picked
+  // e.g. 'ja' on the main site. Without this, any internal link that forgets to
+  // carry `?lang=` forward (the brand/logo link back to this page, for one)
+  // silently reset the visitor to their browser locale.
+  var LANG_KEY = 'tesseres:lang';
   function detect(){
     try{
       var p = new URLSearchParams(location.search).get('lang');
       if(p){ p = p.toLowerCase(); if(VALID.indexOf(p) !== -1) return p; }
+      var stored = localStorage.getItem(LANG_KEY);
+      if(stored && VALID.indexOf(stored) !== -1) return stored;
       var h = (location.hash || '').replace('#','').toLowerCase();
       if(VALID.indexOf(h) !== -1) return h;
       var nav = (navigator.language || 'en').toLowerCase();
@@ -360,6 +369,7 @@
   }
   function apply(lang, resetScroll){
     if(VALID.indexOf(lang) === -1) lang = 'en';
+    try{ localStorage.setItem(LANG_KEY, lang); }catch(e){}
     document.documentElement.setAttribute('lang', lang);
     var blocks = document.querySelectorAll('[data-lang]');
     for(var i=0;i<blocks.length;i++){

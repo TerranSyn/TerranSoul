@@ -206,8 +206,13 @@
     overflow:hidden;display:flex;flex-direction:column}
   /* accent-ink (not accent) as the fill: accent+on-accent measured 3.73:1 in
      light mode - fails WCAG AA (4.5:1) for bold text this small. accent-ink+
-     on-accent measures 9.37:1 light / 10.88:1 dark. */
-  .bctitle{background:var(--accent-ink);color:var(--on-accent);font-family:var(--sans);
+     on-accent measures 9.37:1 light / 10.88:1 dark. `.slide .bctitle` (not
+     bare `.bctitle`) out-specifies the pre-existing `.slide p{color:...}`
+     rule (element+class beats class-only) - without it the banner title
+     silently rendered in ink-soft grey instead of on-accent white, the same
+     specificity bug already fixed elsewhere in this file for whydek/
+     pillartt/srcfoot/etc. */
+  .slide .bctitle{background:var(--accent-ink);color:var(--on-accent);font-family:var(--sans);
     font-weight:700;font-size:clamp(13.5px,1.8vw,15.5px);letter-spacing:0.005em;
     text-align:center;margin:0;padding:clamp(11px,1.7vw,14px) clamp(14px,2.2vw,20px);
     position:relative}
@@ -216,7 +221,7 @@
     border-top:9px solid var(--accent-ink)}
   .bcbody{padding:clamp(20px,2.8vw,26px) clamp(15px,2.2vw,20px) clamp(15px,2.2vw,19px);
     display:flex;flex-direction:column;gap:6px;flex:1}
-  .bcfig{font-family:var(--serif);font-weight:600;letter-spacing:-0.015em;
+  .slide .bcfig{font-family:var(--serif);font-weight:600;letter-spacing:-0.015em;
     font-size:clamp(21px,2.9vw,27px);color:var(--accent-ink);margin:0;line-height:1.15}
   .slide .bctxt{font-size:clamp(13px,1.9vw,14.5px);line-height:1.42;color:var(--ink);
     margin:0;max-width:none}
@@ -709,16 +714,25 @@
 <script>
 (function(){
   var VALID = ['en','vi'];
+  // Same key as Tesseres/index.html's LANG_KEY -- shared across this
+  // mini-cluster (not docs/index.html's own 17-language 'ts5s:lang', a
+  // different scope) so a language choice survives any internal link that
+  // forgets to carry `?lang=` forward (the brand/logo link back to the
+  // homepage, for one).
+  var LANG_KEY = 'tesseres:lang';
   function detect(){
     try{
       var p = new URLSearchParams(location.search).get('lang');
       if(p){ p = p.toLowerCase(); if(VALID.indexOf(p) !== -1) return p; }
+      var stored = localStorage.getItem(LANG_KEY);
+      if(stored && VALID.indexOf(stored) !== -1) return stored;
       var nav = (navigator.language || 'en').toLowerCase();
       return nav.indexOf('vi') === 0 ? 'vi' : 'en';
     }catch(e){ return 'en'; }
   }
   function apply(lang){
     if(VALID.indexOf(lang) === -1) lang = 'en';
+    try{ localStorage.setItem(LANG_KEY, lang); }catch(e){}
     document.documentElement.setAttribute('lang', lang);
     var blocks = document.querySelectorAll('[data-lang]');
     for(var i=0;i<blocks.length;i++){
@@ -729,6 +743,11 @@
       btns[j].setAttribute('aria-pressed', btns[j].getAttribute('data-set-lang') === lang ? 'true' : 'false');
     }
     document.title = (lang === 'vi') ? 'Tesseres - Sứ mệnh' : 'Tesseres - Mission Pitch';
+    // The brand/logo link back to the homepage is shared markup (not
+    // duplicated per data-lang block) -- without this it always pointed at
+    // '../' with no `?lang=`, dropping a VI reader back to English on click.
+    var brand = document.querySelector('.brand');
+    if(brand) brand.setAttribute('href', '../?lang=' + lang);
     try{
       var u = new URL(location.href);
       u.searchParams.set('lang', lang);
