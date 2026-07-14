@@ -80,15 +80,19 @@ const FORBIDDEN_PATTERNS = [
   [/\bXMLHttpRequest\b/, 'XMLHttpRequest network call'],
   [/\bWebSocket\b/, 'WebSocket network call'],
   [/\bEventSource\b/, 'EventSource network call'],
-  [/\bnavigator\b/, 'navigator access'],
-  [/\bdocument\b/, 'DOM access (document)'],
-  [/\bwindow\b/, 'DOM access (window)'],
-  [/\bglobalThis\b/, 'globalThis access'],
+  // window/document/process/etc. require actual member/bracket access
+  // (`.`/`[`) — a bare word match false-positives on ordinary English prose
+  // in a comment (e.g. "// add a window frame" for the aircraft feature).
+  // Mirrors the identical fix in the frozen lib/contract.mjs.
+  [/\bnavigator\s*[.[]/, 'navigator access'],
+  [/\bdocument\s*[.[]/, 'DOM access (document)'],
+  [/\bwindow\s*[.[]/, 'DOM access (window)'],
+  [/\bglobalThis\s*[.[]/, 'globalThis access'],
   [/\blocalStorage\b|\bsessionStorage\b|\bindexedDB\b/, 'storage access'],
   [/\beval\s*\(/, 'eval()'],
   [/\bnew\s+Function\b|\bFunction\s*\(/, 'Function constructor'],
   [/\bWorker\b/, 'Worker'],
-  [/\bprocess\b/, 'process access'],
+  [/\bprocess\s*[.[]/, 'process access'],
   [/\w*Loader\b/, 'asset loader (GLTF/OBJ/texture/file loaders are banned)'],
   [/\bhttps?:\/\//, 'http(s) URL'],
   [/\bwss?:\/\//, 'websocket URL'],

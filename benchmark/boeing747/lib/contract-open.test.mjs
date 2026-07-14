@@ -88,6 +88,20 @@ export function buildPlane(THREE) {
     }
   });
 
+  it('does not false-positive on ordinary English prose that happens to contain a forbidden word (comments, no member access)', () => {
+    // Mirrors the identical fix + regression test in the frozen lib/
+    // contract.mjs — the same bare-word patterns are duplicated here.
+    const benign = [
+      '// add a window frame for depth',
+      '// document the door mechanism here',
+      '// this process adds more detail to the nacelle',
+    ];
+    for (const comment of benign) {
+      const res = validatePlaneSource(`${OPEN_VALID}\n${comment}\n`);
+      expect(res.ok, `should accept: ${comment}`).toBe(true);
+    }
+  });
+
   it('allows a small computed data: URI (payload <= 1024 bytes)', () => {
     const payload = 'A'.repeat(200);
     const src = `${OPEN_VALID}\nconst small = "data:image/png;base64,${payload}";\n`;

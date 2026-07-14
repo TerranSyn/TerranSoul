@@ -66,6 +66,30 @@ describe('validatePlaneSource', () => {
     }
   });
 
+  it('does not false-positive on ordinary English prose that happens to contain a forbidden word (comments, no member access)', () => {
+    // A live run once had this exact edit discarded: the actor's weakest
+    // feature is literally named "window_door_lines", and a comment like
+    // "// add a window frame" tripped a bare \bwindow\b match meant to
+    // catch `window.postMessage`-style DOM access, not the English word.
+    const benign = [
+      '// add a window frame for depth',
+      '// deeper window recesses along the fuselage',
+      '// document the door mechanism here',
+      '// this process adds more detail to the nacelle',
+    ];
+    for (const comment of benign) {
+      const res = validatePlaneSource(`${VALID}\n${comment}\n`);
+      expect(res.ok, `should accept: ${comment}`).toBe(true);
+    }
+  });
+
+  it('still rejects real DOM/process access via member or bracket syntax', () => {
+    for (const line of ['window.top', 'window[0]', 'document.title', 'process.env.HOME', 'navigator.userAgent']) {
+      const res = validatePlaneSource(`${VALID}\n// extra\n${line}\n`);
+      expect(res.ok, `should reject: ${line}`).toBe(false);
+    }
+  });
+
   it('accepts all eight allowed primitive geometries', () => {
     const src = `
 export function buildPlane(THREE) {
