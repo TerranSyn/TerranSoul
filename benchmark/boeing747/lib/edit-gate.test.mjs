@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync, readFileSync, mkdirSync } from 'nod
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import {
+  comparablePerViewDelta,
   decideEditAcceptance,
   DEFAULT_GEMMA_PERSIST_THRESHOLD,
   snapshotBest,
@@ -256,6 +257,32 @@ describe('decideEditAcceptance — perViewDelta reporting', () => {
       ...EPS,
     });
     expect(d.perViewDelta).toEqual([0.25, null, null]);
+  });
+});
+
+describe('comparablePerViewDelta', () => {
+  it('means the diff over all views when every index is scored on both sides', () => {
+    const r = comparablePerViewDelta([5, 6, 7], [4, 6, 8], { minComparable: 3 });
+    // diffs: 1, 0, -1 -> mean 0
+    expect(r).toEqual({ delta: 0, comparableViews: 3, insufficient: false });
+  });
+
+  it('pairs only indices where BOTH sides are numeric — a null on either side is excluded, not treated as 0', () => {
+    const r = comparablePerViewDelta([5, null, 7, 8], [4, 6, null, 6]);
+    // comparable pairs: (5,4)->1, (8,6)->2 ; mean 1.5
+    expect(r.comparableViews).toBe(2);
+    expect(r.delta).toBe(1.5);
+  });
+
+  it('flags insufficient when fewer than minComparable views pair up', () => {
+    const r = comparablePerViewDelta([5, null, null, null], [4, 6, 7, 8], { minComparable: 2 });
+    expect(r.comparableViews).toBe(1);
+    expect(r.insufficient).toBe(true);
+  });
+
+  it('returns a null delta (not zero/NaN) when nothing is comparable', () => {
+    const r = comparablePerViewDelta([null, null], [1, 2]);
+    expect(r).toEqual({ delta: null, comparableViews: 0, insufficient: true });
   });
 });
 

@@ -1,8 +1,10 @@
 // SkillOpt EDIT-GATE for the Boeing 747 primitives vision benchmark loop.
-// Wired into loop-runner-terransoul.mjs ONLY under `if (pairwiseMode)` — the
-// frozen `gemma` default and existing `opus-panel` paths never import this
-// module, so the 73.68 gemma record and its geometry stay byte-identical
-// (EDIT_GATE_SPEC).
+// Wired into loop-runner-terransoul.mjs under BOTH `if (pairwiseMode)` (gated
+// on the calibrated Opus bar) and `else if (!claudeGates)` (the frozen gemma
+// default track, gated on gemma's own total against rubric.json's uniform
+// view_threshold — added after a live run measured the frozen track wander
+// 50.86 -> 40.99 over 20 iterations with nothing pulling it back). The
+// `opus-panel` path is untouched (still ungated) — EDIT_GATE_SPEC.
 //
 // PROBLEM this closes: today the actor edits candidates/<actor>/plane.js in
 // place and bookkeepTrack only records best.json — a REGRESSING edit STAYS and
@@ -207,6 +209,34 @@ export function decideEditAcceptance({
     ? ` (gemma soft-flag: downside streak ${gemmaDownsideStreak}${gemmaPersistedDownside ? ', PERSISTED' : ', not yet persisted'})`
     : '';
   return { ...result, decision: 'within_noise', reason: `within noise (|delta ${totalDelta}| <= epsilonTotal ${epsilonTotal})${flag}` };
+}
+
+/**
+ * Compare two per-view score arrays on ONLY the indices where BOTH sides are a
+ * finite number — a total computed as a mean-over-scored-views (lib/scoring.mjs's
+ * totalScore) is not safely comparable to another such total when the two totals
+ * were means over a DIFFERENT number of views (a view can legitimately go null —
+ * e.g. a camera angle where a feature is not visible — independent of any actual
+ * geometry regression). PURE, no domain vocabulary — indices only.
+ * @param {Array<number|null>} gatePerView
+ * @param {Array<number|null>} bestPerView
+ * @param {{minComparable?: number}} [opts] minComparable: below this many paired
+ *   views, the comparison is flagged `insufficient` (caller decides what to do).
+ * @returns {{delta: number|null, comparableViews: number, insufficient: boolean}}
+ */
+export function comparablePerViewDelta(gatePerView, bestPerView, { minComparable = 5 } = {}) {
+  const a = Array.isArray(gatePerView) ? gatePerView : [];
+  const b = Array.isArray(bestPerView) ? bestPerView : [];
+  const diffs = [];
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    if (isNum(a[i]) && isNum(b[i])) diffs.push(a[i] - b[i]);
+  }
+  const comparableViews = diffs.length;
+  return {
+    delta: comparableViews > 0 ? Math.round((diffs.reduce((x, y) => x + y, 0) / comparableViews) * 100) / 100 : null,
+    comparableViews,
+    insufficient: comparableViews < minComparable,
+  };
 }
 
 // ---------------------------------------------------------------------------

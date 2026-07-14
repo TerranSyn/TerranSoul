@@ -685,7 +685,6 @@ async function smokeCheckPlane(candidateAbs) {
   try {
     const source = readFileSync(candidateAbs, 'utf8');
     const script = stripExportForEval(source);
-    // eslint-disable-next-line no-new-func -- see doc comment above
     const buildPlane = new Function('THREE', `${script}\nreturn buildPlane;`)(THREE);
     if (typeof buildPlane !== 'function') {
       return { ok: false, error: 'module does not export buildPlane(THREE)' };

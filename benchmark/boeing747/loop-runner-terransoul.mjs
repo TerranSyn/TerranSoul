@@ -87,6 +87,7 @@ import {
   restoreBest,
   snapshotBest,
 } from './lib/edit-gate.mjs';
+import { resolvePrevActorAttempt, runFrozenGemmaGate } from './lib/gemma-gate-wiring.mjs';
 import { acquireRunLock } from './lib/run-lock.mjs';
 import { PARITY_ANCHOR_SCORE, loadPairwiseConfig } from './lib/pairwise-config.mjs';
 // PURE statistical-rigor certification primitives (July-2026 findings): the
@@ -509,6 +510,11 @@ export function bookkeepTrack({ actorDir, iterNum, runId, judged, judgeTrack, ru
     weakest_feature: judged.weakest_feature,
     critic: judged.critic ?? anchorHint(rubric, judged.weakest_feature),
     ...(judged.total_cost_usd !== undefined ? { total_cost_usd: judged.total_cost_usd } : {}),
+    // scored_views/missing_views: judge.mjs already computes these (lib/scoring.mjs's
+    // totalScore) but never persisted them — without this, an 8-view total (a view
+    // legitimately unassessable from its angle) silently compares against a stale
+    // 9-view record with no record of the different basis.
+    scored_views: judged.scored_views, missing_views: judged.missing_views,
     regressed,
     best_total_after: improved ? total : prevBest ? prevBest.total_0_100 : total,
     created_at: new Date().toISOString(),
@@ -857,6 +863,10 @@ export async function runIterationTerransoul({
   let gateState;
   const bestPlanePath = path.join(claudeDir, 'best-plane.js');
   const rejectedLedgerPath = path.join(claudeDir, 'rejected-edits.json');
+  const gemmaRejectedLedgerPath = path.join(gemmaDir, 'rejected-edits.json');
+
+  const { prevGemma, hasPriorIter, prevActor } = resolvePrevActorAttempt({ gemmaDir, gemmaHistory, iterNum });
+
   if (pairwiseMode) {
     gateState = loadGateState(claudeDir);
     const gatePerView = claudeJudged.per_view.map((v) => v.score);
@@ -871,19 +881,6 @@ export async function runIterationTerransoul({
       priorContestedStreaks: gateState?.contested_streaks || [],
     });
 
-    const prevGemma = gemmaHistory[gemmaHistory.length - 1];
-    const hasPriorIter = Boolean(prevGemma) && prevGemma.iter === iterNum - 1;
-    let prevActor = null;
-    if (hasPriorIter) {
-      const prevActorPath = path.join(gemmaDir, `iter-${prevGemma.iter}-actor.json`);
-      if (existsSync(prevActorPath)) {
-        try {
-          prevActor = JSON.parse(readFileSync(prevActorPath, 'utf8'));
-        } catch {
-          prevActor = null;
-        }
-      }
-    }
     const canGate = Boolean(gateState) && hasPriorIter && prevActor && GENUINE_ACTOR_STATUSES.has(prevActor.status);
 
     if (!canGate) {
@@ -1008,6 +1005,12 @@ export async function runIterationTerransoul({
       saveGateState(claudeDir, gateState);
       console.log(`  EDIT-GATE iter ${prevGemma.iter}: ${decision.decision} — ${decision.reason}`);
     }
+  } else if (!claudeGates) {
+    // Frozen gemma track: same accept/reject-against-best gate as pairwise
+    // above, gated on gemma's own total (see lib/gemma-gate-wiring.mjs).
+    gateState = runFrozenGemmaGate({
+      gemmaDir, gemmaJudged, rubric, prevGemma, prevActor, hasPriorIter, planePath, iterNum, genuineActorStatuses: GENUINE_ACTOR_STATUSES, loadGateState, saveGateState, reportSnapshot, resolveUngatedGateState,
+    }).gateState;
   }
 
   // Primary (gating) vs secondary (reported) judge track. In opus-panel/
@@ -1061,6 +1064,10 @@ export async function runIterationTerransoul({
       console.log(`  strategy cheatsheet fold skipped: ${String(err.message || err)}`);
     }
     rejectedEditsSection = formatRejectedEditsSection(loadRejectedEdits({ ledgerPath: rejectedLedgerPath }));
+  } else if (!claudeGates) {
+    // Same anti-example injection as pairwise; no strategy-cheatsheet (that
+    // reads pairwiseCfg.certification, which doesn't exist on this track).
+    rejectedEditsSection = formatRejectedEditsSection(loadRejectedEdits({ ledgerPath: gemmaRejectedLedgerPath }));
   }
 
   // Plateau -> mesh escalation (open track ONLY). Uses the SAME genuine-iteration
