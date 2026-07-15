@@ -179,6 +179,7 @@ function buildActorPrompt({
   claudeHint,
   forbiddenReasons,
   priorAttemptsSection,
+  designReferenceSection = null,
   // opus-pairwise-only additive sections (loop-runner-terransoul.mjs pairwise
   // path). Each defaults to null so the FROZEN / opus-panel / gemma actor prompt
   // is BYTE-IDENTICAL when they are omitted (they are only ever passed on the
@@ -265,6 +266,10 @@ function buildActorPrompt({
   }
   if (priorAttemptsSection) {
     lines.push(priorAttemptsSection);
+    lines.push('');
+  }
+  if (designReferenceSection) {
+    lines.push(designReferenceSection);
     lines.push('');
   }
   if (strategyCheatsheetSection) {
@@ -463,6 +468,7 @@ export async function runActorEdit({
   effort,
   timeoutMs,
   priorAttemptsSection,
+  designReferenceSection = null,
   strategyCheatsheetSection,
   badAttemptsSection,
   rejectedEditsSection,
@@ -519,6 +525,7 @@ export async function runActorEdit({
     claudeHint,
     forbiddenReasons,
     priorAttemptsSection,
+    designReferenceSection,
     strategyCheatsheetSection,
     badAttemptsSection,
     rejectedEditsSection,

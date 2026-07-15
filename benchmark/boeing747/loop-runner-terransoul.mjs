@@ -131,6 +131,7 @@ import {
   ingestAttemptLesson,
   ingestStrategyEvent,
 } from './lib/self-learning.mjs';
+import { buildDesignReferenceSection } from './lib/design-reference.mjs';
 import { evaluateStopConditions } from './lib/stop-conditions.mjs';
 import { runRig, sha256 } from './rig/render-rig.mjs';
 
@@ -700,8 +701,7 @@ export async function runIterationTerransoul({
   budget,
   judgeMode,
   judgeSamples,
-  bestOfN,
-  secondaryJudge,
+  bestOfN, secondaryJudge, designReference,
 }) {
   const { rubric, rubricSha256 } = loadRubric();
   const effPatience = patience || rubric.stall_patience;
@@ -1025,6 +1025,7 @@ export async function runIterationTerransoul({
   const weakestId =
     primaryJudged.weakest_feature?.id || gemmaJudged.weakest_feature?.id || claudeJudged?.weakest_feature?.id;
   const priorAttemptsSection = await buildPriorAttemptsSection({ weakestId });
+  const designReferenceSection = designReference ? await buildDesignReferenceSection({ weakestId, subject: 'Boeing 747', cliBinary, cliDataDir }) : null;
 
   // opus-pairwise strategy-cheatsheet (ACE / Dynamic-Cheatsheet) + rejected-edit
   // anti-examples, folded FRESH from the brain each iteration and re-injected
@@ -1136,6 +1137,7 @@ export async function runIterationTerransoul({
           model: model || DEFAULT_MODEL,
           effort: effort || DEFAULT_EFFORT,
           priorAttemptsSection,
+          designReferenceSection,
           strategyCheatsheetSection,
           badAttemptsSection,
           rejectedEditsSection,
@@ -1371,8 +1373,7 @@ export async function runLoopTerransoul({
   budget,
   judgeMode,
   judgeSamples,
-  bestOfN,
-  secondaryJudge,
+  bestOfN, secondaryJudge, designReference,
 }) {
   // ONE WRITER PER CANDIDATE PLANE. Two concurrent runs sharing this file corrupted a
   // real run: an actor's Read and Edit interleaved with the other process's write, and
@@ -1411,8 +1412,7 @@ export async function runLoopTerransoul({
         budget,
         judgeMode,
         judgeSamples,
-        bestOfN,
-        secondaryJudge,
+        bestOfN, secondaryJudge, designReference,
       });
       if (last.stop.stop) break;
     }
@@ -1440,7 +1440,7 @@ if (isMain) {
   if (!args.plane) {
     console.error(
       'usage: node loop-runner-terransoul.mjs --plane <plane.js> [--actor terransoul-fable5] [--model claude-fable-5] ' +
-        '[--effort max] [--max-iter N] [--max-actor-retries N] [--cli-bin <path>] [--cli-data-dir <dir>] [--contract open|frozen] [--budget N] [--patience N] [--judge gemma|opus-panel|opus-pairwise] [--judge-samples N] [--best-of-n N] [--secondary-judge claude|none]',
+        '[--effort max] [--max-iter N] [--max-actor-retries N] [--cli-bin <path>] [--cli-data-dir <dir>] [--contract open|frozen] [--budget N] [--patience N] [--judge gemma|opus-panel|opus-pairwise] [--judge-samples N] [--best-of-n N] [--secondary-judge claude|none] [--design-reference]',
     );
     process.exit(2);
   }
@@ -1480,7 +1480,13 @@ if (isMain) {
     // current single-edit behavior (byte-identical). Capped to BEST_OF_N_CAP inside
     // planBestOfNBudget; only fires when a worst view has plateaued.
     bestOfN: args['best-of-n'] ? Number(args['best-of-n']) : 0,
-    secondaryJudge,
+    // --design-reference: ask TerranSoul's own memory (pointed at THIS run's
+    // --cli-data-dir) for reference material an operator ingested ahead of
+    // time via `terransoul-cli --ingest-resume <path>`, scoped to the current
+    // weakest feature, and inject the answer into the actor prompt. Default
+    // OFF — a bare run stays byte-identical to every prior track. See
+    // buildDesignReferenceSection / lib/design-reference.mjs.
+    secondaryJudge, designReference: Boolean(args['design-reference']),
   })
     .then((last) => {
       console.log('\nLOOP DONE');

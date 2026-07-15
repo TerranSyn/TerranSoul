@@ -1,0 +1,72 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 155732,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 23,
+    "tool_calls": {
+      "read_file": 1,
+      "edit_file": 1
+    },
+    "total_tool_calls": 2,
+    "text_chunks": 19,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 1
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "e97e2db05cae2f24d545df9809521932444d554e776ccaa5a79e5a58f3774300",
+  "plane_sha256_after": "02c7c8b78370efb623131907dd13f828388056163b20c8b56a80e27a29d15280",
+  "changed": true,
+  "claude_result_text": "I have improved the `window_door_lines` feature by making the following targeted edits:\n\n1.  **Main Deck Windows**: Adjusted their height (y=1.8) and depth (z=±2.3) so that they correctly sit on the surface of the fuselage cylinder ($r^2 = 1.8^2 + 2.3^2 \\approx 8.5 < 9$), preventing them from appearing as floating specks or being submerged inside the model.\n2.  **Upper-Deck Windows**: Moved these significantly higher (y=6.8) to ensure they are correctly placed on the crown of the iconic hump rather than appearing in the middle of the main fuselage.\n3.  **Cockpit Window**: Raised and enlarged the cockpit windshield (cp) at the nose ($x=26, y=3.1$) to create a more distinct and realistic cockpit region that blends smoothly with the head of the plane.\n4.  **Doors**: Slightly lowered and repositioned the doors to ensure they look anchored to the fuselage rather than hovering outside of it.\n\nThese changes resolve the \"primitive\" and \"disconnected\" appearance noted by the judge, while maintaining the overall 747 silhouette and proportions.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 155732,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 23,
+        "tool_calls": {
+          "read_file": 1,
+          "edit_file": 1
+        },
+        "total_tool_calls": 2,
+        "text_chunks": 19,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 1
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}
