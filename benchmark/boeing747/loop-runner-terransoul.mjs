@@ -60,7 +60,7 @@
 //   node loop-runner-terransoul.mjs --plane <plane.js> [--actor terransoul-fable5]
 //     [--model claude-fable-5] [--effort max] [--max-iter N] [--max-actor-retries N]
 //     [--cli-bin <path>] [--cli-data-dir <dir>]
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runActorEdit } from './actor/actor-claude.mjs';
@@ -111,6 +111,39 @@ import { DEFAULT_ALPHA, DEFAULT_K_CONFIRM, DEFAULT_P_FLOOR } from './lib/certifi
 // re-exported below so its test import (loop-runner-pairwise.test.mjs) is unchanged.
 import { certifyPairwiseConfirmed } from './lib/pairwise-confirm.mjs';
 export { certifyPairwiseConfirmed };
+// Certification/stop-fold primitives (CONTESTED_PERSIST_THRESHOLD / _isNum /
+// certifyPairwiseStop / computePairwiseStop / formatResolution) — extracted
+// VERBATIM to lib/pairwise-certify.mjs (max-lines refactor, 2026-07-18) and
+// re-exported so loop-runner-pairwise.test.mjs's imports are unchanged.
+import { _isNum, certifyPairwiseStop, computePairwiseStop, formatResolution } from './lib/pairwise-certify.mjs';
+export { CONTESTED_PERSIST_THRESHOLD, certifyPairwiseStop, computePairwiseStop } from './lib/pairwise-certify.mjs';
+// Plateau-escalation directives (open-track mesh + frozen-track recompose) —
+// extracted VERBATIM to lib/plateau-escalation.mjs (max-lines refactor,
+// 2026-07-18) and re-exported so loop-runner-escalation.test.mjs's imports are
+// unchanged.
+import { MESH_ESCALATION_GAP, buildFrozenEscalation, buildMeshEscalation, meshEscalationStreak } from './lib/plateau-escalation.mjs';
+export { MESH_ESCALATION_GAP, buildFrozenEscalation, buildMeshEscalation, meshEscalationStreak };
+// EDIT-GATE state IO + the ungated-iteration resolution rule — extracted
+// VERBATIM to lib/gate-state.mjs (max-lines refactor, 2026-07-18);
+// resolveUngatedGateState is re-exported so loop-runner-record.test.mjs's
+// import is unchanged.
+import { loadGateState, reportSnapshot, resolveUngatedGateState, saveGateState } from './lib/gate-state.mjs';
+export { resolveUngatedGateState };
+// Per-track iteration-record IO (history / iter-N.json / record-plane
+// snapshot / actor-status patch) — extracted VERBATIM to lib/track-records.mjs
+// (max-lines refactor, 2026-07-18); bookkeepTrack is re-exported so
+// loop-runner-record.test.mjs's import is unchanged.
+import { bookkeepTrack, loadHistory, patchActorStatus } from './lib/track-records.mjs';
+export { bookkeepTrack };
+// Fix-4 cross-iteration self-learning seams + the genuine-actor-status set —
+// extracted VERBATIM to lib/runner-self-learning.mjs (max-lines refactor,
+// 2026-07-18).
+import {
+  GENUINE_ACTOR_STATUSES,
+  buildPriorAttemptsSection,
+  maybeIngestPriorIterationLesson,
+  topAnchorText,
+} from './lib/runner-self-learning.mjs';
 // The PURE best-of-N orchestration decision (planBestOfNBudget / runBestOfNCandidates
 // / decideBestOfNPromotion / runBestOfNActorStep / buildBestOfNDiversityInstruction /
 // BEST_OF_N_CAP) lives in lib/best-of-n-orchestrate.mjs and is unit-tested there
@@ -125,16 +158,26 @@ import {
   rankStrategies,
   strategyFingerprint,
 } from './lib/strategy-cheatsheet.mjs';
-import {
-  fetchPriorAttempts,
-  fetchStrategyEvents,
-  formatPriorAttemptsSection,
-  ingestAttemptLesson,
-  ingestStrategyEvent,
-} from './lib/self-learning.mjs';
+import { fetchStrategyEvents, ingestStrategyEvent } from './lib/self-learning.mjs';
 import { buildDesignReferenceSection } from './lib/design-reference.mjs';
 import { computeSentinelView, formatLastEditEffectSection, formatSentinelLine } from './lib/actor-feedback.mjs';
 import { formatBurstStatusSection, loadRebuildBurstConfig } from './lib/rebuild-burst.mjs';
+// BRU-6 flatline health-check (2026-07-17 campaign, lesson 25201): a run of
+// consecutive within-noise judge deltas with an UNCHANGED candidate sha is an
+// ACTOR-HEALTH failure signature (wedged transport/process — restarts
+// re-activated the actor 3x observed, records followed), NOT plateau/patience
+// evidence. Detection-only: the loop logs a loud reclassification line and
+// NEVER alters a stop/gate decision from this signal.
+import { detectFlatline, flatlineItersFromRecords, loadFlatlineHealthConfig } from './lib/flatline-health.mjs';
+// BRU-3 best-of-N judge-once (frozen-gemma track; default DISABLED so bare
+// runs stay byte-identical): sample N candidate edits through the FREE
+// contract/runtime/novelty filters, promote ONE survivor, and let the normal
+// panel judge it EXACTLY once (next iteration's judge step — judge-call
+// counts never change). Folds in BRU-4's deferred archive-of-elites parent
+// selection. Pure decisions in lib/best-of-n-judge-once.mjs + lib/elites.mjs;
+// live seams in lib/best-of-n-judge-once-wiring.mjs.
+import { loadBestOfNJudgeOnceConfig } from './lib/best-of-n-judge-once.mjs';
+import { maybeRunBestOfNJudgeOnce } from './lib/best-of-n-judge-once-wiring.mjs';
 // SCORING v3 (measurement fidelity, 2026-07-16): a view whose judge call
 // SUCCEEDED but returned all-null is "unassessable geometry" (rubric 0-anchor
 // = absent) and counts as 0 in the /100 mean; only a FAILED judge call keeps
@@ -162,15 +205,6 @@ const DEFAULT_ACTOR = 'terransoul-fable5';
 const DEFAULT_MODEL = 'claude-fable-5';
 const DEFAULT_EFFORT = 'max';
 const CLAUDE_JUDGE_SAMPLES = 1;
-// Domain-specific ONLY as an argument value passed to the generic
-// lib/self-learning.mjs functions — those functions never hardcode this
-// string themselves (rules/brain-driven-self-improvement.md,
-// rules/bench-agi-purity.md).
-const SELF_LEARNING_TAG = 'boeing747-actor-attempt';
-// Statuses actor-claude.mjs/runActorWithRetries can produce that reflect a
-// REAL attempt (as opposed to a pure infra failure never worth learning from
-// or counting toward stall/threshold/budget).
-const GENUINE_ACTOR_STATUSES = new Set(['edited', 'no_change', 'contract_failed', 'runtime_failed']);
 
 // --- opus-pairwise track constants (pairwise-only; the frozen gemma and
 // opus-panel paths never read these). ---------------------------------------
@@ -183,442 +217,6 @@ const PAIRWISE_SIDECAR_PATH = path.join(BENCH_DIR, 'calibration', 'opus-pairwise
 // rules/bench-agi-purity.md) — those modules never hardcode these strings.
 const STRATEGY_EVENT_TAG = 'boeing747-strategy-event';
 const STRATEGY_ANTI_TAG = 'boeing747-anti';
-// A gemma cross-family CONTESTED flag on an Opus-cleared view must PERSIST across
-// this many consecutive iterations before it can BLOCK threshold certification
-// (adversarial-review fixes #4/#5: a single-iteration gemma dip is noise relative
-// to gemma's own band — it is only a logged soft-flag, never a hard reject).
-export const CONTESTED_PERSIST_THRESHOLD = 2;
-
-/**
- * Load the opus-pairwise EDIT-GATE state (the total/per-view of the geometry
- * snapshotted in best-plane.js, the gemma total at that best, and the gemma-
- * downside / gemma-contested persistence streaks). PAIRWISE-ONLY. Fails open to
- * null on any missing file / parse error — a state miss simply re-establishes
- * the baseline from the current geometry.
- */
-function loadGateState(claudeDir) {
-  const p = path.join(claudeDir, 'gate-state.json');
-  try {
-    if (!existsSync(p)) return null;
-    const parsed = JSON.parse(readFileSync(p, 'utf8'));
-    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * snapshotBest fails open and returns { ok:false, error } rather than throwing, so the
- * bench loop cannot die on a copy error. Both call sites used to DISCARD that result,
- * which made a failed snapshot indistinguishable from a successful one — and a silent
- * miss leaves best-plane.js holding geometry that was never rendered or judged, which
- * is precisely the state the corrupted run was found in (its best-plane.js sha matched
- * none of the 55 recorded shots across every track). Fail open, but say so.
- */
-function reportSnapshot(result, iterNum) {
-  if (result && result.ok === false) {
-    console.log(`  WARNING: best-plane snapshot FAILED at iter ${iterNum}: ${result.error} — the backtrack anchor is now stale`);
-  }
-  return result;
-}
-
-/**
- * What to do with gate-state when this iteration CANNOT be gated.
- *
- * `canGate` is false whenever the previous iteration produced no genuine actor attempt:
- * the actor exhausted its retries, the run was resumed so the iterations are not
- * contiguous, or an actor record is missing. None of those says anything about whether
- * the CURRENT geometry is good.
- *
- * The bug this replaces: the branch re-baselined unconditionally, overwriting best_total
- * with the current iteration's score and taking a fresh snapshot, with no comparison
- * against the best it already held. On run bjke07o2u, iter-9's actor exhausted its
- * retries, so iter-10 took this branch and a 56.49 replaced a 59.39 best. gate-state is
- * the acceptance baseline, the backtrack target and the best-of-N promotion floor, so a
- * downward leak lowers the bar for every subsequent iteration and un-protects the
- * per-view bars already cleared.
- *
- * Baseline only when there is genuinely no best to protect; otherwise HOLD.
- * @returns {{action:'baseline'|'hold', state:object}}
- */
-export function resolveUngatedGateState({ gateState, gateTotal, gatePerView, gemmaTotal, contestedStreaks, iterNum }) {
-  const haveBest = Boolean(gateState) && _isNum(gateState.best_total);
-  if (!haveBest) {
-    return {
-      action: 'baseline',
-      state: {
-        best_total: gateTotal,
-        best_per_view: gatePerView,
-        best_gemma_total: gemmaTotal,
-        gemma_downside_streak: 0,
-        contested_streaks: contestedStreaks,
-        best_iter: iterNum,
-      },
-    };
-  }
-  // hold every best_* field; only the streaks are iteration-local bookkeeping
-  return { action: 'hold', state: { ...gateState, contested_streaks: contestedStreaks } };
-}
-
-/** Persist the edit-gate state (fail-open — a write miss never breaks the loop).
- * Every save stamps the CURRENT scoring_version so assertGateStateEra can
- * refuse a cross-era resume (adversarial-review fix 2026-07-16). */
-function saveGateState(claudeDir, state) {
-  try {
-    writeFileSync(
-      path.join(claudeDir, 'gate-state.json'),
-      `${JSON.stringify({ ...state, scoring_version: SCORING_VERSION }, null, 2)}\n`,
-    );
-  } catch {
-    // fail-open: a state-write miss must not break the bench loop.
-  }
-}
-
-function loadHistory(actorDir) {
-  if (!existsSync(actorDir)) return [];
-  return readdirSync(actorDir)
-    .filter((f) => /^iter-\d+\.json$/.test(f))
-    .map((f) => JSON.parse(readFileSync(path.join(actorDir, f), 'utf8')))
-    .sort((a, b) => a.iter - b.iter);
-}
-
-function anchorHint(rubric, weakest) {
-  if (!weakest) return null;
-  const criterion = rubric.criteria.find((c) => c.id === weakest.id);
-  if (!criterion) return null;
-  return {
-    weakest_feature: weakest.id,
-    fix_suggestion:
-      `Improve '${criterion.name}' (mean ${weakest.mean}/10). Target the 8 anchor: ` +
-      `${criterion.anchors['8']}; then the 10 anchor: ${criterion.anchors['10']}.`,
-    source: 'anchor',
-  };
-}
-
-// --- Plateau -> computed-mesh escalation (AGI-pure, open-track ONLY) --------
-// A GENERIC loop-engineering escalation: when the single weakest feature sits
-// far below the view target, or has stayed weakest across several primitive
-// edits, a parameter tweak is the wrong tool -- the actor is told to change
-// strategy and REBUILD that one feature as a computed mesh. It names only the
-// strategy and the rubric's own feature id; it seeds NO geometry, coordinates,
-// or 747-specific shape -- the actor must derive the profile from the reference
-// photos itself. Fires only under the open contract; the frozen track never
-// sees it (plateauEscalation stays null), so the frozen number is untouched.
-export const MESH_ESCALATION_GAP = 2.0; // a feature > 2/10 below the view target is a structural gap, not a tweakable one
-
-export function meshEscalationStreak(genuineChain, weakestId) {
-  if (!weakestId) return 0;
-  let streak = 0;
-  for (let i = genuineChain.length - 1; i >= 0; i--) {
-    if (genuineChain[i]?.weakest_feature?.id !== weakestId) break;
-    streak += 1;
-  }
-  return streak;
-}
-
-export function buildMeshEscalation({ weakest, streak, gap, viewThreshold }) {
-  const persisted =
-    streak >= 2
-      ? ` It has stayed the single weakest feature for ${streak} consecutive iterations of primitive edits -- primitive-tweaking has plateaued on it.`
-      : '';
-  return [
-    'PLATEAU ESCALATION (open medium -- change of strategy required):',
-    `The weakest feature '${weakest.id}' is at mean ${weakest.mean}/10, ${gap.toFixed(1)} below the ${viewThreshold}/10 view target.${persisted}`,
-    'A gap this size is STRUCTURAL, not a parameter you can nudge. STOP adjusting primitive dimensions/positions for this feature.',
-    'REBUILD this one feature from scratch as COMPUTED MESH geometry -- a hand-built THREE.BufferGeometry, a THREE.LatheGeometry sweeping a 2-D profile you define, or a THREE.Shape + ExtrudeGeometry (all permitted by the open contract).',
-    'Derive the profile/cross-section YOURSELF by inspecting the reference photos for this view -- there are no coordinates in these instructions to copy. A bold re-architecture of THIS feature is expected and will NOT be scored as a regression.',
-  ].join('\n');
-}
-
-/**
- * FROZEN-TRACK plateau escalation (v4, 2026-07-17): the frozen-primitives
- * track had NO plateau breaker at all — buildMeshEscalation's text directs
- * computed-mesh geometry that the frozen contract rejects, and its gate was
- * `if (contractModulePath)` (open track only), so a paralyzed actor could
- * no_change forever with nothing changing its strategy. Same escalation shape,
- * frozen-contract-safe directive: recompose the feature from scratch as a NEW
- * arrangement of PRIMITIVES with re-derived dimensions, never a mesh. PURE +
- * exported for vitest.
- */
-export function buildFrozenEscalation({ weakest, streak, gap, viewThreshold, stallIters }) {
-  const persisted =
-    streak >= 2
-      ? ` It has stayed the single weakest feature for ${streak} consecutive iterations.`
-      : '';
-  // SINGLE-SHOT REWRITE (2026-07-17 replay evidence): every record this loop
-  // ever banked came from ONE bounded edit; every rebuild-class directive
-  // outcome (2 burst windows + 1 clean-baseline attempt) declined and was
-  // restored. Escalate the TARGET's novelty pressure, never the edit scope —
-  // and never promise dip tolerance the gate does not grant.
-  return [
-    'PLATEAU (frozen primitives -- change of TARGET, never of edit scope):',
-    `The weakest feature '${weakest.id}' is at mean ${weakest.mean}/10, ${gap.toFixed(1)} below the ${viewThreshold}/10 view target, and the accepted best has not improved for ${stallIters} iterations.${persisted}`,
-    `This iteration make exactly ONE bounded change to the single existing code block that renders '${weakest.id}': ` +
-      'set ONE parameter/position from its current value to a better one, add ONE missing element at a stated ' +
-      'location, or swap ONE named geometry for a one-for-one replacement (same variable, same group.add, zero ' +
-      'other lines touched). Every improvement this loop has ever banked was one such bounded edit; sprawling ' +
-      'multi-part rewrites have always been rolled back.',
-    'Do not rebuild, redesign, rework, or recompose anything, and do not modify any line outside that one block. ' +
-      'Stay strictly inside the frozen contract (primitives only, export function buildPlane(THREE)).',
-    'Before finishing: (a) name the ONE visible difference this edit should make and which views should show it; ' +
-      '(b) confirm zero lines changed outside the block; (c) confirm the file still runs. ' +
-      'If any check fails, make the edit SMALLER -- never larger.',
-  ].join('\n');
-}
-
-// --- opus-pairwise CERTIFICATION ("100%" definition) -----------------------
-// PURE + exported so the certification rule is directly vitest-covered without a
-// live judge. A candidate is "100%" ONLY when every one of the 9 views clears
-// its per-view CALIBRATED bar (parity >= Bar_v) with NO inconclusive view (a
-// coin-flip: pairwise decided_fraction < 0.5) and NO persistently gemma-CONTESTED
-// view — NOT total_0_100 == 100. This is stricter than the frozen
-// evaluateStopConditions threshold (which only checks score >= bar); the extra
-// inconclusive/contested gates close the hollow-100% path (adversarial-review
-// fix #1) and add the cross-family veto (fix #4/#5) WITHOUT letting a single
-// noisy gemma dip block a clear (it must persist >= contestedPersistThreshold).
-
-const _isNum = (v) => typeof v === 'number' && Number.isFinite(v);
-
-/**
- * Compute the per-view cleared / inconclusive / gemma-contested flags and the
- * overall certification verdict from ONE iteration's Opus-pairwise per-view
- * scores, the calibrated bars, and the reported gemma cross-family scores.
- *
- * @param {Object} p
- * @param {Array<{view?:number, score:number|null, inconclusive?:boolean}>} p.perView
- *   the Opus-pairwise per-view objects (from judgeShotsPairwise).
- * @param {number|number[]} p.bars   per-view calibrated bar(s) (a scalar broadcasts).
- * @param {Array<number|null>} [p.gemmaCandidatePerView]  reported gemma per-view scores (candidate).
- * @param {Array<number|null>} [p.gemmaReferencePerView]  gemma per-view scores at the reference build (sidecar).
- * @param {number} [p.gemmaVetoBand]  a cleared view is CONTESTED-now when gemmaCand < gemmaRef - band.
- * @param {Array<number>} [p.priorContestedStreaks]  each view's contested streak from the previous iteration.
- * @param {number} [p.contestedPersistThreshold]  streak length a contested flag must reach to BLOCK.
- * @returns {{certified:boolean, allCleared:boolean, clearedViews:number, totalViews:number,
- *   inconclusiveViews:number[], contestedViews:number[], softFlaggedViews:number[],
- *   contestedStreaks:number[], flags:Array<Object>}}
- */
-export function certifyPairwiseStop({
-  perView = [],
-  bars,
-  gemmaCandidatePerView = [],
-  gemmaReferencePerView = [],
-  gemmaVetoBand = 1.0,
-  priorContestedStreaks = [],
-  contestedPersistThreshold = CONTESTED_PERSIST_THRESHOLD,
-} = {}) {
-  const views = Array.isArray(perView) ? perView : [];
-  const barFor = (i) => (Array.isArray(bars) ? bars[i] : bars);
-  const flags = views.map((v, i) => {
-    const score = v && _isNum(v.score) ? v.score : null;
-    const bar = barFor(i);
-    const cleared = _isNum(score) && _isNum(bar) && score >= bar;
-    // A view with no finite score, or explicitly flagged inconclusive (pairwise
-    // decided_fraction < 0.5), is NOT certifiable — a clear on coin-flips is void.
-    const inconclusive = Boolean(v && v.inconclusive) || !_isNum(score);
-    const gc = gemmaCandidatePerView[i];
-    const gr = gemmaReferencePerView[i];
-    // Cross-family CONTESTED (fix #4/#5): only meaningful on an Opus-cleared view,
-    // only when BOTH gemma numbers are confidently parsed (fail-open otherwise),
-    // and only a downside beyond the veto band counts. It is a SOFT flag that must
-    // PERSIST before it blocks — a single-iteration gemma dip never vetoes.
-    const contestedNow = cleared && _isNum(gc) && _isNum(gr) && gc < gr - gemmaVetoBand;
-    const priorStreak = _isNum(priorContestedStreaks[i]) ? Math.max(0, priorContestedStreaks[i]) : 0;
-    const contestedStreak = contestedNow ? priorStreak + 1 : 0;
-    const contestedBlocking = contestedStreak >= Math.max(1, contestedPersistThreshold);
-    return {
-      view: v && _isNum(v.view) ? v.view : i + 1,
-      score,
-      bar: _isNum(bar) ? bar : null,
-      cleared,
-      inconclusive,
-      contestedNow,
-      contestedStreak,
-      contestedBlocking,
-    };
-  });
-  const clearedViews = flags.filter((f) => f.cleared).length;
-  const inconclusiveViews = flags.filter((f) => f.inconclusive).map((f) => f.view);
-  const contestedViews = flags.filter((f) => f.contestedBlocking).map((f) => f.view);
-  const softFlaggedViews = flags.filter((f) => f.contestedNow && !f.contestedBlocking).map((f) => f.view);
-  const allCleared = flags.length > 0 && flags.every((f) => f.cleared);
-  const certified = allCleared && inconclusiveViews.length === 0 && contestedViews.length === 0;
-  return {
-    certified,
-    allCleared,
-    clearedViews,
-    totalViews: flags.length,
-    inconclusiveViews,
-    contestedViews,
-    softFlaggedViews,
-    contestedStreaks: flags.map((f) => f.contestedStreak),
-    flags,
-  };
-}
-
-/**
- * PURE + exported: fold the FROZEN evaluateStopConditions verdict together with
- * the pairwise certification into the loop's actual stop decision. stall/budget
- * reasons stop the loop unchanged; a THRESHOLD reason only stops (and is kept)
- * when the certification passed — otherwise it is DOWNGRADED to a "not certified
- * (continuing)" note naming the blocking views, so a hollow / gemma-contested /
- * coin-flip "all bars met" can never bank a false 100%.
- *
- * When a `confirmed` verdict (certifyPairwiseConfirmed) is supplied — the loop
- * computes it ONLY after a single all-cleared pass, the candidate-100% event — the
- * threshold banks a stop iff the pooled (1 + k_confirm) LCB CONFIRMATION passes
- * (R2/R3): we report the FRESH confirmation verdict at its stated resolution, never
- * the triggering peak. Absent `confirmed`, the legacy single-pass certify gate is
- * used unchanged (byte-identical for every non-confirmed caller/test).
- *
- * @param {{reasons:string[]}} p.claudeStop  the evaluateStopConditions result (calibrated bar).
- * @param {{certified:boolean, allCleared:boolean, inconclusiveViews:number[], contestedViews:number[]}} p.certify
- * @param {Object} [p.confirmed]  certifyPairwiseConfirmed() output (R2/R3/R7); optional.
- * @returns {{stop:boolean, reasons:string[], certified:boolean}}
- */
-export function computePairwiseStop({ claudeStop, certify, confirmed }) {
-  const reasons = [];
-  let stop = false;
-  const cert = certify || { certified: false, allCleared: false, inconclusiveViews: [], contestedViews: [] };
-  for (const r of (claudeStop && Array.isArray(claudeStop.reasons) ? claudeStop.reasons : [])) {
-    if (String(r).startsWith('threshold:')) {
-      if (confirmed) {
-        // R2/R3: gate the threshold on the CONFIRMATION-set certification (LCB over
-        // 1+k_confirm independent passes), never the single-pass peak.
-        if (confirmed.certified) {
-          reasons.push(
-            `${r} — CONFIRMED (worst-view AC LCB ${confirmed.worstViewLCB.toFixed(3)} over ` +
-              `${confirmed.passesUsed} independent passes; 100% at resolution ${formatResolution(confirmed.resolution)})`,
-          );
-          stop = true;
-        } else {
-          const inc = new Set(confirmed.inconclusiveViews);
-          const con = new Set(confirmed.contestedViews);
-          const unresolved = confirmed.blockingViews.filter((v) => !inc.has(v) && !con.has(v));
-          const blockers = [];
-          if (unresolved.length > 0) blockers.push(`views below the LCB floor [${unresolved.join(', ')}]`);
-          if (confirmed.inconclusiveViews.length > 0) {
-            blockers.push(`inconclusive after e-process [${confirmed.inconclusiveViews.join(', ')}]`);
-          }
-          if (confirmed.contestedViews.length > 0) {
-            blockers.push(`gemma-contested views [${confirmed.contestedViews.join(', ')}]`);
-          }
-          if (!confirmed.resolution.resolvable) {
-            const mde = Number.isFinite(confirmed.resolution.mde) ? confirmed.resolution.mde.toFixed(3) : 'inf';
-            blockers.push(`worst-view margin ${confirmed.resolution.worstViewMargin.toFixed(3)} below resolution ${mde}`);
-          }
-          reasons.push(
-            `threshold NOT confirmed over ${confirmed.passesUsed} passes ` +
-              `(${blockers.join('; ') || 'confirmation failed'}) — continuing`,
-          );
-        }
-      } else if (cert.certified) {
-        reasons.push(r);
-        stop = true;
-      } else {
-        const blockers = [];
-        if (!cert.allCleared) blockers.push('not every view cleared its bar');
-        if (cert.inconclusiveViews.length > 0) blockers.push(`inconclusive views [${cert.inconclusiveViews.join(', ')}]`);
-        if (cert.contestedViews.length > 0) blockers.push(`gemma-contested views [${cert.contestedViews.join(', ')}]`);
-        reasons.push(`threshold NOT certified (${blockers.join('; ') || 'certification failed'}) — continuing`);
-      }
-    } else {
-      // stall / budget: a legitimate loop stop regardless of certification.
-      reasons.push(r);
-      stop = true;
-    }
-  }
-  return { stop, reasons, certified: confirmed ? confirmed.certified : cert.certified };
-}
-
-/** Human-readable one-liner for an R7 resolution record (log/report only). */
-function formatResolution(res) {
-  if (!res) return 'n/a';
-  const mde = Number.isFinite(res.mde) ? res.mde.toFixed(3) : 'inf';
-  const flip = _isNum(res.flipRate) ? res.flipRate.toFixed(3) : '?';
-  return `MDE ${mde} (n=${res.n}, flip~=${flip}, power=${res.power})`;
-}
-
-export function bookkeepTrack({ actorDir, iterNum, runId, judged, judgeTrack, rubric, rubricSha256, planePath }) {
-  mkdirSync(actorDir, { recursive: true });
-  const bestFile = path.join(actorDir, 'best.json');
-  const prevBest = existsSync(bestFile) ? JSON.parse(readFileSync(bestFile, 'utf8')) : null;
-  const total = judged.total_0_100;
-  const improved = typeof total === 'number' && (!prevBest || total > prevBest.total_0_100);
-  const regressed = prevBest !== null && !improved;
-
-  const record = {
-    actor: path.basename(actorDir),
-    ...(judgeTrack ? { judge_track: judgeTrack } : {}),
-    iter: iterNum,
-    run_id: runId,
-    plane_sha256: judged.plane_sha256,
-    rubric_sha256: judged.rubric_sha256 ?? rubricSha256,
-    total_0_100: total,
-    per_view: judged.per_view.map((v) => ({
-      view: v.view,
-      key: v.key,
-      score: v.score,
-      ...(v.notes !== undefined ? { notes: v.notes } : {}),
-    })),
-    weakest_feature: judged.weakest_feature,
-    critic: judged.critic ?? anchorHint(rubric, judged.weakest_feature),
-    ...(judged.total_cost_usd !== undefined ? { total_cost_usd: judged.total_cost_usd } : {}),
-    // scored_views/missing_views: judge.mjs already computes these (lib/scoring.mjs's
-    // totalScore) but never persisted them — without this, an 8-view total (a view
-    // legitimately unassessable from its angle) silently compares against a stale
-    // 9-view record with no record of the different basis.
-    scored_views: judged.scored_views, missing_views: judged.missing_views,
-    regressed,
-    best_total_after: improved ? total : prevBest ? prevBest.total_0_100 : total,
-    created_at: new Date().toISOString(),
-  };
-  writeFileSync(path.join(actorDir, `iter-${iterNum}.json`), JSON.stringify(record, null, 2));
-  if (improved) {
-    writeFileSync(
-      bestFile,
-      JSON.stringify(
-        { iter: iterNum, run_id: runId, plane_sha256: judged.plane_sha256, total_0_100: total, per_view: record.per_view },
-        null,
-        2,
-      ),
-    );
-    // Snapshot the geometry that PRODUCED the record, next to the record itself.
-    //
-    // best.json is the all-time high and is correctly monotone. best-plane.js is a
-    // different thing: the edit-gate's BACKTRACK ANCHOR, advanced only when the gate
-    // ACCEPTS an edit. Those two came apart on a real run and the record was lost:
-    // iter-8 scored an all-time-high 61.29, but the gemma-downside veto demoted the
-    // accept to `within_noise`, and within_noise takes no snapshot — so the record
-    // geometry existed only in the working plane.js and iter-9's actor overwrote it
-    // in place. best.json still names a sha256 that now matches no file on disk.
-    //
-    // A record you cannot re-render is not a record. Persist it here, on exactly the
-    // condition that defines the record, and never through the gate.
-    if (planePath && existsSync(planePath)) {
-      try {
-        copyFileSync(planePath, path.join(actorDir, 'record-plane.js'));
-      } catch (err) {
-        // Loud, not fatal: losing the loop over a failed copy would be worse, but a
-        // silent failure here is what cost us the 61.29 geometry in the first place.
-        console.log(`  WARNING: could not snapshot the record plane for iter ${iterNum}: ${String(err?.message || err)}`);
-      }
-    }
-  }
-  return record;
-}
-
-/**
- * Stamp the (by-then-known) actor outcome onto an already-written iter-N.json
- * record, both in-memory (the caller keeps using the returned/mutated object
- * this call) and on disk (so a FUTURE loadHistory() call — i.e. the next
- * iteration, or a resumed run — sees it too). This is the mechanism fix 2
- * relies on: gemmaIterations/claudeIterations are filtered on this field.
- */
-function patchActorStatus(actorDir, iterNum, record, actorStatus) {
-  record.actor_status = actorStatus;
-  writeFileSync(path.join(actorDir, `iter-${iterNum}.json`), JSON.stringify(record, null, 2));
-  return record;
-}
 
 /**
  * Fix 1 (retry-with-backoff): retry the SAME actor call — same rendered
@@ -669,96 +267,6 @@ async function runActorWithRetries({ retryCfg, ...actorArgs }) {
     attempts,
     retry_config: retryCfg,
   };
-}
-
-/**
- * Fix 4 (cross-iteration self-learning, read half): fetch prior attempts on
- * THIS weakest feature from the brain and format them into a prompt section.
- * Fails open (fetchPriorAttempts never throws) — a down/unreachable MCP tray
- * simply means no prior-attempts section this iteration.
- */
-async function buildPriorAttemptsSection({ weakestId, actorName }) {
-  const query = `${SELF_LEARNING_TAG} ${weakestId || 'general'}`;
-  // TRACK-SCOPED read (2026-07-16): the write half already stamps every lesson
-  // with this track's name (maybeIngestPriorIterationLesson's
-  // extraTags:[actorName]); passing it back as actorTag keeps two tracks
-  // sharing one brain from cross-contaminating each other's attempt lessons —
-  // in particular, a v2-gate era's rejected-attempt lessons must not steer a
-  // v3-gate era away from the very edit class the redesigned gate now accepts.
-  const priorAttempts = await fetchPriorAttempts({ query, limit: 5, actorTag: actorName });
-  return formatPriorAttemptsSection(priorAttempts);
-}
-
-/**
- * The prose of a criterion's HIGHEST-scored anchor — the rubric's own
- * definition of what "right" looks like for that criterion. Used to build the
- * design-reference retrieval query from the criterion's actual subject matter
- * (lib/design-reference.mjs's buildDesignReferenceQuery) instead of the old
- * dimension-biased template that retrieved nothing for technique-shaped
- * criteria. GENERIC: reads whatever rubric the caller loaded.
- */
-function topAnchorText(criterion) {
-  const anchors = criterion?.anchors;
-  if (!anchors || typeof anchors !== 'object') return undefined;
-  const keys = Object.keys(anchors)
-    .map(Number)
-    .filter(Number.isFinite);
-  if (keys.length === 0) return undefined;
-  return anchors[String(Math.max(...keys))];
-}
-
-/**
- * Fix 4 (cross-iteration self-learning, write half): a self-improve loop
- * only learns whether iteration N-1's edit helped once iteration N's judge
- * has re-scored the (possibly now-edited) candidate — so this runs at the
- * START of iteration N, right after judging, using the PREVIOUS iteration's
- * recorded actor outcome (iter-{N-1}-actor.json) plus this iteration's fresh
- * scores. Skips silently (no lesson) when there is no previous iteration, or
- * the previous iteration's actor outcome was a pure infra failure (nothing
- * genuine to learn from) — never breaks the bench loop on an MCP error.
- */
-async function maybeIngestPriorIterationLesson({ gemmaDir, gemmaHistory, claudeHistory, gemmaRecord, claudeRecord, iterNum, actorName }) {
-  if (gemmaHistory.length === 0) return;
-  const prevGemma = gemmaHistory[gemmaHistory.length - 1];
-  if (!prevGemma || prevGemma.iter !== iterNum - 1) return;
-  const prevActorPath = path.join(gemmaDir, `iter-${prevGemma.iter}-actor.json`);
-  if (!existsSync(prevActorPath)) return;
-  let prevActor;
-  try {
-    prevActor = JSON.parse(readFileSync(prevActorPath, 'utf8'));
-  } catch {
-    return;
-  }
-  if (!GENUINE_ACTOR_STATUSES.has(prevActor.status)) return; // infra exhaustion — nothing to learn
-
-  const prevClaude = claudeHistory[claudeHistory.length - 1];
-  const gemmaDelta =
-    typeof gemmaRecord.total_0_100 === 'number' && typeof prevGemma.total_0_100 === 'number'
-      ? Math.round((gemmaRecord.total_0_100 - prevGemma.total_0_100) * 100) / 100
-      : null;
-  const claudeDelta =
-    prevClaude && claudeRecord && typeof claudeRecord.total_0_100 === 'number' && typeof prevClaude.total_0_100 === 'number'
-      ? Math.round((claudeRecord.total_0_100 - prevClaude.total_0_100) * 100) / 100
-      : null;
-
-  const summary =
-    prevActor.status === 'edited'
-      ? prevActor.claude_result_text || '(no summary text returned)'
-      : prevActor.status === 'contract_failed'
-        ? `edit rejected by the frozen contract: ${(prevActor.contract_violations || []).join('; ')}`
-        : prevActor.status === 'runtime_failed'
-          ? `edit rejected — buildPlane(THREE) threw at runtime: ${prevActor.runtime_error || '(no error captured)'}`
-          : 'actor made no change to the candidate';
-
-  await ingestAttemptLesson({
-    tag: SELF_LEARNING_TAG,
-    category: 'self-improve-attempt',
-    criterion: prevGemma.weakest_feature?.id,
-    summary,
-    scoreDeltas: { gemma4: gemmaDelta, [prevClaude?.judge_track || 'claude-vision']: claudeDelta },
-    outcome: prevActor.status,
-    extraTags: [actorName],
-  });
 }
 
 /** ONE full autonomous iteration: render (shared) -> gemma judge -> Fable-5-vision judge -> actor edit. */
@@ -1373,9 +881,53 @@ export async function runIterationTerransoul({
       })
     : null;
 
+  // BRU-3 BEST-OF-N JUDGE-ONCE. Config is loaded ONLY off the pairwise
+  // best-of-N path on the non-Claude-gating (frozen gemma) track under the
+  // FROZEN contract (the wiring's filter cascade re-checks candidates with
+  // the frozen lib/contract.mjs validator, which would wrongly filter
+  // open-contract geometry — the open track is intentionally not wired). It
+  // fails open to enabled:false, so a bare run reaches the direct single-edit
+  // call below BYTE-IDENTICALLY (the disabled path never builds the step ctx).
+  const judgeOnceCfg =
+    !bestOfNStep && !claudeGates && !contractModulePath ? loadBestOfNJudgeOnceConfig() : null;
+  const judgeOnceStep = judgeOnceCfg?.enabled
+    ? await maybeRunBestOfNJudgeOnce({
+        config: judgeOnceCfg,
+        planePath,
+        iterNum,
+        gemmaDir,
+        lastGateDecision: lastEditEffect?.decision ?? null,
+        acceptedTotal: gemmaJudged.total_0_100,
+        retryCfg,
+        actorBase: {
+          shotsDir: rig.outDir,
+          gemmaResult: gemmaJudged,
+          claudeResult: claudeJudged,
+          model: model || DEFAULT_MODEL,
+          effort: effort || DEFAULT_EFFORT,
+          priorAttemptsSection,
+          designReferenceSection,
+          strategyCheatsheetSection,
+          badAttemptsSection,
+          rejectedEditsSection,
+          plateauEscalation,
+          burstStatusSection,
+          measuredFeedbackSection,
+          cliBinary,
+          cliDataDir,
+          contractModulePath,
+          contractLabel,
+        },
+        runActorWithRetries,
+        logger: (msg) => console.log(msg),
+      })
+    : null;
+
   let actorResult;
   if (bestOfNStep) {
     actorResult = bestOfNStep.actorResult;
+  } else if (judgeOnceStep) {
+    actorResult = judgeOnceStep.actorResult;
   } else {
     console.log(
       `actor: driving ${model || DEFAULT_MODEL} (--effort ${effort || DEFAULT_EFFORT}) to edit ${planePath} ` +
@@ -1586,6 +1138,38 @@ export async function runIterationTerransoul({
       `exhaustionStreak=${exhaustionStreak}/${retryCfg.exhaustionCap}`,
   );
   for (const reason of stop.reasons) console.log(`  STOP REASON: ${reason}`);
+
+  // BRU-6 FLATLINE HEALTH-CHECK. Runs right where the stop-check/patience
+  // evidence is logged so the two readings can never drift apart. The streak
+  // definition is: consecutive iterations whose judge delta stayed within the
+  // SAME noise epsilon the edit-gate uses AND whose candidate sha never
+  // changed — the actor kept producing no effective edit. The 2026-07-17
+  // campaign proved that chain is usually a wedged transport/process (a
+  // process restart re-activated the actor 3x observed, records followed),
+  // so counting it as plateau/patience evidence misreads infra health as a
+  // capability ceiling. DETECTION-ONLY: stop decisions above are computed
+  // BEFORE this block and are never altered by it (stop semantics may not
+  // change silently); the loud line reclassifies the streak for the
+  // operator/agent driving the run.
+  const flatlineCfg = loadFlatlineHealthConfig();
+  if (flatlineCfg.enabled) {
+    const flatlineEpsilon = Number.isFinite(gemmaJudged.panel_se_total)
+      ? (rubric.judge_panel?.epsilon_se_coefficient ?? 1) * gemmaJudged.panel_se_total
+      : (rubric.total_noise_epsilon ?? 0);
+    const flatline = detectFlatline({
+      recentIters: flatlineItersFromRecords([...gemmaHistory, gemmaRecord]),
+      epsilon: flatlineEpsilon,
+      threshold: flatlineCfg.threshold,
+    });
+    if (flatline.flatline) {
+      console.log(
+        `  FLATLINE HEALTH-CHECK: ${flatline.reason} — ACTOR-HEALTH failure signature (wedged transport/process), ` +
+          `NOT capability-plateau evidence; RESTART the actor process/transport before reading this stretch as a ` +
+          `ceiling (these ${flatline.streak} iteration(s) are RECLASSIFIED as actor-health, not patience evidence; ` +
+          `config source=${flatlineCfg.source})`,
+      );
+    }
+  }
 
   return { iterNum, gemmaRecord, claudeRecord, actorResult, stop };
 }

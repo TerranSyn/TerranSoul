@@ -72,9 +72,12 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
-import * as THREE from 'three';
 import { VIEWS } from '../lib/cameras.mjs';
 import { ALLOWED_GEOMETRIES, validatePlaneSource } from '../lib/contract.mjs';
+// Runtime smoke-check — extracted VERBATIM to lib/candidate-smoke.mjs (BRU-3)
+// so the best-of-N judge-once filter cascade reuses the exact same check;
+// semantics unchanged (see that module's header for the original rationale).
+import { smokeCheckPlane } from '../lib/candidate-smoke.mjs';
 import { loadRubric } from '../judge/judge.mjs';
 import { sha256 } from '../rig/render-rig.mjs';
 import { parseActorStreamBuffer, summarizeActorStream } from '../lib/actor-stream.mjs';
@@ -707,58 +710,6 @@ export async function runActorEdit({
     changed: true,
     claude_result_text: typeof outer?.result === 'string' ? outer.result.slice(0, 2000) : null,
   };
-}
-
-/**
- * Strip the `export` keyword the contract requires so the source can run as
- * a plain script body (via `new Function`) instead of an ES module — avoids
- * a dynamic-import round trip through Node's module cache (this file gets
- * overwritten every iteration in the same long-lived loop-runner process)
- * and any bundler/loader that intercepts `import()` in a test environment.
- * Mirrors validatePlaneSource's own 3 accepted export forms exactly.
- */
-function stripExportForEval(source) {
-  return source
-    .replace(/^(\s*)export\s+(?=(async\s+)?function\s+buildPlane\b)/m, '$1')
-    .replace(/^(\s*)export\s+(?=const\s+buildPlane\s*=)/m, '$1')
-    .replace(/^\s*export\s*\{[^}]*\}\s*;?\s*$/gm, '');
-}
-
-/**
- * Actually execute the edited candidate's buildPlane(THREE) to catch runtime
- * errors (undefined variables, wrong constructor arity, etc.) static
- * contract validation can't see. The contract already forbids DOM/window/
- * network/imports, so the module is a plain synchronous function of THREE —
- * evaluating it harness-side is equivalent to the browser-side rig call for
- * anything the contract allows. `new Function` here evaluates source that
- * JUST passed contractValidate (which itself forbids `new Function`/`eval`
- * — that ban is on what the CANDIDATE may contain, a different trust
- * boundary than the harness evaluating already-validated text).
- *
- * MUST run in strict mode: `new Function` defaults to SLOPPY mode, which
- * silently allows an assignment to an undeclared identifier (creates an
- * implicit global instead of throwing) — a real ES module (what the rig
- * actually loads the candidate as) is always strict and throws a
- * ReferenceError for that exact code. A live run's smoke check passed an
- * edit containing `fusage_rotation = ...` (missing `const`/`let`) for
- * exactly this reason, and it crashed the rig one iteration later.
- */
-async function smokeCheckPlane(candidateAbs) {
-  try {
-    const source = readFileSync(candidateAbs, 'utf8');
-    const script = stripExportForEval(source);
-    const buildPlane = new Function('THREE', `'use strict';\n${script}\nreturn buildPlane;`)(THREE);
-    if (typeof buildPlane !== 'function') {
-      return { ok: false, error: 'module does not export buildPlane(THREE)' };
-    }
-    const result = buildPlane(THREE);
-    if (!result || result.isObject3D !== true) {
-      return { ok: false, error: 'buildPlane(THREE) did not return a THREE.Object3D' };
-    }
-    return { ok: true };
-  } catch (err) {
-    return { ok: false, error: String((err && err.stack) || err) };
-  }
 }
 
 function parseArgs(argv) {
