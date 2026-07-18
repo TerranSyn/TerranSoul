@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 124,
+  "run_id": "terransoul-gemma-taught-v4-iter-124-mrodbs2h",
+  "plane_sha256": "d8c152df47040750589723dac2574239ff8d5f4a619a60c551c50b47cec370cb",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 49.91,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.41
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.54
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.09
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.45
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.83
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.8
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.18
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.72
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 3.9
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 2.17,
+    "perCriterion": {
+      "engines_four_underwing": 4.16,
+      "upper_deck_hump": 4.37,
+      "fuselage_proportions": 4.6,
+      "wing_geometry": 5.4,
+      "empennage": 5.98,
+      "landing_gear": 7.71,
+      "window_door_lines": 2.17,
+      "livery_coherence": 5.53,
+      "silhouette_747": 5.29,
+      "craftsmanship": 4.56
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Replace the single continuous dark line on the fuselage side with an array of 12-15 individual rectangular planes. Each plane should have a width-to-height ratio of 3:1, spaced 0.5 units apart along the longitudinal axis. Position these rectangles to follow the curvature of the fuselage cylinder, ensuring they are inset by 0.1 units from the surface to create defined seams.",
+    "discrepancies": [
+      {
+        "feature": "Main cabin window row",
+        "observed": "A single continuous dark line along the fuselage side",
+        "reference": "A series of distinct individual rectangular windows",
+        "direction_of_fix": "replace line with repeated small rectangles"
+      },
+      {
+        "feature": "Cockpit window layout",
+        "observed": "No visible cockpit windows or structural framing",
+        "reference": "Large multi-pane wrap-around cockpit windows at the nose",
+        "direction_of_fix": "add 4-6 dark rectangular planes to the nose section"
+      },
+      {
+        "feature": "Door outlines",
+        "observed": "Smooth fuselage surface with no door markings",
+        "reference": "Clearly defined main cabin and service doors with visible seams",
+        "direction_of_fix": "add thin recessed rectangles for door frames"
+      },
+      {
+        "feature": "Window spacing",
+        "observed": "Uniformly flat side profile",
+        "reference": "Windows following the curvature of the fuselage",
+        "direction_of_fix": "curve window placement along the cylinder's arc"
+      }
+    ],
+    "critic_view": 2,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 55.49,
+  "created_at": "2026-07-17T03:21:07.290Z",
+  "actor_status": "edited"
+}

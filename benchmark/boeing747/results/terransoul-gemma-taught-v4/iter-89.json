@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 89,
+  "run_id": "terransoul-gemma-taught-v4-iter-89-mro46d2a",
+  "plane_sha256": "eb024c8a219b3e5d3baeb40ea0fbea0b6a873301e1b5608b4290859752d77869",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 50.64,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.12
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.77
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.78
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.69
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.63
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.88
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.17
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.39
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.15
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 2.74,
+    "perCriterion": {
+      "engines_four_underwing": 4.29,
+      "upper_deck_hump": 4.37,
+      "fuselage_proportions": 4.78,
+      "wing_geometry": 5.31,
+      "empennage": 5.65,
+      "landing_gear": 7.78,
+      "window_door_lines": 2.74,
+      "livery_coherence": 5.51,
+      "silhouette_747": 5.29,
+      "craftsmanship": 5.04
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Replace the single horizontal window line on the fuselage with a 3x4 grid of small rectangular primitives. Set each primitive's width to 0.8 units, height to 0.25 units, and arrange them in three distinct rows. Apply a slight Z-axis offset (incrementing by 0.05 per row) and a subtle radial rotation to the grid to follow the fuselage curvature, ensuring they are spaced 0.1 units apart from each other.",
+    "discrepancies": [
+      {
+        "feature": "Window row count",
+        "observed": "A single continuous line of small dots along the fuselage",
+        "reference": "Multiple distinct rows of windows with specific spacing and grouping",
+        "direction_of_fix": "increase number of primitive objects for window units"
+      },
+      {
+        "feature": "Door outlines",
+        "observed": "No distinct geometric boundaries or recessed lines for doors",
+        "reference": "Clearly defined rectangular door frames with visible seams",
+        "direction_of_fix": "add thin box geometries to define door perimeters"
+      },
+      {
+        "feature": "Window alignment",
+        "observed": "Windows are placed in a perfectly straight horizontal line across the curve of the fuselage",
+        "reference": "Windows follow the slight taper and curvature of the aircraft body",
+        "direction_of_fix": "adjust z-positioning of window primitives along the fuselage arc"
+      },
+      {
+        "feature": "Cockpit windows",
+        "observed": "A single small dark area at the nose",
+        "reference": "A multi-paneled, wrap-around cockpit window structure",
+        "direction_of_fix": "replace single primitive with a cluster of angled planes"
+      }
+    ],
+    "critic_view": 7,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 52.71,
+  "created_at": "2026-07-16T23:04:59.584Z",
+  "actor_status": "runtime_failed"
+}

@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 110,
+  "run_id": "terransoul-gemma-taught-v4-iter-110-mro9ki2g",
+  "plane_sha256": "cbffa6c1a374400501f54bd3cde7e13be4a3db56a7dd0df7a1fdaf942a837bb2",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 48.94,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.86
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.31
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.18
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 4.64
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.14
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.83
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.85
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.71
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.53
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 3.62,
+    "perCriterion": {
+      "engines_four_underwing": 3.62,
+      "upper_deck_hump": 4.49,
+      "fuselage_proportions": 4.38,
+      "wing_geometry": 4.93,
+      "empennage": 5.55,
+      "landing_gear": 7.83,
+      "window_door_lines": 5.06,
+      "livery_coherence": 5.49,
+      "silhouette_747": 5.09,
+      "craftsmanship": 4.18
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the 'Engine' primitive to create four instances total. Distribute them along the underside of the 'Swept Wing' geometry (instead of the fuselage) at a 45-degree spanwise offset from the wing root, ensuring two engines are positioned under each wing.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "One large engine mounted on the fuselage side",
+        "reference": "Four engines total (two under each wing)",
+        "direction_of_fix": "duplicate and distribute"
+      },
+      {
+        "feature": "Wing Mounting",
+        "observed": "Engines are attached to the fuselage/body",
+        "reference": "Engines are suspended under the swept wings",
+        "direction_of_fix": "move from fuselage to wing underside"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Single engine positioned near the front of the fuselage",
+        "reference": "Two engines on each wing, spaced along the span",
+        "direction_of_fix": "reposition and multiply"
+      },
+      {
+        "feature": "Wing Geometry",
+        "observed": "Flat horizontal plane with no swept angle",
+        "reference": "Swept-back wings with significant rearward angle",
+        "direction_of_fix": "rotate/tilt wing geometry backward"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 54.13,
+  "created_at": "2026-07-17T01:35:55.342Z",
+  "actor_status": "no_change"
+}

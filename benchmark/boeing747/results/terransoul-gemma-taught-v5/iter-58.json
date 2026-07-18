@@ -1,0 +1,103 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 58,
+  "run_id": "terransoul-gemma-taught-v5-iter-58-mrpbrzf2",
+  "plane_sha256": "a5a46688438d9793ddbb9c592ce7657de124fe2c3c0306ed4e206a1d46ab593f",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 54.16,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.66
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.45
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.61
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 4.72
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5.43
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.36
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.65
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.53
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.33
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.24,
+    "perCriterion": {
+      "engines_four_underwing": 4.24,
+      "upper_deck_hump": 5.03,
+      "fuselage_proportions": 5.2,
+      "wing_geometry": 5.11,
+      "empennage": 6.43,
+      "landing_gear": 7.47,
+      "window_door_lines": 4.8,
+      "livery_coherence": 6.13,
+      "silhouette_747": 5.89,
+      "craftsmanship": 5.71
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "For the 'Engines' geometry, apply a horizontal translation to the secondary engine pod on each wingtip. Increase the distance between the two engines by 50% of the current pod width, ensuring they are distinct and spaced evenly along the inboard section of the wing.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible under the wing",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines appear merged or singular under the wing",
+        "reference": "Distinct, spaced-out engine pods",
+        "direction_of_fix": "increase horizontal spacing between engines"
+      },
+      {
+        "feature": "Wingtip Geometry",
+        "observed": "Blunt/square wingtips",
+        "reference": "Tapered and swept wingtips",
+        "direction_of_fix": "taper the outer edge of the wing primitive"
+      }
+    ],
+    "critic_view": 6,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 60.9,
+  "created_at": "2026-07-17T19:25:54.768Z",
+  "actor_status": "runtime_failed"
+}

@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-transplant",
+  "iter": 13,
+  "run_id": "terransoul-gemma-transplant-iter-13-mroneyje",
+  "plane_sha256": "6224765e91e14ebb05ed078f743a26d418cd5c24e8e2d1c81c17ea3b0141bab5",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 62.1,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.87
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.89
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.3
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.93
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.86
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.77
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 6.21
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.81
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.25
+    }
+  ],
+  "weakest_feature": {
+    "id": "upper_deck_hump",
+    "mean": 4.4,
+    "perCriterion": {
+      "engines_four_underwing": 5.11,
+      "upper_deck_hump": 4.4,
+      "fuselage_proportions": 5.89,
+      "wing_geometry": 7.18,
+      "empennage": 7.39,
+      "landing_gear": 6.76,
+      "window_door_lines": 5.54,
+      "livery_coherence": 5.69,
+      "silhouette_747": 6.31,
+      "craftsmanship": 7.58
+    }
+  },
+  "critic": {
+    "weakest_feature": "upper_deck_hump",
+    "fix_suggestion": "Modify the upper-deck hump geometry by increasing its longitudinal length along the fuselage axis to extend it 40% further toward the rear. Simultaneously, increase the vertical width of the hump cylinder by 25% and apply a fillet radius of 1.5 units at the nose-to-hump junction to eliminate the flat surface area and create a smooth blend with the cockpit curvature.",
+    "discrepancies": [
+      {
+        "feature": "Hump length",
+        "observed": "The upper-deck hump ends abruptly near the front of the fuselage.",
+        "reference": "The hump extends significantly further back along the top of the fuselage.",
+        "direction_of_fix": "increase length along the longitudinal axis"
+      },
+      {
+        "feature": "Hump curvature",
+        "observed": "A sharp, distinct transition between the nose and the upper-deck cylinder.",
+        "reference": "A smooth, continuous curve blending into the main deck.",
+        "direction_of_fix": "smooth/blend transition radius"
+      },
+      {
+        "feature": "Hump width",
+        "observed": "The hump appears as a narrow tube on top of the fuselage.",
+        "reference": "The hump is wider, blending into the main body's curvature.",
+        "direction_of_fix": "increase width along the vertical axis"
+      },
+      {
+        "feature": "Nose-to-hump transition",
+        "observed": "A flat surface area between the nose cone and the start of the hump.",
+        "reference": "The hump begins almost immediately behind the cockpit windows.",
+        "direction_of_fix": "move forward toward the nose"
+      }
+    ],
+    "critic_view": 9,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.11,
+  "created_at": "2026-07-17T08:03:40.598Z",
+  "actor_status": "edited"
+}

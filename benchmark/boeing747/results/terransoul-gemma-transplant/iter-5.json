@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-transplant",
+  "iter": 5,
+  "run_id": "terransoul-gemma-transplant-iter-5-mrokqc1o",
+  "plane_sha256": "d7cb08b1b74cd61a3e129fc0477f1d1bccb8cdb0b10b89a882f708cbdbb26f4e",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 60.87,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.35
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.12
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.09
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.04
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.48
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.67
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 6.2
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.41
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.42
+    }
+  ],
+  "weakest_feature": {
+    "id": "upper_deck_hump",
+    "mean": 4.34,
+    "perCriterion": {
+      "engines_four_underwing": 4.84,
+      "upper_deck_hump": 4.34,
+      "fuselage_proportions": 5.38,
+      "wing_geometry": 7.09,
+      "empennage": 7.53,
+      "landing_gear": 7.29,
+      "window_door_lines": 5.74,
+      "livery_coherence": 5.22,
+      "silhouette_747": 6.02,
+      "craftsmanship": 7.6
+    }
+  },
+  "critic": {
+    "weakest_feature": "upper_deck_hump",
+    "fix_suggestion": "Modify the 'Upper Deck Hump' primitive by increasing its length along the longitudinal axis to 60% of the fuselage length, expanding its width to match the main deck diameter, and applying a spherical fillet (radius = 15% of height) at the forward junction. Adjust the vertical profile from a flat plane to a parabolic curve with a peak height equal to 40% of the upper deck's thickness to create a bulbous volume that blends smoothly into the fuselage.",
+    "discrepancies": [
+      {
+        "feature": "Hump length",
+        "observed": "The upper deck hump ends very abruptly near the front of the fuselage.",
+        "reference": "The hump extends significantly further back along the top of the fuselage.",
+        "direction_of_fix": "increase length"
+      },
+      {
+        "feature": "Hump height/volume",
+        "observed": "The hump appears as a flat, low-profile extension with minimal vertical curvature.",
+        "reference": "The hump has a distinct rounded, bulbous volume that blends into the main deck.",
+        "direction_of_fix": "increase height and radius"
+      },
+      {
+        "feature": "Hump transition",
+        "observed": "There is a sharp, angular intersection where the upper deck meets the main fuselage.",
+        "reference": "A smooth, continuous aerodynamic curve connects the hump to the forward fuselage.",
+        "direction_of_fix": "smooth/round transition"
+      },
+      {
+        "feature": "Hump width",
+        "observed": "The hump appears narrow and thin relative to the main fuselage diameter.",
+        "reference": "The hump is wide enough to accommodate a full row of windows across its span.",
+        "direction_of_fix": "increase width"
+      }
+    ],
+    "critic_view": 6,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.11,
+  "created_at": "2026-07-17T06:48:30.028Z",
+  "actor_status": "no_change"
+}

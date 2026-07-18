@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 135,
+  "run_id": "terransoul-gemma-taught-v4-iter-135-mrofvinh",
+  "plane_sha256": "68a2328bb12f078f2488c7d9c1ba567c3bbd59b26f9edcf52e0696355d585f3a",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 50.7,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.32
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.78
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.06
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.48
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.17
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.51
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.73
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.6
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 3.98
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 0.34,
+    "perCriterion": {
+      "engines_four_underwing": 4.56,
+      "upper_deck_hump": 4.71,
+      "fuselage_proportions": 4.73,
+      "wing_geometry": 5.58,
+      "empennage": 6,
+      "landing_gear": 7.6,
+      "window_door_lines": 0.34,
+      "livery_coherence": 4.98,
+      "silhouette_747": 5.47,
+      "craftsmanship": 4.89
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Replace the single large dark block at the nose with a series of 5-7 distinct, individual rectangular planes. Arrange these planes in a wrap-around configuration following the curvature of the cockpit, spacing them approximately 0.1 units apart to create a segmented pane effect rather than a solid surface.",
+    "discrepancies": [
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A single large dark block at the nose",
+        "reference": "A series of distinct individual windows arranged in a wrap-around cockpit pane",
+        "direction_of_fix": "subdivide and arrange"
+      },
+      {
+        "feature": "Main cabin window row",
+        "observed": "No visible windows along the fuselage side",
+        "reference": "A continuous horizontal line of small, evenly spaced rectangular windows",
+        "direction_of_fix": "add repeated small rectangles"
+      },
+      {
+        "feature": "Passenger door outlines",
+        "observed": "Smooth fuselage surface with no breaks",
+        "reference": "Distinct vertical seams and recessed frames for front and rear doors",
+        "direction_of_fix": "add thin vertical planes/lines"
+      },
+      {
+        "feature": "Cargo hold lines",
+        "observed": "Solid continuous lower fuselage",
+        "reference": "Subtle horizontal paneling and seam lines along the belly",
+        "direction_of_fix": "add horizontal line segments"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 55.83,
+  "created_at": "2026-07-17T04:32:27.632Z",
+  "actor_status": "edited"
+}

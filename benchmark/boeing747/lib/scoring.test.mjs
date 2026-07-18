@@ -1,10 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import {
+  SCORING_VERSION,
+  applyScoringV3,
   maskViewMedians,
   median,
   normalizeScore,
+  panelMean,
+  panelSeTotal,
+  panelStd,
   seedMedian,
   totalScore,
+  totalScoreV3,
+  viewJudgeSucceeded,
   viewScore,
   weakestCriterion,
   weightedMean,
@@ -149,5 +156,191 @@ describe('weakestCriterion', () => {
   });
   it('returns null when nothing is scoreable', () => {
     expect(weakestCriterion([{}], criteria)).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// SCORING v3 — successful-empty views count 0; failed views keep the v2 drop.
+// The vectors below are the taught track's REAL recorded incumbent (gate-state
+// best_per_view at 55.64/100): 8 scored views + view 4 all-null. Under v2 that
+// null was dropped (mean over 8 = 55.64); when the null came from a SUCCESSFUL
+// judge pass ("unassessable from this angle" = the rubric's own 0 anchor) the
+// honest 9-view total is 49.46 — v2 rewarded hiding a view by ~6 points.
+// ---------------------------------------------------------------------------
+
+const INCUMBENT_8_VIEW = [4.02, 8.69, 3.42, null, 3.26, 8.69, 3.43, 8.69, 4.31];
+
+/** A judge.mjs-shaped per-view object. */
+function mkView(score, { ok = true, seeds, judgeErrors } = {}) {
+  const v = { view: 1, key: 'test-view', score };
+  if (seeds !== undefined) v.seeds = seeds;
+  else v.seeds = [{ seed: 7, ok }, { seed: 8, ok }, { seed: 9, ok }];
+  if (judgeErrors !== undefined) v.judge_errors = judgeErrors;
+  return v;
+}
+
+describe('viewJudgeSucceeded (scoring v3 success signal)', () => {
+  it('true when at least one seed returned ok', () => {
+    expect(viewJudgeSucceeded(mkView(null, { seeds: [{ ok: false }, { ok: true }, { ok: false }] }))).toBe(true);
+  });
+  it('false when every seed errored (infra failure, not unassessable geometry)', () => {
+    expect(viewJudgeSucceeded(mkView(null, { seeds: [{ ok: false }, { ok: false }, { ok: false }] }))).toBe(false);
+  });
+  it('falls back to judge_errors === 0 when there is no seeds array', () => {
+    expect(viewJudgeSucceeded({ score: null, judge_errors: 0 })).toBe(true);
+    expect(viewJudgeSucceeded({ score: null, judge_errors: 3 })).toBe(false);
+  });
+  it('treats a missing signal as FAILURE (never worse than v2 null-drop)', () => {
+    expect(viewJudgeSucceeded({ score: null })).toBe(false);
+    expect(viewJudgeSucceeded(null)).toBe(false);
+  });
+});
+
+describe('totalScoreV3', () => {
+  it('counts a SUCCESSFUL-but-all-null view as 0 in the mean (the real 55.64 incumbent reads 49.46 over its honest 9-view basis)', () => {
+    const perView = INCUMBENT_8_VIEW.map((s) => mkView(s));
+    const v2 = totalScore(INCUMBENT_8_VIEW);
+    expect(v2.total).toBe(55.64); // v2 baseline: null dropped, mean over 8
+    const v3 = totalScoreV3(perView);
+    expect(v3.total).toBe(49.46); // v3: successful-empty view scores 0, mean over 9
+    expect(v3.scoredViews).toBe(9);
+    expect(v3.missingViews).toBe(0);
+    expect(v3.scoring_version).toBe(SCORING_VERSION);
+    expect(v3.perViewScores[3]).toBe(0);
+  });
+
+  it('keeps the v2 null-drop for a FAILED judge call (fail-open unchanged)', () => {
+    const perView = INCUMBENT_8_VIEW.map((s, i) =>
+      i === 3 ? mkView(s, { seeds: [{ ok: false }, { ok: false }, { ok: false }] }) : mkView(s),
+    );
+    const v3 = totalScoreV3(perView);
+    expect(v3.total).toBe(55.64); // failed view dropped exactly as v2 did
+    expect(v3.scoredViews).toBe(8);
+    expect(v3.missingViews).toBe(1);
+    expect(v3.perViewScores[3]).toBeNull();
+  });
+
+  it('leaves scored views untouched (only nulls are reinterpreted)', () => {
+    const perView = [mkView(7), mkView(5)];
+    const v3 = totalScoreV3(perView);
+    expect(v3.total).toBe(60);
+    expect(v3.perViewScores).toEqual([7, 5]);
+  });
+});
+
+describe('applyScoringV3', () => {
+  const judged = {
+    total_0_100: 55.64,
+    scored_views: 8,
+    missing_views: 1,
+    per_view: INCUMBENT_8_VIEW.map((s) => mkView(s)),
+    weakest_feature: { id: 'x' },
+  };
+
+  it('rewrites total, per-view scores, and counts on the honest 9-view basis, stamping scoring_version', () => {
+    const out = applyScoringV3(judged);
+    expect(out.total_0_100).toBe(49.46);
+    expect(out.scored_views).toBe(9);
+    expect(out.missing_views).toBe(0);
+    expect(out.scoring_version).toBe(3);
+    expect(out.per_view[3].score).toBe(0);
+    expect(out.per_view[1].score).toBe(8.69);
+    expect(out.weakest_feature).toEqual({ id: 'x' }); // untouched passthrough
+  });
+
+  it('is PURE — never mutates its input', () => {
+    const before = JSON.parse(JSON.stringify(judged));
+    applyScoringV3(judged);
+    expect(judged).toEqual(before);
+  });
+
+  it('passes through null/shapeless input unchanged (a dead judge stays a dead judge)', () => {
+    expect(applyScoringV3(null)).toBeNull();
+    expect(applyScoringV3({ total_0_100: 10 })).toEqual({ total_0_100: 10 });
+  });
+});
+
+describe('scoring v3 on the claude-vision per-view shape (adversarial-review fix 2026-07-16)', () => {
+  // judge-claude.mjs names its per-run array `samples` (not `seeds`) and its
+  // results.json projection used to strip BOTH samples and judge_errors —
+  // which made viewJudgeSucceeded() false for every claude view and v3 a
+  // silent no-op on the whole claude-vision track (confirmed by 3 independent
+  // review lenses + runtime repro). These tests pin the fixed behavior against
+  // the REAL post-fix claude per_view shape.
+  function mkClaudeView(score, { oks = [true], judgeErrors } = {}) {
+    return {
+      view: 1,
+      key: 'test-view',
+      score,
+      score_unmasked: score,
+      masked_out: [],
+      criteria_medians: {},
+      notes: '',
+      judge_errors: judgeErrors ?? oks.filter((o) => !o).length,
+      samples: oks.map((ok) => ({ ok })),
+    };
+  }
+
+  it('viewJudgeSucceeded reads the claude `samples` ok-array', () => {
+    expect(viewJudgeSucceeded(mkClaudeView(null, { oks: [false, true] }))).toBe(true);
+    expect(viewJudgeSucceeded(mkClaudeView(null, { oks: [false, false] }))).toBe(false);
+  });
+
+  it('applyScoringV3 closes the hide-a-view exploit on the claude shape (the real incumbent reads 49.46, not 55.64)', () => {
+    const judged = {
+      total_0_100: 55.64,
+      scored_views: 8,
+      missing_views: 1,
+      per_view: INCUMBENT_8_VIEW.map((s) => mkClaudeView(s)),
+    };
+    const out = applyScoringV3(judged);
+    expect(out.total_0_100).toBe(49.46);
+    expect(out.scored_views).toBe(9);
+    expect(out.per_view[3].score).toBe(0);
+    expect(out.scoring_version).toBe(3);
+  });
+
+  it('a claude view whose every sample errored keeps the v2 null-drop (fail-open unchanged)', () => {
+    const judged = {
+      total_0_100: 55.64,
+      per_view: INCUMBENT_8_VIEW.map((s, i) => (i === 3 ? mkClaudeView(s, { oks: [false, false] }) : mkClaudeView(s))),
+    };
+    const out = applyScoringV3(judged);
+    expect(out.total_0_100).toBe(55.64);
+    expect(out.per_view[3].score).toBeNull();
+  });
+});
+
+describe('judge panel v4 helpers (self-consistency K-panel)', () => {
+  it('panelMean averages non-null draws and abstains only when every draw abstained', () => {
+    expect(panelMean([6, 7, null, 8])).toBe(7);
+    expect(panelMean([null, null])).toBeNull();
+    expect(panelMean([])).toBeNull();
+  });
+
+  it('panelStd is the sample std of non-null draws, 0 below 2 draws', () => {
+    expect(panelStd([4, 6])).toBeCloseTo(Math.SQRT2, 10);
+    expect(panelStd([5, 5, 5])).toBe(0);
+    expect(panelStd([7])).toBe(0);
+    expect(panelStd([null, 7])).toBe(0);
+  });
+
+  it('panelSeTotal propagates per-view spread into the /100 total SE', () => {
+    const nineViews = Array.from({ length: 9 }, () => ({ score_std: 0.9, draws: 5 }));
+    // (10/9) * sqrt(9 * 0.81/5) = 1.342
+    expect(panelSeTotal(nineViews, 9)).toBeCloseTo(1.342, 3);
+  });
+
+  it('a spreadless or single-draw view adds no variance (never inflates epsilon)', () => {
+    const views = [
+      { score_std: 1.2, draws: 4 },
+      { score_std: 0, draws: 5 },
+      {},
+      { score_std: 2.0, draws: 1 },
+    ];
+    // (10/4) * sqrt(1.44/4 + 0 + 0 + 4.0/1) = 2.5 * sqrt(4.36)
+    expect(panelSeTotal(views, 4)).toBeCloseTo(2.5 * Math.sqrt(4.36), 2);
+    expect(panelSeTotal([], 9)).toBe(0);
+    expect(panelSeTotal([{ score_std: 0, draws: 5 }], 9)).toBe(0);
   });
 });

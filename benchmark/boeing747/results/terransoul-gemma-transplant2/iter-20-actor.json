@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 156367,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 183,
+    "tool_calls": {
+      "read_file": 5,
+      "edit_file": 3
+    },
+    "total_tool_calls": 8,
+    "text_chunks": 167,
+    "tool_failures": 2,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 5
+      },
+      {
+        "name": "edit_file",
+        "count": 3
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "c3cd82cfb05eea1728e33693f362f0c1a7af92708b4d85cfbfb6062926a8fbc5",
+  "plane_sha256_after": "d801ecf2ef7a282fbbcb9095d911e4bf92755ed8081d089c833dcfa84aa681d1",
+  "changed": true,
+  "claude_result_text": "apertures. This improvement should make each window clearer as an individual pane while still maintaining the overall line along the fuselage. Since we've addressed the primary issue with window density and spacing, no further adjustments are currently required for this component.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 156367,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 183,
+        "tool_calls": {
+          "read_file": 5,
+          "edit_file": 3
+        },
+        "total_tool_calls": 8,
+        "text_chunks": 167,
+        "tool_failures": 2,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 5
+          },
+          {
+            "name": "edit_file",
+            "count": 3
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

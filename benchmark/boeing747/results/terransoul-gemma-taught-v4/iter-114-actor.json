@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 178324,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 188,
+    "tool_calls": {
+      "read_file": 5,
+      "edit_file": 1
+    },
+    "total_tool_calls": 6,
+    "text_chunks": 176,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 5
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "26381b918dcd6ad79b374192d4a5ef8550cf7c668c14813bcab10a371be7afad",
+  "plane_sha256_after": "df74b625d168b767bab1866daa4e5f8558e61ab245621a9e3194cf5075eec79b",
+  "changed": true,
+  "claude_result_text": "The window and door lines have been significantly improved to be more realistic. Specifically, I made the following changes:\n\n1.  **Main Deck Windows**: Moved them from a low position near the fuselage belly up to the actual passenger cabin level (y = 2.24), which is much closer to reality for a Boeing 747.\n2.  **Upper-Deck/Hump Windows**: Increased their count and adjusted their positioning so they follow the curve of the upper deck hump more naturally, rather than looking like isolated dots. They now properly appear as a continuous row along the front portion of the aircraft.\n3.  **Cockpit Windshields**: Moved them significantly higher (to y = 4.0) to match the upward-curving nose of the aircraft and adjusted their angles for a better \"wrap-around\" effect, creating a much more convincing cockpit profile.\n4.  **Doors**: Adjusted the height of both front and rear doors so they align perfectly with the new main deck window level.\n\nThese changes address the primary issues identified in the `window_door_lines` evaluation and bring the model much closer to a realistic representation while remaining within the primitive-only constraints.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 178324,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 188,
+        "tool_calls": {
+          "read_file": 5,
+          "edit_file": 1
+        },
+        "total_tool_calls": 6,
+        "text_chunks": 176,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 5
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

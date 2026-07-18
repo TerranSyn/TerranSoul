@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 418063,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 603,
+    "tool_calls": {
+      "read_file": 6,
+      "edit_file": 3
+    },
+    "total_tool_calls": 9,
+    "text_chunks": 585,
+    "tool_failures": 4,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 6
+      },
+      {
+        "name": "edit_file",
+        "count": 3
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "no_change",
+  "plane_sha256_before": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "plane_sha256_after": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "changed": false,
+  "claude_result_text": "The user wants me to continue from where I left off. The previous turn was an `edit_file` attempt which failed because I hadn't read the file properly after some intermediate changes (though I did follow the prompt's",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "no_change",
+      "ms": 418063,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 603,
+        "tool_calls": {
+          "read_file": 6,
+          "edit_file": 3
+        },
+        "total_tool_calls": 9,
+        "text_chunks": 585,
+        "tool_failures": 4,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 6
+          },
+          {
+            "name": "edit_file",
+            "count": 3
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

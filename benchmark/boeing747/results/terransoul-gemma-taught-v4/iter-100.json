@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 100,
+  "run_id": "terransoul-gemma-taught-v4-iter-100-mro6ybb7",
+  "plane_sha256": "dd1f8e550500a7859ccad690c51c96b6631f4899c02b7899bb768cfadee645c7",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 52.04,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.78
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.67
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.61
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.93
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.74
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.94
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.83
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.79
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.55
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 3.54,
+    "perCriterion": {
+      "engines_four_underwing": 4.49,
+      "upper_deck_hump": 4.14,
+      "fuselage_proportions": 4.98,
+      "wing_geometry": 5.42,
+      "empennage": 6.05,
+      "landing_gear": 7.69,
+      "window_door_lines": 3.54,
+      "livery_coherence": 5.69,
+      "silhouette_747": 5.56,
+      "craftsmanship": 4.91
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Apply a vertical extrusion/inset to the fuselage surface at the main and service door locations. Define these as 0.15m deep rectangular frames with a width of 1.2m for main doors and 0.8m for service doors, oriented perpendicular to the fuselage skin to create distinct recessed outlines.",
+    "discrepancies": [
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A single large dark block at the nose",
+        "reference": "A multi-paneled array of distinct windows with defined frames",
+        "direction_of_fix": "subdivide and offset"
+      },
+      {
+        "feature": "Main cabin window row",
+        "observed": "A dashed line representing a row of windows",
+        "reference": "Individual small rectangular windows spaced evenly along the fuselage",
+        "direction_of_fix": "replace line with repeated small boxes"
+      },
+      {
+        "feature": "Door outlines",
+        "observed": "No visible door frames or outlines on the fuselage",
+        "reference": "Distinct vertical break lines and recessed frames for main and service doors",
+        "direction_of_fix": "add thin rectangular extrusions/insets"
+      },
+      {
+        "feature": "Window spacing",
+        "observed": "Uniform dashed line across the entire length",
+        "reference": "Varied spacing with gaps between window clusters and over wing roots",
+        "direction_of_fix": "increase gap distance at specific intervals"
+      }
+    ],
+    "critic_view": 2,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 52.71,
+  "created_at": "2026-07-17T00:20:02.285Z",
+  "actor_status": "edited"
+}

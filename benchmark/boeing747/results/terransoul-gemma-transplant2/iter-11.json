@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-transplant2",
+  "iter": 11,
+  "run_id": "terransoul-gemma-transplant2-iter-11-mroqtabk",
+  "plane_sha256": "faeee31c9638f4fec05ad322d81daab2e0406ba6eae52c8993af5494edc107af",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 68.48,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.39
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.83
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.19
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.92
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.07
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 7.37
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 6.26
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.37
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 7.23
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 5.8,
+    "perCriterion": {
+      "engines_four_underwing": 6,
+      "upper_deck_hump": 6,
+      "fuselage_proportions": 6.4,
+      "wing_geometry": 7.36,
+      "empennage": 7.43,
+      "landing_gear": 7.43,
+      "window_door_lines": 5.8,
+      "livery_coherence": 7.13,
+      "silhouette_747": 7.4,
+      "craftsmanship": 7.67
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Replace the continuous fuselage side strip with an array of 24 individual rectangular primitives (0.5x1.2 units) spaced at 0.3 unit intervals along the horizontal axis to represent windows. Additionally, insert four large recessed rectangular planes (3x5 units) at the forward, mid, and rear fuselage positions, oriented perpendicular to the surface normal, to define primary cabin door frames.",
+    "discrepancies": [
+      {
+        "feature": "Main deck window row",
+        "observed": "A single continuous line of small dots along the fuselage side.",
+        "reference": "A distinct horizontal row of individual rectangular windows with visible spacing and framing.",
+        "direction_of_fix": "increase count and add spacing between window primitives"
+      },
+      {
+        "feature": "Upper deck (hump) windows",
+        "observed": "A solid, unbroken dark line or cluster of dots on the nose section.",
+        "reference": "A clearly defined row of individual small windows following the curve of the upper deck.",
+        "direction_of_fix": "reposition and space out window primitives along the hump curvature"
+      },
+      {
+        "feature": "Forward cabin door",
+        "observed": "No visible door outline or break in the fuselage geometry near the nose.",
+        "reference": "A large, distinct rectangular door frame with a visible seam on the forward left side.",
+        "direction_of_fix": "add a recessed rectangular plane to represent the door outline"
+      },
+      {
+        "feature": "Rear cabin doors",
+        "observed": "No discernible breaks or outlines for rear passenger/service doors.",
+        "reference": "Distinct vertical seams and rectangular frames for multiple doors along the rear fuselage.",
+        "direction_of_fix": "add small rectangular planes at specific intervals on the rear fuselage"
+      }
+    ],
+    "critic_view": 8,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 68.48,
+  "created_at": "2026-07-17T09:36:00.191Z",
+  "actor_status": "edited"
+}

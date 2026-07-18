@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-transplant",
+  "iter": 3,
+  "run_id": "terransoul-gemma-transplant-iter-3-mrok258h",
+  "plane_sha256": "7b76fdd24f923a250314dae34180d915a419c81683a5a0df649d34063567e982",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 62.52,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.97
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.66
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.09
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.18
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 8.19
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.78
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.98
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.95
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.47
+    }
+  ],
+  "weakest_feature": {
+    "id": "livery_coherence",
+    "mean": 4.22,
+    "perCriterion": {
+      "engines_four_underwing": 5.16,
+      "upper_deck_hump": 4.69,
+      "fuselage_proportions": 5.93,
+      "wing_geometry": 7.09,
+      "empennage": 7.65,
+      "landing_gear": 6.66,
+      "window_door_lines": 6,
+      "livery_coherence": 4.22,
+      "silhouette_747": 6.51,
+      "craftsmanship": 7.78
+    }
+  },
+  "critic": {
+    "weakest_feature": "livery_coherence",
+    "fix_suggestion": "Divide the fuselage and wing primitive faces into three distinct material zones to replicate the tri-color scheme. Assign a white material to the upper 40% of the fuselage, a purple material to the lower 60%, and a secondary gold/yellow accent strip at the 40% boundary line. For the vertical stabilizer, apply a purple base material and place a small, gold-colored rectangular prism (scaled to 5% of the tail's surface area) centered on the upper half to represent the logo.",
+    "discrepancies": [
+      {
+        "feature": "Livery Color",
+        "observed": "Solid uniform gray color across the entire fuselage and wings.",
+        "reference": "White upper fuselage with purple underbelly and tail accents.",
+        "direction_of_fix": "Apply multi-color material segments to different primitive faces."
+      },
+      {
+        "feature": "Tail Logo",
+        "observed": "Plain gray vertical stabilizer without any markings.",
+        "reference": "Gold Thai Airways logo on a purple vertical stabilizer.",
+        "direction_of_fix": "Add a smaller, colored geometric shape or decal to the tail surface."
+      },
+      {
+        "feature": "Engine Accents",
+        "observed": "Solid gray engine nacelles.",
+        "reference": "Light gray/white engines with specific color banding.",
+        "direction_of_fix": "Change material colors of the cylinder primitives representing the engines."
+      },
+      {
+        "feature": "Fuselage Branding",
+        "observed": "No text or logos on the side of the aircraft.",
+        "reference": "Prominent 'THAI' lettering and gold stripes along the fuselage.",
+        "direction_of_fix": "Add thin, elongated rectangular prisms to represent the livery stripes."
+      }
+    ],
+    "critic_view": 3,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": false,
+  "best_total_after": 62.52,
+  "created_at": "2026-07-17T06:29:41.901Z",
+  "actor_status": "edited"
+}

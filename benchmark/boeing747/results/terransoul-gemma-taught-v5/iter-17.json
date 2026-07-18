@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 17,
+  "run_id": "terransoul-gemma-taught-v5-iter-17-mrp03fxl",
+  "plane_sha256": "70a6e4829d3a46b5e1c0aa358e488ac624d9532f1d01c8dce54b70293f2d2d34",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 55.69,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.18
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.25
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.62
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.52
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.74
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.09
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.81
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.18
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.73
+    }
+  ],
+  "weakest_feature": {
+    "id": "upper_deck_hump",
+    "mean": 4.29,
+    "perCriterion": {
+      "engines_four_underwing": 4.87,
+      "upper_deck_hump": 4.29,
+      "fuselage_proportions": 5.2,
+      "wing_geometry": 6,
+      "empennage": 6.52,
+      "landing_gear": 7.69,
+      "window_door_lines": 4.86,
+      "livery_coherence": 5.49,
+      "silhouette_747": 5.98,
+      "craftsmanship": 5.42
+    }
+  },
+  "critic": {
+    "weakest_feature": "upper_deck_hump",
+    "fix_suggestion": "Extend the upper-deck hump primitive along its longitudinal axis to increase its length by 40% relative to the cockpit's rear edge. Simultaneously, apply a 15-degree taper at the junction where the hump meets the main fuselage cylinder to ensure a smooth transition. Adjust the horizontal width of this primitive to match 85% of the total fuselage diameter, ensuring it integrates as a continuous structural extension rather than a separate bulbous shape.",
+    "discrepancies": [
+      {
+        "feature": "Hump length",
+        "observed": "A short, stubby hump that ends quickly behind the cockpit.",
+        "reference": "An elongated upper deck that extends significantly further back along the fuselage.",
+        "direction_of_fix": "increase length of the upper-deck primitive"
+      },
+      {
+        "feature": "Hump height",
+        "observed": "The hump is relatively low and rounded.",
+        "reference": "A more pronounced, elevated profile on the forward section of the fuselage.",
+        "direction_of_fix": "increase vertical scale of the hump geometry"
+      },
+      {
+        "feature": "Fuselage integration",
+        "observed": "The hump appears as a separate bulbous shape attached to the top.",
+        "reference": "A smooth, continuous transition from the upper deck into the main fuselage body.",
+        "direction_of_fix": "merge or taper the junction between the hump and the main cylinder"
+      },
+      {
+        "feature": "Hump width",
+        "observed": "The hump is narrow relative to the total fuselage diameter.",
+        "reference": "The upper deck occupies a wider portion of the forward fuselage cross-section.",
+        "direction_of_fix": "increase horizontal width of the hump primitive"
+      }
+    ],
+    "critic_view": 3,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": false,
+  "best_total_after": 55.69,
+  "created_at": "2026-07-17T13:58:52.250Z",
+  "actor_status": "edited"
+}

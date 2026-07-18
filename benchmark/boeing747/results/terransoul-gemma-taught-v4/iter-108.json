@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 108,
+  "run_id": "terransoul-gemma-taught-v4-iter-108-mro90ecu",
+  "plane_sha256": "63b7fb53b46c7485e3aeab636d5a06f801e038339b2c388cbc795f7285657cf3",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 51.94,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.93
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.58
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.35
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.98
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.63
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.82
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.99
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.66
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.81
+    }
+  ],
+  "weakest_feature": {
+    "id": "upper_deck_hump",
+    "mean": 4.2,
+    "perCriterion": {
+      "engines_four_underwing": 4.22,
+      "upper_deck_hump": 4.2,
+      "fuselage_proportions": 4.8,
+      "wing_geometry": 5.44,
+      "empennage": 5.85,
+      "landing_gear": 7.73,
+      "window_door_lines": 4.77,
+      "livery_coherence": 5.8,
+      "silhouette_747": 5.44,
+      "craftsmanship": 4.96
+    }
+  },
+  "critic": {
+    "weakest_feature": "upper_deck_hump",
+    "fix_suggestion": "Extend the upper-deck hump primitive along its longitudinal axis to increase total length by 40%. Simultaneously, apply a non-uniform scale of 1.5x on the vertical (Z) axis and a 0.8x scale on the transverse (Y) axis to transform the bulbous dome into an elongated, aerodynamic taper. Finally, shift the base position forward by 10% of its length to ensure it merges seamlessly with the front fuselage volume rather than appearing as a separate object.",
+    "discrepancies": [
+      {
+        "feature": "Hump length",
+        "observed": "A short, rounded hump that ends quickly behind the cockpit.",
+        "reference": "An elongated upper deck that extends significantly further back along the fuselage.",
+        "direction_of_fix": "increase length of the upper-deck primitive"
+      },
+      {
+        "feature": "Hump height",
+        "observed": "The hump is relatively low and blends into the main fuselage.",
+        "reference": "A prominent, high-profile double-decker section that rises sharply from the nose.",
+        "direction_of_fix": "increase vertical height of the upper-deck primitive"
+      },
+      {
+        "feature": "Hump curvature",
+        "observed": "A simple, bulbous dome shape.",
+        "reference": "A more elongated, aerodynamic taper transitioning into the main fuselage.",
+        "direction_of_fix": "stretch and flatten the curve of the hump geometry"
+      },
+      {
+        "feature": "Fuselage integration",
+        "observed": "The hump appears as a separate rounded object on top of the nose.",
+        "reference": "An integrated structural extension that forms part of the forward fuselage volume.",
+        "direction_of_fix": "merge or align the base of the hump primitive with the front fuselage geometry"
+      }
+    ],
+    "critic_view": 3,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 54.13,
+  "created_at": "2026-07-17T01:20:17.698Z",
+  "actor_status": "edited"
+}

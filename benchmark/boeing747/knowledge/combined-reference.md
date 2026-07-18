@@ -39,7 +39,7 @@
 | Taper ratio (tip chord ÷ root chord) | 0.284 (747-100/-200), 0.275 (747-400) | [Jenkinson et al., *Civil Jet Aircraft Design*]; other sources round to ~0.25 |
 | Mean aerodynamic chord | 9.80 m (747-100/-200), 9.68 m (747-400) | [Jenkinson et al., *Civil Jet Aircraft Design*] |
 | Wing reference area | ~525 m² (5,650 ft²) per the engineering data table; ~541.2 m² (5,825 ft²) is the figure most commonly quoted on general aviation-spec sites | [Jenkinson et al., *Civil Jet Aircraft Design*] vs. general web consensus — flagged discrepancy, not resolved in sources found |
-| Wing planform shape | Continuously tapering chord from root to tip (no straight-then-tapered "kink" panel); leading edge has Krueger flaps running almost its entire span | [Wikipedia: Boeing 747] |
+| Wing planform shape | Continuously tapering chord from root to tip (no straight-then-tapered "kink" panel on the leading edge/outboard wing; the inboard TRAILING edge does carry the Yehudi extension — see Addendum A.3); leading edge has Krueger flaps running almost its entire span | [Wikipedia: Boeing 747] |
 
 **Modeling takeaway:** a single swept trapezoidal wing (~37.5° leading-edge sweep, taper ratio ~0.27–0.28, mild 7° dihedral) built from one primitive per side, mirrored across the fuselage centerline, is geometrically correct — the 747 wing has no separate outboard "kink" panel the way some later widebodies do.
 
@@ -556,3 +556,119 @@ lighting, shared-scale-variable proportioning in procedural code, and the
 overall "blockout → detail" sequencing) reflect widely-established CG
 production practice rather than any single citable source, consistent with
 the Polycount and Three.js documentation cited above.
+
+
+# Addendum: Wing Geometry Hard Numbers + Primitive-Construction Recipes
+
+*Supplements §2 (Wing Geometry) with (A) absolute chord/thickness numbers and the planform conventions that reconcile the taper-ratio disagreement flagged in §2, (B) primitive/low-poly construction technique for swept, doubly-tapered, fuselage-faired wings, and (C) Three.js recipes for baking sweep and taper into primitives. Every figure traces to a public spec or public modeling/engineering source, cited inline.*
+
+## A. Wing Geometry — Absolute Chord, Span, and Two Kinds of Taper
+
+### A.1 Hard numbers (747-400 baseline unless noted)
+| Parameter | Value | Source |
+|---|---|---|
+| Theoretical root chord (centreline) | 16.56 m | aircraftinvestigation.info |
+| Reference root chord (Jane's) | 14.63 m (48 ft) | Jane's |
+| Tip chord | 4.06 m (13 ft 4 in) | Jane's / aircraftinvestigation.info |
+| Wingspan (no winglets) | 59.64 m (-100) → 64.44 m (-400) | aircraftinvestigation.info |
+| Gross wing area | 511 m² (-100); 525–541 m² (-400, convention-dependent) | aircraftinvestigation.info (525) / Jane's (541.16) |
+| Aspect ratio | 6.96 (-100) → 7.7–7.91 (-400) | Jane's (7.7) / aircraftinvestigation.info (7.91) |
+| Quarter-chord sweep | 37°3′ (≈37.05°) Jane's; ~35.5° other design tables | Jane's; cf. §2 |
+| Leading-edge sweep (silhouette) | ~37.5° | §2 [Wikipedia] |
+| Dihedral (at rest) | 7° | Jane's / aircraftinvestigation.info |
+| Incidence | 2° | Jane's / aircraftinvestigation.info |
+| t/c — inboard / mid / outboard / avg | 13.44% / 7.8% / 8% / 10.7% | Jane's; avg aircraftinvestigation.info |
+| Airfoil sections | Boeing "BAC" supercritical: root BAC 463–468, tip 469–474 | UIUC airfoil guide; PPRuNe airfoil thread |
+
+### A.2 Why taper ratio is cited as both ~0.245 and ~0.278 (resolved)
+A transport wing is defined as a **trapezoidal reference wing** whose edges extend straight to the aircraft centreline; that **notional centreline chord** is larger than the **exposed root chord** at the wing-fuselage junction. Taper ratio = tip ÷ *notional centreline* chord.
+- Centreline chord 16.56 m: 4.06 / 16.56 = **0.245** (aircraftinvestigation.info).
+- Jane's reference root 14.63 m: 4.06 / 14.63 = **0.278** (matches §2's ~0.275 family).
+Both are correct — different root-chord definitions. **For a single-primitive wing, pick one root chord and derive tip as ~0.25–0.28× of it.** [lissys.uk — Piano Geometric Specs]
+
+### A.3 Inboard trailing-edge extension ("Yehudi") — refinement to §2
+§2's "no separate outboard 'kink' panel" is correct **about the leading edge and outboard wing** — the LE is one continuous straight sweep to the tip. Read it alongside one nuance: the **trailing edge** has an inboard extension, the **Yehudi** — an extra triangular area along the inboard TE that increases root chord/structural depth and houses the inboard main-gear mount. This is why a pure trapezoid from 16.56 m centreline chord × 4.06 m tip over full span overshoots the true ~525–541 m². [airliners.net — TE kink; lissys.uk]
+- **Simplest correct primitive:** one straight-swept tapered panel per side (ignore Yehudi). Reads as a 747 in silhouette.
+- **One step better:** wide inboard "glove" panel (near-constant large chord, little TE sweep) + tapered outboard panel whose LE aligns with the inboard LE — reproduces the visible TE crank near the inboard-engine station.
+
+### A.4 Derived modeling ratios (arithmetic from the cited absolutes)
+- **Span vs. fuselage length:** 64.44 / 70.66 = **0.91** → wing spans ~0.9× body length.
+- **Root chord vs. length:** 14.63 / 70.66 ≈ **0.21** → root chord ≈ one-fifth of body length.
+- **Two independent tapers (key point):** chord tapers 14.63→4.06 m (≈**3.6:1**); t/c *also* falls 13.44%→~8%. Absolute thickness therefore tapers 14.63×0.1344≈1.97 m at root → 4.06×0.08≈0.33 m at tip ≈ **6:1** — the wing thins *faster* than it narrows. Model both, or the tip reads as a plank.
+- **Sweep offset:** over exposed semi-span ~(64.44−6.5)/2 ≈ 29 m, a 37.5° LE sweep pushes the tip LE aft by 29·tan37.5° ≈ **22 m**.
+- **Dihedral rise:** at 7°, tip sits 29·tan7° ≈ **3.6 m** above the root plane.
+
+## B. Primitive / Low-Poly Construction Technique
+
+### B.1 Blockout the trapezoid first, from shared scale variables
+Place root/tip chord lines at the A.1 numbers (as fractions of a shared `fuselageLength`), span ~0.9× length, and check the silhouette before refining — the blockout is the most important stage; anchor to real-world scale, not eyeballed per part. Derive tip chord, thickness, sweep offset, and dihedral rise from the *same* root/length variables so proportions stay coherent under later tuning. [Polycount — Topology]
+
+### B.2 Build sweep + double taper into one primitive per side
+A swept, tapered wing is a **frustum**, not a box: the tip section is a scaled-down, aft-shifted, thinner copy of the root. Two equivalent strategies: (1) a **tapered 4-sided frustum** (cylinder, 4 radial segments; unequal top/bottom radii give chord taper; a non-uniform flatten makes the aerofoil-ish lens); (2) a **sheared, per-station-scaled box** (shear bakes constant sweep; scale the tip cross-section down in chord *and* thickness for the double taper). Either way, apply **dihedral** (~7° about the fore-aft axis) and **incidence** (~2° about the spanwise axis) *after* shaping, then position and mirror.
+
+### B.3 Fair the wing root into the belly — don't just intersect
+The wing-fuselage seam is the most amateur-prone join; real aircraft cover it with a **wing-root fairing** (variable-radius blend). Cheapest first:
+- **Overlap generously** — bury the root ~1–2 fuselage-radii in so no coplanar faces meet at the surface (hides the intersection, avoids z-fighting). [Z-fighting — Wikipedia]
+- **Add a belly fillet primitive** — a stretched low-radius rounded box or squashed half-cylinder along the root/belly join, tapering fore and aft; reads as the fairing and covers the seam. [airplanes3d; Airfield Models]
+- **Keep the fairing longer than the root chord**, extending aft past the trailing edge.
+
+### B.4 Symmetry
+Build one wing fully (shape + sweep + dihedral + fairing + engines), then mirror across the fuselage centreline (`scale.x = -1` or an explicit mirror matrix) rather than re-deriving numbers — guarantees perfect symmetry and confines later tuning to one side. [Blender Mirror Modifier]
+
+## C. Three.js Recipes for Tapered/Swept Primitives
+
+### C.1 `CylinderGeometry` radiusTop/radiusBottom — the built-in taper
+`new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments, …)` — unequal radii yield a frustum/cone. Correct for round tapered members (nacelles, tail cone, aft fuselage) and, with `radialSegments: 4` + a flatten, for a wing:
+```js
+const span = 29;                       // exposed semi-span (m)
+const g = new THREE.CylinderGeometry(
+  4.06 / 2,   // radiusTop ≈ half tip chord
+  14.63 / 2,  // radiusBottom ≈ half root chord → chord taper
+  span, 4, 1  // 4 radial segments = rectangular section
+);
+g.rotateY(Math.PI / 4);                // square-on the chord/thickness axes
+g.scale(1, 1, 0.12);                   // flatten thickness → t/c ~13% at root end
+```
+
+### C.2 Bake sweep with a shear matrix; taper with per-station vertex scaling
+A single affine scale cannot taper a box (it scales every station equally). Sweep, however, *is* a shear. Combine baked shear (sweep) with per-vertex chord+thickness scaling (double taper):
+```js
+const root = 14.63, tip = 4.06, thickRoot = 1.97, span = 29;
+const sweepTan = Math.tan(THREE.MathUtils.degToRad(37.5));
+
+// X = spanwise (0→span), Z = chordwise, Y = thickness.
+const g = new THREE.BoxGeometry(span, thickRoot, root, 8, 1, 1);
+g.translate(span / 2, 0, 0);           // root at x=0, tip at x=span
+
+// 1) Bake constant sweep: shift chordwise (Z) aft as span (X) grows.
+g.applyMatrix4(new THREE.Matrix4().makeShear(0, 0, 0, 0, sweepTan, 0)); // zx = tanΛ
+
+// 2) Double taper: scale each vertex's chord (Z) and thickness (Y) by span fraction.
+const pos = g.attributes.position;
+for (let i = 0; i < pos.count; i++) {
+  const t = THREE.MathUtils.clamp(pos.getX(i) / span, 0, 1); // 0 root → 1 tip
+  pos.setZ(i, pos.getZ(i) * THREE.MathUtils.lerp(1, tip / root, t));
+  pos.setY(i, pos.getY(i) * THREE.MathUtils.lerp(1, (tip * 0.08) / thickRoot, t)); // thins faster
+}
+pos.needsUpdate = true;
+g.computeVertexNormals();
+g.rotateX(THREE.MathUtils.degToRad(7)); // dihedral about fore-aft axis
+```
+`makeShear(xy,xz,yx,yz,zx,zy)` — the `zx` term does `z += tanΛ·x`, sweeping every chordwise station aft by the same angle; `applyMatrix4` bakes the transform into vertex coordinates. After any per-vertex edit, call `computeVertexNormals()` and orbit-inspect under one directional light to catch inverted/averaged normals.
+
+### C.3 `ExtrudeGeometry` cautions under a primitives-only budget
+Flexible but heavy for this job: `curveSegments`/`steps`/`bevelSegments` multiply triangle count fast (each doubling ~quadruples triangles); bevel/cap artifacts can produce near-coplanar or non-manifold faces that z-fight or break CSG (which needs two-manifold, watertight brushes). **Rule of thumb:** prefer `BoxGeometry`/`CylinderGeometry` + baked shear/taper for the wing; reserve `ExtrudeGeometry` for genuinely 2-D-profile parts (winglet plate, flap-track fairing) with `bevelEnabled: false` and low `steps`.
+
+## Addendum Sources
+- aircraftinvestigation.info — Boeing 747-400 (https://aircraftinvestigation.info/airplanes/Boeing_747-400.html) & 747-100 (https://aircraftinvestigation.info/airplanes/747-100.html)
+- Jane's — Boeing 747-400 (https://janes.migavia.com/usa/boeing/boeing-747-400.html)
+- lissys.uk — Piano, Ch.03 Geometric Specifications (https://lissys.uk/pug/c03.html)
+- airliners.net — Kink on trailing edge, Airbus vs Boeing wings (https://www.airliners.net/forum/viewtopic.php?t=764529)
+- UIUC — The Incomplete Guide to Airfoil Usage, M. Selig (https://m-selig.ae.illinois.edu/ads/aircraft.html)
+- PPRuNe — NACA airfoil for 737 classic / 744 (https://www.pprune.org/tech-log/226843-what-naca-airfoil-737-classic-744-a.html)
+- three.js docs — CylinderGeometry (https://threejs.org/docs/pages/CylinderGeometry.html), Matrix4 (https://threejs.org/docs/pages/Matrix4.html), BufferGeometry.applyMatrix4 (https://threejs.org/docs/#api/en/core/BufferGeometry.applyMatrix4), ExtrudeGeometry (https://threejs.org/docs/#api/en/geometries/ExtrudeGeometry)
+- LearnWithHasan — Three.js Geometry Guide (https://learnwithhasan.com/threejs-guide/geometry/)
+- airplanes3d — Modeling Wing Root Fairing 1 & 2 (https://airplanes3d.wordpress.com/2015/11/07/modeling-wing-root-fairing-1/, https://airplanes3d.wordpress.com/2015/11/14/modeling-wing-root-fairing-2/)
+- Airfield Models — Fuselage-to-Wing Fairing (https://www.airfieldmodels.com/information_source/how_to_articles_for_model_builders/construction/wing_construction/13.htm)
+- Polycount Wiki — Topology (http://wiki.polycount.com/wiki/Topology)
+- three-bvh-csg (https://github.com/gkjohnson/three-bvh-csg); Z-fighting — Wikipedia (https://en.wikipedia.org/wiki/Z-fighting); Blender Mirror Modifier (https://www.blenderbasecamp.com/blender-mirror-modifier-reflect-your-models/)

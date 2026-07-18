@@ -1,0 +1,129 @@
+{
+  "model": "claude-opus-4-8",
+  "effort": "max",
+  "ms": 1315079,
+  "cost_usd": 5.359529499999999,
+  "timeout_ms": 1800000,
+  "observability": {
+    "event_count": 66,
+    "tool_calls": {
+      "Read": 12,
+      "Bash": 3,
+      "Edit": 3,
+      "Grep": 2
+    },
+    "total_tool_calls": 20,
+    "text_chunks": 26,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "Read",
+        "count": 12
+      },
+      {
+        "name": "Bash",
+        "count": 3
+      },
+      {
+        "name": "Edit",
+        "count": 3
+      },
+      {
+        "name": "Grep",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "a7674593aa5d40595af5e781ba0cc11f22a56237d9940c7d4d6bc7270f157292",
+  "plane_sha256_after": "2537ceb0477b0311ab82aa722e66adea953321e7d162be4a4dbbb0402c142452",
+  "changed": true,
+  "claude_result_text": "Done. Syntax valid, open contract clean, `export function buildPlane(THREE)` intact, and the header comment now matches the code.\n\n**What happened first — you should know this:** a concurrent process running this same actor prompt rewrote the engine block *between* my Read and my Edit. This is the identical race that regressed iter 6 by −5.07. My first edit (a header comment) landed cleanly against text that still matched, but it then described `nacY = under - 2.85` and `cx = le + 1.6` — neither of which existed anymore. I did **not** leave that in. I re-read the file, threw my own planned edit away, and rewrote the comment to describe the code that is actually there.\n\n**What I changed:** two constants in the engine block — `NAC_Y_IN` −2.85 → **−3.15** and `NAC_Y_RISE` 0.031 → **0.074**.\n\n**Why.** I inspected views 1, 2, 3, 8, 9 and the contact sheet, plus `side.png`, `front-quarter.png` and `threeview.png`. gemma reports \"only two engines instead of four\" on views 1, 4, 7 and 9 but four on 3, 6 and 8 — that split is exactly the profile-ish views against the ones that see under the aircraft, and Claude's three worst views (1: 3.91, 2: 2.74, 3: 2.74, against 8.08/8.09/8.08 for views 4/5/8) all name `engines_four_underwing` first. The outboard nacelle isn't being missed by the judges; it isn't there to see. The iter-16 wing-to-body fairing pushes the belly down to **y = −3.62** across exactly the x-band the engines occupy, and the outboard cowl was standing only **0.31** below it — three pixels of light-grey cowl on a light-grey belly.\n\nThe concurrent writer diagnosed that too, and its two rebuilds are good (whole cowl forward of the leading edge; nacelle on an absolute height datum instead of `under - k`, so the wing's dihedral stops riding the outboard cowl into the hull). I kept both. But it then solved its datum against a belly of **−3**, its own note reading \"clear the belly (−3) by 1.40 / 1.15\" — against the real line those are 0.78 and 0.53. The tell is the inb",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 600448,
+      "actor_error": "terransoul-cli agent-task timed out after 600000ms (8 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 25,
+        "tool_calls": {
+          "Read": 8
+        },
+        "total_tool_calls": 8,
+        "text_chunks": 9,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "actor_failed",
+      "ms": 1200073,
+      "actor_error": "terransoul-cli agent-task timed out after 1200000ms (13 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 35,
+        "tool_calls": {
+          "Read": 13
+        },
+        "total_tool_calls": 13,
+        "text_chunks": 9,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 3,
+      "timeout_ms": 1800000,
+      "status": "edited",
+      "ms": 1315079,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 66,
+        "tool_calls": {
+          "Read": 12,
+          "Bash": 3,
+          "Edit": 3,
+          "Grep": 2
+        },
+        "total_tool_calls": 20,
+        "text_chunks": 26,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "Read",
+            "count": 12
+          },
+          {
+            "name": "Bash",
+            "count": 3
+          },
+          {
+            "name": "Edit",
+            "count": 3
+          },
+          {
+            "name": "Grep",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

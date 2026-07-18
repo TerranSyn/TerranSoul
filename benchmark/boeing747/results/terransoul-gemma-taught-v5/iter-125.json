@@ -1,0 +1,103 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 125,
+  "run_id": "terransoul-gemma-taught-v5-iter-125-mrpwyr91",
+  "plane_sha256": "3849fd4363a807c31a1f5952536d29c6753c576b4359cf20b37def92ae13c221",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 58.73,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.15
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.15
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.47
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.15
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.87
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.96
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.23
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.82
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.06
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.4,
+    "perCriterion": {
+      "engines_four_underwing": 4.4,
+      "upper_deck_hump": 5,
+      "fuselage_proportions": 5.71,
+      "wing_geometry": 6.42,
+      "empennage": 6.9,
+      "landing_gear": 7.55,
+      "window_door_lines": 5.14,
+      "livery_coherence": 5.96,
+      "silhouette_747": 6.38,
+      "craftsmanship": 5.78
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the existing engine primitive geometry to achieve four total engines; then, apply a translation transform to move the two new engine instances outward along the wing's longitudinal axis until they are equidistant from the fuselage center.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two large engines visible under the wing",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines are clustered near the fuselage center",
+        "reference": "Engines are spaced out along the wingspan",
+        "direction_of_fix": "move engine primitives outward away from the fuselage"
+      },
+      {
+        "feature": "Wingtip Geometry",
+        "observed": "Wings end in blunt, flat edges",
+        "reference": "Wings have distinct upward-turned winglets/tips",
+        "direction_of_fix": "add small vertical planes at wing tips"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-18T05:19:24.523Z",
+  "actor_status": "no_change"
+}

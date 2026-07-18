@@ -1,0 +1,63 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 133066,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 405,
+    "tool_calls": {
+      "read_file": 2
+    },
+    "total_tool_calls": 2,
+    "text_chunks": 401,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "no_change",
+  "plane_sha256_before": "dbf8826f0e954056d7c895c3f564ddf2ad7d2d95d198f9605a4918967e027eb4",
+  "plane_sha256_after": "dbf8826f0e954056d7c895c3f564ddf2ad7d2d95d198f9605a4918967e027eb4",
+  "changed": false,
+  "claude_result_text": "The user wants me to improve the Boeing-747 model.\nThe current model has several issues (judged at ~4/10):\n- Engines are floating and incorrectly placed.\n- Hump is disproportionate and lacks smoothing.\n- Wings are flat slabs with no taper or dihedral.\n- Landing gear looks like disconnected spheres/rods.\n- Construction shows significant floating parts and lack of aerodynamic fairing.\n- Weakest feature: 'Craftsmanship (no floating parts, z-fighting, holes)' (mean 2.82/10).\n\nI need to rebuild the model focusing on coherence and fixing the \"floating\" issues first as per the PLATEAU ESCALATION instructions.\n\nLooking at `plane.js`:\n- `fuselage` is a cylinder from x=-30 to x=30 (diameter 6).\n- `hump` is another cylinder, but its position/rotation might be making it look detached or blocky. It's centered at x=20.\n- `wings` are boxes. They have some sweep and dihedral, but they are flat slabs.\n- `engines` are cylinders with pylons.\n- `tail` is a box.\n- `landing_gear` has struts and spheres for wheels.\n\nCritique of current construction:\n1. **Wings**: `BoxGeometry(1, 0.4, 35)` is very thin. Taper is missing. Dihedral is small (3 degrees). Sweep is 30 degrees. They don't seem to connect well to the fuselage.\n2. **Engines**: Placed at x=14 and x=26 from some origin? No, they are relative to `wingGroup`. Let's check. The wing half has `side * 15` for z-position. When side is 1, it's at z=15. Engines are at zDist=18 and 36. So they are well outside the wings.\n   Wait: `half.position.set(side * 2, -1.2, side * 15)`.\n   `engine.position.set(side * (idx === 0 ? 14 : 26), -3.4, side * zDist)`.\n   If `side=1`, wing is at `z=15` and engine is at `z=18` and `z=36`. They are outside the wings! The wing half only goes to `15`.\n3. **Hump**: Cylinder of radius 4.5, height 22 (along x). Positioned at y=6.2. Fuselage is cylinder with radius 3. So it's a big lump on top. It needs better integration.\n4. **Tail**: Box `(6, 12, 0.6)` at `-27, 7, 0`. The fuselage tail cone should be more tapered.\n\n",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "no_change",
+      "ms": 133066,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 405,
+        "tool_calls": {
+          "read_file": 2
+        },
+        "total_tool_calls": 2,
+        "text_chunks": 401,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

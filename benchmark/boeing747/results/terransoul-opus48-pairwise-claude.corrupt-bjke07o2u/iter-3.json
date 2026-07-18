@@ -1,0 +1,91 @@
+{
+  "actor": "terransoul-opus48-pairwise-claude",
+  "judge_track": "claude-opus-4-8-pairwise-vision",
+  "iter": 3,
+  "run_id": "terransoul-opus48-pairwise-iter-3-mrihk51s",
+  "plane_sha256": "cf31e8dfdcff8a92c104bea2466262efaf245e5b3a5056831a73e6cc8bde9c01",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 41.93,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 2.69,
+      "notes": "engines_four_underwing: reference shows Two pairs of overlapping cylindrical nacelles (four engines total, near+far side) hang below and forward of the wing on visible pylon stubs, with darker circular inlet faces | upper_deck_hump: reference shows A clear raised dome starting just behind the cockpit and blending back down within roughly the front third of the fuselage, sitting above the main tube"
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 2.66,
+      "notes": "engines_four_underwing: reference shows Two nacelle bodies are visible under the wing with cylindrical inlet fairings, and an aft cylindrical nacelle with a rounded darker inlet face sits on a pylon; the wing-mounted engines read as underslung on the near side | upper_deck_hump: reference shows A clearly raised, faired bulge sits over the forward third of the fuselage starting behind the cockpit a"
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 2.39,
+      "notes": "engines_four_underwing: reference shows Four nacelles on clearly visible pylons hang below and forward of the wings with wider, more even inboard/outboard spacing matching the three-view | upper_deck_hump: reference shows A distinctly widened crown/upper lobe with a small cockpit window band sits above the nose, reading as a second deck head-on | empennage: reference shows A wider blue-accented fi"
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.96,
+      "notes": "livery_coherence: reference shows Mid-grey body and grey wings with a navy-blue fin providing a tasteful accent, similar to the blue tail in the photo"
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.95,
+      "notes": "livery_coherence: reference shows White fuselage, mid-grey wings and nacelles, plus a navy blue accent stripe on the tail fin"
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.68,
+      "notes": "engines_four_underwing: reference shows Four nacelles on pylons under the wings with dark ringed inlet faces and clear forward projection ahead of the wing leading edge, near-wing pair spaced inboard/outboard and far-wing pair visible above the fuselage line | upper_deck_hump: reference shows A raised crown bulge sits behind the cockpit on the forward fuselage, faired down within the front third, "
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.61,
+      "notes": "engines_four_underwing: reference shows Four separate cylindrical nacelles hang clearly BELOW the wings on visible short pylons, two per wing, projecting forward of the wing with dark cylinder ends | upper_deck_hump: reference shows A pronounced raised upper-deck lobe sits on the forward fuselage, faired down within roughly the front third, with cockpit windows on the upper lobe | empennage: refer"
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.43,
+      "notes": "engines_four_underwing: reference shows Four pale nacelles are clearly slung below and forward of the swept wing on visible pylons, with dark circular inlets on the near two and plausible inboard/outboard spacing across both wings | upper_deck_hump: reference shows A pronounced rounded upper-deck lobe sits over the forward fuselage, starting at the cockpit and blending down within roughly the fron"
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.37,
+      "notes": "landing_gear: reference shows Nose strut plus main gear bogies each carrying multiple wheels in a truck arrangement under the wing/body junction | window_door_lines: reference shows Dashed main-deck window band plus a separate row of windows on the upper deck and a smaller cockpit window on the upper lobe | livery_coherence: reference shows Light fuselage with a dark-blue cheatline running the bod"
+    }
+  ],
+  "weakest_feature": {
+    "id": "upper_deck_hump",
+    "mean": 1.25,
+    "perCriterion": {
+      "engines_four_underwing": 3.28,
+      "upper_deck_hump": 1.25,
+      "fuselage_proportions": 7.36,
+      "wing_geometry": 6.07,
+      "empennage": 3.75,
+      "landing_gear": 1.72,
+      "window_door_lines": 1.88,
+      "livery_coherence": 1.94,
+      "silhouette_747": 1.96,
+      "craftsmanship": 6.94
+    }
+  },
+  "critic": {
+    "weakest_feature": "upper_deck_hump",
+    "fix_suggestion": "Improve 'Partial-length upper-deck hump' (mean 1.25/10). Target the 8 anchor: distinct partial-length upper deck starting at the nose and blending down within roughly the front third of the fuselage; then the 10 anchor: iconic 747 hump: starts at the cockpit, smoothly faired into the crown, ends around one-third of the length, with a visible cockpit region on the upper lobe.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 6.490318,
+  "regressed": true,
+  "best_total_after": 43.84,
+  "created_at": "2026-07-13T00:42:54.208Z",
+  "actor_status": "edited"
+}

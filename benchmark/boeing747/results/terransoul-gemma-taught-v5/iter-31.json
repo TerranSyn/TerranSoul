@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 31,
+  "run_id": "terransoul-gemma-taught-v5-iter-31-mrp3y98t",
+  "plane_sha256": "f22213bfa07ce1cd1ee881b25923b0b182c5bbdb8dc2c0036d7732a8d30a2144",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 57.19,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.78
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.53
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.99
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.41
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5.31
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.22
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.45
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.49
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.29
+    }
+  ],
+  "weakest_feature": {
+    "id": "upper_deck_hump",
+    "mean": 4.37,
+    "perCriterion": {
+      "engines_four_underwing": 4.56,
+      "upper_deck_hump": 4.37,
+      "fuselage_proportions": 5.49,
+      "wing_geometry": 6.24,
+      "empennage": 6.82,
+      "landing_gear": 7.78,
+      "window_door_lines": 4.77,
+      "livery_coherence": 6.31,
+      "silhouette_747": 6.22,
+      "craftsmanship": 5.47
+    }
+  },
+  "critic": {
+    "weakest_feature": "upper_deck_hump",
+    "fix_suggestion": "Extend the upper-deck cylinder geometry along its longitudinal axis. Increase the length of the hump by 40% to ensure it extends significantly further back toward the rear fuselage, past the cockpit area, matching the reference profile's elongated silhouette.",
+    "discrepancies": [
+      {
+        "feature": "Hump length",
+        "observed": "The upper deck hump ends very close to the cockpit area.",
+        "reference": "The hump extends significantly further back along the fuselage.",
+        "direction_of_fix": "increase length of the upper-deck cylinder"
+      },
+      {
+        "feature": "Hump curvature",
+        "observed": "A sharp transition between the cockpit and the top deck structure.",
+        "reference": "A smooth, continuous curve blending into the main fuselage.",
+        "direction_of_fix": "smooth/round the front edge of the hump geometry"
+      },
+      {
+        "feature": "Hump width",
+        "observed": "The upper deck appears very narrow relative to the lower fuselage.",
+        "reference": "The upper deck has a substantial, wide profile that tapers gradually.",
+        "direction_of_fix": "increase diameter of the upper-deck cylinder"
+      },
+      {
+        "feature": "Hump height",
+        "observed": "The hump is relatively low and flat against the top of the plane.",
+        "reference": "A prominent, high-profile 'hump' characteristic of the 747.",
+        "direction_of_fix": "increase vertical height of the upper-deck cylinder"
+      }
+    ],
+    "critic_view": 3,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 57.44,
+  "created_at": "2026-07-17T15:46:50.220Z",
+  "actor_status": "edited"
+}

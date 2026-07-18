@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 95,
+  "run_id": "terransoul-gemma-taught-v5-iter-95-mrpny8qt",
+  "plane_sha256": "721e0ef009af99fe8eb4bc3c07ca0c4d210f4850f8e531eaad20daffec09f269",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 62.28,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.25
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.59
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.55
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.71
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 6.81
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.2
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 8.19
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.75
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.78,
+    "perCriterion": {
+      "engines_four_underwing": 4.78,
+      "upper_deck_hump": 5.94,
+      "fuselage_proportions": 5.87,
+      "wing_geometry": 6.87,
+      "empennage": 6.99,
+      "landing_gear": 7.62,
+      "window_door_lines": 5.29,
+      "livery_coherence": 6.33,
+      "silhouette_747": 7,
+      "craftsmanship": 5.78
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Apply a non-uniform scale to the wing primitives along the longitudinal axis (X) to create a taper, reducing width by 40% from root to tip. Simultaneously, rotate the wing geometry -15 degrees relative to the fuselage centerline to achieve the swept-back profile and move the engine primitives 2 units outward along the Y-axis from the wing root.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible on one wing side",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Wing Sweep",
+        "observed": "Wings are nearly perpendicular to the fuselage",
+        "reference": "Significantly swept-back wings",
+        "direction_of_fix": "rotate wing primitives backward along longitudinal axis"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines attached directly under the wing root",
+        "reference": "Engines spaced out along the leading edge/wing span",
+        "direction_of_fix": "move engine primitives outward from fuselage"
+      },
+      {
+        "feature": "Wing Planform",
+        "observed": "Rectangular, flat wing shape",
+        "reference": "Tapered wings with distinct leading and trailing edges",
+        "direction_of_fix": "scale wing width to taper toward tips"
+      }
+    ],
+    "critic_view": 7,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-18T01:06:49.200Z",
+  "actor_status": "edited"
+}

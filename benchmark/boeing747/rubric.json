@@ -1,10 +1,36 @@
 {
   "protocol": "boeing747-primitives-vision-bench",
-  "version": 2,
+  "version": 4,
+  "version_4_change": "JUDGE-SAMPLING change (self-consistency panel), no rubric-content change (same criteria, anchors, weights, cameras, prompts, model). The per-view vote becomes a K-draw panel of DISTINCT FIXED seeds at temperature judge_panel.temperature (diverse AND byte-reproducible — Ollama is deterministic per seed), aggregated per criterion by MEAN (Wang et al. arXiv:2203.11171 self-consistency; single-draw LLM-judge scoring is high-variance, arXiv:2305.17926), replacing version-3's 3-fixed-seed temperature-0 MEDIAN. Each view also reports its panel score spread, and the /100 total carries panel_se_total — the LIVE-MEASURED judge noise — which the frozen-gemma edit gate consumes as epsilonTotal (judge_panel.epsilon_se_coefficient x panel_se_total) instead of the uncalibrated static total_noise_epsilon=0 that made the gate reject genuinely-neutral edits inside noise. Results under version 4 are NOT numerically comparable to version-3 (or earlier) results: the v4 era runs in its own results track (fresh best.json/gate-state.json, era-guarded), the reference build is re-probed under this protocol to re-anchor the parity target, and all v3/v2 evidence stays frozen in place as those eras' floors. Removing the judge_panel block restores the version-3 protocol byte-identically.",
+  "frozen_escalation": {
+    "min_stall_iters": 6,
+    "note": "Frozen-track plateau breaker (2026-07-17): when the gate's accepted best has not advanced for this many iterations, the actor prompt gains the PRIMITIVE-RECOMPOSITION escalation (buildFrozenEscalation -- frozen-contract-safe, no mesh directives) and escalation_armed is stamped so the gate applies the aggregate-only exemption to that edit. Remove this block to disable escalation on the frozen track."
+  },
+  "strategy_certification": {
+    "strategy_min_episodes": 3,
+    "strategy_winrate_floor": 0.5,
+    "alpha": 0.1,
+    "note": "R5 promotion-gate knobs for the frozen-gemma track's strategy cheatsheet (v4 era; the pairwise track keeps reading its own calibrated sidecar). A strategy is re-injected into the actor prompt only once its win-rate LCB over >= min_episodes independent gate observations clears the floor."
+  },
+  "critic_structured": {
+    "max_discrepancies": 4,
+    "note": "Structured two-stage critic (v4 era): stage 1 = falsifiable render-vs-reference observations on the weakest criterion's worst VISIBLE view; stage 2 = one parametric edit instruction from those observations. Local judge model only. Remove this block to restore the single-call contact-sheet critic; every failure falls open through the legacy call to the deterministic anchor fallback."
+  },
+  "judge_panel": {
+    "k": 5,
+    "temperature": 0.7,
+    "seeds": [7, 8, 9, 10, 11],
+    "epsilon_se_coefficient": 1.0,
+    "note": "K/temperature/seeds/coefficient are protocol knobs (never source literals). k draws per view from seeds[0..k); epsilon_se_coefficient scales panel_se_total into the gate's epsilonTotal. Difficulty-aware per-view K allocation (more draws on the weakest view) is deliberately NOT in v4.0 — flat K keeps the first re-anchor simple; revisit only with measured need."
+  },
+  "version_3_change": "Two measurement-fidelity fixes, no judge-protocol change (same model, seeds, prompts, criteria, weights, cameras). (1) SCORING v3 (lib/scoring.mjs applyScoringV3, wired in loop-runner-terransoul.mjs): a view whose judge call SUCCEEDED (>=1 seed ok) but returned all-null criteria is 'unassessable geometry' per the rubric's own 0 anchors and now counts as 0 in the /100 mean; only a FAILED judge call (every seed errored) keeps the v2 null-drop + weight renormalization. v2 rewarded hiding a view: a degenerate 8-view candidate out-scored its honest 9-view self by ~6 points. (2) GATE v3 (max_view_drop below, consumed by lib/gemma-gate-wiring.mjs -> lib/edit-gate.mjs): the frozen-gemma edit gate's per-view guard becomes a RELATIVE drop cap vs the incumbent's same view, replacing the absolute view_threshold bar — which no gemma-judged view has reliably cleared (reference build: only 3 of 9 views >= 8.0) and which rejected the only genuine improvement in 239 taught-track iterations (iter-115, 56.8 > 55.64, for a 1.15-point dip in one view). Results under version 3 are NOT numerically comparable to version-2 results; the v3 era runs in its own results track (fresh best.json/gate-state.json), and v2 evidence stays frozen in place.",
+  "max_view_drop": 2.0,
+  "max_view_drop_note": "GATE v3 relative per-view regression cap: an aggregate improvement is rejected only if some single view drops by MORE than this many points vs the incumbent's SAME view (both sides scored). 2.0 tolerates a bold rebuild's transient dip in one view while still catching a real collapse (e.g. a coherent 6.26 -> a hidden 0, which scoring v3 now surfaces as 0 instead of dropping). Set to null/remove to restore the v2 absolute cleared-view bar.",
   "version_2_change": "Added view_visibility (per-criterion view mask) — a measurement-correctness fix. A criterion is scored ONLY on views where the feature is structurally visible; on masked views its median is forced to null and excluded with weight renormalization (the deterministic enforcement of the existing 'null if not assessable from this angle' judge instruction). Also: the render rig now applies SSAA (BOEING_SUPERSAMPLE, default 3x, Lanczos downscale) because the pinned SwiftShader software-GL path ignores the WebGL antialias flag and produced stair-stepped edges that read as rough craftsmanship. Both changes re-baseline the frozen harness: results under this rubric_sha256 (version 2) are NOT numerically comparable to version-1 results. Same geometry, camera spec, lighting, scene, references, weights, seeds and prompts are otherwise unchanged.",
   "provenance": "Loop Library benchmark protocol - signals.forwardfuture.com (build the most realistic Boeing 747 from Three.js primitives; screenshot fixed angles; vision-judge against references; critic steers; iterate)",
   "judge_model": "gemma4:12b-it-qat",
-  "judge_options": { "temperature": 0, "num_ctx": 8192, "num_predict": 768 },
+  "judge_options": { "temperature": 0, "num_ctx": 16384, "num_predict": 768 },
+  "judge_options_note": "num_ctx 8192 -> 16384 (2026-07-16, v4 measurement-infrastructure alignment): the actor/design-reference CLI loads the SAME model at num_ctx 16384, and Ollama reloads a model when context size changes -- so the judge scored on a DIFFERENT model geometry on a cold process (first iteration, fresh 8192 load: e97e2db0 -> 55.4-55.53) than in steady state (post-CLI 16384 load: identical stable 48.88 across four consecutive judgments of the same sha). One shared num_ctx = one model instance geometry = placement-stable scores across the whole run. Prompt content is unchanged (well under 8192 tokens); the reference was re-probed under this setting.",
   "judge_think": false,
   "judge_format": "json",
   "judge_seeds": [7, 8, 9],
@@ -19,7 +45,7 @@
   "stall_patience": 3,
   "iteration_budget": 12,
   "total_noise_epsilon": 0,
-  "total_noise_epsilon_note": "UNCALIBRATED (0 = strict hill-climbing, any total decrease rejects). Raise only from a measured repeat-judge noise probe (re-judge the same unchanged geometry N times, use the observed spread) — never a guessed number. Consumed by the frozen-gemma-track edit gate in loop-runner-terransoul.mjs.",
+  "total_noise_epsilon_note": "STATIC FALLBACK ONLY since rubric v4: when judge_panel is active the gate's epsilonTotal comes from the LIVE-MEASURED panel_se_total x judge_panel.epsilon_se_coefficient (per-iteration, per-geometry), which is exactly the 'measured repeat-judge noise probe' this note always demanded — now automated. This static value is consumed only when the panel is disabled or produced no spread (fail-open toward strict hill-climbing).",
   "criteria": [
     {
       "id": "engines_four_underwing",

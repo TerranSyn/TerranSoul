@@ -1,0 +1,91 @@
+{
+  "actor": "terransoul-opus48-pairwise-claude",
+  "judge_track": "claude-opus-4-8-pairwise-vision",
+  "iter": 8,
+  "run_id": "terransoul-opus48-pairwise-iter-8-mripc0hg",
+  "plane_sha256": "a7674593aa5d40595af5e781ba0cc11f22a56237d9940c7d4d6bc7270f157292",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 61.29,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 3.91,
+      "notes": "engines_four_underwing: reference shows Two cylindrical nacelles with rounded barrel bodies visible under the wing, mounted on short visible pylons and offset forward of the wing leading edge, plus a further boxy pylon shape above them; inlet ends read as distinct circular faces. | wing_geometry: reference shows A distinctly swept-back wing plate is visible projecting from the fuselage with a visi"
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 2.74,
+      "notes": "engines_four_underwing: reference shows Two rounded cylindrical nacelles with visible pylon connection to the wing, each with a shaded round inlet face, consistent with an inboard/outboard pair on this side | upper_deck_hump: reference shows A clearly bulged upper lobe sits above the forward fuselage crown starting at the cockpit and fairing down within the front third, with its own window row and"
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 2.74,
+      "notes": "engines_four_underwing: reference shows Four nacelles below the wings, two per side, each on a clearly visible vertical pylon stalk with a shaded ring inlet and forward offset ahead of the leading edge | upper_deck_hump: reference shows Head-on the crown shows a small upper lobe with faint window detail sitting above the round lower fuselage | fuselage_proportions: reference shows Head-on cross-se"
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 8.08,
+      "notes": "Both show four underwing engines and a full gear set. A models a tapered upswept tail cone, faired fin and two-tone livery; B presents a blunt cylindrical fuselage end with slab fin and tailplane intersecting the body."
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 8.09,
+      "notes": "RENDER-A matches the reference planform's tapered swept wings, slender body and forward-offset nacelles. RENDER-B is a fat constant-chord slab-wing jet with seams, a floating crown oval, and a fin overhanging the tail."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 6.57,
+      "notes": "landing_gear: reference shows Nose gear strut with wheel plus additional small gear/pod shapes visible under the wing-body junction area"
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 7.22,
+      "notes": "window_door_lines: reference shows Dashed window line along the main deck plus a dark blue cheatline and windows on the upper pod"
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 8.08,
+      "notes": "Both models place a front hump, four engines and multi-bogie gear. A has swept, tapered, dihedral wings and an upswept tail cone; B uses flat plank wings and slabs that visibly interpenetrate a blunt cylindrical fuselage."
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 7.73,
+      "notes": "landing_gear: reference shows Two-wheel nose strut plus several clearly separated multi-wheel main bogies (body and wing pairs) under the wing/body junction."
+    }
+  ],
+  "weakest_feature": {
+    "id": "landing_gear",
+    "mean": 3.91,
+    "perCriterion": {
+      "engines_four_underwing": 5,
+      "upper_deck_hump": 6.25,
+      "fuselage_proportions": 7.36,
+      "wing_geometry": 6.56,
+      "empennage": 5.18,
+      "landing_gear": 3.91,
+      "window_door_lines": 5.63,
+      "livery_coherence": 6.25,
+      "silhouette_747": 6.39,
+      "craftsmanship": 7.03
+    }
+  },
+  "critic": {
+    "weakest_feature": "landing_gear",
+    "fix_suggestion": "Improve 'Landing gear (nose gear + 4-truck main gear) when visible' (mean 3.91/10). Target the 8 anchor: nose gear plus four main-gear trucks under the wing/body junction with wheels; then the 10 anchor: recognizable 747 gear layout: two-wheel nose strut, four multi-wheel main bogies (two under the body, two under the wings), plausible strut lengths.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 6.496924,
+  "regressed": false,
+  "best_total_after": 61.29,
+  "created_at": "2026-07-13T04:20:43.711Z",
+  "actor_status": "edited"
+}

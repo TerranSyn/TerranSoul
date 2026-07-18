@@ -47,9 +47,54 @@ const DEFAULT_FS = { readFileSync, writeFileSync, copyFileSync, existsSync, mkdi
  */
 export const DEFAULT_GEMMA_PERSIST_THRESHOLD = 2;
 
+/**
+ * v3 GATE REDESIGN (2026-07-16) default for the per-view REGRESSION guard. The
+ * original gate rejected any edit that dropped a previously-CLEARED view below an
+ * ABSOLUTE 8.0 bar — but the frozen gemma judge gives the project's own committed
+ * reference build only 3 of 9 views >= 8.0 (per-view [5.99, 8.69, 6.39, 6.26,
+ * 6.8, 8.75, 6.45, 6.82, 7.35]; no gemma-judged view has EVER exceeded 8.75 in
+ * any committed result), so "protect every cleared view at zero tolerance below
+ * 8.0" was empirically unreachable and blocked the ONLY genuine improvement in
+ * 239 gemma-taught iterations (iter-115 56.8 > iter-1 55.64 was rejected because
+ * view 6 dipped 8.69 -> 7.54). The v3 rule replaces the absolute bar with a
+ * RELATIVE cap: accept an aggregate improvement unless some single view drops by
+ * MORE than this many points vs the incumbent's SAME view. 2.0 lets a bold
+ * whole-model rebuild trade a small dip in one view for a net gain, while still
+ * catching a view that collapses (e.g. a coherent 6.26 -> a hidden 0).
+ */
+export const DEFAULT_MAX_VIEW_DROP = 2.0;
+
 /** Finite-number guard used throughout (null/undefined/NaN/Infinity => false). */
 function isNum(v) {
   return typeof v === 'number' && Number.isFinite(v);
+}
+
+/**
+ * ERA GUARD (adversarial-review fix 2026-07-16). A persisted gate-state's
+ * best_total is only meaningful under the scoring aggregation that produced
+ * it — resuming a results dir whose gate-state was written under a DIFFERENT
+ * scoring_version compares apples to oranges and, in the v2→v3 direction,
+ * false-rejects every iteration as a "total regression" against a
+ * structurally-inflated bar (the exact 239-stuck-iteration failure mode the
+ * v3 redesign exists to end). The fresh-track rule used to live only in
+ * README prose; this makes it enforced. PURE — throws on mismatch, returns
+ * the state (possibly null) otherwise. A null/absent state always passes
+ * (a fresh track re-baselines). A state with NO scoring_version stamp is a
+ * pre-v3 legacy state and fails against any expectedVersion.
+ * @param {object|null} state    loaded gate-state (null when none exists)
+ * @param {{expectedVersion:number, stateLabel?:string}} p
+ * @returns {object|null} the state, when compatible
+ */
+export function assertGateStateEra(state, { expectedVersion, stateLabel = 'gate-state.json' } = {}) {
+  if (!state || typeof state !== 'object') return state ?? null;
+  if (state.scoring_version === expectedVersion) return state;
+  throw new Error(
+    `${stateLabel} was persisted under scoring_version ${state.scoring_version ?? '(pre-versioned v2 or older)'} ` +
+      `but this run aggregates under scoring_version ${expectedVersion} — the totals are NOT numerically comparable, ` +
+      `and gating fresh totals against this best_total would false-reject every iteration. ` +
+      `Do NOT resume this results dir: start a NEW track (fresh --actor name => fresh results dir), ` +
+      `seeding its candidate from this track's protected best-plane.js. The old dir stays frozen as its era's floor.`,
+  );
 }
 
 /**
@@ -68,7 +113,13 @@ function isNum(v) {
  *     UNLESS `escalationArmed` (the mesh-escalation prompt explicitly lets the
  *     actor accept a small transient dip in one already-good view to
  *     re-architect a feature, so a bold rebuild is gated on AGGREGATE ONLY and
- *     never rejected for a 1-view transient).
+ *     never rejected for a 1-view transient), OR
+ *   - v3 RELATIVE per-view drop cap (active iff a finite `maxViewDrop` is
+ *     supplied; it REPLACES the absolute cleared-view rule above — see
+ *     DEFAULT_MAX_VIEW_DROP's doc for the live-measured failure the absolute
+ *     bar caused): some view scored on BOTH sides drops by MORE than
+ *     maxViewDrop points vs the incumbent's SAME view. Also exempt under
+ *     `escalationArmed` (same aggregate-only escalation contract).
  * The cross-family gemma DOWNSIDE is deliberately NOT a reject key (review
  * fixes #4/#5) — see DEFAULT_GEMMA_PERSIST_THRESHOLD.
  *
@@ -90,6 +141,7 @@ function isNum(v) {
  * @param {number|null} [p.prevGemmaBest]   gemma total at the current best (baseline for the downside)
  * @param {number} p.epsilonTotal    measured total-level noise (calibration Probe B)
  * @param {number} [p.epsilonView]   measured per-view noise
+ * @param {number|null} [p.maxViewDrop]  v3: finite ⇒ relative per-view drop cap REPLACES the absolute cleared-view rule
  * @param {number} [p.epsilonGemma]  measured gemma-level noise
  * @param {boolean} [p.escalationArmed]  the escalation prompt was armed this iteration (aggregate-only gate)
  * @param {number} [p.priorGemmaDownsideStreak]  consecutive prior iterations already showing a gemma downside
@@ -110,6 +162,7 @@ export function decideEditAcceptance({
   prevGemmaBest,
   epsilonTotal = 0,
   epsilonView = 0,
+  maxViewDrop = null,
   epsilonGemma = 0,
   escalationArmed = false,
   priorGemmaDownsideStreak = 0,
@@ -155,11 +208,26 @@ export function decideEditAcceptance({
   const totalRegression = gateTotal < bestTotal - epsilonTotal;
   const totalImprovement = gateTotal > bestTotal + epsilonTotal;
 
-  // cleared-view collapse: a view previously at/above its bar that now drops
-  // below the bar by more than the per-view noise. Exempt under escalation.
+  // Per-view regression guard, exempt under escalation. Two mutually-exclusive
+  // modes:
+  //   v3 RELATIVE (maxViewDrop finite): a view scored on BOTH sides that drops
+  //   by MORE than maxViewDrop vs the incumbent's SAME view collapses —
+  //   regardless of any absolute bar (which no gemma-judged view could ever
+  //   reliably clear; see DEFAULT_MAX_VIEW_DROP).
+  //   v2 ABSOLUTE (default): a view previously at/above its bar that now drops
+  //   below the bar by more than the per-view noise.
+  const relativeDropMode = isNum(maxViewDrop);
   const collapsedViews = [];
   if (!escalationArmed) {
     for (let i = 0; i < (gatePerView || []).length; i++) {
+      if (relativeDropMode) {
+        // Only a SCORED-on-both-sides drop counts — an unscored/failed view is
+        // a judge miss, not evidence of geometric regression (fail-open).
+        if (isNum(gatePerView[i]) && isNum(bestPerView[i]) && bestPerView[i] - gatePerView[i] > maxViewDrop) {
+          collapsedViews.push(i);
+        }
+        continue;
+      }
       const bar = clearedViewsBar[i];
       if (!isNum(bar)) continue;
       const wasCleared = isNum(bestPerView[i]) && bestPerView[i] >= bar;
@@ -186,7 +254,9 @@ export function decideEditAcceptance({
     return {
       ...result,
       decision: 'reject',
-      reason: `cleared-view collapse: view(s) [${collapsedViews.join(', ')}] dropped below their bar by > epsilonView ${epsilonView}`,
+      reason: relativeDropMode
+        ? `per-view drop cap: view(s) [${collapsedViews.join(', ')}] dropped by > maxViewDrop ${maxViewDrop} vs the incumbent's same view`
+        : `cleared-view collapse: view(s) [${collapsedViews.join(', ')}] dropped below their bar by > epsilonView ${epsilonView}`,
     };
   }
 

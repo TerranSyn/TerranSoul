@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 185772,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 332,
+    "tool_calls": {
+      "read_file": 2,
+      "edit_file": 1
+    },
+    "total_tool_calls": 3,
+    "text_chunks": 326,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 2
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "a91b928a5f3dc9d5788f1dbbf18bca92469f0014f769bcd114c9fed79ca7fd5d",
+  "plane_sha256_after": "d3f0c43f9f8e84e1ed6857674ecfa71c887c6ba7ce997bbb6482e4d79bcf12e7",
+  "changed": true,
+  "claude_result_text": "The model has been significantly improved to address \"Craftsmanship\" issues:\n- **Fuselage Reconstruction**: Replaced the blunt single cylinder with a body tube and added conical/tapered sections for both the nose and tail, providing them with realistic shapes.\n- **Hump Fairing**: Adjusted the hump's radius and height to better blend into the fuselage crown, making it look like an integrated upper deck rather than a floating block.\n- **Wing & Engine Integration**: Rebuilt the wings as coherent structural components with proper sweep and dihedral relative to the fuselage (moved closer for proper attachment). The engines were correctly parented/positioned on pylons attached to the wing halves, resolving the \"floating\" parts issue.\n- **Tail Geometry**: Tilting the vertical stabilizer provides a more accurate representation of its swept design.\n\nThese changes fix the major structural issues with missing connections and crude geometry.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 185772,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 332,
+        "tool_calls": {
+          "read_file": 2,
+          "edit_file": 1
+        },
+        "total_tool_calls": 3,
+        "text_chunks": 326,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 2
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

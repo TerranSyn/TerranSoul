@@ -1,0 +1,111 @@
+{
+  "model": "claude-opus-4-8",
+  "effort": "max",
+  "ms": 794246,
+  "cost_usd": 3.2945275000000005,
+  "timeout_ms": 1200000,
+  "observability": {
+    "event_count": 61,
+    "tool_calls": {
+      "Read": 11,
+      "Grep": 1,
+      "Edit": 2,
+      "Bash": 2
+    },
+    "total_tool_calls": 16,
+    "text_chunks": 29,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "Read",
+        "count": 11
+      },
+      {
+        "name": "Grep",
+        "count": 1
+      },
+      {
+        "name": "Edit",
+        "count": 2
+      },
+      {
+        "name": "Bash",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "b32e7183b49cb53d4f346f6349c1dae08f7b79f6c505cf9993612f1ceadf6b56",
+  "plane_sha256_after": "66e65be885aedec8cb8a707c3c9075d958a28a60dbf1389656b9530524897ba1",
+  "changed": true,
+  "claude_result_text": "**PARSE OK, contract clean, `export function buildPlane(THREE)` intact.** (The single grep hit is the pre-existing `window_door_lines` comment, not a `window` access.)\n\n## What I changed\n\nI added **eight main-gear axles** — one per axle station on each of the four trucks — because the audit showed the 16 main wheels were attached to the aircraft by nothing at all.\n\nThe arithmetic: the truck beam's flank stops at |z| = 0.36, while a tyre's inner *hub* face sits at 0.55 − 0.4 × 0.26 = **0.446**. That is 0.086 of open air between every main wheel and its own beam. The nose leg has carried an axle since iter 16; the four trucks never got one. Each new axle is r = 0.15, length 1.24 (z = ±0.62): it starts inside the 0.36 beam, enters each hub 0.174 deep, and stops 0.034 short of the 0.654 outer hub face, so it bridges the gap without bursting out the far side of either tyre. It stays inside the 0.308 bright-hub disc, so it reads as the boss the hub is drawn around.\n\nThis targets `landing_gear` (Claude's weakest, 3.59) and `craftsmanship` — the 3-anchor is literally *\"a few floating wheels\"*, and until the axle exists that is what a truck is. Nothing outside the gear is touched, so the hump, wings, engines, empennage and livery (all ≥7 on at least one track) can't regress.\n\n## What you need to know first\n\n**A concurrent process running this same actor prompt rewrote `plane.js` between my Read and my Edit** — the third time this has happened on this benchmark. It is the direct cause of the iter-6 (−5.07) and iter-8 (−4.4) regressions, both of which were me clobbering a file that had moved under me.\n\nIt landed a complete \"iter 19\" landing-gear fix. Independently, from the renders alone, I had reached **the same root cause**: `makeOleo` ramps `CHROME` (0xd2d8de) at local y = 0, and y = 0 is the *truck* end — so the half of every leg that hangs in free air against a 0xeef1f4 background was the brightest grey on the model, while the dark barrel sat buried up inside the fairing.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 600593,
+      "actor_error": "terransoul-cli agent-task timed out after 600000ms (10 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 26,
+        "tool_calls": {
+          "Read": 10
+        },
+        "total_tool_calls": 10,
+        "text_chunks": 6,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "edited",
+      "ms": 794246,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 61,
+        "tool_calls": {
+          "Read": 11,
+          "Grep": 1,
+          "Edit": 2,
+          "Bash": 2
+        },
+        "total_tool_calls": 16,
+        "text_chunks": 29,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "Read",
+            "count": 11
+          },
+          {
+            "name": "Grep",
+            "count": 1
+          },
+          {
+            "name": "Edit",
+            "count": 2
+          },
+          {
+            "name": "Bash",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

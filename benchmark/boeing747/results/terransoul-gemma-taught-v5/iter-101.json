@@ -1,0 +1,103 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 101,
+  "run_id": "terransoul-gemma-taught-v5-iter-101-mrpq5sed",
+  "plane_sha256": "695744dcdf9e689b909ff1b4f984b9505181dc0e3deb590ffc38dbbdcbd3f3b4",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 53.67,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.3
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.17
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.63
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.72
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.09
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.03
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.21
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.98
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.17
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 3.93,
+    "perCriterion": {
+      "engines_four_underwing": 3.93,
+      "upper_deck_hump": 4.49,
+      "fuselage_proportions": 5.13,
+      "wing_geometry": 5.8,
+      "empennage": 6.47,
+      "landing_gear": 7,
+      "window_door_lines": 4.37,
+      "livery_coherence": 5.82,
+      "silhouette_747": 5.8,
+      "craftsmanship": 5.2
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the existing engine nacelle geometry to create four total engines. Position them in pairs (two per wing) along the span, moving each pair forward from the wing root to a position approximately 15% of the wingspan ahead of the leading edge. Replace the rectangular housing dimensions with cylindrical primitives, tapering the front and rear diameters by 20% to create streamlined nacelles.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two large engine nacelles visible under the wing",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate and mirror"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines appear attached directly under the main wing root area",
+        "reference": "Engines mounted on pylons forward of the wing leading edge",
+        "direction_of_fix": "move engines forward along the wing span"
+      },
+      {
+        "feature": "Nacelle Shape",
+        "observed": "Blocky, rectangular engine housings",
+        "reference": "Streamlined, cylindrical nacelles with tapered inlets/exhausts",
+        "direction_of_fix": "replace boxes with cylinders"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-18T02:08:13.372Z",
+  "actor_status": "edited"
+}

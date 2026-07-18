@@ -1,0 +1,111 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 344142,
+  "cost_usd": 0,
+  "timeout_ms": 1800000,
+  "observability": {
+    "event_count": 215,
+    "tool_calls": {
+      "read_file": 5,
+      "edit_file": 5
+    },
+    "total_tool_calls": 10,
+    "text_chunks": 195,
+    "tool_failures": 4,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 5
+      },
+      {
+        "name": "edit_file",
+        "count": 5
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "3e4bbd2e12cadabe1557fe5d7bb9a06ad8795f974808d6ab4d7b52287f48fcd3",
+  "plane_sha256_after": "7b76fdd24f923a250314dae34180d915a419c81683a5a0df649d34063567e982",
+  "changed": true,
+  "claude_result_text": "The 747 has been updated with a larger upper-deck hump (scale increased to 1.7 and position moved forward to 25.0). The next suggested refinements are the nose taper and the aft tail cone.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 577336,
+      "actor_error": "terransoul-cli agent-task failed (exit 1): [headless] data dir: D:/Git/TerranSoulApp/mcp-data/bench-boeing-gemma-taught-v4\n[mcp] seed shared dir: D:\\Git\\TerranSoulApp\\mcp-data\\shared\n[mcp] init seed already applied (v001)\n[brain] WARNING: configured brain model 'gemma4:12b-it-qat' needs ~8909 MB VRAM but only 1630 MB is free. Honoring the explicit brain_config.json choice anyway (no automatic downgrade); it may offload to CPU and run slowly. Close other GPU apps or pick a lighter model in Brain settings if needed.\n[write-engine] db.write",
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 276,
+        "tool_calls": {
+          "read_file": 15,
+          "edit_file": 14
+        },
+        "total_tool_calls": 29,
+        "text_chunks": 218,
+        "tool_failures": 14
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "actor_failed",
+      "ms": 584297,
+      "actor_error": "terransoul-cli agent-task failed (exit 1): [headless] data dir: D:/Git/TerranSoulApp/mcp-data/bench-boeing-gemma-taught-v4\n[mcp] seed shared dir: D:\\Git\\TerranSoulApp\\mcp-data\\shared\n[mcp] init seed already applied (v001)\n[brain] WARNING: configured brain model 'gemma4:12b-it-qat' needs ~8909 MB VRAM but only 1630 MB is free. Honoring the explicit brain_config.json choice anyway (no automatic downgrade); it may offload to CPU and run slowly. Close other GPU apps or pick a lighter model in Brain settings if needed.\n[write-engine] db.write",
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 405,
+        "tool_calls": {
+          "read_file": 15,
+          "edit_file": 14
+        },
+        "total_tool_calls": 29,
+        "text_chunks": 347,
+        "tool_failures": 14
+      }
+    },
+    {
+      "attempt": 3,
+      "timeout_ms": 1800000,
+      "status": "edited",
+      "ms": 344142,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 215,
+        "tool_calls": {
+          "read_file": 5,
+          "edit_file": 5
+        },
+        "total_tool_calls": 10,
+        "text_chunks": 195,
+        "tool_failures": 4,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 5
+          },
+          {
+            "name": "edit_file",
+            "count": 5
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

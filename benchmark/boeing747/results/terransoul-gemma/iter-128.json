@@ -1,0 +1,82 @@
+{
+  "actor": "terransoul-gemma",
+  "iter": 128,
+  "run_id": "terransoul-gemma-iter-128-mrkyvaeb",
+  "plane_sha256": "042ffd8e2762ce486e55d418201f6932eedb022bc9b30a2ecae9956470c9b872",
+  "rubric_sha256": "fc881e55aacfebe892505a8db6e4e5d82865a92fa370119fa15a48ebe83180ff",
+  "total_0_100": 48.07,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.84
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 8.69
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 3.59
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": null
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.61
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 7.04
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 2.36
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.79
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.54
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 3.86,
+    "perCriterion": {
+      "engines_four_underwing": 4.13,
+      "upper_deck_hump": 5.43,
+      "fuselage_proportions": 4.63,
+      "wing_geometry": 4.75,
+      "empennage": 5.86,
+      "landing_gear": 8,
+      "window_door_lines": 3.86,
+      "livery_coherence": 4.75,
+      "silhouette_747": 5.13,
+      "craftsmanship": 5.13
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Improve 'Window and door lines' (mean 3.86/10). Target the 8 anchor: a consistent passenger-window line along the main deck plus cockpit windows, door hints; then the 10 anchor: clean main-deck window line, separate upper-deck windows on the hump, cockpit windshield shape, evenly spaced doors.",
+    "source": "anchor"
+  },
+  "scored_views": 8,
+  "missing_views": 1,
+  "regressed": true,
+  "best_total_after": 55.51,
+  "created_at": "2026-07-14T18:12:39.101Z",
+  "actor_status": "edited"
+}

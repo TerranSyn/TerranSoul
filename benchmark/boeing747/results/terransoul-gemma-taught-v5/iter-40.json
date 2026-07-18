@@ -1,0 +1,103 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 40,
+  "run_id": "terransoul-gemma-taught-v5-iter-40-mrp6hsae",
+  "plane_sha256": "e45c2415a1190bc8a0fb27d48934f7503e4bbfcb3cfb8c2b0744c4a9c0996580",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 51.78,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.78
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.66
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.1
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.6
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.69
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.36
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.4
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.17
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.84
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 3.69,
+    "perCriterion": {
+      "engines_four_underwing": 3.69,
+      "upper_deck_hump": 4.49,
+      "fuselage_proportions": 5.04,
+      "wing_geometry": 5.76,
+      "empennage": 6.31,
+      "landing_gear": 7.33,
+      "window_door_lines": 4.57,
+      "livery_coherence": 5.84,
+      "silhouette_747": 5.6,
+      "craftsmanship": 4.22
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the existing engine primitive to create four total engines; distribute them along the wing span by 15-degree increments from the center, ensuring two are mounted per wing and aligned with the front/rear of the tapered wing geometry.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "One large engine mounted under the wing",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate and distribute"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Single engine centered under the wing",
+        "reference": "Two engines per side spaced along the wing span",
+        "direction_of_fix": "move and duplicate outward"
+      },
+      {
+        "feature": "Wing Geometry",
+        "observed": "Flat, thin rectangular plane",
+        "reference": "Tapered wings with distinct leading/trailing edges",
+        "direction_of_fix": "taper width toward tips"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 57.44,
+  "created_at": "2026-07-17T16:58:00.176Z",
+  "actor_status": "no_change"
+}

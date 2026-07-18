@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 213643,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 346,
+    "tool_calls": {
+      "read_file": 4,
+      "edit_file": 1
+    },
+    "total_tool_calls": 5,
+    "text_chunks": 336,
+    "tool_failures": 1,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 4
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "4465c9179bb34a7df7e7cea126373fb15c48ca740b7581143cbabdd7f6de3281",
+  "plane_sha256_after": "e6b027892a858282e811153947c289952e3895abb891ef1db2b7f0186fea7106",
+  "changed": true,
+  "claude_result_text": "The Boeing 747 model's `window_door_lines` have been improved by increasing the size and visibility of both main-deck and upper-deck windows, expanding the cockpit windshield area for a more realistic \"wrap-around\" effect, and adding a third set of doors (totaling 8) to ensure a coherent distribution of access points along the fuselage. These changes directly address the feedback regarding small window dots and sparse door placement.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 213643,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 346,
+        "tool_calls": {
+          "read_file": 4,
+          "edit_file": 1
+        },
+        "total_tool_calls": 5,
+        "text_chunks": 336,
+        "tool_failures": 1,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 4
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

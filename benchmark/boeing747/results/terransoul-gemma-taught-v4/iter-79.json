@@ -1,0 +1,103 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 79,
+  "run_id": "terransoul-gemma-taught-v4-iter-79-mro1y5ih",
+  "plane_sha256": "fe60fd0058d813a3cc013a2a35aa85e9c5e4bc5def4e1ac6834092c6998e416a",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 47.31,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.26
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.66
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.79
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 4.95
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.11
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.56
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.79
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.88
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.58
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 3.89,
+    "perCriterion": {
+      "engines_four_underwing": 3.89,
+      "upper_deck_hump": 4.26,
+      "fuselage_proportions": 4.22,
+      "wing_geometry": 5.18,
+      "empennage": 5.16,
+      "landing_gear": 7.45,
+      "window_door_lines": 4.06,
+      "livery_coherence": 5.73,
+      "silhouette_747": 4.78,
+      "craftsmanship": 4.02
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Replace the single central engine geometry with four distinct cylindrical geometries. Position these four engines in pairs (two per side) along the underside of the swept wings, specifically mounting them on pylons located 50% to 75% of the distance from the fuselage to the wingtip.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "One large cylindrical engine on the wing",
+        "reference": "Four engines total (two under each swept wing)",
+        "direction_of_fix": "increase count to four"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Single engine mounted centrally under the fuselage area",
+        "reference": "Engines mounted on pylons under the outer wing sections",
+        "direction_of_fix": "move engines outward and forward along wings"
+      },
+      {
+        "feature": "Wing Geometry",
+        "observed": "Flat, thin rectangular planes",
+        "reference": "Tapered, aerodynamic swept-back wings with distinct leading edges",
+        "direction_of_fix": "taper width of wing geometry toward tips"
+      }
+    ],
+    "critic_view": 2,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": false,
+  "best_total_after": 47.31,
+  "created_at": "2026-07-16T22:02:35.522Z",
+  "actor_status": "no_change"
+}

@@ -1,0 +1,91 @@
+{
+  "actor": "terransoul-opus48-pairwise-claude",
+  "judge_track": "claude-opus-4-8-pairwise-vision",
+  "iter": 1,
+  "run_id": "terransoul-opus48-pairwise-iter-1-mrjc6gdv",
+  "plane_sha256": "92f5e42a445e5dc92179c933be846c4626649c7a5c5dc4a677858acdf8a77d18",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 50,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B are visually indistinguishable at this camera: same geometry, colors, seams, gear and hump. Both share stepped fuselage segments, a blister-like hump, and only two clearly separated nacelles visible."
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B are visually indistinguishable at this camera: same geometry, same navy-on-white livery, same fuselage step seam, same gear cluster. Both share a too-short bulbous hump and a thin high tail boom versus the photos."
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B appear pixel-identical from this head-on camera: same geometry, livery, gear cluster and fin. No criterion distinguishes them; both show the horizontal stabilizer as a thin unswept slab."
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5,
+      "notes": "The two renders are pixel-indistinguishable from this rear camera. Both share the same shortfalls versus the photos: no upper-deck hump shoulder, an unswept slab fin, untapered wings, and an all-grey livery instead of white-over-grey."
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B are pixel-indistinguishable from this top-down camera. Both show a slender white fuselage, four underwing nacelles, swept tapering wings and a navy-edged fin; neither matches the reference's wider inboard-engine spacing or wingtip extension."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B appear pixel-identical from this camera: same geometry, livery, gear and shading. Both share one deficit versus the photos — the upper-deck hump is far too shallow."
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B are visually indistinguishable at this camera: identical geometry, livery, gear and seams. Both share the same defects versus the photos — flat wings with little dihelbral, blunt tail-cone end cap, rear fuselage seam."
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B appear pixel-identical from this camera: same geometry, livery, gear cluster, hump and belly seam. No criterion showed any distinguishable difference, so every verdict is a tie."
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B appear pixel-identical from this camera; every criterion is a tie. Both share the same deviation: the upper-deck lobe extends farther aft than the real 747's front-third hump."
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 5,
+    "perCriterion": {
+      "engines_four_underwing": 5,
+      "upper_deck_hump": 5,
+      "fuselage_proportions": 5,
+      "wing_geometry": 5,
+      "empennage": 5,
+      "landing_gear": 5,
+      "window_door_lines": 5,
+      "livery_coherence": 5,
+      "silhouette_747": 5,
+      "craftsmanship": 5
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Improve 'Four engines under swept wings' (mean 5/10). Target the 8 anchor: four nacelles hung under the swept wings on visible pylons, plausible inboard/outboard spacing; then the 10 anchor: four underslung pylon-mounted nacelles with correct relative size, spacing, and forward offset ahead of the wing leading edge, inlet visibly open/darker.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 6.274509,
+  "regressed": false,
+  "best_total_after": 50,
+  "created_at": "2026-07-13T14:58:28.115Z",
+  "actor_status": "actor_exhausted_retries"
+}

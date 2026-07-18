@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 128,
+  "run_id": "terransoul-gemma-taught-v5-iter-128-mrpxsuof",
+  "plane_sha256": "2d194c6a4d99b0d3d84e57088b24777c78f5fbff9350bdd5903e628813e98476",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 61.01,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.17
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.65
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.52
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.75
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.76
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 6.03
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.65
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.59
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.79
+    }
+  ],
+  "weakest_feature": {
+    "id": "upper_deck_hump",
+    "mean": 4.94,
+    "perCriterion": {
+      "engines_four_underwing": 5.22,
+      "upper_deck_hump": 4.94,
+      "fuselage_proportions": 5.73,
+      "wing_geometry": 6.64,
+      "empennage": 6.75,
+      "landing_gear": 7.59,
+      "window_door_lines": 5.14,
+      "livery_coherence": 6.42,
+      "silhouette_747": 6.76,
+      "craftsmanship": 5.78
+    }
+  },
+  "critic": {
+    "weakest_feature": "upper_deck_hump",
+    "fix_suggestion": "Extend the upper-deck primitive along the longitudinal axis of the fuselage. Increase its length by 40% to move the rear terminus significantly further back from the cockpit area, ensuring it aligns with the reference's elongated profile. Simultaneously, increase the width of this same primitive by 25% and raise its vertical height by 15% to create a more substantial horizontal footprint that integrates smoothly into the main fuselage body.",
+    "discrepancies": [
+      {
+        "feature": "Hump length",
+        "observed": "A very short hump that ends almost immediately behind the cockpit.",
+        "reference": "An elongated upper deck that extends significantly further back along the fuselage.",
+        "direction_of_fix": "increase length of the upper-deck primitive"
+      },
+      {
+        "feature": "Hump height",
+        "observed": "The hump is relatively low and rounded, blending quickly into the main fuselage.",
+        "reference": "A distinct, elevated section with a more pronounced vertical rise from the nose.",
+        "direction_of_fix": "increase height of the upper-deck primitive"
+      },
+      {
+        "feature": "Hump width",
+        "observed": "The hump appears narrow and vertically oriented.",
+        "reference": "The upper deck has a wider horizontal footprint across the forward fuselage.",
+        "direction_of_fix": "increase width of the upper-deck primitive"
+      },
+      {
+        "feature": "Fuselage transition",
+        "observed": "A sharp, abrupt junction between the cockpit area and the main body.",
+        "reference": "A smooth, continuous curve where the upper deck integrates into the primary fuselage structure.",
+        "direction_of_fix": "adjust curvature/radius of the hump-to-fuselage joint"
+      }
+    ],
+    "critic_view": 3,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-18T05:42:42.084Z",
+  "actor_status": "edited"
+}

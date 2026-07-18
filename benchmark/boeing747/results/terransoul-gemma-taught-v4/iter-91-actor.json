@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 218620,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 283,
+    "tool_calls": {
+      "read_file": 2,
+      "edit_file": 2
+    },
+    "total_tool_calls": 4,
+    "text_chunks": 275,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 2
+      },
+      {
+        "name": "edit_file",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "615e3af12db747f03fc3d893e77be5cacbd84786fe49fbf3ed61525eecc0e12b",
+  "plane_sha256_after": "5c6d30feb4c4cfef7b118947b2297dbf4e8b207beeb7858fd6a1a46f46552098",
+  "changed": true,
+  "claude_result_text": "The Boeing 747 model has been improved by performing a coherent reconstruction of the \"Window and door lines\" feature, which was identified as the weakest part of the candidate. \n\nSpecifically:\n1.  **Windows**: The manual box placement for windows was replaced with structured loop-based construction. This ensures consistent spacing, height, and depth along both the main deck and the upper deck (hump). I adjusted the $y$ coordinates to be more proportionate to the fuselage curve.\n2.  **Cockpit**: The cockpit panes were reorganized into larger, distinct blocks that better represent a windshield profile rather than just small cabin windows.\n3.  **Doors**: Door positions and sizes were standardized to accurately reflect entry points on both sides of the aircraft, with proportions scaled relative to the new window system. \n4.  **Bug Fixes**: A redundant `createWingHalf` call in the wing generation logic was corrected to ensure correct symmetry (it previously called one side twice).\n\nThe aircraft now follows standard Boeing 747 proportions more closely, featuring a clearly identifiable hump with its own distinct windows and a cohesive window/door pattern across the fuselage.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 218620,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 283,
+        "tool_calls": {
+          "read_file": 2,
+          "edit_file": 2
+        },
+        "total_tool_calls": 4,
+        "text_chunks": 275,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 2
+          },
+          {
+            "name": "edit_file",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

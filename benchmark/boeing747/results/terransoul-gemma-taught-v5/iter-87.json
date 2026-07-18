@@ -1,0 +1,103 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 87,
+  "run_id": "terransoul-gemma-taught-v5-iter-87-mrplkf2v",
+  "plane_sha256": "0e61cd364c22c3edf7a7a63f97f491609519e271c2438e9f02881694d1a15724",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 60.2,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.34
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.5
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.61
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.97
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5.38
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.6
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 6.02
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.89
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.87
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.91,
+    "perCriterion": {
+      "engines_four_underwing": 4.91,
+      "upper_deck_hump": 5.37,
+      "fuselage_proportions": 6.18,
+      "wing_geometry": 6.36,
+      "empennage": 6.75,
+      "landing_gear": 7.8,
+      "window_door_lines": 5.49,
+      "livery_coherence": 6.56,
+      "silhouette_747": 6.62,
+      "craftsmanship": 5.22
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Replace the flat wing planes with thick box primitives (0.5 units height). Apply a 3-degree upward dihedral rotation relative to the fuselage centerline and a 15-degree sweepback angle from the root, ensuring the airfoil thickness is consistent across the span.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible under the wings",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines appear attached near the wing root/center.",
+        "reference": "Engines are positioned further outboard on the swept wings.",
+        "direction_of_fix": "move engine primitives outward along the wing span"
+      },
+      {
+        "feature": "Wing Geometry",
+        "observed": "Wings are flat, thin planes.",
+        "reference": "Wings have a distinct aerodynamic airfoil thickness and upward dihedral.",
+        "direction_of_fix": "replace plane with thick box/cylinder geometry and rotate slightly upward"
+      }
+    ],
+    "critic_view": 9,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-18T00:00:14.824Z",
+  "actor_status": "no_change"
+}

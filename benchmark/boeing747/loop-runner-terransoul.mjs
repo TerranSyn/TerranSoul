@@ -66,7 +66,7 @@ import { fileURLToPath } from 'node:url';
 import { runActorEdit } from './actor/actor-claude.mjs';
 import { judgeShotsClaude } from './judge/judge-claude.mjs';
 import { judgeShotsPairwise } from './judge/judge-pairwise.mjs';
-import { judgeShots, loadRubric } from './judge/judge.mjs';
+import { criticPass, judgeShots, loadRubric } from './judge/judge.mjs';
 import {
   computeAttemptTimeoutMs,
   computeTrailingExhaustionStreak,
@@ -81,6 +81,7 @@ import {
 // Dynamic-Cheatsheet strategy memory (event fold/rank/format/purity-guard).
 import {
   appendRejectedEdit,
+  assertGateStateEra,
   decideEditAcceptance,
   formatRejectedEditsSection,
   loadRejectedEdits,
@@ -132,6 +133,16 @@ import {
   ingestStrategyEvent,
 } from './lib/self-learning.mjs';
 import { buildDesignReferenceSection } from './lib/design-reference.mjs';
+import { computeSentinelView, formatLastEditEffectSection, formatSentinelLine } from './lib/actor-feedback.mjs';
+import { formatBurstStatusSection, loadRebuildBurstConfig } from './lib/rebuild-burst.mjs';
+// SCORING v3 (measurement fidelity, 2026-07-16): a view whose judge call
+// SUCCEEDED but returned all-null is "unassessable geometry" (rubric 0-anchor
+// = absent) and counts as 0 in the /100 mean; only a FAILED judge call keeps
+// the v2 null-drop + renormalization. Applied to every mean-aggregated judge
+// (gemma + claude-vision) — NEVER to the pairwise parity total, which is not a
+// view mean. v3 totals are NOT numerically comparable to v2 records (see the
+// README's scoring-v3 note); the v3 era runs in its own results track.
+import { SCORING_VERSION, applyScoringV3 } from './lib/scoring.mjs';
 import { evaluateStopConditions } from './lib/stop-conditions.mjs';
 import { runRig, sha256 } from './rig/render-rig.mjs';
 
@@ -249,10 +260,15 @@ export function resolveUngatedGateState({ gateState, gateTotal, gatePerView, gem
   return { action: 'hold', state: { ...gateState, contested_streaks: contestedStreaks } };
 }
 
-/** Persist the edit-gate state (fail-open — a write miss never breaks the loop). */
+/** Persist the edit-gate state (fail-open — a write miss never breaks the loop).
+ * Every save stamps the CURRENT scoring_version so assertGateStateEra can
+ * refuse a cross-era resume (adversarial-review fix 2026-07-16). */
 function saveGateState(claudeDir, state) {
   try {
-    writeFileSync(path.join(claudeDir, 'gate-state.json'), `${JSON.stringify(state, null, 2)}\n`);
+    writeFileSync(
+      path.join(claudeDir, 'gate-state.json'),
+      `${JSON.stringify({ ...state, scoring_version: SCORING_VERSION }, null, 2)}\n`,
+    );
   } catch {
     // fail-open: a state-write miss must not break the bench loop.
   }
@@ -311,6 +327,42 @@ export function buildMeshEscalation({ weakest, streak, gap, viewThreshold }) {
     'A gap this size is STRUCTURAL, not a parameter you can nudge. STOP adjusting primitive dimensions/positions for this feature.',
     'REBUILD this one feature from scratch as COMPUTED MESH geometry -- a hand-built THREE.BufferGeometry, a THREE.LatheGeometry sweeping a 2-D profile you define, or a THREE.Shape + ExtrudeGeometry (all permitted by the open contract).',
     'Derive the profile/cross-section YOURSELF by inspecting the reference photos for this view -- there are no coordinates in these instructions to copy. A bold re-architecture of THIS feature is expected and will NOT be scored as a regression.',
+  ].join('\n');
+}
+
+/**
+ * FROZEN-TRACK plateau escalation (v4, 2026-07-17): the frozen-primitives
+ * track had NO plateau breaker at all — buildMeshEscalation's text directs
+ * computed-mesh geometry that the frozen contract rejects, and its gate was
+ * `if (contractModulePath)` (open track only), so a paralyzed actor could
+ * no_change forever with nothing changing its strategy. Same escalation shape,
+ * frozen-contract-safe directive: recompose the feature from scratch as a NEW
+ * arrangement of PRIMITIVES with re-derived dimensions, never a mesh. PURE +
+ * exported for vitest.
+ */
+export function buildFrozenEscalation({ weakest, streak, gap, viewThreshold, stallIters }) {
+  const persisted =
+    streak >= 2
+      ? ` It has stayed the single weakest feature for ${streak} consecutive iterations.`
+      : '';
+  // SINGLE-SHOT REWRITE (2026-07-17 replay evidence): every record this loop
+  // ever banked came from ONE bounded edit; every rebuild-class directive
+  // outcome (2 burst windows + 1 clean-baseline attempt) declined and was
+  // restored. Escalate the TARGET's novelty pressure, never the edit scope —
+  // and never promise dip tolerance the gate does not grant.
+  return [
+    'PLATEAU (frozen primitives -- change of TARGET, never of edit scope):',
+    `The weakest feature '${weakest.id}' is at mean ${weakest.mean}/10, ${gap.toFixed(1)} below the ${viewThreshold}/10 view target, and the accepted best has not improved for ${stallIters} iterations.${persisted}`,
+    `This iteration make exactly ONE bounded change to the single existing code block that renders '${weakest.id}': ` +
+      'set ONE parameter/position from its current value to a better one, add ONE missing element at a stated ' +
+      'location, or swap ONE named geometry for a one-for-one replacement (same variable, same group.add, zero ' +
+      'other lines touched). Every improvement this loop has ever banked was one such bounded edit; sprawling ' +
+      'multi-part rewrites have always been rolled back.',
+    'Do not rebuild, redesign, rework, or recompose anything, and do not modify any line outside that one block. ' +
+      'Stay strictly inside the frozen contract (primitives only, export function buildPlane(THREE)).',
+    'Before finishing: (a) name the ONE visible difference this edit should make and which views should show it; ' +
+      '(b) confirm zero lines changed outside the block; (c) confirm the file still runs. ' +
+      'If any check fails, make the edit SMALLER -- never larger.',
   ].join('\n');
 }
 
@@ -625,10 +677,34 @@ async function runActorWithRetries({ retryCfg, ...actorArgs }) {
  * Fails open (fetchPriorAttempts never throws) — a down/unreachable MCP tray
  * simply means no prior-attempts section this iteration.
  */
-async function buildPriorAttemptsSection({ weakestId }) {
+async function buildPriorAttemptsSection({ weakestId, actorName }) {
   const query = `${SELF_LEARNING_TAG} ${weakestId || 'general'}`;
-  const priorAttempts = await fetchPriorAttempts({ query, limit: 5 });
+  // TRACK-SCOPED read (2026-07-16): the write half already stamps every lesson
+  // with this track's name (maybeIngestPriorIterationLesson's
+  // extraTags:[actorName]); passing it back as actorTag keeps two tracks
+  // sharing one brain from cross-contaminating each other's attempt lessons —
+  // in particular, a v2-gate era's rejected-attempt lessons must not steer a
+  // v3-gate era away from the very edit class the redesigned gate now accepts.
+  const priorAttempts = await fetchPriorAttempts({ query, limit: 5, actorTag: actorName });
   return formatPriorAttemptsSection(priorAttempts);
+}
+
+/**
+ * The prose of a criterion's HIGHEST-scored anchor — the rubric's own
+ * definition of what "right" looks like for that criterion. Used to build the
+ * design-reference retrieval query from the criterion's actual subject matter
+ * (lib/design-reference.mjs's buildDesignReferenceQuery) instead of the old
+ * dimension-biased template that retrieved nothing for technique-shaped
+ * criteria. GENERIC: reads whatever rubric the caller loaded.
+ */
+function topAnchorText(criterion) {
+  const anchors = criterion?.anchors;
+  if (!anchors || typeof anchors !== 'object') return undefined;
+  const keys = Object.keys(anchors)
+    .map(Number)
+    .filter(Number.isFinite);
+  if (keys.length === 0) return undefined;
+  return anchors[String(Math.max(...keys))];
 }
 
 /**
@@ -702,6 +778,7 @@ export async function runIterationTerransoul({
   judgeMode,
   judgeSamples,
   bestOfN, secondaryJudge, designReference,
+  judgeCache = null,
 }) {
   const { rubric, rubricSha256 } = loadRubric();
   const effPatience = patience || rubric.stall_patience;
@@ -768,11 +845,53 @@ export async function runIterationTerransoul({
   console.log(`rig: rendering ${planePath} as ${runId}`);
   const rig = await runRig({ planePath, runId, contractModulePath });
 
-  console.log(
-    `judge (gemma4${claudeGates ? ', reported diversity cross-check' : ', frozen primary'}): scoring 9 views (median of seeds ${rubric.judge_seeds.join('/')})`,
+  // JUDGE CACHE (v4, 2026-07-17): re-judging IDENTICAL geometry is the same
+  // measurement — the panel is deterministic within one model-load geometry
+  // (proven live: |delta| 0.03-0.07 across identical shas) — so a no_change
+  // iteration was burning ~45 panel calls (~5 min) to reproduce a known
+  // number. `judgeCache` is an in-process, single-entry cache owned by
+  // runLoopTerransoul (lost on relaunch by design: one fresh judgment per
+  // process anchors the regime). Keyed by plane sha + rubric sha.
+  const rigMeta = JSON.parse(readFileSync(path.join(rig.outDir, 'meta.json'), 'utf8'));
+  const cacheHit = Boolean(
+    judgeCache && judgeCache.judged && judgeCache.sha === rigMeta.planeSha256 && judgeCache.rubricSha === rubricSha256,
   );
-  const gemmaJudged = await judgeShots({ shotsDir: rig.outDir });
-  if (!gemmaJudged) throw new Error('gemma judge did not complete all 9 views');
+  let gemmaJudged;
+  if (cacheHit) {
+    gemmaJudged = structuredClone(judgeCache.judged);
+    console.log(
+      `judge (gemma4): CACHE HIT — plane sha ${String(rigMeta.planeSha256).slice(0, 8)} unchanged, reusing previous panel judgment + critique`,
+    );
+  } else {
+    console.log(
+      `judge (gemma4${claudeGates ? ', reported diversity cross-check' : ', frozen primary'}): scoring 9 views (${rubric.judge_panel ? `panel k=${rubric.judge_panel.k} @ temp ${rubric.judge_panel.temperature}` : `median of seeds ${rubric.judge_seeds.join('/')}`})`,
+    );
+    gemmaJudged = applyScoringV3(await judgeShots({ shotsDir: rig.outDir }));
+    if (!gemmaJudged) throw new Error('gemma judge did not complete all 9 views');
+
+    // CRITIC WIRING (live-caught fix, 2026-07-16): criticPass existed only as a
+    // CLI mode — the live loop's critic was ALWAYS bookkeepTrack's deterministic
+    // anchorHint, so the structured render-vs-reference critique (and even the
+    // legacy LLM contact-sheet critique) never actually steered the actor. Run
+    // it on the frozen-gemma gating path. Fail-open: any error leaves
+    // gemmaJudged.critic undefined → bookkeepTrack's anchorHint fallback →
+    // byte-identical prior behavior.
+    if (!claudeGates) {
+      try {
+        gemmaJudged.critic = await criticPass({
+          resultsFile: path.join(rig.outDir, 'judge', 'results.json'),
+          shotsDir: rig.outDir,
+        });
+      } catch (err) {
+        console.log(`  critic pass skipped (fail-open to anchor hint): ${String(err.message || err)}`);
+      }
+    }
+    if (judgeCache) {
+      judgeCache.sha = rigMeta.planeSha256;
+      judgeCache.rubricSha = rubricSha256;
+      judgeCache.judged = structuredClone(gemmaJudged);
+    }
+  }
 
   let claudeJudged = null;
   if (secondaryJudgeDisabled) {
@@ -791,11 +910,16 @@ export async function runIterationTerransoul({
           samples: opusSamples,
           model: opusJudgeModel,
         })
-      : await judgeShotsClaude({
-          shotsDir: rig.outDir,
-          samples: opusSamples,
-          model: opusJudgeModel,
-        });
+      : // claude-vision is a view MEAN like gemma, so it takes the same v3
+        // aggregation; the pairwise branch above is a parity total and must
+        // NOT be v3-rewritten (applyScoringV3's own contract).
+        applyScoringV3(
+          await judgeShotsClaude({
+            shotsDir: rig.outDir,
+            samples: opusSamples,
+            model: opusJudgeModel,
+          }),
+        );
     if (!claudeJudged) throw new Error('claude vision judge did not complete all 9 views');
   }
 
@@ -861,6 +985,9 @@ export async function runIterationTerransoul({
   // fail-open and pairwise-only.
   let pairwiseCertify = null;
   let gateState;
+  // BRU-5: the gated edit's measured per-view effect (gemma track only —
+  // returned by runFrozenGemmaGate; stays null on other paths).
+  let lastEditEffect = null;
   const bestPlanePath = path.join(claudeDir, 'best-plane.js');
   const rejectedLedgerPath = path.join(claudeDir, 'rejected-edits.json');
   const gemmaRejectedLedgerPath = path.join(gemmaDir, 'rejected-edits.json');
@@ -1008,9 +1135,13 @@ export async function runIterationTerransoul({
   } else if (!claudeGates) {
     // Frozen gemma track: same accept/reject-against-best gate as pairwise
     // above, gated on gemma's own total (see lib/gemma-gate-wiring.mjs).
-    gateState = runFrozenGemmaGate({
-      gemmaDir, gemmaJudged, rubric, prevGemma, prevActor, hasPriorIter, planePath, iterNum, genuineActorStatuses: GENUINE_ACTOR_STATUSES, loadGateState, saveGateState, reportSnapshot, resolveUngatedGateState,
-    }).gateState;
+    // v4: the gate also writes ONE strategy event per gated genuine edit so
+    // this track's cheatsheet fold (below) has credit to rank.
+    const gemmaGateRun = await runFrozenGemmaGate({
+      gemmaDir, gemmaJudged, rubric, prevGemma, prevActor, hasPriorIter, planePath, iterNum, runId, actorName, strategyEventTag: STRATEGY_EVENT_TAG, strategyAntiTag: STRATEGY_ANTI_TAG, genuineActorStatuses: GENUINE_ACTOR_STATUSES, loadGateState, saveGateState, reportSnapshot, resolveUngatedGateState,
+    });
+    gateState = gemmaGateRun.gateState;
+    lastEditEffect = gemmaGateRun.lastEditEffect ?? null;
   }
 
   // Primary (gating) vs secondary (reported) judge track. In opus-panel/
@@ -1024,8 +1155,49 @@ export async function runIterationTerransoul({
   // Fix 4 (read half): surface prior attempts on this weakest feature.
   const weakestId =
     primaryJudged.weakest_feature?.id || gemmaJudged.weakest_feature?.id || claudeJudged?.weakest_feature?.id;
-  const priorAttemptsSection = await buildPriorAttemptsSection({ weakestId });
-  const designReferenceSection = designReference ? await buildDesignReferenceSection({ weakestId, subject: 'Boeing 747', cliBinary, cliDataDir }) : null;
+  const priorAttemptsSection = await buildPriorAttemptsSection({ weakestId, actorName });
+  // Criterion-aware retrieval (2026-07-16): hand the RAG query builder the
+  // weakest criterion's own rubric name + top-anchor prose so technique-shaped
+  // criteria (craftsmanship-class) retrieve on their actual subject — the old
+  // fixed "geometry, dimensions, proportions" template was a documented live
+  // retrieval miss for those (milestones BOEING-100 expansion note, bug #1).
+  const weakestCriterion = (rubric.criteria || []).find((c) => c.id === weakestId) || null;
+  const designReferenceSection = designReference
+    ? await buildDesignReferenceSection({
+        weakestId,
+        subject: 'Boeing 747',
+        criterionLabel: weakestCriterion?.name,
+        criterionText: topAnchorText(weakestCriterion),
+        cliBinary,
+        cliDataDir,
+      })
+    : null;
+
+  // BOEING-747-REBUILD-BURST-1 feedback half: when a rebuild burst is live,
+  // tell the actor where it stands (attempts used/remaining, the incumbent
+  // total to beat, recover-coherence-first priority). Null outside bursts —
+  // the prompt stays byte-identical.
+  const burstStatusSection = formatBurstStatusSection({
+    burst: gateState?.burst ?? null,
+    maxDepth: loadRebuildBurstConfig().maxDepth,
+    bestTotal: gateState?.best_total,
+    currentTotal: gemmaJudged.total_0_100,
+  });
+
+  // BRU-5: numeric credit assignment — what the actor's LAST gated edit
+  // measurably did per view, plus the ledger-derived sentinel-view
+  // pre-commit check. Both null until there is data; the prompt stays
+  // byte-identical without them.
+  const viewLabels = gemmaJudged.per_view.map((v) => ({ view: v.view, key: v.key }));
+  const measuredFeedbackSection = [
+    formatLastEditEffectSection({ lastEditEffect, views: viewLabels }),
+    formatSentinelLine({
+      sentinel: computeSentinelView(loadRejectedEdits({ ledgerPath: gemmaRejectedLedgerPath })),
+      views: viewLabels,
+    }),
+  ]
+    .filter(Boolean)
+    .join('\n\n') || null;
 
   // opus-pairwise strategy-cheatsheet (ACE / Dynamic-Cheatsheet) + rejected-edit
   // anti-examples, folded FRESH from the brain each iteration and re-injected
@@ -1037,7 +1209,7 @@ export async function runIterationTerransoul({
   let rejectedEditsSection = null;
   if (pairwiseMode) {
     try {
-      const events = await fetchStrategyEvents({ criterion: weakestId, limit: 20 });
+      const events = await fetchStrategyEvents({ criterion: weakestId, limit: 20, tag: STRATEGY_EVENT_TAG });
       const folded = foldStrategyEvents(events);
       // R5 strategy-persistence PROMOTION GATE: only re-inject a strategy once it
       // has a CERTIFIED win-rate LCB above floor over >= N independent fresh gate
@@ -1066,15 +1238,65 @@ export async function runIterationTerransoul({
     }
     rejectedEditsSection = formatRejectedEditsSection(loadRejectedEdits({ ledgerPath: rejectedLedgerPath }));
   } else if (!claudeGates) {
-    // Same anti-example injection as pairwise; no strategy-cheatsheet (that
-    // reads pairwiseCfg.certification, which doesn't exist on this track).
+    // v4: full strategy memory on the frozen-gemma track too — the write half
+    // now ingests gate events (lib/gemma-gate-wiring.mjs), so the read half
+    // folds the same credit-ranked, PROMOTION-GATED cheatsheet + contrastive
+    // anti-examples the pairwise track gets. Certification knobs come from
+    // rubric.strategy_certification (protocol data, not source literals);
+    // absent knobs fall back to rankStrategies' own defaults. TRACK-SCOPED
+    // via actorTag so another era's gate events never steer this actor.
+    // Fail-open: brain down ⇒ no sections this iteration.
+    try {
+      const events = await fetchStrategyEvents({ criterion: weakestId, limit: 20, tag: STRATEGY_EVENT_TAG, actorTag: actorName });
+      const folded = foldStrategyEvents(events);
+      const certCfg = rubric.strategy_certification || {};
+      const promoted = rankStrategies(folded, {
+        scope: 'strategy',
+        criterion: weakestId,
+        limit: 5,
+        promote: true,
+        minEpisodes: certCfg.strategy_min_episodes,
+        winrateFloor: certCfg.strategy_winrate_floor,
+        alpha: certCfg.alpha,
+      });
+      strategyCheatsheetSection = formatStrategyCheatsheetSection(promoted);
+      badAttemptsSection = formatBadAttemptsSection(
+        rankStrategies(folded, { scope: 'anti', criterion: weakestId, limit: 3 }),
+      );
+      if (folded.length > 0) {
+        console.log(
+          `  strategy cheatsheet (gemma track): folded ${folded.length} item(s), ${promoted.length} PROMOTED for '${weakestId || 'general'}'`,
+        );
+      }
+    } catch (err) {
+      console.log(`  strategy cheatsheet fold skipped (gemma track): ${String(err.message || err)}`);
+    }
     rejectedEditsSection = formatRejectedEditsSection(loadRejectedEdits({ ledgerPath: gemmaRejectedLedgerPath }));
   }
 
-  // Plateau -> mesh escalation (open track ONLY). Uses the SAME genuine-iteration
-  // filter the stop conditions use, so an infra-failed iteration never counts.
-  // Driven by the PRIMARY (gating) judge's weakest feature.
+  // Plateau escalation. Open track: mesh escalation (below). Frozen gemma
+  // track (v4, 2026-07-17): a frozen-contract-safe PRIMITIVE RECOMPOSITION
+  // directive, armed when the gate's accepted best has stalled for
+  // rubric.frozen_escalation.min_stall_iters genuine iterations — the plateau
+  // breaker this track never had. Driven by the gating judge's weakest feature.
   let plateauEscalation = null;
+  if (!claudeGates && !contractModulePath && rubric.frozen_escalation && gateState && Number.isFinite(gateState.best_iter)) {
+    const weakest = primaryJudged.weakest_feature;
+    const stallIters = iterNum - gateState.best_iter;
+    const minStall = Number.isFinite(rubric.frozen_escalation.min_stall_iters)
+      ? rubric.frozen_escalation.min_stall_iters
+      : 6;
+    if (weakest && typeof weakest.mean === 'number' && stallIters >= minStall) {
+      const genuineChain = filterGenuineIterationsForStopConditions([...primaryHistory, primaryRecord]);
+      const streak = meshEscalationStreak(genuineChain, weakest.id);
+      const gap = rubric.view_threshold - weakest.mean;
+      plateauEscalation = buildFrozenEscalation({ weakest, streak, gap, viewThreshold: rubric.view_threshold, stallIters });
+      console.log(
+        `  PLATEAU ESCALATION armed (frozen track) for '${weakest.id}' (mean ${weakest.mean}/10, stall ${stallIters} >= ${minStall}) ` +
+          `-- actor directed to recompose it from primitives`,
+      );
+    }
+  }
   if (contractModulePath) {
     const weakest = primaryJudged.weakest_feature;
     if (weakest && typeof weakest.mean === 'number') {
@@ -1168,10 +1390,17 @@ export async function runIterationTerransoul({
       model: model || DEFAULT_MODEL,
       effort: effort || DEFAULT_EFFORT,
       priorAttemptsSection,
+      // LIVE-CAUGHT OMISSION (2026-07-17): this direct path built the
+      // design-reference section every iteration (the RAG --ask ran and was
+      // paid for) but never passed it — only the best-of-N actorBase did.
+      // The taught channel was retrieval-connected, injection-disconnected.
+      designReferenceSection,
       strategyCheatsheetSection,
       badAttemptsSection,
       rejectedEditsSection,
       plateauEscalation,
+      burstStatusSection,
+      measuredFeedbackSection,
       cliBinary,
       cliDataDir,
       contractModulePath,
@@ -1206,11 +1435,15 @@ export async function runIterationTerransoul({
             `NOT fed into evaluateStopConditions as a capability signal: ${actorResult.actor_error}`,
     );
   }
-  // Pairwise-only: stamp whether escalation was armed THIS iteration so the NEXT
-  // iteration's edit-gate applies the escalation-aggregate exemption to this edit
-  // (a bold mesh rebuild is gated on AGGREGATE total, not per-cleared-view dips).
-  // Guarded so the frozen/opus-panel actor.json shape stays byte-identical.
-  if (pairwiseMode) actorResult.escalation_armed = Boolean(plateauEscalation);
+  // Stamp whether escalation was armed THIS iteration so the NEXT iteration's
+  // edit-gate applies the escalation-aggregate exemption to this edit (a bold
+  // rebuild is gated on AGGREGATE total, not per-view dips). Originally
+  // pairwise-only; the frozen track stamps too since it now escalates
+  // (2026-07-17) — the promise "a transient one-view dip will not be scored
+  // as a regression" must be honored by its gate as well.
+  if (pairwiseMode || (!claudeGates && rubric.frozen_escalation)) {
+    actorResult.escalation_armed = Boolean(plateauEscalation);
+  }
   writeFileSync(path.join(gemmaDir, `iter-${iterNum}-actor.json`), JSON.stringify(actorResult, null, 2));
 
   // Fix 2: tag both tracks' records with the actor outcome so the stall/
@@ -1383,6 +1616,26 @@ export async function runLoopTerransoul({
   if (!lock.ok) {
     throw new Error(`refusing to start a second bench run on the same candidate: ${lock.reason}`);
   }
+  // ERA GUARD (adversarial-review fix 2026-07-16): refuse — BEFORE any
+  // iteration is rendered, judged, or recorded — to resume a frozen-gemma-gated
+  // results dir whose persisted gate-state was written under a different
+  // scoring_version. Resuming e.g. the v2-era terransoul-gemma-taught dir with
+  // v3 aggregation would gate every fresh (v3) total against the v2-inflated
+  // 55.64 bar and false-reject everything — re-bricking the loop the way the
+  // 239-iteration stall did. opus-panel/opus-pairwise are exempt: their gating
+  // totals are not v3-rewritten (parity/calibrated-bar semantics unchanged).
+  if (judgeMode !== 'opus-panel' && judgeMode !== 'opus-pairwise') {
+    const eraActor = actor || DEFAULT_ACTOR;
+    try {
+      assertGateStateEra(loadGateState(path.join(BENCH_DIR, 'results', eraActor)), {
+        expectedVersion: SCORING_VERSION,
+        stateLabel: `results/${eraActor}/gate-state.json`,
+      });
+    } catch (err) {
+      lock.release();
+      throw err;
+    }
+  }
   // Nothing in this harness handles SIGINT/SIGTERM, so a Ctrl-C on a multi-hour bench
   // would otherwise leave the lock behind and block the next run.
   const onSignal = (sig) => {
@@ -1396,6 +1649,9 @@ export async function runLoopTerransoul({
     const { rubric } = loadRubric();
     const effBudget = budget || rubric.iteration_budget;
     const hardCap = maxIter ? Math.min(maxIter, effBudget) : effBudget;
+    // Single-entry judge cache shared across this process's iterations (see
+    // the JUDGE CACHE note in runIterationTerransoul).
+    const judgeCache = {};
     let last = null;
     for (let i = 0; i < hardCap; i++) {
       last = await runIterationTerransoul({
@@ -1413,6 +1669,7 @@ export async function runLoopTerransoul({
         judgeMode,
         judgeSamples,
         bestOfN, secondaryJudge, designReference,
+        judgeCache,
       });
       if (last.stop.stop) break;
     }

@@ -1,0 +1,91 @@
+{
+  "actor": "terransoul-opus48-pairwise-claude",
+  "judge_track": "claude-opus-4-8-pairwise-vision",
+  "iter": 9,
+  "run_id": "terransoul-opus48-pairwise-iter-9-mrirne0y",
+  "plane_sha256": "2537ceb0477b0311ab82aa722e66adea953321e7d162be4a4dbbb0402c142452",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 54.99,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 3.5,
+      "notes": "engines_four_underwing: reference shows Two clearly cylindrical nacelles are visible on this side, offset forward and below the wing on visible pylon structures, with visibly darker/recessed inlet ends on the forward faces, matching the inboard/outboard staggered pair seen in the real side photo. | upper_deck_hump: reference shows A pronounced, clearly bounded bubble sits on the crown just aft of "
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 2.46,
+      "notes": "engines_four_underwing: reference shows Two distinct cylindrical nacelles hang below/forward of the swept wing on short pylons (near and far side pairs implied), with rounded inlet ends offset ahead of the wing | upper_deck_hump: reference shows A clearly separate raised upper-deck lobe sits atop the forward fuselage, starting near the cockpit and blending down within the front third, with a small"
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.35,
+      "notes": "empennage: reference shows A tall blue vertical fin rises above the crown and a full pair of horizontal stabilizers is visible as symmetric bars either side of the tail | landing_gear: reference shows Nose strut plus four main-gear bogies visible under the belly/wing junction, wheels rendered as blocky cubes but the count and spread read correctly"
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.24,
+      "notes": "empennage: reference shows Straight, untapered rectangular fin plus two clearly visible flat horizontal stabilizer slabs projecting from the fuselage disc"
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.68,
+      "notes": "Both are four-engine swept-wing top views. A has a slenderer, better-tapered fuselage, faired wing roots and clearer window lines; B has a fatter body, plank-like wings, but a more visible tail fin."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 2.84,
+      "notes": "upper_deck_hump: reference shows A visible raised upper-deck bulge behind the cockpit that fairs down within the front third of the fuselage, matching the 747 hump in the photos | empennage: reference shows Tall swept fin in dark blue plus a wider swept tailplane pair with visible dihedral at the tail cone | landing_gear: reference shows Nose strut with wheel visible plus small gear/bogie shapes n"
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.91,
+      "notes": "engines_four_underwing: reference shows Four blocky cylindrical nacelles clearly visible, two per wing, each separated from the wing by a short visible pylon strut, with dark inlet ends and plausible inboard/outboard spacing | window_door_lines: reference shows Even main-deck window band with a navy cheatline plus upper-deck windows on the hump and cockpit windows"
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.4,
+      "notes": "A presents a smoother, better-faired airliner with an upswept tail and open-inlet nacelles; B shows segmented body, slab wings, oversized root cylinders and a blunt rear, though B does show upper-deck windows."
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 7.11,
+      "notes": "landing_gear: reference shows Two-wheel nose strut plus four distinct multi-wheel main bogies clearly spread under the wing/body junction."
+    }
+  ],
+  "weakest_feature": {
+    "id": "landing_gear",
+    "mean": 3.91,
+    "perCriterion": {
+      "engines_four_underwing": 4.82,
+      "upper_deck_hump": 4.82,
+      "fuselage_proportions": 7.81,
+      "wing_geometry": 6.43,
+      "empennage": 4.64,
+      "landing_gear": 3.91,
+      "window_door_lines": 4.25,
+      "livery_coherence": 6.25,
+      "silhouette_747": 5,
+      "craftsmanship": 7.03
+    }
+  },
+  "critic": {
+    "weakest_feature": "landing_gear",
+    "fix_suggestion": "Improve 'Landing gear (nose gear + 4-truck main gear) when visible' (mean 3.91/10). Target the 8 anchor: nose gear plus four main-gear trucks under the wing/body junction with wheels; then the 10 anchor: recognizable 747 gear layout: two-wheel nose strut, four multi-wheel main bogies (two under the body, two under the wings), plausible strut lengths.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 6.448298,
+  "regressed": true,
+  "best_total_after": 61.29,
+  "created_at": "2026-07-13T05:24:51.688Z",
+  "actor_status": "actor_exhausted_retries"
+}

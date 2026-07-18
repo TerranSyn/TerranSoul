@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 11,
+  "run_id": "terransoul-gemma-taught-v4-iter-11-mrnlsauh",
+  "plane_sha256": "e54b1c376902cb7e99f113ebe422d0f29ab6b9907e8deda69c96de6d3e1aab1d",
+  "rubric_sha256": "1f48fb4693187253d5067ca72dca5f160f6f076bf8c973a70383b1eb0152f55d",
+  "total_0_100": 41.49,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 3.89
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 3.93
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.19
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.14
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.78
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.43
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.89
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.85
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.24
+    }
+  ],
+  "weakest_feature": {
+    "id": "craftsmanship",
+    "mean": 2.82,
+    "perCriterion": {
+      "engines_four_underwing": 4.11,
+      "upper_deck_hump": 3.97,
+      "fuselage_proportions": 4.13,
+      "wing_geometry": 3.91,
+      "empennage": 4.93,
+      "landing_gear": 6.81,
+      "window_door_lines": 3.86,
+      "livery_coherence": 3.47,
+      "silhouette_747": 4.16,
+      "craftsmanship": 2.82
+    }
+  },
+  "critic": {
+    "weakest_feature": "craftsmanship",
+    "fix_suggestion": "Attach the engine geometry to the wing pylon by setting its local position offset to (0, 0, 0) relative to the pylon's origin. Scale the engine along the X-axis by a factor of 1.2 to ensure proper clearance from the fuselage, and rotate it -5 degrees on the Z-axis to align with the wing's leading edge angle.",
+    "discrepancies": [
+      {
+        "feature": "Engine placement",
+        "observed": "The engine is floating away from the wing and fuselage.",
+        "reference": "The engine is physically attached to a pylon on the wing.",
+        "direction_of_fix": "Move/attach engine to wing pylon"
+      },
+      {
+        "feature": "Nose landing gear",
+        "observed": "The nose wheel assembly is detached and floating in front of the plane.",
+        "reference": "The nose gear is attached directly under the cockpit area.",
+        "direction_of_fix": "Attach nose gear to fuselage"
+      },
+      {
+        "feature": "Main landing gear",
+        "observed": "Multiple wheels are floating independently below the wing/fuselage.",
+        "reference": "Wheels are grouped into a single strut assembly attached to the body.",
+        "direction_of_fix": "Group and attach wheels to struts"
+      },
+      {
+        "feature": "Tail fin connection",
+        "observed": "The vertical stabilizer appears as a separate, disconnected block.",
+        "reference": "The tail fin is integrated into the rear fuselage structure.",
+        "direction_of_fix": "Attach/merge tail fin to rear fuselage"
+      }
+    ],
+    "critic_view": 2,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 41.49,
+  "created_at": "2026-07-16T14:30:09.374Z",
+  "actor_status": "no_change"
+}

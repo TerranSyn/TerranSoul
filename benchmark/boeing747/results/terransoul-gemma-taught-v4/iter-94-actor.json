@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 269754,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 186,
+    "tool_calls": {
+      "read_file": 5,
+      "edit_file": 2
+    },
+    "total_tool_calls": 7,
+    "text_chunks": 172,
+    "tool_failures": 1,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 5
+      },
+      {
+        "name": "edit_file",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "e6b027892a858282e811153947c289952e3895abb891ef1db2b7f0186fea7106",
+  "plane_sha256_after": "1ff62c82258aa042e928375c58ebf2e75a82e1b83a3ffe17be8f58606821558a",
+  "changed": true,
+  "claude_result_text": "The `window_door_lines` feature has been rebuilt to provide better realism and visual coherence for the Boeing 747 model:\n1.  **Main Deck Windows**: Re-architected a coherent row of passenger windows along both sides of the fuselage, ensuring they are clearly defined and properly spaced.\n2.  **Upper Deck Windows**: Adjusted the upper deck window placement to correctly reflect the iconic \"hump\" structure—now only present on the front third of the aircraft and positioned at the correct height.\n3.  **Cockpit Windshields**: Replaced the simple box windows with a multi-pane arrangement on both sides, creating a more realistic wrap-around windshield look for the nose.\n4.  **Doors**: Refined the door placement and proportions to be consistent with the main deck window line while remaining clearly visible as access points.\n\nThese changes significantly improve the model's detail by correctly placing key features in accordance with 747 architecture using primitive components.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 269754,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 186,
+        "tool_calls": {
+          "read_file": 5,
+          "edit_file": 2
+        },
+        "total_tool_calls": 7,
+        "text_chunks": 172,
+        "tool_failures": 1,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 5
+          },
+          {
+            "name": "edit_file",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

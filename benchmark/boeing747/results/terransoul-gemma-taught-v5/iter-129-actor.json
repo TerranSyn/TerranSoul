@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 271647,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 634,
+    "tool_calls": {
+      "read_file": 3,
+      "edit_file": 1
+    },
+    "total_tool_calls": 4,
+    "text_chunks": 626,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 3
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "plane_sha256_after": "ce144f74cb34bba3d737054ca24972b804dbd3c0aefb08ec0c1405d33acfa46e",
+  "changed": true,
+  "claude_result_text": "The engine configurations have been updated to improve spacing and visibility, addressing the judge's main concern about only seeing two nacelles instead of four. The positions are now correctly spread across both the longitudinal and lateral axes.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 271647,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 634,
+        "tool_calls": {
+          "read_file": 3,
+          "edit_file": 1
+        },
+        "total_tool_calls": 4,
+        "text_chunks": 626,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 3
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

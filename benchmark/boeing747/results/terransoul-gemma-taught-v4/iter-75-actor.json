@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 555480,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 622,
+    "tool_calls": {
+      "read_file": 7,
+      "edit_file": 7
+    },
+    "total_tool_calls": 14,
+    "text_chunks": 594,
+    "tool_failures": 3,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 7
+      },
+      {
+        "name": "edit_file",
+        "count": 7
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "a91b928a5f3dc9d5788f1dbbf18bca92469f0014f769bcd114c9fed79ca7fd5d",
+  "plane_sha256_after": "d8b5f62093534123aa23450609226fc0f4eb9862c0721e3e08f8f19ec44ddbdd",
+  "changed": true,
+  "claude_result_text": "The requested features have been successfully implemented in `plane.js`:\n1.  **Cockpit**: Two angled windshields at the nose (+X) were added to create a wrap-around cockpit look.\n2.  **Main Deck Windows**: A loop now generates 90 windows (45 rows on each side) along the fuselage skin, spanning from the middle towards the rear.\n3.  **Upper-deck Windows**: A second loop adds smaller windows specifically for the front hump area between x=5 and x=20.\n4.  **Doors**: Two sets of doors are placed at x=8 and x=-20 on both sides of the fuselage with appropriate dimensions.\n\nThe geometry remains consistent with the Boeing-747 specifications while adding these necessary details for realism.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 555480,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 622,
+        "tool_calls": {
+          "read_file": 7,
+          "edit_file": 7
+        },
+        "total_tool_calls": 14,
+        "text_chunks": 594,
+        "tool_failures": 3,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 7
+          },
+          {
+            "name": "edit_file",
+            "count": 7
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

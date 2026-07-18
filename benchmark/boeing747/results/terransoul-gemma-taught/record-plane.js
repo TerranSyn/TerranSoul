@@ -30,7 +30,7 @@ export function buildPlane(THREE) {
   group.add(wingGroup);
   const createWingHalf = (side) => {
     const half = new THREE.Mesh(new THREE.BoxGeometry(1, 0.4, 35), dark);
-    half.position.set(side * 2, -1.2, side * 15);
+    half.position.set(side * 2, -1.2, side * 3.5);
     half.rotation.x = Math.PI / 180 * 3; // Dihedral
     half.rotation.z = -Math.PI / 180 * 30; // Sweep back
     half.rotation.y = side === 1 ? Math.PI / 2 : -Math.PI / 2; // Align span with Z axis

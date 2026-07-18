@@ -1,0 +1,132 @@
+{
+  "model": "claude-opus-4-8",
+  "effort": "max",
+  "ms": 855368,
+  "cost_usd": 4.1468365,
+  "timeout_ms": 1800000,
+  "observability": {
+    "event_count": 107,
+    "tool_calls": {
+      "Read": 15,
+      "Edit": 5,
+      "Bash": 6,
+      "Grep": 2
+    },
+    "total_tool_calls": 28,
+    "text_chunks": 51,
+    "tool_failures": 2,
+    "tool_calls_reported": [
+      {
+        "name": "Read",
+        "count": 15
+      },
+      {
+        "name": "Edit",
+        "count": 5
+      },
+      {
+        "name": "Bash",
+        "count": 6
+      },
+      {
+        "name": "Grep",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "8d88ee393c93f740604a10bcd328156ca80898d576e9e316688e3f23f1cad58b",
+  "plane_sha256_after": "a7674593aa5d40595af5e781ba0cc11f22a56237d9940c7d4d6bc7270f157292",
+  "changed": true,
+  "claude_result_text": "Contract validates clean (`ok: true`, zero violations). Done.\n\n## Summary\n\n**What I found.** I opened the renders and both reference photos, then audited the gear numerically against the source. The layout was never the bug — measured against the real 747 ACAP figures, the track, wheel diameter, and ride height are all already correct, which is why iter 11's \"+30% rescale\" and iter 16's full rebuild each bought nothing. The gear fails on two things, and both are arithmetic you can read straight off the source.\n\n**A race, first.** Between my Read and my Edit, a concurrent actor running my same prompt wrote an \"Iter 19\" into the file (1029 → 1139 lines). This is the exact collision that got iter 6 rejected, so I stopped and re-read instead of forcing my write. Iter 19 had independently found one of my two root causes — `makeOleo` painted `CHROME` (near-white) at local y=0 and dark at y=len, i.e. the leg was near-white exactly where it hangs in free air and dark only where it's buried in the hull, so to a camera there were no legs at all — and fixed it, plus opened the *fore/aft* tyre gap (`TRUCK_HALF` 0.8 → 0.92) and braced the wing legs. **I left all of that alone.** Re-applying it would have collided and double-fixed the same thing.\n\n**What I fixed: the axis iter 19 didn't measure.** A 747 truck has four tyres separated on *two* axes — two axles apart in x (iter 19 opened that), and two **duals** apart in z. The duals sit at ±0.55 with half-width 0.26, so their inner faces are at ±0.29 and the channel between them is 0.58 wide. The beam meant to run *down* that channel was built at `halfW 0.32` — **wider than the gap.** It didn't part the duals, it plugged them, overlapping each tyre by 0.03. Beam (`0x3a4048`) and tyre (`0x14171b`) are the same near-black, so every truck fused into one solid slab. That's the half of Claude's \"more clearly separated **wheel pairs**\" still standing: a wheel pair *is* the dual pair, it's separated along z, and no colour law or fore/aft",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 600229,
+      "actor_error": "terransoul-cli agent-task timed out after 600000ms (12 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 33,
+        "tool_calls": {
+          "Read": 12
+        },
+        "total_tool_calls": 12,
+        "text_chunks": 9,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "actor_failed",
+      "ms": 1200072,
+      "actor_error": "terransoul-cli agent-task timed out after 1200000ms (28 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 75,
+        "tool_calls": {
+          "Read": 15,
+          "Grep": 2,
+          "Bash": 3,
+          "Edit": 8
+        },
+        "total_tool_calls": 28,
+        "text_chunks": 19,
+        "tool_failures": 1
+      }
+    },
+    {
+      "attempt": 3,
+      "timeout_ms": 1800000,
+      "status": "edited",
+      "ms": 855368,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 107,
+        "tool_calls": {
+          "Read": 15,
+          "Edit": 5,
+          "Bash": 6,
+          "Grep": 2
+        },
+        "total_tool_calls": 28,
+        "text_chunks": 51,
+        "tool_failures": 2,
+        "tool_calls_reported": [
+          {
+            "name": "Read",
+            "count": 15
+          },
+          {
+            "name": "Edit",
+            "count": 5
+          },
+          {
+            "name": "Bash",
+            "count": 6
+          },
+          {
+            "name": "Grep",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

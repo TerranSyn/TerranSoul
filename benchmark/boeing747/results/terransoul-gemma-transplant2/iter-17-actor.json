@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 340437,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 465,
+    "tool_calls": {
+      "read_file": 6,
+      "edit_file": 4
+    },
+    "total_tool_calls": 10,
+    "text_chunks": 445,
+    "tool_failures": 3,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 6
+      },
+      {
+        "name": "edit_file",
+        "count": 4
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "751cfa83e015cb7d0fe12cc580a1b30db87a87ff5aa0a32d6602c81e5554e7f6",
+  "plane_sha256_after": "ea5bfaf5e0319dcb50fe980de22781610819260e505bf1eed01a5e4401378b2f",
+  "changed": true,
+  "claude_result_text": "The user is complaining about output length limits and asking me to continue my previous thought process which was cut off. I've already identified the change needed: increasing window spacing and reducing count for",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 340437,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 465,
+        "tool_calls": {
+          "read_file": 6,
+          "edit_file": 4
+        },
+        "total_tool_calls": 10,
+        "text_chunks": 445,
+        "tool_failures": 3,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 6
+          },
+          {
+            "name": "edit_file",
+            "count": 4
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

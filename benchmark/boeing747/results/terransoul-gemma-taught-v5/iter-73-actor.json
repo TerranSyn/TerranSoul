@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 566428,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 1037,
+    "tool_calls": {
+      "read_file": 4,
+      "edit_file": 3
+    },
+    "total_tool_calls": 7,
+    "text_chunks": 1023,
+    "tool_failures": 2,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 4
+      },
+      {
+        "name": "edit_file",
+        "count": 3
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "d95fb2df6846b419d2639f1fde1927546778897ef3681273a368a48881c3222e",
+  "plane_sha256_after": "63e198ef1197e06442ab19540d3a933feb8f5086d6848966c30756ac15a8562a",
+  "changed": true,
+  "claude_result_text": "The user wants me to finish my previous response which was cut off. I already know what I want to do",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 566428,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 1037,
+        "tool_calls": {
+          "read_file": 4,
+          "edit_file": 3
+        },
+        "total_tool_calls": 7,
+        "text_chunks": 1023,
+        "tool_failures": 2,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 4
+          },
+          {
+            "name": "edit_file",
+            "count": 3
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

@@ -1,0 +1,102 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 78,
+  "run_id": "terransoul-gemma-taught-v4-iter-78-mro11uod",
+  "plane_sha256": "c8d4fe25e80480a8f9aaaf37271de737fe0ad2a0e4d14e676d3ffd0db536e8ff",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 45.78,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.33
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.56
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.6
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.04
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.9
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.89
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.55
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.86
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.47
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 3.67,
+    "perCriterion": {
+      "engines_four_underwing": 3.67,
+      "upper_deck_hump": 4.54,
+      "fuselage_proportions": 4.36,
+      "wing_geometry": 4,
+      "empennage": 5.48,
+      "landing_gear": 7.11,
+      "window_door_lines": 3.71,
+      "livery_coherence": 5.31,
+      "silhouette_747": 4.91,
+      "craftsmanship": 3.82
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the engine nacelle geometry to achieve four total engines (two per wing). For each new instance, apply a translation along the X-axis and Y-axis to position them further outboard on the wings, and replace the boxy primitive with a cylindrical cowling of 1.5x the original diameter.",
+    "discrepancies": [
+      {
+        "feature": "Engine count",
+        "observed": "Two large engine nacelles on the visible side",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate"
+      },
+      {
+        "feature": "Engine placement",
+        "observed": "Engines are attached directly under the wing root area",
+        "reference": "Engines are mounted further outboard on the wings",
+        "direction_of_fix": "move outward"
+      },
+      {
+        "feature": "Nacelle shape",
+        "observed": "Boxy, rectangular nacelles",
+        "reference": "Cylindrical, aerodynamic engine cowlings",
+        "direction_of_fix": "change primitive from box to cylinder"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 46.81,
+  "created_at": "2026-07-16T21:37:27.279Z"
+}

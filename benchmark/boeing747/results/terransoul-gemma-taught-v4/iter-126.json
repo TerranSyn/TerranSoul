@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 126,
+  "run_id": "terransoul-gemma-taught-v4-iter-126-mrodn35b",
+  "plane_sha256": "dc45e8a772e755e75f7687da28dff9c25fa457eae52bcbbf4210fe6003c96d73",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 49.9,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.34
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.51
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.2
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.93
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.36
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.55
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.99
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.02
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.01
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 0.46,
+    "perCriterion": {
+      "engines_four_underwing": 4.56,
+      "upper_deck_hump": 4.66,
+      "fuselage_proportions": 4.69,
+      "wing_geometry": 5.49,
+      "empennage": 6.08,
+      "landing_gear": 7.65,
+      "window_door_lines": 0.46,
+      "livery_coherence": 4.71,
+      "silhouette_747": 5.4,
+      "craftsmanship": 4.6
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Create an array of 40 small rectangular planes (dimensions: 0.5m x 0.3m) along the fuselage's longitudinal axis. Position them at a constant interval of 1.2m starting from the cockpit, rotating each plane to match the local curvature of the cylindrical hull geometry to ensure they follow the fuselage profile.",
+    "discrepancies": [
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A single large blocky shape at the nose",
+        "reference": "A distinct row of multiple individual windows",
+        "direction_of_fix": "replace with a series of small rectangular planes"
+      },
+      {
+        "feature": "Main cabin window line",
+        "observed": "No visible windows along the fuselage",
+        "reference": "A continuous horizontal row of many small windows",
+        "direction_of_fix": "add a repeated array of small rectangles along the side"
+      },
+      {
+        "feature": "Passenger door outlines",
+        "observed": "Smooth fuselage surface with no breaks",
+        "reference": "Distinct rectangular outlines for front and rear doors",
+        "direction_of_fix": "inset/extrude thin rectangular frames into the fuselage geometry"
+      },
+      {
+        "feature": "Window spacing",
+        "observed": "Uniformly blank side profile",
+        "reference": "Regularly spaced windows following the curvature of the hull",
+        "direction_of_fix": "distribute small planes along the length of the cylinder"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 55.49,
+  "created_at": "2026-07-17T03:29:55.445Z",
+  "actor_status": "no_change"
+}

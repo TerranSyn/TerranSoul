@@ -38,5 +38,285 @@
     "gating_delta": -8.6,
     "reason": "total regression: 42.26 < best 50.86 - epsilonTotal 0 (delta -8.6)",
     "created_at": "2026-07-14T11:03:51.570Z"
+  },
+  {
+    "iter": 65,
+    "weakest_feature_targeted": "craftsmanship",
+    "edit_summary": "I have updated the wing geometry and engine configuration in `plane.js`.\n\nSpecifically, I changed:\n1.  **Wing Geometry**: Increased the sweep angle to ~38 degrees (closer to the 37.5-degree target) and slightly increased the dihedral and span length. This improves the realism of the swept-back wing planform.\n2.  **Engine Positioning**: Moved the engines further outboard and forward relative to the wing root, and adjusted their size/pylon dimensions. This follows the rubric's requirement for plausible inboard/outboard spacing and a correct forward offset ahead of the wing leading edge.\n\nThese changes specifically target the `wing_geometry` (weight 1.3) and `engines_four_underwing` (weight 1.5) criteria, addressing common feedback about \"straight slabs\" or \"floating cylinders.\"",
+    "rejected_sha256": "e3e85bb00b092aa6eef7c587497d502c7b0928391fba9dc4875caf6cc02f6a22",
+    "per_view_delta": [
+      -0.09,
+      -1.58,
+      -0.25,
+      null,
+      0,
+      -1.15,
+      -0.43,
+      0.16,
+      0.58
+    ],
+    "gating_delta": -1.83,
+    "reason": "total regression: 50.88 < best 52.71 - epsilonTotal 0 (delta -1.83)",
+    "created_at": "2026-07-14T12:45:08.877Z"
+  },
+  {
+    "iter": 79,
+    "weakest_feature_targeted": "craftsmanship",
+    "edit_summary": "actor edit (no summary)",
+    "rejected_sha256": "2258ab15917a2172dc326fac887cc49e8a145add136c867344345af5d6459a91",
+    "per_view_delta": [
+      0,
+      -1.58,
+      -0.07,
+      null,
+      0.28,
+      0,
+      0.21,
+      0,
+      0.35
+    ],
+    "gating_delta": -1.01,
+    "reason": "total regression: 51.7 < best 52.71 - epsilonTotal 0 (delta -1.01)",
+    "created_at": "2026-07-14T13:56:18.780Z"
+  },
+  {
+    "iter": 85,
+    "weakest_feature_targeted": "craftsmanship",
+    "edit_summary": "I have addressed the primary \"Craftsmanship\" and \"upper_deck_hump\" issues by lowering the hump's vertical position from `6.2` to `4.8`. \n\nThis adjustment ensures the upper deck is no longer a floating block above the fuselage; it now properly blends into the crown of the main body (which has a radius of `3`). I also slightly reduced the larger radius of the hump cylinder (`4.5` down to `3.8`) to allow for a smoother, more natural aesthetic transition from the cockpit area down into the main cabin. This change fixes several \"disconnected\" and \"floating parts\" complaints while maintaining the 747's iconic silhouette.",
+    "rejected_sha256": "850577a24f96b3bdf091f1a4d47c8bf82937db59ffa2ba2ff17ed68f54b5159a",
+    "per_view_delta": [
+      -0.02,
+      -1.87,
+      -0.07,
+      null,
+      0.55,
+      -3.89,
+      -0.43,
+      -0.06,
+      -0.09
+    ],
+    "gating_delta": -4.68,
+    "reason": "total regression: 48.03 < best 52.71 - epsilonTotal 0 (delta -4.68)",
+    "created_at": "2026-07-14T14:25:31.240Z"
+  },
+  {
+    "iter": 86,
+    "weakest_feature_targeted": "engines_four_underwing",
+    "edit_summary": "I have updated the engine and pylon configuration in `plane.js` to better meet the requirements for the `engines_four_underwing` criterion.\n\nSpecifically, I:\n1.  **Increased Engine Size and Detail**: Adjusted the `engineGeo` to be larger and more substantial (radius 2.3/1.8, length 6).\n2.  **Improved Spacing**: Replaced the hardcoded x-positions with a new distribution (`18` for inboard, `34` for outboard) to provide better spacing along the swept wings.\n3.  **Refined Underslung Positioning**: Moved the engines further down (`y = -6.5`) and adjusted their forward offset to ensure they are clearly suspended beneath the wing structure.\n4.  **Enhanced Pylon Construction**: Enlarged the pylons and repositioned them so that they bridge the gap between the wing root/mid-span area and the engine nacelles, creating a more plausible \"hung\" appearance rather than having engines appear detached or floating.",
+    "rejected_sha256": "86e0acc7193a97926234219593faa57c07d9a9e31d803bb1bec50fc554cb2d6e",
+    "per_view_delta": [
+      -0.26,
+      -4.34,
+      0.62,
+      null,
+      0.55,
+      0,
+      -0.43,
+      -0.4,
+      0.05
+    ],
+    "gating_delta": -5.26,
+    "reason": "total regression: 47.45 < best 52.71 - epsilonTotal 0 (delta -5.26)",
+    "created_at": "2026-07-14T14:30:12.879Z"
+  },
+  {
+    "iter": 87,
+    "weakest_feature_targeted": "craftsmanship",
+    "edit_summary": "The primary issue in this candidate was a significant lack of craftsmanship, specifically regarding the disconnected nature of the model's components—most notably, the engines were positioned far below the wings without proper pylon integration, and certain parts appeared to be floating. \n\nTo address this, I performed a targeted edit on the engine and pylon configuration:\n1. **Engine Elevation**: I raised the vertical position (`y`) of the four nacelles from `-5.0` to `-3.5`, bringing them much closer to the wing's actual mounting height (approx. `-1.2`). This significantly reduces the visual \"floating\" effect and makes the engines appear as part of a cohesive structure.\n2. **Pylon Alignment**: I adjusted the pylon positions to be correctly offset relative to the new engine coordinates, ensuring they appear to provide a structural connection between the wings and the nacelles rather than looking like separate, loosely placed blocks.\n\nThese changes directly target the \"Craftsmanship\" rubric's 8-10 point anchors for solid assembly and clean construction, while maintaining all other geometric properties of the Boeing-747 silhouette that were already performing well (such as the hump proportions and wing sweep).",
+    "rejected_sha256": "094e55e731b1a4a8010b30d788e39648549bb23cc54a83e18a8683c79110764b",
+    "per_view_delta": [
+      0.24,
+      0,
+      0.1,
+      null,
+      -0.13,
+      -1.15,
+      -0.12,
+      -3.13,
+      -0.15
+    ],
+    "gating_delta": -5.42,
+    "reason": "total regression: 47.29 < best 52.71 - epsilonTotal 0 (delta -5.42)",
+    "created_at": "2026-07-14T14:37:48.702Z"
+  },
+  {
+    "iter": 101,
+    "weakest_feature_targeted": "craftsmanship",
+    "edit_summary": "I have adjusted the engine and pylon positions in `plane.js` to bring them closer to the wing surface. Previously, they were positioned quite far below the wings, contributing to a \"floating\" appearance that negatively impacted the craftsmanship score. By moving the engines to $y = -4.3$ (from $-5.0$) and the pylons to $y = -3.5$ (from $-4.2$), I've improved their integration with the wing structure, aiming for a more cohesive and deliberate assembly as required by the craftsmanship rubric.",
+    "rejected_sha256": "bfb57dac56c39587f0f1a139533112fd3a3b0c131fd3a9118cbcc7d4ddb4146a",
+    "per_view_delta": [
+      0.02,
+      -1.58,
+      0.17,
+      null,
+      0,
+      0,
+      -0.68,
+      -2.46,
+      0.17
+    ],
+    "gating_delta": -5.45,
+    "reason": "total regression: 50.05 < best 55.5 - epsilonTotal 0 (delta -5.45)",
+    "created_at": "2026-07-14T15:54:00.445Z"
+  },
+  {
+    "iter": 114,
+    "weakest_feature_targeted": "craftsmanship",
+    "edit_summary": "I have made a targeted edit to improve the 'Craftsmanship' score by addressing \"floating\" components, specifically moving the wing roots inward so they no longer appear detached from the fuselage. I changed `half.position.set(side * 8, -1.2, side * 15)` to `half.position.set(side * 6, -0.8, side * 15)`. With a fuselage radius of 3, this new root position at $X=\\pm 6$ ensures the wing roots are properly joined to the fuselage body (overlapping the surface), significantly improving the visual cohesion and meeting the \"solid assembly\" criteria from the rubric. I also slightly adjusted the vertical offset to better align the wings with the lower mid-fuselage mounting points.",
+    "rejected_sha256": "4a26c6e0567a6599d9716b66a78bbe4f085cec84804774349282abdd26b8ad9f",
+    "per_view_delta": [
+      0.04,
+      0.18,
+      0,
+      null,
+      0.24,
+      0,
+      0,
+      -3.89,
+      -0.23
+    ],
+    "gating_delta": -3.28,
+    "reason": "total regression: 52.23 < best 55.51 - epsilonTotal 0 (delta -3.28)",
+    "created_at": "2026-07-14T17:05:34.625Z"
+  },
+  {
+    "iter": 115,
+    "weakest_feature_targeted": "window_door_lines",
+    "edit_summary": "I have made a targeted edit to improve the `window_door_lines` criterion, which was identified as the weakest feature in the previous iteration.\n\nKey changes include:\n1. **Introduction of a dedicated window material**: I created a new `windowMat` with a significantly darker color (`0x222222`) instead of using the general `dark` material used for wings and engines. This makes the windows stand out much more clearly against the white fuselage, addressing the \"simple dark stripes\" feedback.\n2. **Enhanced main deck window detail**: I increased the number of windows (from 35 to 45) and slightly reduced their individual size while increasing their outward offset (`z=2.8`). This provides a cleaner, more continuous, yet clearly defined row of apertures.\n3. **Improved upper-deck hump windows**: I repositioned these as smaller apertures further up on the hump profile (`y=3.5`) to better reflect their appearance on an aircraft's crown.\n4. **Refined cockpit windshield**: The cockpit geometry is now larger and moved slightly further toward the nose, making it more distinctive as a primary navigation window.\n5. **More prominent doors**: I slightly increased the size and adjusted the placement of the front/rear doors to ensure they are clearly identifiable markings as requested by the rubric.\n\nThese changes specifically target the \"clean main-deck window line\", \"separate upper-deck windows\", and \"cockpit windshield shape\" requirements from the 10-point anchor while preserving the existing model structure.",
+    "rejected_sha256": "0aab3b793e30d488de8888a410a24b402244d1b739a6327f53e884375af47c33",
+    "per_view_delta": [
+      0.39,
+      0,
+      0,
+      null,
+      -0.12,
+      -1.58,
+      0,
+      0,
+      -0.41
+    ],
+    "gating_delta": -1.12,
+    "reason": "total regression: 54.39 < best 55.51 - epsilonTotal 0 (delta -1.12)",
+    "created_at": "2026-07-14T17:11:11.550Z"
+  },
+  {
+    "iter": 116,
+    "weakest_feature_targeted": "window_door_lines",
+    "edit_summary": "I have updated the window and door lines to improve the `window_door_lines` criterion. Specifically, I increased the number of main deck windows for a more continuous look, adjusted their vertical position for better alignment with the fuselage surface, raised the upper-deck windows significantly (to $y=8.5$) so they correctly sit on the crown of the 747's hump rather than just in front of it, and slightly increased the count/spacing of those windows to improve coverage of the iconic partial-length upper deck.",
+    "rejected_sha256": "6e98aa40ec770224dc737b4bc27ad22bd354f951477383d1438ffb82fac97b6d",
+    "per_view_delta": [
+      0.1,
+      -1.58,
+      -0.18,
+      null,
+      0,
+      -1.15,
+      -1.22,
+      -1.74,
+      -0.31
+    ],
+    "gating_delta": -7.6,
+    "reason": "total regression: 47.91 < best 55.51 - epsilonTotal 0 (delta -7.6)",
+    "created_at": "2026-07-14T17:16:51.468Z"
+  },
+  {
+    "iter": 128,
+    "weakest_feature_targeted": "window_door_lines",
+    "edit_summary": "I have updated the `window_door_lines` in `plane.js` to improve their visual density and consistency across the aircraft's profile.\n\nSpecifically:\n1.  **Main Deck Windows**: Increased the count from 35 to 41 windows and adjusted their positioning to cover a more continuous stretch along both sides of the fuselage ($x$ coordinates). This provides a more realistic row of cabin windows.\n2.  **Upper-Deck Hump Windows**: Increased the window count for the hump area, ensuring that the upper deck has sufficient detail as it blends into the front of the fuselage.\n3.  **Cockpit Windshield**: Replaced the single central cockpit block with dual windshield shapes on both sides. This better approximates a realistic cockpit profile and aligns more naturally with the surrounding main-deck window line.\n\nThese changes directly address the \"Window and door lines\" criterion while keeping the rest of the 747's primitive geometry intact.",
+    "rejected_sha256": "97f1f26ad78f3370fb5e54aa4f4d59cfbfcd873c5a2872278cd3bf6829f54e49",
+    "per_view_delta": [
+      0.04,
+      0,
+      0,
+      null,
+      -0.12,
+      0,
+      0,
+      -3.89,
+      0
+    ],
+    "gating_delta": -4.47,
+    "reason": "total regression: 51.04 < best 55.51 - epsilonTotal 0 (delta -4.47)",
+    "created_at": "2026-07-14T18:17:44.227Z"
+  },
+  {
+    "iter": 139,
+    "weakest_feature_targeted": "craftsmanship",
+    "edit_summary": "I have improved the aircraft model by correcting the fundamental wing and engine geometry, which was a primary cause of low craftsmanship and silhouette scores. \n\nSpecifically:\n1.  **Corrected Wing Orientation:** Revised the rotation logic in `createWingHalf` to ensure wings properly span across the fuselage along the Z-axis rather than appearing as \"flat slabs.\" I also adjusted the root position to better align with the lower mid-fuselage.\n2.  **Improved Sweep and Dihedral:** Tuned the sweep angles to a more realistic ~35 degrees and added distinct dihedral, improving the model's silhouette from both front and top views.\n3.  **Fixed Engine/Pylon Alignment:** Relocated the four engines and their pylons so they are properly underslung beneath the swept wings with correct relative spacing and forward offsets, resolving the \"floating\" components issue that penalized the craftsmanship score across multiple perspectives.\n\nThese changes significantly enhance both the realism of the 747's profile and the structural integrity of the primitive assembly.",
+    "rejected_sha256": "81177f963e74388c7c535180661d3de71afd516397aafafb50d426fb8bf99384",
+    "per_view_delta": [
+      0.51,
+      -1.87,
+      -0.21,
+      null,
+      0.43,
+      -1.87,
+      0.45,
+      -2.21,
+      0.29
+    ],
+    "gating_delta": -3.93,
+    "reason": "total regression: 51.58 < best 55.51 - epsilonTotal 0 (delta -3.93)",
+    "created_at": "2026-07-14T19:17:07.457Z"
+  },
+  {
+    "iter": 147,
+    "weakest_feature_targeted": "craftsmanship",
+    "edit_summary": "I have improved the aircraft's craftsmanship by moving the wing roots inward toward the fuselage center (from a multiplier of `8` to `7`) and slightly adjusting their vertical offset. This change ensures that the wings appear to be structurally joined to the body rather than floating as detached slabs, directly addressing the primary criticism regarding \"disconnected floating parts\" and visible gaps in the model's assembly.",
+    "rejected_sha256": "d28b1644bd7e61e2287d6bcf0b0229337ecf3b1e1a267c24b578af44836c3c2a",
+    "per_view_delta": [
+      0.1,
+      -4.57,
+      0.17,
+      null,
+      5.85,
+      -5.06,
+      3.25,
+      -5.18,
+      2.49
+    ],
+    "gating_delta": -5.83,
+    "reason": "total regression: 49.68 < best 55.51 - epsilonTotal 0 (delta -5.83)",
+    "created_at": "2026-07-14T20:20:21.209Z"
+  },
+  {
+    "iter": 155,
+    "weakest_feature_targeted": "wing_geometry",
+    "edit_summary": "actor edit (no summary)",
+    "rejected_sha256": "42debd39104fb7b91add19d2873f885ca1ccec1ba58cac8203ce6f618c398ad7",
+    "per_view_delta": [
+      -0.74,
+      -1.87,
+      -0.18,
+      null,
+      0.35,
+      0,
+      0,
+      -3.89,
+      0.09
+    ],
+    "gating_delta": -5.41,
+    "reason": "total regression: 50.23 < best 55.64 - epsilonTotal 0 (delta -5.41)",
+    "created_at": "2026-07-14T21:02:57.519Z"
+  },
+  {
+    "iter": 159,
+    "weakest_feature_targeted": "wing_geometry",
+    "edit_summary": "I have improved the aircraft's wing geometry by increasing both the sweep-back angle to approximately 38 degrees and the dihedral angle (upward slant) to about 7 degrees, which provides a more realistic silhouette for a Boeing 747. I also adjusted the proportions of the wings—increasing their span and thickness relative to the fuselage—to better match the expected planform while remaining within the allowed primitive geometry constraints. This directly addresses the \"wing_geometry\" rubric criteria, which was identified as the model's weakest feature.",
+    "rejected_sha256": "053f67f4ebfda0aff3cc0465897b3ea0de711d27bfb28de7d9edc1410928bd54",
+    "per_view_delta": [
+      0,
+      0,
+      -0.18,
+      null,
+      -0.32,
+      -1.15,
+      0.2,
+      -2.84,
+      0.03
+    ],
+    "gating_delta": -5.33,
+    "reason": "total regression: 50.31 < best 55.64 - epsilonTotal 0 (delta -5.33)",
+    "created_at": "2026-07-14T21:25:28.908Z"
   }
 ]

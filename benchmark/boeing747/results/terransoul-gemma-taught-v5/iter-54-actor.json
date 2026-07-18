@@ -1,0 +1,92 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 274612,
+  "cost_usd": 0,
+  "timeout_ms": 1200000,
+  "observability": {
+    "event_count": 232,
+    "tool_calls": {
+      "read_file": 2,
+      "edit_file": 3
+    },
+    "total_tool_calls": 5,
+    "text_chunks": 222,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 2
+      },
+      {
+        "name": "edit_file",
+        "count": 3
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "90c51d31eb929154b6fe3bd2f143bacb70c013f37cc1cb93fbdf7eadc9396b3a",
+  "plane_sha256_after": "7d835e556dbf8ccb521904e58441ee3f1d79be5fd161b2cbd75fecd448924892",
+  "changed": true,
+  "claude_result_text": "The model improvements for the Boeing-747 hump are complete. I have:\n1.  Moved the hump center forward to `x=15` and increased its x-scale to 16, making it longer and ensuring it doesn't look like a blunt nose extension as noted in the judge feedback.\n2.  Increased its height scale to 4.0 to better represent an upper deck structure above the main fuselage crown (at y=3).\n3.  Adjusted the position of the hump windows to be properly centered on this new, larger hump geometry.\n\nThese changes address the specific issues identified by the judge in view 9 regarding the inaccuracy of the partial-length upper deck and its blend with the nose.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 600238,
+      "actor_error": "terransoul-cli agent-task timed out after 600000ms (8 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 570,
+        "tool_calls": {
+          "read_file": 4,
+          "edit_file": 4
+        },
+        "total_tool_calls": 8,
+        "text_chunks": 554,
+        "tool_failures": 2
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "edited",
+      "ms": 274612,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 232,
+        "tool_calls": {
+          "read_file": 2,
+          "edit_file": 3
+        },
+        "total_tool_calls": 5,
+        "text_chunks": 222,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 2
+          },
+          {
+            "name": "edit_file",
+            "count": 3
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 453258,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 493,
+    "tool_calls": {
+      "read_file": 4,
+      "edit_file": 4
+    },
+    "total_tool_calls": 8,
+    "text_chunks": 477,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 4
+      },
+      {
+        "name": "edit_file",
+        "count": 4
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "plane_sha256_after": "2d194c6a4d99b0d3d84e57088b24777c78f5fbff9350bdd5903e628813e98476",
+  "changed": true,
+  "claude_result_text": "No further edits are needed as all observed issues (underslung engines, correct Z-offsets, pylon forward-placement) have been addressed.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 453258,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 493,
+        "tool_calls": {
+          "read_file": 4,
+          "edit_file": 4
+        },
+        "total_tool_calls": 8,
+        "text_chunks": 477,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 4
+          },
+          {
+            "name": "edit_file",
+            "count": 4
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 107,
+  "run_id": "terransoul-gemma-taught-v4-iter-107-mro8nmp6",
+  "plane_sha256": "66a96033dde7310f861814d16c5dfa947843013ecbaeba95b12203504ed28ec3",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 54.09,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.87
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.76
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.93
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.1
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.94
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.15
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.23
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.01
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.69
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 3.83,
+    "perCriterion": {
+      "engines_four_underwing": 4.6,
+      "upper_deck_hump": 4.46,
+      "fuselage_proportions": 4.98,
+      "wing_geometry": 5.89,
+      "empennage": 6.1,
+      "landing_gear": 7.6,
+      "window_door_lines": 3.83,
+      "livery_coherence": 6,
+      "silhouette_747": 5.82,
+      "craftsmanship": 5.18
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Duplicate the window primitive array along the fuselage Z-axis to create two distinct rows. Position the first row at a Y-offset of 0.5 units and the second (upper deck) row at a Y-offset of 1.2 units. For the upper deck row, constrain the X-coordinates to the 'hump' section geometry only. Adjust the spacing parameter between windows from uniform to a variable array that increases by 1.5x in width whenever a door frame primitive is detected on the fuselage surface.",
+    "discrepancies": [
+      {
+        "feature": "Window row count",
+        "observed": "A single continuous line of small dots along the fuselage side.",
+        "reference": "Multiple distinct rows of windows (main deck and upper deck).",
+        "direction_of_fix": "increase"
+      },
+      {
+        "feature": "Door outlines",
+        "observed": "No discernible door geometry or recessed lines on the fuselage.",
+        "reference": "Clearly defined rectangular door frames with visible seams.",
+        "direction_of_fix": "add"
+      },
+      {
+        "feature": "Upper deck window placement",
+        "observed": "Windows are only present on the lower main fuselage section.",
+        "reference": "A distinct row of windows is located on the upper 'hump' section.",
+        "direction_of_fix": "move/add"
+      },
+      {
+        "feature": "Window spacing",
+        "observed": "Uniformly spaced dots across the entire length.",
+        "reference": "Varied spacing with larger gaps around door locations and cockpit area.",
+        "direction_of_fix": "vary"
+      }
+    ],
+    "critic_view": 7,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 54.13,
+  "created_at": "2026-07-17T01:10:22.812Z",
+  "actor_status": "edited"
+}

@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-transplant2",
+  "iter": 29,
+  "run_id": "terransoul-gemma-transplant2-iter-29-mrouj0u7",
+  "plane_sha256": "70503b7aaac294389c0fd4eee06b0f716827453a985ce32a4d5f97d53226ed67",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 69.06,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.37
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.82
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.28
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.92
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.92
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 7.38
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 6.61
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.44
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 7.41
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 5.97,
+    "perCriterion": {
+      "engines_four_underwing": 6,
+      "upper_deck_hump": 6.09,
+      "fuselage_proportions": 6.6,
+      "wing_geometry": 7.47,
+      "empennage": 7.45,
+      "landing_gear": 7.32,
+      "window_door_lines": 5.97,
+      "livery_coherence": 6.78,
+      "silhouette_747": 7.53,
+      "craftsmanship": 7.82
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Duplicate the 'Main deck window row' primitive along the fuselage Z-axis; offset the new row by 1.5x the current window height to create two distinct rows, and adjust the spacing of the second row to be 20% wider than the first to match the reference grouping.",
+    "discrepancies": [
+      {
+        "feature": "Main deck window row",
+        "observed": "A single continuous line of small dots along the fuselage side.",
+        "reference": "Two distinct rows of windows (upper and lower decks) with specific spacing.",
+        "direction_of_fix": "duplicate/offset"
+      },
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A simple oval shape on the nose.",
+        "reference": "A multi-pane, wrap-around cockpit window structure.",
+        "direction_of_fix": "subdivide/extrude"
+      },
+      {
+        "feature": "Forward door placement",
+        "observed": "No distinct door outlines or breaks in the fuselage geometry.",
+        "reference": "Clearly defined forward passenger doors with visible frames.",
+        "direction_of_fix": "inset/recess"
+      },
+      {
+        "feature": "Window spacing",
+        "observed": "Uniformly spaced dots across the entire length of the fuselage.",
+        "reference": "Variable spacing and grouping, especially near the wing root and tail.",
+        "direction_of_fix": "reposition"
+      }
+    ],
+    "critic_view": 5,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 69.63,
+  "created_at": "2026-07-17T11:22:55.550Z",
+  "actor_status": "edited"
+}

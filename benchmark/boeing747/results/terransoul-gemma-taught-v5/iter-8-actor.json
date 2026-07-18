@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 191410,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 296,
+    "tool_calls": {
+      "read_file": 2,
+      "edit_file": 1
+    },
+    "total_tool_calls": 3,
+    "text_chunks": 290,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 2
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "ddac9c380ed2023a115f8e94ac3010b54f07b1a2af952df107fd125b85021700",
+  "plane_sha256_after": "19f463253b8f398655aaeec984d0925e3fdef6e3c58beb2111f61ef582c7218a",
+  "changed": true,
+  "claude_result_text": "The passenger window line on the main deck has been updated to follow the human-curated design's spacing and positioning (starting at x=24 with a pitch of 0.95), which improves the consistency and realism of the fuselage windows while staying within the bounds of a single edit.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 191410,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 296,
+        "tool_calls": {
+          "read_file": 2,
+          "edit_file": 1
+        },
+        "total_tool_calls": 3,
+        "text_chunks": 290,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 2
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

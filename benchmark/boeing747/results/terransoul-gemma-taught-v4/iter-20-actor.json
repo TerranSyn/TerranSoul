@@ -1,0 +1,62 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 144371,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 286,
+    "tool_calls": {
+      "read_file": 3
+    },
+    "total_tool_calls": 3,
+    "text_chunks": 280,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 3
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "no_change",
+  "plane_sha256_before": "e54b1c376902cb7e99f113ebe422d0f29ab6b9907e8deda69c96de6d3e1aab1d",
+  "plane_sha256_after": "e54b1c376902cb7e99f113ebe422d0f29ab6b9907e8deda69c96de6d3e1aab1d",
+  "changed": false,
+  "claude_result_text": "The user wants me to improve the Boeing-747 model in `plane.js`.\nThe weakest feature identified by the judge is 'Craftsmanship (no floating parts, z-fighting, holes)' with a mean score of 2.82/10.\n\nLet's examine the rendered images and the source code to identify specific craftsmanship issues:\n- In `view-5.png` (top-down), I can see several engine nacelles \"floating\" in space relative to the fuselage and wings. They are clearly not attached or pylon-mounted correctly. There are also some small dots/clusters which might be landing gear components that appear detached.\n- The engines: `engineGeo = new THREE.CylinderGeometry(2, 1.5, 5, 8)`. They are placed at `side * (idx === 0 ? 14 : 26), -3.4, side * zDist`.\n- The pylons are placed at the same X and Z but `y = -4.2`.\n- The wings are a box geometry: `new THREE.BoxGeometry(1, 0.4, 35)`.\n- In `view-5.png`, it's clear the engines/pylons don't seem to be connected to the wing or fuselage in a coherent way visually from this angle, although they are logically placed close to them. They look like floating objects.\n- The landing gear also looks very detached and \"floating\" as points/small cylinders.\n\nThe judge notes for craftsmanship mention: \"detached, floating parts everywhere\", \"several visibly floating/intersecting parts or flickering coplanar faces\".\n\nLooking at the code:\n- `hump` is a separate cylinder placed on top of `fuselage`. If the radii and positions aren't perfectly aligned, they might look like disjointed pieces.\n  - `fuselage`: radius 3, length 60 (from -30 to 30).\n  - `hump`: radius 4.5 (back) to 3.2 (front), length 22. Position at x=20. It spans from x=9 to x=31.\n  - The fuselage crown is at y=3. The hump's back radius is 3.2, front is 4.5. If it's centered on the crown, it might be okay visually but maybe there are gaps.\n- `tail`: BoxGeometry(6, 12, 0.6), position (-27, 7, 0). It seems to be sticking out of the back of the fuselage without any fairing.\n- Engines and Pylons: they are definitely problematic i",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "no_change",
+      "ms": 144371,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 286,
+        "tool_calls": {
+          "read_file": 3
+        },
+        "total_tool_calls": 3,
+        "text_chunks": 280,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 3
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}

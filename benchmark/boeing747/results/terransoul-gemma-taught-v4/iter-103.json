@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 103,
+  "run_id": "terransoul-gemma-taught-v4-iter-103-mro7iv3k",
+  "plane_sha256": "63d48c14c80faa20350f1158354eb91ee8ad27b4ee4e432e741a0402c3a79e3b",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 51.64,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.47
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.04
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.17
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.07
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.63
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.66
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.17
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.33
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 3.94
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 0.43,
+    "perCriterion": {
+      "engines_four_underwing": 4.62,
+      "upper_deck_hump": 4.69,
+      "fuselage_proportions": 4.91,
+      "wing_geometry": 5.87,
+      "empennage": 6.03,
+      "landing_gear": 7.68,
+      "window_door_lines": 0.43,
+      "livery_coherence": 5.02,
+      "silhouette_747": 5.73,
+      "craftsmanship": 4.91
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Replace the single nose protrusion with a linear array of 6 small rectangular planes (0.5x0.3 units) arranged horizontally along the upper fuselage curve, spaced 1.2 units apart to simulate individual cockpit windows.",
+    "discrepancies": [
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A single large blocky protrusion at the nose",
+        "reference": "A distinct row of multiple individual cockpit windows",
+        "direction_of_fix": "replace with a series of small rectangular planes"
+      },
+      {
+        "feature": "Main cabin windows",
+        "observed": "No visible window markings or lines on the main body",
+        "reference": "A continuous, long horizontal line of many small circular/oval windows along the fuselage",
+        "direction_of_fix": "add a row of repeated small cylinders or thin rectangles along the side"
+      },
+      {
+        "feature": "Passenger door outlines",
+        "observed": "Smooth, uninterrupted fuselage surface with no door markings",
+        "reference": "Clearly defined rectangular outlines for front and rear cabin doors",
+        "direction_of_fix": "add two large vertical rectangular planes slightly inset into the fuselage sides"
+      },
+      {
+        "feature": "Fuselage curvature at nose",
+        "observed": "A sharp, angular transition from the cockpit area to the main body",
+        "reference": "A smooth, continuous aerodynamic curve from nose to cabin",
+        "direction_of_fix": "increase radius of the nose cone primitive"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 54.13,
+  "created_at": "2026-07-17T00:38:38.747Z",
+  "actor_status": "runtime_failed"
+}

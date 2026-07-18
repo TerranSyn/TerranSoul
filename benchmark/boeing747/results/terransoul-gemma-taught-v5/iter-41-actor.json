@@ -1,0 +1,63 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 17916,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 12,
+    "tool_calls": {
+      "read_file": 2
+    },
+    "total_tool_calls": 2,
+    "text_chunks": 8,
+    "tool_failures": 1,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "no_change",
+  "plane_sha256_before": "e3c01da022de711cf564cba90a87dd2a502bc7438f0c009158aacb1a0cd75b86",
+  "plane_sha256_after": "e3c01da022de711cf564cba90a87dd2a502bc7438f0c009158aacb1a0cd75b86",
+  "changed": false,
+  "claude_result_text": "call:read_file{file_path:<|\"|>D:\\Git\\TerranSoulApp\\benchmark\\boeing747\\candidates\\terransoul-gemma-taught-v5\\plane.js<|\"|>}<tool_call|><|tool_response>",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "no_change",
+      "ms": 17916,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 12,
+        "tool_calls": {
+          "read_file": 2
+        },
+        "total_tool_calls": 2,
+        "text_chunks": 8,
+        "tool_failures": 1,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

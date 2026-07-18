@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 183599,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 296,
+    "tool_calls": {
+      "read_file": 3,
+      "edit_file": 1
+    },
+    "total_tool_calls": 4,
+    "text_chunks": 288,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 3
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "plane_sha256_after": "8d82046307b4ef06a76c4ab731ee3feddf3a601dbeb859f0231f45b3b8af843e",
+  "changed": true,
+  "claude_result_text": "The model's engine count and spacing issues were addressed by updating the inboard engine `zOffset` from `side * 8` to `side * 11.7`, following the design reference for proper lateral distribution on the wings. This helps prevent overlapping that occurred when engines were positioned too close to the fuselage centerline in various viewing angles.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 183599,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 296,
+        "tool_calls": {
+          "read_file": 3,
+          "edit_file": 1
+        },
+        "total_tool_calls": 4,
+        "text_chunks": 288,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 3
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

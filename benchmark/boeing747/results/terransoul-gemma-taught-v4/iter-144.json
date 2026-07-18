@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 144,
+  "run_id": "terransoul-gemma-taught-v4-iter-144-mrohy4kv",
+  "plane_sha256": "74c6c7b434042d19210526416daeec35b71938b61edaccfebf748f9c171a3d60",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 49.77,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.41
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.47
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.29
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.68
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.63
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.35
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.82
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.42
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.72
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 0.69,
+    "perCriterion": {
+      "engines_four_underwing": 4.49,
+      "upper_deck_hump": 4.26,
+      "fuselage_proportions": 4.8,
+      "wing_geometry": 5.87,
+      "empennage": 5.66,
+      "landing_gear": 7.59,
+      "window_door_lines": 0.69,
+      "livery_coherence": 5.04,
+      "silhouette_747": 5.24,
+      "craftsmanship": 4.67
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Replace the continuous dark band along the fuselage with an array of 40 small rectangular boxes (dimensions: 0.5m x 0.3m). Position these boxes in a linear path along the longitudinal axis of the cylinder, spaced at regular intervals of 1.2m from center to center, ensuring they are recessed by 0.05m into the fuselage surface.",
+    "discrepancies": [
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A single large dark block at the nose",
+        "reference": "A row of distinct individual windows with defined frames",
+        "direction_of_fix": "replace one box with multiple smaller boxes"
+      },
+      {
+        "feature": "Passenger door outlines",
+        "observed": "No visible vertical breaks or lines for doors",
+        "reference": "Distinct vertical seams and recessed lines for main cabin doors",
+        "direction_of_fix": "add thin vertical cylinders/planes at door locations"
+      },
+      {
+        "feature": "Window row spacing",
+        "observed": "A solid continuous dark band along the fuselage",
+        "reference": "Individual small rectangular windows spaced evenly in a line",
+        "direction_of_fix": "replace long cylinder with array of small boxes"
+      },
+      {
+        "feature": "Fuselage surface continuity",
+        "observed": "Smooth, unbroken cylindrical body",
+        "reference": "Surface broken by door frames and window recesses",
+        "direction_of_fix": "add thin rectangular planes to represent door outlines"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 55.83,
+  "created_at": "2026-07-17T05:30:30.933Z",
+  "actor_status": "edited"
+}

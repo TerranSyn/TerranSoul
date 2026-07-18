@@ -314,14 +314,23 @@
     return wrap;
   }
 
-  // Boeing-747 primitives-only self-improve loop, grouped bar chart: 2 judge
-  // tracks x 2 actors, frozen /100 rubric (benchmark/boeing747/, sha256-stamped
-  // rig/cameras/scoring/stop-conditions — identical measurement for both
-  // actors). Mirrors memoryGroupChart()'s group-by-metric / bar-by-entity
-  // shape exactly, reusing its .mg-* CSS via the shared .grouped-chart-style
-  // selectors (see deck.css) so the two grouped charts read as one visual
-  // language. Real committed numbers only (results/terransoul-opus48*/,
-  // results/terransoul-fable5*/) — see benchmark/BOEING-COMPARISON.md.
+  // Boeing-747 primitives-only self-improve loop. TWO judge-protocol eras live
+  // on this panel and are never mixed on one axis (raw totals are never
+  // compared across judge protocols):
+  //  - v2 era (bars): grouped chart, 2 judge tracks x 2 actors, frozen /100
+  //    rubric (benchmark/boeing747/, sha256-stamped rig/cameras/scoring/
+  //    stop-conditions — identical measurement for both actors). Mirrors
+  //    memoryGroupChart()'s group-by-metric / bar-by-entity shape, reusing its
+  //    .mg-* CSS (see deck.css). Real committed numbers only
+  //    (results/terransoul-opus48*/, results/terransoul-fable5*/) — see
+  //    benchmark/BOEING-COMPARISON.md.
+  //  - v4 era (the .bv4 strip below the bars): 2026-07 finals under the frozen
+  //    gemma4:12b-it-qat vision judge, K=5 fixed-seed panel, reported on the
+  //    reference-parity index (reference-geometry build = 63.92/100 = parity
+  //    100). Each number carries its provenance in the same sentence — the
+  //    knowledge-transfer 108.9 is seeded from a stronger actor's build and is
+  //    NOT pure self-improvement. Sources:
+  //    benchmark/boeing747/results/PARITY-INDEX-20260717.md, results/PROGRESS.md.
   function boeingChart() {
     const wrap = document.createElement('div');
     wrap.className = 'chart chart--span-12 boeing-chart';
@@ -359,15 +368,29 @@
       + '<text x="' + (padL + i * 260 + 19) + '" y="19" class="' + (act.valCls ? 'mg-leg' : 'mg-leg mg-valts') + '">' + esc(act.name) + '</text>').join('');
     wrap.innerHTML =
       '<h3>Boeing-747 self-improve loop — primitives-only build, /100</h3>'
-      + '<div class="chart-sub">Three.js primitives only, frozen 9-view rubric (rig/cameras/scoring sha256-stamped) · higher is better</div>'
+      + '<div class="chart-sub">Three.js primitives only, frozen 9-view rubric (rig/cameras/scoring sha256-stamped) · higher is better · '
+      + 'v2-era judge protocol (2026-06/07) — raw totals are never compared across judge protocols</div>'
       + '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Boeing-747 self-improve loop comparison">'
       + '<defs><linearGradient id="gradTSgBoeing" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFC000"/><stop offset="100%" stop-color="#F4C77E"/></linearGradient></defs>'
       + legend + s + '</svg>'
-      + '<div class="mem-note mem-caveat">Same actor, two judges: the frozen gemma4 track is the single neutral instrument every '
-      + 'actor is scored on identically; the vision-judge track is each actor’s OWN model family grading its own build '
-      + '(self-family-bias caveat — a generous read, not an independent check) and is never compared across actors as if it '
-      + 'were one instrument. Both are separate, honestly-labelled measurements, not a ranking of Opus vs Fable — full '
-      + 'protocol and per-iteration history: benchmark/BOEING-COMPARISON.md.</div>';
+      + '<div class="mem-note mem-caveat">Same actor, two judges (v2-era instruments): the frozen gemma4 track is the single neutral '
+      + 'instrument; the vision judge is each actor’s OWN model family grading its own build (self-family-bias caveat) — not a ranking. '
+      + 'Protocol: benchmark/BOEING-COMPARISON.md; v4 finals: benchmark/boeing747/results/PARITY-INDEX-20260717.md.</div>'
+      + '<div class="bv4">'
+      + '<div class="bv4-head">2026-07 finals · v4 judge protocol (a different era — never compared with the /100 totals above): frozen '
+      + 'gemma4:12b-it-qat vision judge, K=5 fixed-seed panel · reference-parity index (real-aircraft reference build = 63.92/100 ⇒ parity 100)</div>'
+      + '<div class="bv4-row">'
+      + '<div class="bv4-cell"><b class="bv4-num">86.8</b><span>pure self-improvement (raw 55.49, from 36.1 same-day) — gemma 12B actor '
+      + 'only, every edit its own</span></div>'
+      + '<div class="bv4-cell"><b class="bv4-num bv4-num--gold">99.7</b><span>learn-then-ace (raw 63.71) — same gemma actor after knowledge '
+      + 'taught into its own memory (docs, distilled solutions, owner teaching); +12.9 index points from taught knowledge</span></div>'
+      + '<div class="bv4-cell"><b class="bv4-num">108.9</b><span>knowledge-transfer (raw 69.63) — seeded from a stronger actor’s build '
+      + '(owner-authorized), then improved by the gemma actor; above the reference build under the identical judge — NOT pure '
+      + 'self-improvement</span></div>'
+      + '</div>'
+      + '<div class="bv4-thesis">Human-owned data taught into TerranSoul’s own memory raised its actor from 86.8 to 99.7 on the '
+      + 'reference-parity index — with no model change.</div>'
+      + '</div>';
     return wrap;
   }
 

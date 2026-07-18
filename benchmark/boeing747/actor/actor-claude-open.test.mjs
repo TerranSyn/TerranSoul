@@ -155,11 +155,12 @@ describe('runActorEdit --contract open wiring (fake execImpl, no spawn)', () => 
     expect(readFileSync(candidatePath, 'utf8')).toBe(FROZEN_SEED_SOURCE);
   });
 
-  // Plateau -> mesh escalation wiring: when the runner supplies a
-  // plateauEscalation string, it must reach the actor verbatim AND flip
-  // task-step 3 from the conservative "one edit, don't regress >=7" form to
-  // the bold "rebuild this feature as a computed mesh" form.
-  it('injects the PLATEAU ESCALATION and switches task-step 3 to a mesh rebuild', async () => {
+  // Plateau -> escalation wiring: when the runner supplies a plateauEscalation
+  // string, it must reach the actor verbatim AND flip task-step 3 from the
+  // conservative "one edit, don't regress >=7" form to the track-agnostic bold
+  // "coherent whole-object rebuild" form (the escalation section is now shared
+  // across tracks — it no longer names the open-only "computed mesh" medium).
+  it('injects the PLATEAU ESCALATION and switches task-step 3 to a coherent whole-object rebuild', async () => {
     let capturedPrompt;
     const execImpl = vi.fn(async (binary, args) => {
       capturedPrompt = args[1];
@@ -178,7 +179,10 @@ describe('runActorEdit --contract open wiring (fake execImpl, no spawn)', () => 
     });
 
     expect(capturedPrompt).toContain('PLATEAU ESCALATION (open medium');
-    expect(capturedPrompt).toContain('REBUILD the weakest feature from scratch as COMPUTED MESH geometry');
+    expect(capturedPrompt).toContain('exactly ONE bounded, targeted change');
+    // The escalation wording is now track-agnostic: it must NOT name the
+    // open-contract-only "computed mesh" medium in the shared task step.
+    expect(capturedPrompt).not.toContain('REBUILD the weakest feature from scratch as COMPUTED MESH geometry');
     // The timid form must be GONE when escalating.
     expect(capturedPrompt).not.toContain('WITHOUT regressing any criterion that already scores well (>=7)');
   });

@@ -29,7 +29,16 @@ import {
   parseJudgeBody,
   parseJudgeReply,
 } from '../lib/judge-parse.mjs';
-import { maskViewMedians, seedMedian, totalScore, viewScore, weakestCriterion } from '../lib/scoring.mjs';
+import {
+  maskViewMedians,
+  panelMean,
+  panelSeTotal,
+  panelStd,
+  seedMedian,
+  totalScore,
+  viewScore,
+  weakestCriterion,
+} from '../lib/scoring.mjs';
 
 // Re-exported for API stability; the implementation (plus extractReplyText /
 // parseJudgeBody / callWithParseRetry) lives in lib/judge-parse.mjs so the
@@ -152,8 +161,21 @@ async function judgeOneView({ rubric, refs, model, shotsDir, view }) {
   const criteriaIds = rubric.criteria.map((c) => c.id);
   const { refKeys, messages } = buildViewJudgeRequest({ rubric, refs, shotsDir, view });
 
+  // JUDGE PANEL v4 (rubric.judge_panel, 2026-07-16): a K-draw self-consistency
+  // panel — DISTINCT FIXED seeds with temperature > 0, so the panel is diverse
+  // AND byte-reproducible (Ollama is deterministic per seed) — aggregated by
+  // MEAN per criterion. Without a judge_panel block the v3 protocol runs
+  // byte-identically (fixed seeds 7/8/9, temp-0 options, per-criterion MEDIAN).
+  const panel = rubric.judge_panel && Number.isInteger(rubric.judge_panel.k) && rubric.judge_panel.k > 0
+    ? rubric.judge_panel
+    : null;
+  const drawSeeds = panel ? (panel.seeds || rubric.judge_seeds).slice(0, panel.k) : rubric.judge_seeds;
+  const drawOptions = panel
+    ? { ...rubric.judge_options, temperature: panel.temperature }
+    : rubric.judge_options;
+
   const seeds = [];
-  for (const seed of rubric.judge_seeds) {
+  for (const seed of drawSeeds) {
     const started = Date.now();
     try {
       // FROZEN same-seed retry policy (rubric judge_parse_retries): the call
@@ -162,7 +184,7 @@ async function judgeOneView({ rubric, refs, model, shotsDir, view }) {
         ollamaChat({
           model,
           messages,
-          options: { ...rubric.judge_options, seed },
+          options: { ...drawOptions, seed },
           format: rubric.judge_format,
           think: rubric.judge_think,
           timeoutMs: rubric.judge_timeout_ms,
@@ -187,7 +209,12 @@ async function judgeOneView({ rubric, refs, model, shotsDir, view }) {
 
   const medians = {};
   for (const id of criteriaIds) {
-    medians[id] = seedMedian(seeds.filter((s) => s.ok).map((s) => s.scores[id]));
+    const drawValues = seeds.filter((s) => s.ok).map((s) => s.scores[id]);
+    // v4 panel aggregates by MEAN (self-consistency); v3 keeps the MEDIAN.
+    // The field keeps its historical name — downstream consumers (mask, view
+    // score, weakest-criterion, audit tooling) read `criteria_medians`
+    // regardless of the aggregation that produced it.
+    medians[id] = panel ? panelMean(drawValues) : seedMedian(drawValues);
   }
   // View-visibility mask (rubric v2): score only on views where each feature is
   // structurally assessable. criteria_medians stays RAW (what the judge said) for
@@ -197,6 +224,14 @@ async function judgeOneView({ rubric, refs, model, shotsDir, view }) {
   const score = viewScore(masked, rubric.criteria);
   const scoreUnmasked = viewScore(medians, rubric.criteria);
   const maskedOut = criteriaIds.filter((id) => masked[id] === null && medians[id] !== null);
+  // v4 panel spread: each ok draw's own masked view score; the std across
+  // draws is this view's live-measured judge noise (consumed by panelSeTotal
+  // in judgeShots → the gate's epsilon).
+  const drawViewScores = panel
+    ? seeds
+        .filter((s) => s.ok)
+        .map((s) => viewScore(maskViewMedians(s.scores, view.id, rubric.view_visibility), rubric.criteria))
+    : null;
   return {
     view: view.id,
     key: view.key,
@@ -207,6 +242,16 @@ async function judgeOneView({ rubric, refs, model, shotsDir, view }) {
     criteria_medians: medians,
     judge_errors: seeds.filter((s) => !s.ok).length,
     seeds,
+    ...(panel
+      ? {
+          panel: {
+            k: drawSeeds.length,
+            temperature: panel.temperature,
+            draws: drawViewScores.filter((v) => typeof v === 'number' && Number.isFinite(v)).length,
+            score_std: Math.round(panelStd(drawViewScores) * 1000) / 1000,
+          },
+        }
+      : {}),
   };
 }
 
@@ -270,7 +315,9 @@ export async function judgeShots({ shotsDir, views, out, force, model: modelOver
       console.log(`SKIP view ${view.id} (already judged; --force to redo)`);
       continue;
     }
-    process.stdout.write(`judging view ${view.id} (${view.key}) with ${model} x${rubric.judge_seeds.length} seeds... `);
+    const drawCount = rubric.judge_panel?.k ?? rubric.judge_seeds.length;
+    const drawLabel = rubric.judge_panel ? `panel x${drawCount} draws @ temp ${rubric.judge_panel.temperature}` : `x${rubric.judge_seeds.length} seeds`;
+    process.stdout.write(`judging view ${view.id} (${view.key}) with ${model} ${drawLabel}... `);
     const result = await judgeOneView({ rubric, refs, model, shotsDir: dir, view });
     writeFileSync(partial, JSON.stringify(result, null, 2));
     console.log(`score=${result.score} (errors=${result.judge_errors})`);
@@ -295,6 +342,12 @@ export async function judgeShots({ shotsDir, views, out, force, model: modelOver
     rubric.criteria,
   );
   const { total: totalUnmasked } = totalScore(perView.map((v) => v.score_unmasked ?? v.score));
+  // v4 live-measured judge noise: SE of the /100 total implied by each view's
+  // panel spread. Stamped so the edit gate derives its epsilon from MEASURED
+  // noise (rubric judge_panel.epsilon_se_coefficient x this) instead of the
+  // uncalibrated static total_noise_epsilon.
+  const panelViews = perView.map((v) => v.panel).filter(Boolean);
+  const panelSe = rubric.judge_panel && panelViews.length > 0 ? panelSeTotal(panelViews, VIEWS.length) : null;
   const results = {
     protocol: rubric.protocol,
     rubric_version: rubric.version,
@@ -302,6 +355,7 @@ export async function judgeShots({ shotsDir, views, out, force, model: modelOver
     judge_model: model,
     judge_seeds: rubric.judge_seeds,
     judge_options: rubric.judge_options,
+    ...(rubric.judge_panel ? { judge_panel: rubric.judge_panel, panel_se_total: panelSe } : {}),
     supersample: meta.supersample ?? 1,
     run_id: meta.runId,
     plane_path: meta.planePath,
@@ -327,10 +381,124 @@ export async function judgeShots({ shotsDir, views, out, force, model: modelOver
 }
 
 /**
+ * Pick the view where the weakest criterion is most damningly VISIBLE: among
+ * the views where the rubric's visibility mask says the criterion is
+ * assessable, the one whose recorded (raw) median for that criterion is
+ * lowest — nulls sort last. PURE + exported for vitest. Returns null when no
+ * per-view signal exists (caller falls back to the contact sheet).
+ */
+export function pickWeakestView(perView, criterionId, viewVisibility) {
+  const allowed = viewVisibility?.[criterionId];
+  const candidates = (Array.isArray(perView) ? perView : []).filter(
+    (v) => !Array.isArray(allowed) || allowed.includes(v.view),
+  );
+  if (candidates.length === 0) return null;
+  const scored = candidates.filter((v) => typeof v?.criteria_medians?.[criterionId] === 'number');
+  if (scored.length > 0) {
+    return scored.reduce((worst, v) =>
+      v.criteria_medians[criterionId] < worst.criteria_medians[criterionId] ? v : worst,
+    ).view;
+  }
+  // Criterion never scored numerically on a visible view — steer by the
+  // lowest-scoring visible VIEW instead (still an honest "look here").
+  const viewScored = candidates.filter((v) => typeof v?.score === 'number');
+  if (viewScored.length === 0) return null;
+  return viewScored.reduce((worst, v) => (v.score < worst.score ? v : worst)).view;
+}
+
+/**
+ * STRUCTURED CRITIC v2 (rubric.critic_structured, 2026-07-16 — Design2Code
+ * arXiv:2403.03163 / Self-Refine arXiv:2303.17651 render-feedback shape):
+ * stage 1 puts the WEAKEST VIEW's render next to that view's own reference
+ * images and asks only for OBSERVED visual discrepancies scoped to the weakest
+ * criterion ({feature, observed, reference, direction_of_fix} — falsifiable
+ * observations, no fixes yet); stage 2 (text-only) turns those observations
+ * into ONE parametric edit instruction. Both calls run on the LOCAL judge
+ * model — never a cloud VLM. Throws on any failure; the caller's fail-open
+ * chain (legacy single-call → deterministic anchors) handles survival.
+ */
+async function structuredCritic({ rubric, results, weakest, criterion, model, shotsDir, refs }) {
+  const cfg = rubric.critic_structured;
+  const maxItems = Number.isInteger(cfg.max_discrepancies) && cfg.max_discrepancies > 0 ? cfg.max_discrepancies : 4;
+  const viewId = pickWeakestView(results.per_view, weakest.id, rubric.view_visibility);
+  if (!viewId) throw new Error('no per-view signal to pick a weakest view from');
+  const view = VIEWS.find((v) => v.id === viewId);
+  const shotB64 = readFileSync(path.join(path.resolve(shotsDir), `view-${viewId}.png`)).toString('base64');
+  const refKeys = rubric.view_references[String(viewId)];
+  const [refA, refB] = refKeys.map((k) => refs[k]);
+
+  // Stage 1 — falsifiable observations only.
+  const observePrompt = [
+    `IMAGE 1 = candidate 3D render, view ${viewId} of 9 (${view.name}).`,
+    `IMAGE 2 = reference photo: ${refA.depicts}.`,
+    `IMAGE 3 = reference photo: ${refB.depicts}.`,
+    '',
+    `Compare ONLY the aspect "${criterion.name}" between the candidate and the references.`,
+    `List up to ${maxItems} concrete VISUAL DISCREPANCIES you can actually see. For each: what the candidate shows, what the references show, and the geometric direction of the difference. Observations only — do NOT propose code or fixes yet.`,
+    '',
+    `Respond with STRICT JSON only: {"discrepancies": [{"feature": "<short name>", "observed": "<what the candidate render shows>", "reference": "<what the reference photos show>", "direction_of_fix": "<geometric direction, e.g. increase/decrease/move/attach>"}]}`,
+  ].join('\n');
+  const stage1 = await ollamaChat({
+    model,
+    messages: [
+      { role: 'system', content: rubric.critic_system_prompt },
+      { role: 'user', content: observePrompt, images: [shotB64, refA.b64, refB.b64] },
+    ],
+    options: { ...rubric.judge_options, seed: rubric.judge_seeds[0] },
+    format: rubric.judge_format,
+    think: rubric.judge_think,
+    timeoutMs: rubric.judge_timeout_ms,
+  });
+  const obs = JSON.parse(extractReplyText(stage1.body).text.match(/\{[\s\S]*\}/)?.[0] ?? '');
+  const discrepancies = (Array.isArray(obs.discrepancies) ? obs.discrepancies : [])
+    .slice(0, maxItems)
+    .map((d) => ({
+      feature: String(d?.feature || '').slice(0, 80),
+      observed: String(d?.observed || '').slice(0, 240),
+      reference: String(d?.reference || '').slice(0, 240),
+      direction_of_fix: String(d?.direction_of_fix || '').slice(0, 160),
+    }))
+    .filter((d) => d.observed && d.reference);
+  if (discrepancies.length === 0) throw new Error('stage-1 critique produced no usable discrepancies');
+
+  // Stage 2 — one parametric instruction from the observations (text-only).
+  const prescribePrompt = [
+    `Observed visual discrepancies for "${criterion.name}" (candidate vs reference, view ${viewId}):`,
+    JSON.stringify(discrepancies, null, 1),
+    '',
+    'Turn these observations into ONE concrete, PARAMETRIC geometric edit instruction for the candidate model: name the part(s), the transform (dimension/angle/position/attachment), and a reasonable target value or ratio for each. One focused change-set, not a rewrite.',
+    'Respond with STRICT JSON only: {"fix_suggestion": "<the instruction>"}',
+  ].join('\n');
+  const stage2 = await ollamaChat({
+    model,
+    messages: [
+      { role: 'system', content: rubric.critic_system_prompt },
+      { role: 'user', content: prescribePrompt },
+    ],
+    options: { ...rubric.judge_options, seed: rubric.judge_seeds[0] },
+    format: rubric.judge_format,
+    think: rubric.judge_think,
+    timeoutMs: rubric.judge_timeout_ms,
+  });
+  const fix = JSON.parse(extractReplyText(stage2.body).text.match(/\{[\s\S]*\}/)?.[0] ?? '');
+  const fixSuggestion = String(fix.fix_suggestion || '').slice(0, 800);
+  if (!fixSuggestion) throw new Error('stage-2 critique produced no fix_suggestion');
+
+  return {
+    weakest_feature: weakest.id,
+    fix_suggestion: fixSuggestion,
+    discrepancies,
+    critic_view: viewId,
+    source: 'structured-llm',
+  };
+}
+
+/**
  * Critic mode: the weakest FEATURE is computed deterministically from the
  * scores (lib/scoring.mjs weakestCriterion); the LLM contributes only the
- * concrete geometric fix suggestion, with a deterministic fallback if the
- * LLM call fails (fail-open — the loop's steering signal must survive).
+ * concrete geometric fix suggestion. Fail-open CHAIN (the loop's steering
+ * signal must survive): structured two-stage critic (rubric.critic_structured)
+ * → legacy single-call contact-sheet critic → deterministic anchor fallback.
  */
 export async function criticPass({ resultsFile, shotsDir, model: modelOverride }) {
   const { rubric } = loadRubric();
@@ -340,49 +508,62 @@ export async function criticPass({ resultsFile, shotsDir, model: modelOverride }
   const criterion = rubric.criteria.find((c) => c.id === weakest.id);
   const model = modelOverride || rubric.judge_model;
 
-  const table = rubric.criteria
-    .map((c) => `- ${c.id}: mean ${weakest.perCriterion[c.id] ?? 'null'} (weight ${c.weight})`)
-    .join('\n');
-  const userText =
-    `Per-criterion mean scores (0-10) of the candidate across the nine views:\n${table}\n\n` +
-    `Deterministically computed weakest feature: ${weakest.id} (${criterion.name}), mean ${weakest.mean}.\n` +
-    `IMAGE 1 is the 3x3 contact sheet of the nine views.\n` +
-    `Give ONE concrete geometric fix for ${weakest.id}. STRICT JSON: {"weakest_feature": "${weakest.id}", "fix_suggestion": "..."}`;
+  let critic = null;
+  let structuredError = null;
+  if (rubric.critic_structured) {
+    try {
+      const refs = loadReferences(rubric);
+      critic = await structuredCritic({ rubric, results, weakest, criterion, model, shotsDir, refs });
+    } catch (err) {
+      structuredError = String(err.message || err);
+    }
+  }
 
-  let critic;
-  try {
-    const sheetB64 = readFileSync(path.join(path.resolve(shotsDir), 'contact-sheet.png')).toString('base64');
-    const { body } = await ollamaChat({
-      model,
-      messages: [
-        { role: 'system', content: rubric.critic_system_prompt },
-        { role: 'user', content: userText, images: [sheetB64] },
-      ],
-      options: { ...rubric.judge_options, seed: rubric.judge_seeds[0] },
-      format: rubric.judge_format,
-      think: rubric.judge_think,
-      timeoutMs: rubric.judge_timeout_ms,
-    });
-    // Same extraction path as the judge (content -> thinking fallback); the
-    // critic is single-call fail-open — a bad reply falls to the
-    // deterministic fallback below rather than a retry.
-    const { text } = extractReplyText(body);
-    const obj = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] ?? text);
-    critic = {
-      weakest_feature: weakest.id,
-      fix_suggestion: String(obj.fix_suggestion || '').slice(0, 800),
-      source: 'llm',
-    };
-    if (!critic.fix_suggestion) throw new Error('empty fix_suggestion');
-  } catch (err) {
-    critic = {
-      weakest_feature: weakest.id,
-      fix_suggestion:
-        `Improve '${criterion.name}' (mean ${weakest.mean}/10). Target the 8-10 anchor: ` +
-        `${criterion.anchors['8']}; then: ${criterion.anchors['10']}.`,
-      source: 'fallback',
-      llm_error: String(err.message || err),
-    };
+  if (!critic) {
+    const table = rubric.criteria
+      .map((c) => `- ${c.id}: mean ${weakest.perCriterion[c.id] ?? 'null'} (weight ${c.weight})`)
+      .join('\n');
+    const userText =
+      `Per-criterion mean scores (0-10) of the candidate across the nine views:\n${table}\n\n` +
+      `Deterministically computed weakest feature: ${weakest.id} (${criterion.name}), mean ${weakest.mean}.\n` +
+      `IMAGE 1 is the 3x3 contact sheet of the nine views.\n` +
+      `Give ONE concrete geometric fix for ${weakest.id}. STRICT JSON: {"weakest_feature": "${weakest.id}", "fix_suggestion": "..."}`;
+    try {
+      const sheetB64 = readFileSync(path.join(path.resolve(shotsDir), 'contact-sheet.png')).toString('base64');
+      const { body } = await ollamaChat({
+        model,
+        messages: [
+          { role: 'system', content: rubric.critic_system_prompt },
+          { role: 'user', content: userText, images: [sheetB64] },
+        ],
+        options: { ...rubric.judge_options, seed: rubric.judge_seeds[0] },
+        format: rubric.judge_format,
+        think: rubric.judge_think,
+        timeoutMs: rubric.judge_timeout_ms,
+      });
+      // Same extraction path as the judge (content -> thinking fallback); the
+      // critic is single-call fail-open — a bad reply falls to the
+      // deterministic fallback below rather than a retry.
+      const { text } = extractReplyText(body);
+      const obj = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] ?? text);
+      critic = {
+        weakest_feature: weakest.id,
+        fix_suggestion: String(obj.fix_suggestion || '').slice(0, 800),
+        source: 'llm',
+        ...(structuredError ? { structured_error: structuredError } : {}),
+      };
+      if (!critic.fix_suggestion) throw new Error('empty fix_suggestion');
+    } catch (err) {
+      critic = {
+        weakest_feature: weakest.id,
+        fix_suggestion:
+          `Improve '${criterion.name}' (mean ${weakest.mean}/10). Target the 8-10 anchor: ` +
+          `${criterion.anchors['8']}; then: ${criterion.anchors['10']}.`,
+        source: 'fallback',
+        llm_error: String(err.message || err),
+        ...(structuredError ? { structured_error: structuredError } : {}),
+      };
+    }
   }
 
   results.critic = critic;

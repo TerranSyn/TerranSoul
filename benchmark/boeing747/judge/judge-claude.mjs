@@ -287,6 +287,16 @@ export async function judgeShotsClaude({ shotsDir, views, out, force, samples, m
       masked_out: v.masked_out,
       criteria_medians: v.criteria_medians,
       notes: v.notes,
+      // SCORING v3 success signal (adversarial-review fix 2026-07-16): this
+      // projection used to strip BOTH `judge_errors` and the per-run ok-array,
+      // which made lib/scoring.mjs's viewJudgeSucceeded() return false for
+      // every claude view — applyScoringV3 silently degraded to the v2
+      // null-drop on the whole claude-vision track (the hide-a-view exploit
+      // stayed open there while the result was stamped scoring_version:3).
+      // `samples` is deliberately reduced to ok-only so results.json stays
+      // lean; the full runs still live in the per-view partials.
+      judge_errors: v.judge_errors,
+      samples: Array.isArray(v.samples) ? v.samples.map((s) => ({ ok: s?.ok === true })) : undefined,
     })),
     total_0_100: total,
     total_0_100_unmasked: totalUnmasked,

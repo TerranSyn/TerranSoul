@@ -1,0 +1,62 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 139301,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 317,
+    "tool_calls": {
+      "read_file": 3
+    },
+    "total_tool_calls": 3,
+    "text_chunks": 311,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 3
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "no_change",
+  "plane_sha256_before": "e54b1c376902cb7e99f113ebe422d0f29ab6b9907e8deda69c96de6d3e1aab1d",
+  "plane_sha256_after": "e54b1c376902cb7e99f113ebe422d0f29ab6b9907e8deda69c96de6d3e1aab1d",
+  "changed": false,
+  "claude_result_text": "The user wants me to improve the 747 model by addressing the weakest feature: \"Craftsmanship (no floating parts, z-fighting, holes)\".\nLooking at the rendered images and the feedback:\n- View 1 shows some floating wheels or struts that might not be attached correctly.\n- View 2 shows objects in front that are detached. It looks like a piece of the nose or a cockpit part is far ahead (+X). Oh wait, the contract says nose along +X. In view 2 (right profile), we see the tail on the left and nose on the right? No, usually side profiles have nose to the left/right.\n- Contract: \"Orientation: nose along +X\".\n- `fuselage.rotation.z = -Math.PI / 2` for a cylinder initially along Y (if it's standard) or something else? Let's check. `CylinderGeometry(3, 3, 60, 24)` creates a cylinder along the Y axis by default in Three.js.\n- If it's along Y and we rotate -90 degrees around Z, it will be along X. So nose is at +X.\n- Let's check `hump`: `CylinderGeometry(4.5, 3.2, 22)`. Rotation `z = -Math.PI / 2`. Positioned at (20, 6.2, 0). This should be on the top of the fuselage if nose is +X and up is +Y.\n- Let's check `wingGroup`:\n  - `half.position.set(side * 2, -1.2, side * 15)`\n  - `half.rotation.x = Math.PI / 180 * 3` (dihedral)\n  - `half.rotation.z = -Math.PI / 180 * 30` (sweep back)\n  - If nose is +X, then sweep back should be around -Z axis? Let's see.\n  - The wing half for side=1: position (2, -1.2, 15). Rotation X = 3 deg, Z = -30 deg.\n  - If it rotates around Z by -30 degrees, it will point towards +X and -Z? No, if it's at Z=15 and we rotate around Z, its local X axis (pointing along the wing length) might be changing.\n  - Actually, `BoxGeometry(1, 0.4, 35)` has length along Z. So if it's oriented with Z extending from -17.5 to +17.5.\n  - If we rotate around Z by -30 degrees, it doesn't change its orientation relative to the Z axis in the scene. It just rotates *around* the Z axis. That means it stays parallel to the YZ plane? No, that's not right.\n  - A box `(1, 0.4, 35)` has di",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "no_change",
+      "ms": 139301,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 317,
+        "tool_calls": {
+          "read_file": 3
+        },
+        "total_tool_calls": 3,
+        "text_chunks": 311,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 3
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}

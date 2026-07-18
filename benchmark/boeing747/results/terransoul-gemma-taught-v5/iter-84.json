@@ -1,0 +1,103 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 84,
+  "run_id": "terransoul-gemma-taught-v5-iter-84-mrpkgr33",
+  "plane_sha256": "f77175d88032618bf91491a04dffda36e3e526aa3c3b277ddbdb438e563ce8c3",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 59.57,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.54
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.71
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.51
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.83
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.08
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.54
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.68
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.83
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.89
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.51,
+    "perCriterion": {
+      "engines_four_underwing": 4.51,
+      "upper_deck_hump": 4.69,
+      "fuselage_proportions": 5.87,
+      "wing_geometry": 6.8,
+      "empennage": 6.56,
+      "landing_gear": 7.97,
+      "window_door_lines": 5.09,
+      "livery_coherence": 6.38,
+      "silhouette_747": 6.47,
+      "craftsmanship": 5.91
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Modify the wing primitives from rectangular to swept trapezoidal shapes by applying a 30-degree sweep angle to the leading edge and tapering the outer half of the wing. Adjust the position of the engine primitives so they are mounted further outboard on these new wings, rather than at the root, ensuring a 2:1 ratio of wing area to engine placement distance.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible on one wing side",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines appear attached near the wing root",
+        "reference": "Engines mounted further outboard on the swept wing",
+        "direction_of_fix": "move engine primitives outward and forward"
+      },
+      {
+        "feature": "Wing Geometry",
+        "observed": "Flat, rectangular wing planes",
+        "reference": "Tapered wings with distinct leading edge sweep",
+        "direction_of_fix": "scale/rotate wing primitives to create a swept trapezoidal shape"
+      }
+    ],
+    "critic_view": 9,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-17T23:29:12.634Z",
+  "actor_status": "edited"
+}

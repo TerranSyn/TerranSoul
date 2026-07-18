@@ -1,0 +1,62 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 223555,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 235,
+    "tool_calls": {
+      "read_file": 3
+    },
+    "total_tool_calls": 3,
+    "text_chunks": 229,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 3
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "no_change",
+  "plane_sha256_before": "e97e2db05cae2f24d545df9809521932444d554e776ccaa5a79e5a58f3774300",
+  "plane_sha256_after": "e97e2db05cae2f24d545df9809521932444d554e776ccaa5a79e5a58f3774300",
+  "changed": false,
+  "claude_result_text": "The user wants me to improve the Boeing-747 model based on the judge's feedback and my own visual inspection of `view-1.png`.\n\n**Observations from `view-1.png`:**\n1. There is a large cylinder floating above the nose/hump area.\n2. There is an engine nacelle (large cylinder) floating behind the tail.\n3. The wings are flat slabs without any tapering or proper sweep logic that seems integrated with the fuselage at this angle (they look like they are mostly just placed near it).\n4. The \"craftsmanship\" score is low because of these clearly detached, floating parts.\n\n**Judge Feedback:**\n- Weakest feature: 'Craftsmanship' (mean 4.67/10). Target anchor: solid assembly: parts join cleanly, no holes, no z-fighting patterns visible.\n- View 1 notes: \"The model is poorly constructed with significant floating parts: a large cylinder floats above the nose and an engine nacelle floats behind the tail.\"\n- View 9 notes: \"Several parts (engines, tail surfaces) appear to be floating detached from the main body.\"\n\n**Analysis of `plane.js`:**\n1. **Hump**: `const hump = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 3.2, 22), grey);` is at `hump.position.set(20, 6.2, 0);`. The fuselage cylinder has a radius of 3 and its center Y is 0. So the top of the fuselage is at Y=3. A hump radius of 4.5 seems large enough to overlap, but maybe it's not positioned correctly or its geometry is wrong for this look (it's just another cylinder).\n2. **Floating Engine behind tail**: The engine logic: `[18, 36].forEach((zDist, idx) => { [1, -1].forEach(side => ... ) })`. If `zDist` is large or the wing is rotated, maybe one set of engines is getting way out there. In `createWingHalf`, it's at `side * 15`. So wings go from -15 to +15 in Z. The engine logic uses `zDist` as 18 and 36.\n   - Side 1: z = 18, 36. One of these (36) is definitely way outside the wing span (-15 to 15).\n   - Wait, side 1 means Z goes from -15 to +15? No, `side * 15` for side=1 is +15, and for side=-1 is -15.\n   - Then `side * zDist`:\n ",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "no_change",
+      "ms": 223555,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 235,
+        "tool_calls": {
+          "read_file": 3
+        },
+        "total_tool_calls": 3,
+        "text_chunks": 229,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 3
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}

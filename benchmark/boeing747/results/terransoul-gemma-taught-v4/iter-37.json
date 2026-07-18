@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 37,
+  "run_id": "terransoul-gemma-taught-v4-iter-37-mrnqn3vq",
+  "plane_sha256": "1602697d28fd7fc9df453124e3936e570c326d331055fe40d014d73f7d2fa213",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 41.37,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.63
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.73
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 4.51
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.1
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.59
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.86
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.69
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.12
+    }
+  ],
+  "weakest_feature": {
+    "id": "livery_coherence",
+    "mean": 3.31,
+    "perCriterion": {
+      "engines_four_underwing": 3.67,
+      "upper_deck_hump": 4.43,
+      "fuselage_proportions": 4.07,
+      "wing_geometry": 4.04,
+      "empennage": 4.87,
+      "landing_gear": 6.44,
+      "window_door_lines": 3.74,
+      "livery_coherence": 3.31,
+      "silhouette_747": 4.2,
+      "craftsmanship": 3.4
+    }
+  },
+  "critic": {
+    "weakest_feature": "livery_coherence",
+    "fix_suggestion": "Apply a purple color override to the vertical stabilizer geometry. If using a primitive box or cylinder for the tail, ensure it is positioned at the rear of the fuselage with a height-to-width ratio of 2:1. For the branding, place a small gold sphere (radius 0.5% of wing span) on the center of the tail's exterior face to represent the emblem.",
+    "discrepancies": [
+      {
+        "feature": "Livery Color",
+        "observed": "Solid white and grey body with no distinct branding colors.",
+        "reference": "White upper fuselage with purple tail and gold logo.",
+        "direction_of_fix": "change color of tail geometry"
+      },
+      {
+        "feature": "Logo Presence",
+        "observed": "No logos or emblems present on any surface.",
+        "reference": "Gold Thai Airways emblem on the vertical stabilizer.",
+        "direction_of_fix": "add small plane/circle primitives to tail"
+      },
+      {
+        "feature": "Fuselage Branding",
+        "observed": "Blank white fuselage with no lettering.",
+        "reference": "Thai text and logo along the forward fuselage side.",
+        "direction_of_fix": "place thin rectangular planes on fuselage side"
+      },
+      {
+        "feature": "Engine Coloration",
+        "observed": "Uniform grey cylinders without detail or color variation.",
+        "reference": "Grey/metallic engine cowlings with specific markings.",
+        "direction_of_fix": "change color of cylinder primitives"
+      }
+    ],
+    "critic_view": 3,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 42.26,
+  "created_at": "2026-07-16T16:46:04.511Z",
+  "actor_status": "no_change"
+}

@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 86,
+  "run_id": "terransoul-gemma-taught-v4-iter-86-mro3bchw",
+  "plane_sha256": "ac10bc8975fbe70ff0a597de34f3ec14a18b93ab10ed814e003f5f1de6a860db",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 49.6,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.41
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.66
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.92
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.48
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.59
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.5
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.91
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.95
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.22
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 0.51,
+    "perCriterion": {
+      "engines_four_underwing": 4.27,
+      "upper_deck_hump": 4.11,
+      "fuselage_proportions": 4.64,
+      "wing_geometry": 5.71,
+      "empennage": 6.18,
+      "landing_gear": 7.56,
+      "window_door_lines": 0.51,
+      "livery_coherence": 5.49,
+      "silhouette_747": 5.18,
+      "craftsmanship": 4.76
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Instantiate a series of 20 small rectangular planes along the fuselage side. Each plane should have dimensions of 0.5 units (width) by 0.3 units (height), spaced at 1.5-unit intervals starting from the cockpit rear to the tail. Orient each plane perpendicular to the fuselage surface and offset them slightly inward by 0.05 units to simulate recessed window frames.",
+    "discrepancies": [
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A single dark rectangular block at the nose.",
+        "reference": "A multi-paneled cockpit window array with distinct vertical and horizontal dividers.",
+        "direction_of_fix": "subdivide into multiple smaller rectangles"
+      },
+      {
+        "feature": "Main cabin windows",
+        "observed": "No visible windows along the fuselage.",
+        "reference": "A continuous row of small, evenly spaced rectangular windows spanning the length of the fuselage.",
+        "direction_of_fix": "add a series of small repeated cubes/planes along the side"
+      },
+      {
+        "feature": "Passenger door outlines",
+        "observed": "Smooth fuselage surface with no breaks or markings.",
+        "reference": "Distinct vertical lines and recessed areas indicating front, mid, and rear passenger doors.",
+        "direction_of_fix": "add thin vertical planes to represent door frames"
+      },
+      {
+        "feature": "Cargo door detail",
+        "observed": "Uniform grey surface.",
+        "reference": "A large rectangular outline on the lower forward fuselage.",
+        "direction_of_fix": "add a large rectangle on the bottom-front side"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 52.71,
+  "created_at": "2026-07-16T22:40:50.195Z",
+  "actor_status": "runtime_failed"
+}

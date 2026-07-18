@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 288354,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 263,
+    "tool_calls": {
+      "read_file": 5,
+      "edit_file": 5
+    },
+    "total_tool_calls": 10,
+    "text_chunks": 243,
+    "tool_failures": 4,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 5
+      },
+      {
+        "name": "edit_file",
+        "count": 5
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "d801ecf2ef7a282fbbcb9095d911e4bf92755ed8081d089c833dcfa84aa681d1",
+  "plane_sha256_after": "5a13f93ef3a38dc769dd7b51e2f55a38b650d7794051efe37a1e0b1e0d8bdc22",
+  "changed": true,
+  "claude_result_text": "The cockpit glazing in `plane.js` has been updated to properly position the side panes relative to the center pane by spreading them out symmetrically using a conditional offset based on the Z-coordinate. This ensures that the flight deck reads correctly from both front and profile views.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 288354,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 263,
+        "tool_calls": {
+          "read_file": 5,
+          "edit_file": 5
+        },
+        "total_tool_calls": 10,
+        "text_chunks": 243,
+        "tool_failures": 4,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 5
+          },
+          {
+            "name": "edit_file",
+            "count": 5
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 54,
+  "run_id": "terransoul-gemma-taught-v4-iter-54-mrnt1pjy",
+  "plane_sha256": "0b743c34a041ddf5615b6af5caad5be1bbe8b3bcd62d74f44f0209a9f67a4026",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 43.71,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.24
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.28
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.43
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.3
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.56
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.49
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.01
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.48
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.55
+    }
+  ],
+  "weakest_feature": {
+    "id": "craftsmanship",
+    "mean": 3.2,
+    "perCriterion": {
+      "engines_four_underwing": 3.84,
+      "upper_deck_hump": 4.37,
+      "fuselage_proportions": 4.11,
+      "wing_geometry": 4.38,
+      "empennage": 4.86,
+      "landing_gear": 7.31,
+      "window_door_lines": 3.66,
+      "livery_coherence": 4.87,
+      "silhouette_747": 4.4,
+      "craftsmanship": 3.2
+    }
+  },
+  "critic": {
+    "weakest_feature": "craftsmanship",
+    "fix_suggestion": "Relocate the four engine geometries from their current floating positions to the underside of the wing structure. Apply a translation vector that aligns the center of each engine with the corresponding pylon location on the wing's lower surface, ensuring they are vertically aligned and spaced at 25% intervals along the wingspan.",
+    "discrepancies": [
+      {
+        "feature": "Engine Placement",
+        "observed": "Four engines are floating in space away from the wing structure.",
+        "reference": "Engines are physically attached to pylons under the wings.",
+        "direction_of_fix": "Move and attach engine geometries to wing underside positions."
+      },
+      {
+        "feature": "Wing Attachment",
+        "observed": "The main wings appear disconnected or floating near the fuselage.",
+        "reference": "Wings are structurally integrated into the lower fuselage/wing root.",
+        "direction_of_fix": "Move and merge wing base geometry with fuselage center."
+      },
+      {
+        "feature": "Tail Assembly",
+        "observed": "Vertical stabilizer is detached from the rear fuselage.",
+        "reference": "Vertical stabilizer is joined to the top of the aft fuselage.",
+        "direction_of_fix": "Move and attach vertical stabilizer to rear fuselage top."
+      },
+      {
+        "feature": "Horizontal Stabilizer",
+        "observed": "Horizontal stabilizers are floating at the tail.",
+        "reference": "Horizontal stabilizers are attached to the base of the vertical stabilizer/rear fuselage.",
+        "direction_of_fix": "Move and attach horizontal stabilizers to the tail section."
+      }
+    ],
+    "critic_view": 5,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 43.77,
+  "created_at": "2026-07-16T17:50:47.811Z",
+  "actor_status": "no_change"
+}

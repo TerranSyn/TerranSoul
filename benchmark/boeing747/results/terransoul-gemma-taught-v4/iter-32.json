@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 32,
+  "run_id": "terransoul-gemma-taught-v4-iter-32-mrnpomrt",
+  "plane_sha256": "0f2fb285d1627fc0896e842def7a1b524075463261215dffc77b59b44f8ea320",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 41.47,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 3.63
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.42
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.02
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 4.31
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.15
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.47
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.57
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.42
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.33
+    }
+  ],
+  "weakest_feature": {
+    "id": "livery_coherence",
+    "mean": 2.84,
+    "perCriterion": {
+      "engines_four_underwing": 4.16,
+      "upper_deck_hump": 3.86,
+      "fuselage_proportions": 4.36,
+      "wing_geometry": 4.24,
+      "empennage": 4.66,
+      "landing_gear": 6.9,
+      "window_door_lines": 3.97,
+      "livery_coherence": 2.84,
+      "silhouette_747": 4.24,
+      "craftsmanship": 2.93
+    }
+  },
+  "critic": {
+    "weakest_feature": "livery_coherence",
+    "fix_suggestion": "Apply a multi-material assignment to the fuselage and wing primitives: set the primary material color of the main body to white (RGB 255,255,255) and create four distinct sub-meshes or vertex-color masks for the tail, wingtips, and fuselage swoosh areas. Assign these specific regions a teal/blue hex code (#007A89) to match the reference accents while maintaining the white base across 85% of the total surface area.",
+    "discrepancies": [
+      {
+        "feature": "Livery Color",
+        "observed": "Solid uniform gray material across the entire fuselage and wings.",
+        "reference": "White base color with blue and teal accents on the tail, wingtips, and fuselage.",
+        "direction_of_fix": "change material colors"
+      },
+      {
+        "feature": "Tail Logo",
+        "observed": "Plain gray vertical stabilizer with no markings.",
+        "reference": "A distinct white 'Koru' symbol inside a blue/teal shape on the vertical stabilizer.",
+        "direction_of_fix": "add geometry or change color for logo"
+      },
+      {
+        "feature": "Fuselage Branding",
+        "observed": "No branding or text on the gray fuselage surface.",
+        "reference": "Large 'AIR NEW ZEALAND' text and swoosh graphics along the side of the fuselage.",
+        "direction_of_fix": "change material colors/add geometry"
+      },
+      {
+        "feature": "Wingtip Accents",
+        "observed": "Uniform gray color across all wing surfaces and tips.",
+        "reference": "Distinctive blue/teal coloring on the winglets/wingtips.",
+        "direction_of_fix": "change material colors"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 41.49,
+  "created_at": "2026-07-16T16:16:38.709Z",
+  "actor_status": "no_change"
+}

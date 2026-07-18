@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 271810,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 244,
+    "tool_calls": {
+      "read_file": 4,
+      "edit_file": 2
+    },
+    "total_tool_calls": 6,
+    "text_chunks": 232,
+    "tool_failures": 1,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 4
+      },
+      {
+        "name": "edit_file",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "fe60fd0058d813a3cc013a2a35aa85e9c5e4bc5def4e1ac6834092c6998e416a",
+  "plane_sha256_after": "c106543def22b838d70ca43ec86425d7a65e70e35b5c192e657a9e11e8515fbe",
+  "changed": true,
+  "claude_result_text": "The Boeing 747 model has been updated to improve the realism and coherence of its wing and engine assembly, specifically addressing the \"four engines underwing\" feedback. The wings now exhibit a plausible sweep-back and taper, with the four engines correctly positioned as inboard and outboard pairs mounted on pylons beneath the wings at appropriate relative offsets and sizes.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 271810,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 244,
+        "tool_calls": {
+          "read_file": 4,
+          "edit_file": 2
+        },
+        "total_tool_calls": 6,
+        "text_chunks": 232,
+        "tool_failures": 1,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 4
+          },
+          {
+            "name": "edit_file",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

@@ -38,6 +38,16 @@
 > forthcoming — but it is the proof-of-mechanism that the real-agent path works
 > end-to-end, and stands as its own, separate, honestly-labeled data point.
 
+> **Campaign close-out (2026-07-17/18) — a THIRD regime, era-labeled.** The
+> all-local gemma-actor campaign concluded under the **v4 panel protocol**
+> (frozen gemma4 K=5 panel judge, reference-anchored) — a different judge
+> regime whose raw totals are not comparable to the v2-era rows in this table.
+> Final tracks: knowledge-transfer **69.63 raw / 108.9 parity index**
+> (candidate seeded from a stronger actor's build, owner-authorized — not pure
+> self-improvement); pure self-improvement **55.49 / 86.8**; learn-then-ace
+> **63.71 / 99.7**. Full table, anchor definition, and provenance: § Final
+> results — gemma-actor campaign close-out (2026-07-17/18) below.
+
 The actor being maximized is **Claude Opus 4.8**. In the numbers below to date it was
 driven by the benchmark's own loop calling the bare `claude` CLI (the raw model); the
 in-progress re-measurement moves the driver to **TerranSoul's LLM Agent (Opus 4.8 +
@@ -393,7 +403,10 @@ run's final geometry (`candidates/terransoul-fable5-v2/plane.js`, sha256
   table, and stop-condition reason, following the same honest-decomposition
   style used for the Opus-4.8 v1→v2 camera-spec re-baseline earlier in this
   doc. Until that happens, this section stays open/incomplete — it is not
-  claimed as done.
+  claimed as done. _(Resolved 2026-07-11: the corrected re-run completed
+  through the product-CLI path — final **71.66 gemma4 / 63.7 Fable-5-vision**,
+  genuine `stall` verdict; see § CLI-routed actor → CLOSED and footnote ² of
+  the top-of-doc table.)_
 
 ## CLI-routed actor (2026-07-10): the Boeing-747 actor now drives TerranSoul's own product CLI, not a parallel script — second re-run attempt also incomplete
 
@@ -551,6 +564,63 @@ ingest-lesson → shared-seed sync appends game-specific `self-improve-attempt`
 bench lessons into the committed seed — it must filter bench lessons so only
 generic mechanism lessons sync.
 
+## Final results — gemma-actor campaign close-out (2026-07-17/18): v4 panel protocol, reference-anchored parity index
+
+> **A NEW JUDGE REGIME — raw totals in this section are NOT comparable to the
+> v2-era numbers above.** After the credit-forced all-local pivot of 2026-07-14
+> (`docs/boeing-100-mechanism-plan.md` §7), the gating judge was re-calibrated
+> as the **v4 protocol**: frozen **gemma4:12b-it-qat** vision judge, **K=5
+> fixed-seed panel @ temp 0.7, `num_ctx` 16384, scoring v3**. (Protocol version
+> numbers here track the *judge protocol* — v4 — and are unrelated to the v1/v2
+> *render-harness* versions above.) Under this judge, the build made from the
+> real aircraft's **reference geometry scores 63.92/100**
+> (`benchmark/boeing747/calibration/probe-gemma-reference-v4.json`) — the
+> **reference anchor**. Every result is therefore reported both raw (/100) and
+> on a **parity index = 100 × total / 63.92** (reference build = 100). A
+> literal 100/100 raw is not emittable by this judge for any candidate — no
+> view of any build has ever exceeded 8.75/10 — so reference parity, not a raw
+> century, is the honest target. Per this doc's era-labeling rule, v4-protocol
+> raw totals are never set against v2-era (or any other regime's) raw totals.
+
+All three tracks below were scored by the identical frozen v4 judge.
+
+| Track | Raw /100 | Parity index | Provenance (carried with the number) |
+|---|---|---|---|
+| **Knowledge-transfer** (`terransoul-gemma-transplant2`) | **69.63** | **108.9** | Candidate seeded from a stronger actor's build (owner-authorized), then improved by the gemma actor (+4.52 and +1.19 accepted edits). Scores above the reference build's own score under the identical judge. **NOT citable as pure self-improvement.** `candidates/terransoul-gemma-transplant2/PROVENANCE.md`. |
+| **Pure self-improvement** (`terransoul-gemma-taught-v4`) | 55.49 (from a 36.1 baseline, same day) | 86.8 | gemma actor only; every edit its own; six production-harness fixes landed during the climb. |
+| **Learn-then-ace** (`terransoul-gemma-taught-v5`) | 63.71 (from a 55.34 seed = its own v4 best) | **99.7** | Own gemma actor; knowledge taught into its memory (public docs, solutions distilled from stronger actors, community/online techniques, owner chat-teaching). Each teaching round was followed by a converted record: winner-blueprint → 57.44; trajectory work → 61.72; chat-teaching round → 63.71 on the first edit after. **+12.9 index points attributable to taught knowledge.** |
+
+**Reading it (the campaign's thesis statement, factual form).** Human-owned
+data taught into TerranSoul's own memory raised its actor from **86.8 to 99.7
+on the reference-parity index — with no model change** (pure self-improvement
+track vs. learn-then-ace track; identical frozen gemma actor, identical frozen
+judge). The learn-then-ace build closed 0.21 raw points below the reference
+anchor (63.71 vs. 63.92). The knowledge-transfer track — seeded from a
+stronger actor's build (owner-authorized), then improved by the gemma actor
+itself — **scores above the reference build's own score under the identical
+judge** (69.63 raw / 108.9 index); its provenance travels with the number, and
+it is not citable as pure self-improvement.
+
+**Historical records under OTHER protocols (era-labeled; never compared raw):**
+
+- **fable5-v2: 71.66** (v2-era single-judge protocol, frozen contract) — the
+  strongest frozen-contract build on record produced through TerranSoul's own
+  agent machinery (the v2-era 73.68 gemma4 figure above belongs to the
+  bare-CLI Opus-4.8 series per the ACTOR-FIDELITY CORRECTION note at the top
+  of this doc).
+- **AGI-purity track** (`terransoul-gemma`): **37.39 → 55.64** (v2-era; closed
+  2026-07-14) — the no-domain-knowledge floor.
+
+Per `rules/bench-never-regress.md`, the published v4-protocol results are now
+their tracks' floors, scoped to this regime: **69.63** (transplant2 —
+transplant-seeded, provenance above), **55.49** (taught-v4), **63.71**
+(taught-v5).
+
+**Evidence:** `results/PARITY-INDEX-20260717.md` · `results/PROGRESS.md`
+(final table) · per-track `gate-state.json` + `iter-*.json` · candidate
+`PROVENANCE.md` files · knowledge packs in `benchmark/boeing747/knowledge/`
+(their inline source URLs and arXiv ids are citable).
+
 ## How to read the comparison
 
 - **Single-shot** — one prompt, no iteration (`run-baselines.mjs`). This is how a
@@ -571,7 +641,7 @@ generic mechanism lessons sync.
 |---|---|---|---|---|
 | **Claude Opus 4.8 + TerranSoul** (v2 harness) | self-improve loop (Opus actor inside TerranSoul) | **73.68** gemma4 · **68.26** Opus vision | 9+ (both judge tracks) | measured — `results/terransoul-opus48*/` |
 | _(v1 pre-fix rig — history)_ | same, aliased/thumbnail render | 66.07 gemma4 · 63.5 Opus vision | — | prior record, retired to history; **not comparable to v2** |
-| **Claude Fable 5 + TerranSoul** (v2 harness, TerranSoul-agent-driven actor)¹ ² ³ | self-improve loop (Fable-5 actor via TerranSoul's own Read+Edit-restricted CLI agent, real vision tool access) | **59.62** gemma4 · **49.48** Fable-5 vision — **bug-affected, see § Harness fix; re-run also pending via § CLI-routed actor** | 10 of 12-budget (gemma4 `stall`, 4 of 10 later root-caused as a timeout-retry artifact) | measured — `results/terransoul-fable5*/`; two corrected re-run attempts (`results/terransoul-fable5-v2*/`), **both incomplete** |
+| **Claude Fable 5 + TerranSoul** (v2 harness, TerranSoul-agent-driven actor)¹ ² ³ | self-improve loop (Fable-5 actor via TerranSoul's own product-CLI agent, real vision tool access) | **71.66** gemma4 · **63.7** Fable-5 vision — corrected re-run, completed 2026-07-11; supersedes the bug-affected **59.62 / 49.48** (preserved in § Fable-5 + TerranSoul measurement) | run 1: 59.62 → 71.66 in 3 iters, infra-classified stop @ 5; run 2: resumed, genuine gemma4 `stall` | measured — `results/terransoul-fable5-v2*` + `terransoul-fable5-v2r2*`, commits `a77c0fd4`/`ee33877c` |
 | Stub (rig validation) | fixed source | 28.25 | — | `results/stub-validation.json` (pre-render-fix; methodology check only) |
 
 ¹ Different actor, different driving mechanism (TerranSoul's own agent loop vs.
@@ -581,17 +651,20 @@ measurement for the full honest caveats (notably the actor-timeout stall in
 iterations 7–10).
 
 ² **The `stall` was root-caused as a harness bug, not a demonstrated
-capability ceiling** — see § Harness fix (2026-07-10) for the fix and the
-corrected re-run's status. The 59.62 / 49.48 figures are the last **completed**
-measurement for this track and remain published (never silently overwritten),
-now explicitly flagged bug-affected rather than presented as a clean ceiling.
+capability ceiling** — see § Harness fix (2026-07-10). The corrected re-run
+subsequently **completed (2026-07-11) at 71.66 gemma4 / 63.7 Fable-5-vision**
+with a genuine gemma4 `stall` verdict — full trajectory and stop-condition
+story in footnote ² of the top-of-doc table and § CLI-routed actor's CLOSED
+note. The bug-affected 59.62 / 49.48 figures remain published in § Fable-5 +
+TerranSoul measurement (never silently overwritten), explicitly flagged
+bug-affected rather than presented as a clean ceiling.
 
 ³ **The actor was further rewired onto TerranSoul's own product CLI**
 (`terransoul-cli --agent-task`, `action_trust`-gated) in place of the
 bare-CLI-adjacent, tool-granted script the ¹/² measurement and its first
-re-run attempt used — see § CLI-routed actor (2026-07-10). A second corrected
-re-run attempt on this new path was started but is **also not complete**; no
-number in this row has changed as a result of either rewire.
+re-run attempt used — see § CLI-routed actor (2026-07-10). The completed
+2026-07-11 re-run in this row executed through this exact product-CLI path
+(§ CLI-routed actor → CLOSED).
 
 **The loop trajectory (measured).** Judged by Claude Opus 4.8 vision, the loop climbed
 **37.9 → 60.4 → 61.0 → 62.6 → 63.7 → 64.4 → 66.3 (peak) → 63.5 (median-of-3)** as the
@@ -623,6 +696,11 @@ methodology check, not a competitor. Single-shot local baselines were dropped pe
 the project owner's direction — the comparison of interest is the best
 Opus 4.8 + TerranSoul result against the **existing published benchmark
 landscape**, catalogued in § Existing online benchmarks below.)_
+
+_The 2026-07-17/18 gemma-actor campaign tracks are deliberately NOT rows in
+this v2-era table: they run under the **v4 panel protocol** — a different
+judge regime — and are recorded, era-labeled, in § Final results —
+gemma-actor campaign close-out (2026-07-17/18) above._
 
 ## Existing online benchmarks (audit)
 

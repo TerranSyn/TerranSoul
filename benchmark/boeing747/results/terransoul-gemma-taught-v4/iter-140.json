@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 140,
+  "run_id": "terransoul-gemma-taught-v4-iter-140-mroh06ta",
+  "plane_sha256": "345bfce81b06a9a1e976f5125b35a2ed95dbf282061ca37cc5737dfcf72d5d64",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 52.71,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.88
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.76
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.97
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.62
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.54
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.19
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.01
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.47
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 2.91,
+    "perCriterion": {
+      "engines_four_underwing": 4.51,
+      "upper_deck_hump": 4.37,
+      "fuselage_proportions": 4.93,
+      "wing_geometry": 5.78,
+      "empennage": 6.03,
+      "landing_gear": 7.81,
+      "window_door_lines": 2.91,
+      "livery_coherence": 5.36,
+      "silhouette_747": 5.58,
+      "craftsmanship": 5.33
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Modify the fuselage geometry by adding two distinct horizontal window rows along the cylindrical body. Set the primary row at a 15-degree upward tilt from the centerline and the secondary row above it. Instead of uniform dots, use a repeating array of rectangular primitives with a 2:1 width-to-height ratio. Introduce 30% larger gaps in this array to accommodate four main cabin door outlines (recessed rectangles) spaced evenly along the fuselage length.",
+    "discrepancies": [
+      {
+        "feature": "Window Row Count",
+        "observed": "A single continuous line of small dots along the fuselage.",
+        "reference": "Multiple distinct rows of windows (main deck and upper deck).",
+        "direction_of_fix": "increase"
+      },
+      {
+        "feature": "Upper Deck Windows",
+        "observed": "No visible window structure on the forward hump area.",
+        "reference": "A distinct row of windows following the curve of the upper deck.",
+        "direction_of_fix": "add"
+      },
+      {
+        "feature": "Door Outlines",
+        "observed": "Smooth fuselage surface with no breaks or recessed lines for doors.",
+        "reference": "Clearly defined rectangular outlines and seams for main cabin doors.",
+        "direction_of_fix": "add"
+      },
+      {
+        "feature": "Window Spacing",
+        "observed": "Uniformly spaced dots across the entire length of the cylinder.",
+        "reference": "Varied spacing with larger gaps around door locations and cockpit area.",
+        "direction_of_fix": "move"
+      }
+    ],
+    "critic_view": 6,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 55.83,
+  "created_at": "2026-07-17T05:04:06.522Z",
+  "actor_status": "edited"
+}

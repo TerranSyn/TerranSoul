@@ -1,0 +1,115 @@
+{
+  "model": "claude-opus-4-8",
+  "effort": "max",
+  "ms": 975878,
+  "cost_usd": 3.621135999999999,
+  "timeout_ms": 1200000,
+  "observability": {
+    "event_count": 99,
+    "tool_calls": {
+      "Read": 13,
+      "Bash": 5,
+      "Grep": 1,
+      "Edit": 3
+    },
+    "total_tool_calls": 22,
+    "text_chunks": 55,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "Read",
+        "count": 13
+      },
+      {
+        "name": "Bash",
+        "count": 5
+      },
+      {
+        "name": "Grep",
+        "count": 1
+      },
+      {
+        "name": "Edit",
+        "count": 3
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "contract_failed",
+  "contract_violations": [
+    "forbidden token `window`: DOM access (window)"
+  ],
+  "plane_sha256_before": "cf31e8dfdcff8a92c104bea2466262efaf245e5b3a5056831a73e6cc8bde9c01",
+  "plane_sha256_after": "cf31e8dfdcff8a92c104bea2466262efaf245e5b3a5056831a73e6cc8bde9c01",
+  "plane_sha256_rejected": "b6e4d6a6ebd8d84aa59a950e8ab1f02d78e9b2ca1db596229eb9852db7ba7e89",
+  "changed": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 600232,
+      "actor_error": "terransoul-cli agent-task timed out after 600000ms (13 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 40,
+        "tool_calls": {
+          "Read": 9,
+          "Bash": 4
+        },
+        "total_tool_calls": 13,
+        "text_chunks": 14,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "contract_failed",
+      "ms": 975878,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 99,
+        "tool_calls": {
+          "Read": 13,
+          "Bash": 5,
+          "Grep": 1,
+          "Edit": 3
+        },
+        "total_tool_calls": 22,
+        "text_chunks": 55,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "Read",
+            "count": 13
+          },
+          {
+            "name": "Bash",
+            "count": 5
+          },
+          {
+            "name": "Grep",
+            "count": 1
+          },
+          {
+            "name": "Edit",
+            "count": 3
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

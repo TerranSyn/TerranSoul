@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 51030,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 64,
+    "tool_calls": {
+      "read_file": 3,
+      "edit_file": 2
+    },
+    "total_tool_calls": 5,
+    "text_chunks": 54,
+    "tool_failures": 2,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 3
+      },
+      {
+        "name": "edit_file",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "2c34a313269ac783064484070752cc1dd699542c9ef884425ce46e560b26b1a0",
+  "plane_sha256_after": "15fbc8974bdcc4b8f4b940d1841e01fee6d09c04d580616092a66d002b73d409",
+  "changed": true,
+  "claude_result_text": "I moved the `hump` mesh position forward from $x=20.2$ to $x=18.7$. This change better aligns the 747's partial upper deck hump with the cockpit area, ensuring it appears to start at the nose and blend smoothly into the fuselage crown rather than looking like a disconnected block halfway down the body. This directly addresses the 'upper_deck_hump' criterion for both silhouette and faired integration.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 51030,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 64,
+        "tool_calls": {
+          "read_file": 3,
+          "edit_file": 2
+        },
+        "total_tool_calls": 5,
+        "text_chunks": 54,
+        "tool_failures": 2,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 3
+          },
+          {
+            "name": "edit_file",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

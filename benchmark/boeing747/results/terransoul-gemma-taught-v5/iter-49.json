@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 49,
+  "run_id": "terransoul-gemma-taught-v5-iter-49-mrp8s1hc",
+  "plane_sha256": "8b99ac9bfcb1c988168b8f4873a9aca720dd7a7a1fc4be8a43c55c49e3755bb8",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 58.5,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.39
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.02
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.88
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.91
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.7
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.53
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.68
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.36
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.18
+    }
+  ],
+  "weakest_feature": {
+    "id": "upper_deck_hump",
+    "mean": 4.69,
+    "perCriterion": {
+      "engines_four_underwing": 4.87,
+      "upper_deck_hump": 4.69,
+      "fuselage_proportions": 5.69,
+      "wing_geometry": 6.42,
+      "empennage": 6.38,
+      "landing_gear": 7.96,
+      "window_door_lines": 5.23,
+      "livery_coherence": 6.16,
+      "silhouette_747": 6.44,
+      "craftsmanship": 5.53
+    }
+  },
+  "critic": {
+    "weakest_feature": "upper_deck_hump",
+    "fix_suggestion": "Modify the upper deck cylinder primitive to create a more prominent 'hump' by increasing its length along the longitudinal axis by 50% (extending further toward the rear), increasing its vertical offset from the main fuselage by 30%, and applying a gradual height taper of -20% from front to back. To improve aerodynamics, round the leading edge of this primitive with a 15-degree fillet radius where it meets the nose section.",
+    "discrepancies": [
+      {
+        "feature": "Upper-deck hump length",
+        "observed": "The upper deck section is very short and ends abruptly near the front.",
+        "reference": "A long, distinct 'hump' that extends significantly back along the forward fuselage.",
+        "direction_of_fix": "Increase length of the upper deck cylinder towards the rear."
+      },
+      {
+        "feature": "Upper-deck hump height",
+        "observed": "The hump is relatively low and blends into the main fuselage quickly.",
+        "reference": "A prominent, elevated section that sits high above the main cabin line.",
+        "direction_of_fix": "Increase vertical offset of the upper deck geometry."
+      },
+      {
+        "feature": "Hump curvature",
+        "observed": "The transition from the nose to the hump is sharp and angular.",
+        "reference": "A smooth, continuous aerodynamic curve blending the cockpit into the upper deck.",
+        "direction_of_fix": "Smooth/round the front edge of the upper deck primitive."
+      },
+      {
+        "feature": "Upper-deck taper",
+        "observed": "The top surface of the hump appears flat or lacks a gradual downward slope toward the rear.",
+        "reference": "A graceful tapering down from the peak of the hump towards the mid-fuselage.",
+        "direction_of_fix": "Decrease height of the upper deck primitive gradually as it moves backward."
+      }
+    ],
+    "critic_view": 7,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": false,
+  "best_total_after": 58.5,
+  "created_at": "2026-07-17T18:01:59.892Z",
+  "actor_status": "edited"
+}

@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-transplant",
+  "iter": 1,
+  "run_id": "terransoul-gemma-transplant-iter-1-mroioeof",
+  "plane_sha256": "3e4bbd2e12cadabe1557fe5d7bb9a06ad8795f974808d6ab4d7b52287f48fcd3",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 61.62,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.89
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.31
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.57
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.15
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.59
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.31
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.64
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.75
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.25
+    }
+  ],
+  "weakest_feature": {
+    "id": "livery_coherence",
+    "mean": 4.38,
+    "perCriterion": {
+      "engines_four_underwing": 4.98,
+      "upper_deck_hump": 4.4,
+      "fuselage_proportions": 5.98,
+      "wing_geometry": 7.18,
+      "empennage": 7.8,
+      "landing_gear": 6.51,
+      "window_door_lines": 5.77,
+      "livery_coherence": 4.38,
+      "silhouette_747": 6.2,
+      "craftsmanship": 7.76
+    }
+  },
+  "critic": {
+    "weakest_feature": "livery_coherence",
+    "fix_suggestion": "Apply a multi-part livery to the fuselage and tail primitives: set the upper 60% of the main body cylinder/box primitive to White, the lower 40% to a Solid Gray, and create a separate tail fin geometry with a 50/50 split of Purple and Blue. For the wingtips, replace the single dark primitive with two thin, overlapping rectangular planes colored Purple and Blue respectively to simulate the reference accents.",
+    "discrepancies": [
+      {
+        "feature": "Livery Color",
+        "observed": "Solid uniform gray body with no markings.",
+        "reference": "White upper fuselage and purple/blue tail livery.",
+        "direction_of_fix": "Apply different colors to specific primitive segments."
+      },
+      {
+        "feature": "Logo Presence",
+        "observed": "No logos or text on the fuselage or tail.",
+        "reference": "Prominent 'THAI' and 'AIR NEW ZEALAND' text and tail emblems.",
+        "direction_of_fix": "Add small flat planes for decals."
+      },
+      {
+        "feature": "Engine Color",
+        "observed": "Dark gray engines matching the body color.",
+        "reference": "Light gray/white engine cowlings with distinct markings.",
+        "direction_of_fix": "Change color of cylinder primitives."
+      },
+      {
+        "feature": "Winglet Accents",
+        "observed": "Plain dark winglets.",
+        "reference": "Purple and blue colored wingtips.",
+        "direction_of_fix": "Apply multi-color segments to wingtip geometry."
+      }
+    ],
+    "critic_view": 8,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": false,
+  "best_total_after": 61.62,
+  "created_at": "2026-07-17T05:51:00.227Z",
+  "actor_status": "edited"
+}

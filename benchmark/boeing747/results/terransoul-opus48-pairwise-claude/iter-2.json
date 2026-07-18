@@ -1,0 +1,91 @@
+{
+  "actor": "terransoul-opus48-pairwise-claude",
+  "judge_track": "claude-opus-4-8-pairwise-vision",
+  "iter": 2,
+  "run_id": "terransoul-opus48-pairwise-iter-2-mrjd7oeu",
+  "plane_sha256": "92f5e42a445e5dc92179c933be846c4626649c7a5c5dc4a677858acdf8a77d18",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 50,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B are pixel-identical in this view; every observable feature, artifact and color matches exactly, so no criterion separates them. Both share the same aft-set hump, blunt nose, slab wing and clustered gear."
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B are pixel-identical from this camera: same fuselage, hump, cheatline, navy fin, wing planform, gear, and engine block. Every criterion ties. Both share the same defects: mid-body seam, engines too low/aft, no visible pylons."
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5,
+      "notes": "The two head-on renders are pixel-for-pixel indistinguishable to me: same geometry, same livery, same gear and nacelle placement. No criterion separates them from this camera."
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B appear pixel-identical from this rear view: same geometry, colors, gear cluster and fin. Both share the same deviations from the photos: unswept slab fin, untapered wings, belly-bunched gear."
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B appear pixel-identical in this top-down view: same fuselage seams, same wing sweep and taper, same four wing-top nacelles, same hump panel and navy fin. No criterion separates them."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B are pixel-indistinguishable at this camera: same geometry, livery, gear and engine placement. Both share one deficiency versus the photos: the upper-deck hump is too shallow and blends too gradually."
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B appear pixel-identical from this camera: same geometry, same livery, same seams. Both share the real 747's hump and four engines but lack its upswept tail cone, wing dihedral, and forward-slung nacelles."
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B are pixel-identical from this camera: same geometry, colors, gear and stripe placement. All criteria tie. Both share a flat unfaired wing root and slightly clustered main gear versus the photos."
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5,
+      "notes": "RENDER-A and RENDER-B appear pixel-identical at this camera: same geometry, livery, gear and hump. No criterion showed any distinguishable difference, so every verdict is a tie."
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 5,
+    "perCriterion": {
+      "engines_four_underwing": 5,
+      "upper_deck_hump": 5,
+      "fuselage_proportions": 5,
+      "wing_geometry": 5,
+      "empennage": 5,
+      "landing_gear": 5,
+      "window_door_lines": 5,
+      "livery_coherence": 5,
+      "silhouette_747": 5,
+      "craftsmanship": 5
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Improve 'Four engines under swept wings' (mean 5/10). Target the 8 anchor: four nacelles hung under the swept wings on visible pylons, plausible inboard/outboard spacing; then the 10 anchor: four underslung pylon-mounted nacelles with correct relative size, spacing, and forward offset ahead of the wing leading edge, inlet visibly open/darker.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 5.976052,
+  "regressed": true,
+  "best_total_after": 50,
+  "created_at": "2026-07-13T15:26:50.603Z",
+  "actor_status": "actor_exhausted_retries"
+}

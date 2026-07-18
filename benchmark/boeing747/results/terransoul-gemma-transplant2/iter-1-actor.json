@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 481639,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 514,
+    "tool_calls": {
+      "read_file": 8,
+      "edit_file": 5
+    },
+    "total_tool_calls": 13,
+    "text_chunks": 488,
+    "tool_failures": 5,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 8
+      },
+      {
+        "name": "edit_file",
+        "count": 5
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "no_change",
+  "plane_sha256_before": "92f5e42a445e5dc92179c933be846c4626649c7a5c5dc4a677858acdf8a77d18",
+  "plane_sha256_after": "92f5e42a445e5dc92179c933be846c4626649c7a5c5dc4a677858acdf8a77d18",
+  "changed": false,
+  "claude_result_text": "Thinking Process:\n\n1.  **Analyze Request:** The user's previous prompt was cut off. I need to continue my thought process",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "no_change",
+      "ms": 481639,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 514,
+        "tool_calls": {
+          "read_file": 8,
+          "edit_file": 5
+        },
+        "total_tool_calls": 13,
+        "text_chunks": 488,
+        "tool_failures": 5,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 8
+          },
+          {
+            "name": "edit_file",
+            "count": 5
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

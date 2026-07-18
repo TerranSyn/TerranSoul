@@ -1,0 +1,107 @@
+[
+  {
+    "iter": 1,
+    "weakest_feature_targeted": "livery_coherence",
+    "edit_summary": "Thinking Process:\n\n1.  **Identify the goal:** Add a tail cone to the 747 model in `plane.js`.\n2.  **Current state of `plane.js` (from last read):**\n    ```javascript\n      // Fuselage: single cylinder along +X (nose = +X per the frozen contract).\n      const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, 60, 24), grey);\n      fuselage.rotation.z = -Math.PI / 2;\n      group.add(fuselage);\n\n      // Lifting-surface builder (iter 8): ONE 4-sided CylinderGeometry frustum\n    ```\n3.  **Plan:** Insert the tail cone code between `group.add(fuselage);` and the lifting-surface builder comment.\n4.  **Refine coordinates/parameters:**\n    *   Fuselage spans $x \\in [-30, 30]$.\n    *   Tail is at $x = -30$.\n    *   Tail cone should extend from $-30$ to say $-34$. Center is $-32$.\n    *   Radius at $-30$ (base) $\\approx 2.9$ (slightly less than fuselage radius of 3).\n    *   Radius at $-34$ (tip) $\\approx 0.15$.\n    *   Rotation: `rotation.z = -Math.PI / 2` means top is $+X$, bottom is $-X$.\n    *   Since tip is at $-X$, I want the \"bottom\" to be small ($\\text{radius",
+    "rejected_sha256": "42b58c163119030058c8e55a4a148024dee8bdf280c212b3b7dd00e29d4bb6c8",
+    "per_view_delta": [
+      -0.01,
+      -0.24,
+      -0.22,
+      -0.47,
+      -0.55,
+      -0.33,
+      0.61,
+      -0.36,
+      0.1
+    ],
+    "gating_delta": -1.63,
+    "reason": "total regression: 59.99 < best 61.62 - epsilonTotal 0.83 (delta -1.63)",
+    "burst_deferred": false,
+    "created_at": "2026-07-17T06:01:35.089Z"
+  },
+  {
+    "iter": 4,
+    "weakest_feature_targeted": "upper_deck_hump",
+    "edit_summary": "The user wants me to add nose and tail tapers to the Boeing 747 model in `plane.js`.\n\nCurrent fuselage:\n```javascript\n  // Fuselage: single cylinder along +X (nose = +X per the frozen contract).\n  const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, 60, 24), grey);\n  fuselage.rotation.z = -Math.PI / 2;\n  group.add(fuselage);\n```\n\nI need to:\n1. Change fuselage length to 50 (so it spans from x=-25 to x=25).\n2. Add nose taper from x=25 to x=30.\n3. Add tail cone from x=-25 to x=-30.\n\nLet's check the orientations again.\nRotation is -PI/2 around Z.\nCylinder length 50, radius 3. Spans x = [-25, 25].\n\nNose taper: Base at x=25 (radius 3), tip at x=30 (radius 0). Length 5. Center at x=27.5.\nIn Three.js `ConeGeometry(radiusTop, radiusBottom, height)`:\nIf I use `ConeGeometry(0, 3,",
+    "rejected_sha256": "d7cb08b1b74cd61a3e129fc0477f1d1bccb8cdb0b10b89a882f708cbdbb26f4e",
+    "per_view_delta": [
+      -0.62,
+      0.46,
+      0,
+      -0.14,
+      -0.71,
+      -0.11,
+      0.22,
+      -0.54,
+      -0.05
+    ],
+    "gating_delta": -1.65,
+    "reason": "total regression: 60.87 < best 62.52 - epsilonTotal 0.619 (delta -1.65)",
+    "burst_deferred": false,
+    "created_at": "2026-07-17T06:48:30.054Z"
+  },
+  {
+    "iter": 6,
+    "weakest_feature_targeted": "livery_coherence",
+    "edit_summary": "I have updated the materials to use a more neutral grey palette, addressing the blueish tints that were likely contributing to low livery coherence scores:\n- `dark` was changed from `0x6b7280` to `0x3d3d3d`.\n- `nacelleMat` was changed from `0x9aa3ad` to `0xa0a0a0`.\n- `strutMat` was changed from `0x9aa3ad` to `0x8c8c8c`.\n\nThese changes should improve the overall coherence of the aircraft livery.",
+    "rejected_sha256": "084b2d709b6d9a58b38eaa037243a32a16b708c15454182ffa315d1b023261d0",
+    "per_view_delta": [
+      -0.13,
+      0.91,
+      -0.36,
+      -0.09,
+      -0.7,
+      -0.55,
+      -0.35,
+      0.02,
+      -0.14
+    ],
+    "gating_delta": -1.54,
+    "reason": "total regression: 60.98 < best 62.52 - epsilonTotal 0.636 (delta -1.54)",
+    "burst_deferred": false,
+    "created_at": "2026-07-17T07:10:45.212Z"
+  },
+  {
+    "iter": 7,
+    "weakest_feature_targeted": "upper_deck_hump",
+    "edit_summary": "The upper-deck hump of the Boeing 747 has been corrected by adjusting its geometry to a more elongated capsule. I've switched it from a bulbous, floating hemisphere-like shape to one that is stretched lengthwise (1.54x), which properly represents the \"double-bubble\" cross-section characteristic of the 747's upper deck. The new configuration ensures it blends into the crown and fuselage as intended in the design specifications.",
+    "rejected_sha256": "39caa6722ac651534a2f2d6fa8a487da036b08f350fd993eedf557be8a438c84",
+    "per_view_delta": [
+      -0.28,
+      0.25,
+      0.3,
+      -0.57,
+      -0.57,
+      -0.02,
+      -0.07,
+      -0.3,
+      -0.4
+    ],
+    "gating_delta": -1.84,
+    "reason": "total regression: 60.68 < best 62.52 - epsilonTotal 0.697 (delta -1.84)",
+    "burst_deferred": false,
+    "created_at": "2026-07-17T07:27:24.226Z"
+  },
+  {
+    "iter": 14,
+    "weakest_feature_targeted": "upper_deck_hump",
+    "edit_summary": "The Boeing-747 model has been improved by refining the upper-deck hump to address the feedback that it was modeled as running nearly the full length of the fuselage like an A380. Specifically:\n1.  Reduced the hump's scale from 1.7 to 1.4, which shortened its longitudinal extent to better approximate a partial deck.\n2.  Reduced the hump's radius from 2.0 to 1.6. This made it noticeably slimmer and less bulky (\"thick\"), ensuring it doesn't have an A380-like profile in top-down (view 5) and perspective views.\n\nThese changes ensure that the hump is now a distinct, smoother feature at the front third of the fuselage as requested by the judges.",
+    "rejected_sha256": "44c80f9c2fe0a9759e2d8acb26aa75b3a849d39ef2cf2b24b5c492ee416bfd29",
+    "per_view_delta": [
+      0.01,
+      0.18,
+      0.44,
+      0.48,
+      -0.16,
+      0.09,
+      -0.29,
+      -1.5,
+      -1.24
+    ],
+    "gating_delta": -2.22,
+    "reason": "total regression: 61.94 < best 64.16 - epsilonTotal 0.723 (delta -2.22)",
+    "burst_deferred": false,
+    "created_at": "2026-07-17T08:20:11.678Z"
+  }
+]

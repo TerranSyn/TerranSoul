@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 67,
+  "run_id": "terransoul-gemma-taught-v4-iter-67-mrnx7j2q",
+  "plane_sha256": "4c10c73a1303150c019b8d99f62951e28c45ad42d282a97792b9325d858fa10e",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 43.1,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.73
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.8
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.05
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.22
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.34
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.04
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.27
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.04
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.3
+    }
+  ],
+  "weakest_feature": {
+    "id": "craftsmanship",
+    "mean": 3.4,
+    "perCriterion": {
+      "engines_four_underwing": 3.84,
+      "upper_deck_hump": 4.37,
+      "fuselage_proportions": 4,
+      "wing_geometry": 4.13,
+      "empennage": 4.55,
+      "landing_gear": 7.13,
+      "window_door_lines": 3.57,
+      "livery_coherence": 4.6,
+      "silhouette_747": 4.29,
+      "craftsmanship": 3.4
+    }
+  },
+  "critic": {
+    "weakest_feature": "craftsmanship",
+    "fix_suggestion": "Relocate the engine geometries from their current floating positions to the underside of the wing structures. Specifically, parent each engine to a new pylon primitive located at 75% of the wingspan distance from the fuselage center. Align the engines' longitudinal axes with the wing's leading edge and set the vertical offset so that the bottom of the engine housing sits 0.1 units above the wing surface.",
+    "discrepancies": [
+      {
+        "feature": "Engine placement",
+        "observed": "Engines are floating in space away from the wing structure.",
+        "reference": "Engines are physically attached to pylons under the wings.",
+        "direction_of_fix": "Move and attach engines to wing underside"
+      },
+      {
+        "feature": "Wing attachment",
+        "observed": "The main wing is a separate, detached cylinder-like shape.",
+        "reference": "Wings are integrated into the fuselage structure with clear root geometry.",
+        "direction_of_fix": "Attach wings to fuselage sides"
+      },
+      {
+        "feature": "Tail assembly",
+        "observed": "The vertical stabilizer and horizontal stabilizers appear as disconnected blocks.",
+        "reference": "Stabilizers are joined at a common empennage junction.",
+        "direction_of_fix": "Merge tail components into a single joint"
+      },
+      {
+        "feature": "Landing gear",
+        "observed": "Gear struts are floating independently under the fuselage.",
+        "reference": "Gear is connected to the wing and fuselage via structural struts.",
+        "direction_of_fix": "Attach landing gear to fuselage/wing underside"
+      }
+    ],
+    "critic_view": 7,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 46.81,
+  "created_at": "2026-07-16T19:49:54.112Z",
+  "actor_status": "edited"
+}

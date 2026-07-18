@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 21,
+  "run_id": "terransoul-gemma-taught-v5-iter-21-mrp18dux",
+  "plane_sha256": "f11512d3f357cd6d88dcfa85ff285308dd05c4835421ff14d9760725e82e9857",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 50.6,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.3
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.79
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.61
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.09
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.31
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.51
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.71
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.46
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.76
+    }
+  ],
+  "weakest_feature": {
+    "id": "craftsmanship",
+    "mean": 3.84,
+    "perCriterion": {
+      "engines_four_underwing": 4.02,
+      "upper_deck_hump": 4.91,
+      "fuselage_proportions": 4.67,
+      "wing_geometry": 5.2,
+      "empennage": 6,
+      "landing_gear": 7.36,
+      "window_door_lines": 4.66,
+      "livery_coherence": 5.62,
+      "silhouette_747": 5.53,
+      "craftsmanship": 3.84
+    }
+  },
+  "critic": {
+    "weakest_feature": "craftsmanship",
+    "fix_suggestion": "Align the wing root geometry to the fuselage by applying a translation and rotation transform at the wing's origin point. Move the wing along its local X-axis until it intersects with the fuselage side panel, and rotate it around the Y-axis to match the 15-degree sweep angle of the main body. Ensure the wing's root thickness matches the fuselage's curvature radius to eliminate the floating gap.",
+    "discrepancies": [
+      {
+        "feature": "Wing Attachment",
+        "observed": "The wing appears to be floating or disconnected from the fuselage at the root.",
+        "reference": "The wing is seamlessly integrated into the main body of the aircraft.",
+        "direction_of_fix": "Move/Attach"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines are positioned far forward and appear detached from the wing structure.",
+        "reference": "Engines are mounted directly onto pylons attached to the underside of the wings.",
+        "direction_of_fix": "Move/Attach"
+      },
+      {
+        "feature": "Tail Assembly",
+        "observed": "The vertical stabilizer is disconnected from the rear fuselage.",
+        "reference": "The tail is structurally joined to the aft section of the fuselage.",
+        "direction_of_fix": "Move/Attach"
+      },
+      {
+        "feature": "Landing Gear Connection",
+        "observed": "The landing gear struts are floating beneath the fuselage and wings without clear pivot points.",
+        "reference": "Struts are connected to specific structural hardpoints on the body and wing roots.",
+        "direction_of_fix": "Move/Attach"
+      }
+    ],
+    "critic_view": 6,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 57.44,
+  "created_at": "2026-07-17T14:30:41.602Z",
+  "actor_status": "edited"
+}

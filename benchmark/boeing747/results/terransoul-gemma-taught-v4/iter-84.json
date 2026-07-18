@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 84,
+  "run_id": "terransoul-gemma-taught-v4-iter-84-mro31jkp",
+  "plane_sha256": "615e3af12db747f03fc3d893e77be5cacbd84786fe49fbf3ed61525eecc0e12b",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 52.71,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.36
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.46
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.72
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.05
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.11
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.04
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.62
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.53
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.55
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 2.89,
+    "perCriterion": {
+      "engines_four_underwing": 4.44,
+      "upper_deck_hump": 4.4,
+      "fuselage_proportions": 4.78,
+      "wing_geometry": 5.89,
+      "empennage": 6.23,
+      "landing_gear": 7.9,
+      "window_door_lines": 2.89,
+      "livery_coherence": 5.93,
+      "silhouette_747": 5.42,
+      "craftsmanship": 5.27
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "For the 'Main deck window row' and 'Upper deck window row' primitive arrays, modify the spacing parameter from a clustered distribution to a uniform linear distribution. Set the distance between each window center point to 15% of the total fuselage length (Z-axis), ensuring even distribution across the mid-fuselage section while maintaining current dimensions for individual windows.",
+    "discrepancies": [
+      {
+        "feature": "Main deck window row",
+        "observed": "A single continuous line of small dots along the fuselage side.",
+        "reference": "Two distinct rows of windows (main deck and upper deck) with specific spacing.",
+        "direction_of_fix": "duplicate and offset"
+      },
+      {
+        "feature": "Upper deck window count",
+        "observed": "The upper deck has a very short, sparse row of windows near the nose.",
+        "reference": "A long, continuous row of windows extending significantly back from the cockpit.",
+        "direction_of_fix": "increase length along Z-axis"
+      },
+      {
+        "feature": "Door outlines",
+        "observed": "No visible door frames or structural breaks in the fuselage skin.",
+        "reference": "Clearly defined main cabin doors and emergency exits with distinct rectangular outlines.",
+        "direction_of_fix": "add small extruded rectangles"
+      },
+      {
+        "feature": "Window spacing",
+        "observed": "Windows are clustered tightly near the front and rear of the fuselage.",
+        "reference": "Windows are evenly spaced along the majority of the mid-fuselage length.",
+        "direction_of_fix": "increase uniform spacing"
+      }
+    ],
+    "critic_view": 5,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 52.71,
+  "created_at": "2026-07-16T22:30:34.433Z",
+  "actor_status": "runtime_failed"
+}

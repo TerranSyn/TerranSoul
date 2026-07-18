@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 99,
+  "run_id": "terransoul-gemma-taught-v5-iter-99-mrppbqux",
+  "plane_sha256": "ee50743740015731bb03f7c29cd17587d49e05aa2a2a6cfd8ce7b8f6038f349f",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 56.02,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.61
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.56
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.36
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.58
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5.51
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 6.29
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.99
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.34
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.18
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.42,
+    "perCriterion": {
+      "engines_four_underwing": 4.42,
+      "upper_deck_hump": 4.66,
+      "fuselage_proportions": 5.22,
+      "wing_geometry": 5.84,
+      "empennage": 6.5,
+      "landing_gear": 7.84,
+      "window_door_lines": 4.63,
+      "livery_coherence": 6.13,
+      "silhouette_747": 6.09,
+      "craftsmanship": 5.82
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the engine geometry on the opposite wing to achieve a 2x count (4 total). For each set, apply a translation of +15% aft and +10% outward from the fuselage centerline. Simultaneously, rotate the main wing geometry -30 degrees backward around its root axis to establish the required sweep angle, and parent the engine geometries to new pylon primitives attached to the underside of these swept wings.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible under the wing",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines are positioned far forward and low on the fuselage/wing root",
+        "reference": "Engines are mounted further aft along the swept wings",
+        "direction_of_fix": "move engines aft and outward"
+      },
+      {
+        "feature": "Wing Sweep",
+        "observed": "Wings appear relatively straight with minimal backward angle",
+        "reference": "Significant rearward sweep of the main wing",
+        "direction_of_fix": "rotate wing geometry backward around root"
+      },
+      {
+        "feature": "Engine Pylon Attachment",
+        "observed": "Engines appear to be floating or poorly joined to the wing structure",
+        "reference": "Engines are clearly attached via pylons to the underside of the swept wings",
+        "direction_of_fix": "attach engines to wing undersides"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-18T01:45:19.508Z",
+  "actor_status": "edited"
+}

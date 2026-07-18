@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 52,
+  "run_id": "terransoul-gemma-taught-v5-iter-52-mrp9pcil",
+  "plane_sha256": "176cbf132a63b7637f6b607f20e11461510ac14e3882fce6a78bee93eadc3d41",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 55.1,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.92
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.12
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.11
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.44
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.91
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.95
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.35
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.58
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.21
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 3.84,
+    "perCriterion": {
+      "engines_four_underwing": 3.84,
+      "upper_deck_hump": 4.66,
+      "fuselage_proportions": 5.2,
+      "wing_geometry": 6.16,
+      "empennage": 6.64,
+      "landing_gear": 6.98,
+      "window_door_lines": 4.71,
+      "livery_coherence": 6.09,
+      "silhouette_747": 5.96,
+      "craftsmanship": 5.42
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Relocate the engine geometry from the wing surface to independent pylon structures. Create four pylon primitives extending forward and downward from the wing's leading edge at a 15-degree angle relative to the fuselage. Attach the engines to these pylons, ensuring they are positioned approximately 20% of the wingspan distance away from the wing root.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible on the starboard wing",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines are attached directly to the wing surface",
+        "reference": "Engines mounted on pylons extending forward from the wing",
+        "direction_of_fix": "move engines forward and down"
+      },
+      {
+        "feature": "Wing Sweep",
+        "observed": "Wings appear relatively straight/low sweep",
+        "reference": "Significant rearward sweep of the wings",
+        "direction_of_fix": "rotate wing geometry backward along the longitudinal axis"
+      },
+      {
+        "feature": "Engine Geometry",
+        "observed": "Engines are simple cylinders with flat ends",
+        "reference": "Cylindrical nacelles with tapered cowlings and intake cones",
+        "direction_of_fix": "taper cylinder dimensions toward front and rear"
+      }
+    ],
+    "critic_view": 2,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 60.53,
+  "created_at": "2026-07-17T18:27:53.577Z",
+  "actor_status": "runtime_failed"
+}

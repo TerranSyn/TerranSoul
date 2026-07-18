@@ -1,0 +1,62 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 142226,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 319,
+    "tool_calls": {
+      "read_file": 2
+    },
+    "total_tool_calls": 2,
+    "text_chunks": 315,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "no_change",
+  "plane_sha256_before": "e54b1c376902cb7e99f113ebe422d0f29ab6b9907e8deda69c96de6d3e1aab1d",
+  "plane_sha256_after": "e54b1c376902cb7e99f113ebe422d0f29ab6b9907e8deda69c96de6d3e1aab1d",
+  "changed": false,
+  "claude_result_text": "The user wants me to fix the \"Craftsmanship (no floating parts, z-fighting, holes)\" issue in the Boeing 747 model.\nLooking at `view-1.png`:\n- The fuselage is a cylinder.\n- There's an \"engine\" looking thing that seems partially detached or just poorly placed on the front. Wait, no, that looks like a pylon/nacelle but it's very front.\n- Actually, looking at view 1, there are some parts that look like landing gear struts sticking out from nothing.\n- Looking at `view-1.png`, there is a long vertical bar (strut) and several small spheres near the bottom. These are the landing gears. They seem to be mostly okay, but might have gaps or not look attached firmly.\n- There's an engine nacelle/pylon on the side of the front fuselage? No, that looks like it's trying to be a wing root or something.\n- Oh, wait. I see some parts that really don't belong there.\n- In `view-1.png`, looking at the nose area (+X is towards right? Wait, contract says \"nose along +X\").\n- The fuselage is a cylinder with radius 3, length 60. It's rotated -PI/2 around Z axis. So its long axis is along X. Nose is at X=30, tail at X=-30.\n- Actually `fuselage.rotation.z = -Math.PI / 2`. If originally Cylinder extends on Y (from 0 to 60), then after rotation by -90 deg around Z, it's along X. So nose is +X. Yes.\n- In view 1 (left profile), we are probably looking from the side (+Z or -Z). Usually left profile means looking at it from the left side of the plane.\n- \"nose along +X, up +Y\".\n- Let's check `fuselage` position: `group.add(fuselage)`. Default position is (0,0,0). Radius 3. So Y ranges from -3 to 3, Z from -3 to 3. Length 60 on X axis from -30 to 30.\n- The nose of the fuselage is at x=30.\n- Let's check `hump`: `hump.position.set(20, 6.2, 0)`. It sits on top of the fuselage (y=3). Radius is 4.5 at front, 3.2 at back. This seems okay.\n- `createWingHalf` positions:\n    - Side 1: `half.position.set(side * 2, -1.2, side * 15)`. Wait, if `side=1`, it's (2, -1.2, 15). If `side=-1`, it's (-2, -1.2, -15).\n    - `",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "no_change",
+      "ms": 142226,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 319,
+        "tool_calls": {
+          "read_file": 2
+        },
+        "total_tool_calls": 2,
+        "text_chunks": 315,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}

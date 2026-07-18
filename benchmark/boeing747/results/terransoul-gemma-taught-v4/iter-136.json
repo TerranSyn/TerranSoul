@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 136,
+  "run_id": "terransoul-gemma-taught-v4-iter-136-mrog1qjg",
+  "plane_sha256": "8854756eb2a6267a01f8f4cc4a975b155cc033f6ad2a636a2136b3859f0ceb87",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 52.51,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.03
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.75
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.17
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.45
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.63
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.06
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.71
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.27
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.19
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 2.49,
+    "perCriterion": {
+      "engines_four_underwing": 4.24,
+      "upper_deck_hump": 4.91,
+      "fuselage_proportions": 4.8,
+      "wing_geometry": 5.76,
+      "empennage": 6.19,
+      "landing_gear": 7.46,
+      "window_door_lines": 2.49,
+      "livery_coherence": 5.67,
+      "silhouette_747": 5.78,
+      "craftsmanship": 4.84
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Duplicate the existing window row geometry along the fuselage to create two distinct rows (upper and lower deck). Set the vertical offset between the original and new row to 15% of the total cabin height, ensuring they are parallel and evenly spaced across the length of the fuselage.",
+    "discrepancies": [
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A single large rectangular block at the nose",
+        "reference": "A multi-paneled cockpit window array with distinct vertical and horizontal dividers",
+        "direction_of_fix": "subdivide into smaller rectangles"
+      },
+      {
+        "feature": "Main cabin windows",
+        "observed": "A dashed line representing a row of windows",
+        "reference": "Individual small rectangular windows spaced evenly along the fuselage",
+        "direction_of_fix": "replace line with repeated small boxes"
+      },
+      {
+        "feature": "Door outlines",
+        "observed": "No visible door markings or structural breaks",
+        "reference": "Distinct main cabin and service doors with defined frames",
+        "direction_of_fix": "add rectangular inset planes for doors"
+      },
+      {
+        "feature": "Window row alignment",
+        "observed": "A single horizontal line across the fuselage",
+        "reference": "Two distinct rows of windows (upper and lower deck)",
+        "direction_of_fix": "duplicate window row at different vertical offsets"
+      }
+    ],
+    "critic_view": 2,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 55.83,
+  "created_at": "2026-07-17T04:37:18.260Z",
+  "actor_status": "edited"
+}

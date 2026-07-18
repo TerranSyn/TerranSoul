@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 94,
+  "run_id": "terransoul-gemma-taught-v4-iter-94-mro53xky",
+  "plane_sha256": "e6b027892a858282e811153947c289952e3895abb891ef1db2b7f0186fea7106",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 49.98,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.83
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.75
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.34
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.99
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.39
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.06
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.9
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.31
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.41
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 3.66,
+    "perCriterion": {
+      "engines_four_underwing": 4.29,
+      "upper_deck_hump": 4.29,
+      "fuselage_proportions": 4.42,
+      "wing_geometry": 5.62,
+      "empennage": 5.69,
+      "landing_gear": 7.36,
+      "window_door_lines": 3.66,
+      "livery_coherence": 5.36,
+      "silhouette_747": 5.18,
+      "craftsmanship": 4.6
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Modify the window placement array along the fuselage to introduce variable spacing. Specifically, increase the gap size between windows by a ratio of 2.5x in the areas corresponding to door locations (the 'door zones'), while maintaining the current uniform spacing for all other sections of the cabin.",
+    "discrepancies": [
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A single large dark block at the nose",
+        "reference": "A multi-paneled array of distinct windows",
+        "direction_of_fix": "subdivide and offset"
+      },
+      {
+        "feature": "Main cabin window row",
+        "observed": "A dashed line of small dots along the fuselage",
+        "reference": "A continuous, solid horizontal row of individual rectangular panes",
+        "direction_of_fix": "replace with repeated thin boxes"
+      },
+      {
+        "feature": "Door outlines",
+        "observed": "No visible door frames or structural breaks in the fuselage skin",
+        "reference": "Distinct vertical and curved lines indicating passenger and cargo doors",
+        "direction_of_fix": "add thin rectangular planes at specific intervals"
+      },
+      {
+        "feature": "Window spacing",
+        "observed": "Uniformly spaced dots across the entire length",
+        "reference": "Varied spacing with larger gaps around door locations",
+        "direction_of_fix": "increase gap size near door positions"
+      }
+    ],
+    "critic_view": 2,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 52.71,
+  "created_at": "2026-07-16T23:31:02.463Z",
+  "actor_status": "edited"
+}

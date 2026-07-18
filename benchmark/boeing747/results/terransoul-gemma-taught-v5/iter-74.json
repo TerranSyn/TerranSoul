@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 74,
+  "run_id": "terransoul-gemma-taught-v5-iter-74-mrphviem",
+  "plane_sha256": "63e198ef1197e06442ab19540d3a933feb8f5086d6848966c30756ac15a8562a",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 59.13,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.5
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.73
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.07
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.07
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.12
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.62
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.74
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.87
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.5
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.62,
+    "perCriterion": {
+      "engines_four_underwing": 4.62,
+      "upper_deck_hump": 4.89,
+      "fuselage_proportions": 5.64,
+      "wing_geometry": 6.67,
+      "empennage": 6.27,
+      "landing_gear": 7.58,
+      "window_door_lines": 4.94,
+      "livery_coherence": 6.24,
+      "silhouette_747": 6.51,
+      "craftsmanship": 5.76
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "For the wing engines, replace the direct under-wing attachment with a pylon geometry. Move the engine models forward along the X-axis (relative to the fuselage) by 15% of the wing's chord length, and offset them vertically by 5% of the wing's thickness to simulate a suspended mount rather than a flush underside placement.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible on one wing side",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate"
+      },
+      {
+        "feature": "Wing Sweep",
+        "observed": "Wings are nearly perpendicular to the fuselage",
+        "reference": "Highly swept-back wings",
+        "direction_of_fix": "rotate/tilt"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines are attached directly under the wing surface",
+        "reference": "Engines mounted on pylons extending forward from the wing",
+        "direction_of_fix": "move/offset"
+      },
+      {
+        "feature": "Wing Planform",
+        "observed": "Rectangular, flat wing shape",
+        "reference": "Tapered wings with distinct leading and trailing edges",
+        "direction_of_fix": "scale/taper"
+      }
+    ],
+    "critic_view": 7,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 61.72,
+  "created_at": "2026-07-17T22:16:39.308Z",
+  "actor_status": "edited"
+}

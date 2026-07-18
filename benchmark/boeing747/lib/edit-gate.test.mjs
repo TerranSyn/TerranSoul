@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync, readFileSync, mkdirSync } from 'nod
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import {
+  assertGateStateEra,
   comparablePerViewDelta,
   decideEditAcceptance,
   DEFAULT_GEMMA_PERSIST_THRESHOLD,
@@ -438,5 +439,119 @@ describe('I/O helpers — snapshot/restore/ledger round-trip on a real tmp dir',
     expect(restoreBest({}).ok).toBe(false);
     expect(appendRejectedEdit({}).ok).toBe(false);
     expect(loadRejectedEdits({})).toEqual([]);
+  });
+});
+
+describe('decideEditAcceptance — v3 RELATIVE per-view drop cap (maxViewDrop)', () => {
+  // The live-measured case the v3 redesign exists for: taught-track iter-115
+  // improved the aggregate 55.64 -> 56.8 but view 6 dipped 8.69 -> 7.54, and
+  // the v2 absolute bar (uniform 8.0) rejected it — the ONLY genuine
+  // improvement in 239 iterations. Real recorded vectors, only view 6 varied.
+  const BEST_PER_VIEW = [4.02, 8.69, 3.42, null, 3.26, 8.69, 3.43, 8.69, 4.31];
+  const UNIFORM_BAR = Array(9).fill(8.0);
+
+  it('ACCEPTS the real iter-115 shape: aggregate up, one view dips within the cap (v2 bar rejected it)', () => {
+    const gatePerView = [...BEST_PER_VIEW];
+    gatePerView[5] = 7.54; // 8.69 - 1.15: inside maxViewDrop 2.0
+    const v2 = decideEditAcceptance({
+      gateTotal: 56.8, gatePerView, bestTotal: 55.64, bestPerView: BEST_PER_VIEW,
+      clearedViewsBar: UNIFORM_BAR, epsilonTotal: 0,
+    });
+    expect(v2.decision).toBe('reject'); // documents the v2 failure this replaces
+    const v3 = decideEditAcceptance({
+      gateTotal: 56.8, gatePerView, bestTotal: 55.64, bestPerView: BEST_PER_VIEW,
+      clearedViewsBar: UNIFORM_BAR, epsilonTotal: 0, maxViewDrop: 2.0,
+    });
+    expect(v3.decision).toBe('accept');
+    expect(v3.collapsedViews).toEqual([]);
+  });
+
+  it('REJECTS a single-view COLLAPSE beyond the cap even when the aggregate improves', () => {
+    const gatePerView = [...BEST_PER_VIEW];
+    gatePerView[4] = 0; // 3.26 -> 0 (a hidden view surfaced as 0 by scoring v3)
+    gatePerView[0] = 9.5; // big gain elsewhere pushes the aggregate up
+    const d = decideEditAcceptance({
+      gateTotal: 58, gatePerView, bestTotal: 55.64, bestPerView: BEST_PER_VIEW,
+      clearedViewsBar: UNIFORM_BAR, epsilonTotal: 0, maxViewDrop: 2.0,
+    });
+    expect(d.decision).toBe('reject');
+    expect(d.collapsedViews).toEqual([4]);
+    expect(d.reason).toContain('maxViewDrop');
+  });
+
+  it('ignores the absolute bar entirely in relative mode (a sub-bar wobble inside the cap passes)', () => {
+    const gatePerView = [...BEST_PER_VIEW];
+    gatePerView[1] = 6.8; // 8.69 -> 6.8 = 1.89 drop: below the 8.0 bar but inside the cap
+    const d = decideEditAcceptance({
+      gateTotal: 56, gatePerView, bestTotal: 55.64, bestPerView: BEST_PER_VIEW,
+      clearedViewsBar: UNIFORM_BAR, epsilonTotal: 0, maxViewDrop: 2.0,
+    });
+    expect(d.decision).toBe('accept');
+  });
+
+  it('does not treat an unscored side as a drop (fail-open: null is a judge miss, not a regression)', () => {
+    const gatePerView = [...BEST_PER_VIEW];
+    gatePerView[1] = null; // judge miss on a previously 8.69 view
+    const d = decideEditAcceptance({
+      gateTotal: 56, gatePerView, bestTotal: 55.64, bestPerView: BEST_PER_VIEW,
+      clearedViewsBar: UNIFORM_BAR, epsilonTotal: 0, maxViewDrop: 2.0,
+    });
+    expect(d.decision).toBe('accept');
+    expect(d.collapsedViews).toEqual([]);
+  });
+
+  it('escalationArmed keeps the aggregate-only contract in relative mode too', () => {
+    const gatePerView = [...BEST_PER_VIEW];
+    gatePerView[4] = 0; // would collapse under the cap
+    const d = decideEditAcceptance({
+      gateTotal: 56.8, gatePerView, bestTotal: 55.64, bestPerView: BEST_PER_VIEW,
+      clearedViewsBar: UNIFORM_BAR, epsilonTotal: 0, maxViewDrop: 2.0, escalationArmed: true,
+    });
+    expect(d.decision).toBe('accept');
+  });
+
+  it('total regression still rejects in relative mode (the aggregate contract is unconditional)', () => {
+    const d = decideEditAcceptance({
+      gateTotal: 50, gatePerView: BEST_PER_VIEW, bestTotal: 55.64, bestPerView: BEST_PER_VIEW,
+      clearedViewsBar: UNIFORM_BAR, epsilonTotal: 0, maxViewDrop: 2.0,
+    });
+    expect(d.decision).toBe('reject');
+    expect(d.reason).toContain('total regression');
+  });
+
+  it('without maxViewDrop the v2 absolute-bar behavior is untouched (pairwise path stays byte-identical)', () => {
+    const gatePerView = [...BEST_PER_VIEW];
+    gatePerView[5] = 7.54;
+    const d = decideEditAcceptance({
+      gateTotal: 56.8, gatePerView, bestTotal: 55.64, bestPerView: BEST_PER_VIEW,
+      clearedViewsBar: UNIFORM_BAR, epsilonTotal: 0,
+    });
+    expect(d.decision).toBe('reject');
+    expect(d.reason).toContain('cleared-view collapse');
+  });
+});
+
+describe('assertGateStateEra (cross-era resume guard, adversarial-review fix 2026-07-16)', () => {
+  it('passes a null/absent state through (a fresh track re-baselines)', () => {
+    expect(assertGateStateEra(null, { expectedVersion: 3 })).toBeNull();
+    expect(assertGateStateEra(undefined, { expectedVersion: 3 })).toBeNull();
+  });
+
+  it('returns a state stamped with the expected scoring_version', () => {
+    const state = { best_total: 50, scoring_version: 3 };
+    expect(assertGateStateEra(state, { expectedVersion: 3 })).toBe(state);
+  });
+
+  it('THROWS on a pre-versioned legacy (v2-era) state — the exact resume that would false-reject every iteration', () => {
+    const legacy = { best_total: 55.64, best_per_view: [4.02, 8.69, 3.42, null, 3.26, 8.69, 3.43, 8.69, 4.31], best_iter: 1 };
+    expect(() => assertGateStateEra(legacy, { expectedVersion: 3, stateLabel: 'results/track/gate-state.json' })).toThrow(
+      /NOT numerically comparable/,
+    );
+    expect(() => assertGateStateEra(legacy, { expectedVersion: 3 })).toThrow(/fresh --actor/);
+  });
+
+  it('THROWS on a version mismatch in either direction', () => {
+    expect(() => assertGateStateEra({ best_total: 49, scoring_version: 3 }, { expectedVersion: 4 })).toThrow();
+    expect(() => assertGateStateEra({ best_total: 49, scoring_version: 4 }, { expectedVersion: 3 })).toThrow();
   });
 });

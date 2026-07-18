@@ -218,7 +218,9 @@ strong { color: var(--coral); font-weight: 700; }
 .compare-grid {
   flex: 1; min-height: 0; display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: 1.05fr 1.05fr 1fr; gap: 16px;
+  /* Row 3 (Boeing panel) carries two labelled judge-protocol eras (v2 bars +
+     the v4 parity strip), so it gets the larger share of the grid height. */
+  grid-template-rows: 0.9fr 0.9fr 1.5fr; gap: 14px;
 }
 .chart {
   background: rgba(255, 255, 255, 0.055); border: 1px solid rgba(255, 255, 255, 0.12);
@@ -251,6 +253,21 @@ strong { color: var(--coral); font-weight: 700; }
 .boeing-chart .mg-metric { font-size: 11px; }
 .boeing-chart .mg-leg { font-size: 12px; }
 .boeing-chart .mg-axis { font-size: 9px; }
+/* The v2-era bars must stay visible even when the v4 strip competes for the
+   row's flex height — guarantee the SVG a minimum drawing height. */
+.boeing-chart svg { min-height: 50px; }
+.boeing-chart .mem-note { margin-top: 5px; line-height: 1.35; }
+/* v4-era finals strip inside the Boeing panel — a separate judge protocol
+   (frozen gemma4 K=5 panel, reference-parity index), so it renders as its own
+   labelled block below a dashed divider, never as bars on the v2-era /100
+   axes above. Each parity number keeps its provenance in the same sentence. */
+.boeing-chart .bv4 { margin-top: 8px; border-top: 1px dashed rgba(255, 255, 255, 0.18); padding-top: 7px; }
+.boeing-chart .bv4-head { font-family: var(--body); font-size: clamp(9px, 0.85vw, 12px); line-height: 1.3; color: var(--ink-light-soft); opacity: 0.8; margin-bottom: 6px; }
+.boeing-chart .bv4-row { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.boeing-chart .bv4-cell { flex: 1 1 260px; display: flex; align-items: baseline; gap: 8px; font-family: var(--body); font-size: clamp(9px, 0.85vw, 12px); line-height: 1.3; color: var(--ink-light-soft); }
+.boeing-chart .bv4-num { font-family: var(--display); font-weight: 700; font-size: clamp(17px, 1.6vw, 24px); line-height: 1; color: var(--ink-light); }
+.boeing-chart .bv4-num--gold { color: var(--gold); }
+.boeing-chart .bv4-thesis { margin-top: 6px; font-family: var(--body); font-size: clamp(10px, 0.95vw, 13px); line-height: 1.3; color: var(--gold); }
 
 /* Stat tile — a single "not a leaderboard bar" callout (e.g. a scripted
    replay demo) so it's never visually compared against the self-play bars

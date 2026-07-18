@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 39,
+  "run_id": "terransoul-gemma-taught-v5-iter-39-mrp66e28",
+  "plane_sha256": "1a99983506228f2205556f15c49a2442fd905c91033fe9d633c8d9e9e4402828",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 54.87,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.92
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.31
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.82
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.69
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.63
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.86
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.27
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 8.01
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.87
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.22,
+    "perCriterion": {
+      "engines_four_underwing": 4.22,
+      "upper_deck_hump": 4.89,
+      "fuselage_proportions": 5.16,
+      "wing_geometry": 5.8,
+      "empennage": 6.75,
+      "landing_gear": 7.7,
+      "window_door_lines": 4.31,
+      "livery_coherence": 5.76,
+      "silhouette_747": 6.16,
+      "craftsmanship": 4.98
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the engine pod geometry to achieve four total engines; position them along the leading edge of each wing, moving them outward from the root by 25% of the wingspan to ensure proper spacing.",
+    "discrepancies": [
+      {
+        "feature": "Engine count",
+        "observed": "Two large engine pods under the wings",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate"
+      },
+      {
+        "feature": "Wing sweep",
+        "observed": "Wings are nearly perpendicular to the fuselage",
+        "reference": "Wings have a significant rearward sweep angle",
+        "direction_of_fix": "rotate wings backward"
+      },
+      {
+        "feature": "Engine placement",
+        "observed": "Engines are positioned very close to the wing root",
+        "reference": "Engines are spaced out along the leading edge of the wing",
+        "direction_of_fix": "move engines outward"
+      },
+      {
+        "feature": "Wing shape",
+        "observed": "Wings appear as flat, thin planes with no taper or twist",
+        "reference": "Wings have a distinct tapered and swept planform",
+        "direction_of_fix": "taper wing geometry"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 57.44,
+  "created_at": "2026-07-17T16:49:08.597Z",
+  "actor_status": "edited"
+}

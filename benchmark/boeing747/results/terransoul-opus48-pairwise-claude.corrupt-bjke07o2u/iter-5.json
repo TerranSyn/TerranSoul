@@ -1,0 +1,91 @@
+{
+  "actor": "terransoul-opus48-pairwise-claude",
+  "judge_track": "claude-opus-4-8-pairwise-vision",
+  "iter": 5,
+  "run_id": "terransoul-opus48-pairwise-iter-5-mrikghzo",
+  "plane_sha256": "9fe5823922e4806758d4efeff32c7c7f78f28b608eb1953f7f518451c4185c89",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 48.62,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 2.41,
+      "notes": "engines_four_underwing: reference shows Two distinct cylindrical nacelles with visible circular inlet faces are slung below and forward of the wing on short pylons, plus a second pair partially occluded behind them, giving a plausible inboard/outboard staggered pair. | upper_deck_hump: reference shows A clearly raised, smoothly faired bubble sits above the forward fuselage just behind the cockpit,"
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 3.63,
+      "notes": "engines_four_underwing: reference shows Two rounded cylindrical nacelles with visible circular inlet faces hang below and forward of the wing, offset from the wing surface so a pylon gap is readable | upper_deck_hump: reference shows A distinct raised upper-deck lobe sits above the forward fuselage with a clear start and a rear blend-down, plus small windows on that lobe | empennage: reference sho"
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 2.56,
+      "notes": "engines_four_underwing: reference shows Four nacelles of near-equal size hung on clearly visible short pylons below the wing, with light metallic cowls, dark open inlets and bright spinner/hub centers, spaced in plausible inboard/outboard pairs | upper_deck_hump: reference shows Head-on the crown shows a narrower raised upper lobe with a small cockpit window band sitting on top of the wider lower "
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.16,
+      "notes": "livery_coherence: reference shows Grey body and wings with a dark navy vertical fin providing an accent, echoing the blue tail of the real photo"
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.5,
+      "notes": "empennage: reference shows Larger swept tailplane pair plus a clearly visible dark-blue fin chord line running down the centerline behind the tail cone | livery_coherence: reference shows White fuselage, grey wings and nacelles, plus a navy-blue accent stripe on the fin"
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.49,
+      "notes": "empennage: reference shows Tall swept fin (dark blue) plus swept tailplanes, similar proportions but slightly slab-like fin | landing_gear: reference shows Nose-gear strut visible plus a small main-gear/wheel element under the wing-body area | livery_coherence: reference shows White fuselage, grey wings/nacelles, blue cheatline stripe and dark blue tail — an airliner accent scheme"
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 6.39,
+      "notes": "window_door_lines: reference shows Main-deck window row along a blue cheatline plus an upper-deck window row on the hump and cockpit windows | livery_coherence: reference shows White upper fuselage with a blue cheatline and a blue swept tail fin, grey wings/engines — matching the photos' accent tail plus stripe"
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.74,
+      "notes": "engines_four_underwing: reference shows Four pale cylindrical nacelles with darker open inlet faces, each hung below the wing on a short pylon with inboard/outboard spacing | upper_deck_hump: reference shows Clearly raised upper-deck bulge from the cockpit back through roughly the front third, faired down into the crown, with its own window row | window_door_lines: reference shows Denser evenly sp"
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.88,
+      "notes": "engines_four_underwing: reference shows Two nacelles on pylons under the near wing with dark inlets showing a spinner/fan hub, plus a clearly pylon-mounted nacelle under the far wing ahead of its leading edge. | landing_gear: reference shows Two-wheel nose strut plus multiple multi-wheel main bogies clustered under the wing/body junction. | window_door_lines: reference shows Even main-deck window "
+    }
+  ],
+  "weakest_feature": {
+    "id": "livery_coherence",
+    "mean": 2.22,
+    "perCriterion": {
+      "engines_four_underwing": 3.75,
+      "upper_deck_hump": 3.33,
+      "fuselage_proportions": 7.34,
+      "wing_geometry": 7.5,
+      "empennage": 4.38,
+      "landing_gear": 3.59,
+      "window_door_lines": 4,
+      "livery_coherence": 2.22,
+      "silhouette_747": 3.33,
+      "craftsmanship": 6.88
+    }
+  },
+  "critic": {
+    "weakest_feature": "livery_coherence",
+    "fix_suggestion": "Improve 'Color / livery coherence' (mean 2.22/10). Target the 8 anchor: clean airliner scheme: light fuselage, grey/metal wings and engines, accent tail or stripe; then the 10 anchor: coherent believable livery: white/light upper fuselage, grey underside/wings, consistent nacelles, tasteful accent color on tail/stripe.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 6.559003,
+  "regressed": false,
+  "best_total_after": 48.62,
+  "created_at": "2026-07-13T02:04:45.866Z",
+  "actor_status": "edited"
+}

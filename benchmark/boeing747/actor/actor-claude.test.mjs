@@ -410,6 +410,99 @@ describe('runActorEdit (terransoul-cli --agent-task wiring)', () => {
 
     expect(capturedOpts.env).toBe(process.env);
   });
+
+  // --- ASSEMBLY COHERENCE SELF-CHECK (item 1): shared prompt, always present,
+  // domain-generic. This is the core steering fix for the "exploded scatter"
+  // failure mode the actor never noticed while reasoning about abstract critic
+  // text. ---
+  it('always injects the ASSEMBLY COHERENCE SELF-CHECK + craft guidance into the shared prompt', async () => {
+    let capturedPrompt;
+    const execImpl = vi.fn(async (binary, args) => {
+      capturedPrompt = args[1];
+      return { stdout: okOutcome(), stderr: '' };
+    });
+
+    await runActorEdit({ candidatePath, shotsDir, gemmaResult, claudeResult, cliBinary: 'fake', execImpl });
+
+    expect(capturedPrompt).toContain('ASSEMBLY COHERENCE SELF-CHECK');
+    expect(capturedPrompt).toContain('reads as ONE coherent, connected object');
+    expect(capturedPrompt).toContain('nothing floating in empty space, detached, sunk');
+    expect(capturedPrompt).toContain("takes PRIORITY over the critic's named weakest feature");
+    // craft guidance
+    expect(capturedPrompt).toContain('parameterized, named-part structure');
+    expect(capturedPrompt).toContain('COORDINATE PLAN');
+    expect(capturedPrompt).toContain('ONE minimal, targeted change per iteration');
+  });
+
+  it('the coherence + craft section is domain-generic (no aircraft vocabulary in the shared prompt block)', async () => {
+    let capturedPrompt;
+    const execImpl = vi.fn(async (binary, args) => {
+      capturedPrompt = args[1];
+      return { stdout: okOutcome(), stderr: '' };
+    });
+
+    await runActorEdit({ candidatePath, shotsDir, gemmaResult, claudeResult, cliBinary: 'fake', execImpl });
+
+    const start = capturedPrompt.indexOf('ASSEMBLY COHERENCE SELF-CHECK');
+    const end = capturedPrompt.indexOf('YOUR TASK:');
+    expect(start).toBeGreaterThanOrEqual(0);
+    expect(end).toBeGreaterThan(start);
+    const section = capturedPrompt.slice(start, end).toLowerCase();
+    for (const word of ['boeing', 'wing', 'fuselage', 'engine', 'aircraft', 'airplane', 'nacelle', 'empennage', 'hump']) {
+      expect(section).not.toMatch(new RegExp(`\\b${word}\\b`));
+    }
+    expect(section).not.toContain('747');
+  });
+
+  // --- ESCALATION (item 2): track-agnostic. Passing plateauEscalation on the
+  // DEFAULT (frozen) contract must flip task-step 3 to a coherent whole-object
+  // rebuild WITHOUT naming the open-only "computed mesh" medium — proving the
+  // section is no longer open-track-only (the core-mechanics agent arms this
+  // param for the gemma track after K consecutive rejections). ---
+  it('escalation is track-agnostic: on the FROZEN contract, plateauEscalation switches step-3 to a coherent whole-object rebuild', async () => {
+    let capturedPrompt;
+    const execImpl = vi.fn(async (binary, args) => {
+      capturedPrompt = args[1];
+      return { stdout: okOutcome(), stderr: '' };
+    });
+
+    await runActorEdit({
+      candidatePath,
+      shotsDir,
+      gemmaResult,
+      claudeResult,
+      cliBinary: 'fake',
+      execImpl,
+      plateauEscalation: 'PLATEAU ESCALATION (change of strategy required):\nrebuild the whole object coherently',
+    });
+
+    expect(capturedPrompt).toContain('PLATEAU ESCALATION (change of strategy required)');
+    // SINGLE-SHOT REWRITE (2026-07-17): the escalated step-3 directs one
+    // bounded change — rebuild-class language is measured-harmful for this
+    // actor and must never return.
+    expect(capturedPrompt).toContain('exactly ONE bounded, targeted change');
+    expect(capturedPrompt).not.toContain('COHERENT WHOLE-OBJECT REBUILD');
+    // Track-agnostic: the open-contract-only "computed mesh" medium must NOT be named.
+    expect(capturedPrompt).not.toContain('COMPUTED MESH');
+    // The timid non-escalation form is gone while escalating.
+    expect(capturedPrompt).not.toContain('WITHOUT regressing any criterion that already scores well (>=7)');
+    // Frozen contract text is still present — this is the frozen track, not the open one.
+    expect(capturedPrompt).toContain('Allowed geometries ONLY');
+  });
+
+  it('CONTROL: without plateauEscalation, the FROZEN-track step-3 stays the conservative one-edit form', async () => {
+    let capturedPrompt;
+    const execImpl = vi.fn(async (binary, args) => {
+      capturedPrompt = args[1];
+      return { stdout: okOutcome(), stderr: '' };
+    });
+
+    await runActorEdit({ candidatePath, shotsDir, gemmaResult, claudeResult, cliBinary: 'fake', execImpl });
+
+    expect(capturedPrompt).not.toContain('PLATEAU ESCALATION');
+    expect(capturedPrompt).not.toContain('COHERENT WHOLE-OBJECT REBUILD');
+    expect(capturedPrompt).toContain('WITHOUT regressing any criterion that already scores well (>=7)');
+  });
 });
 
 describe('resolveTerranSoulCliBinary', () => {

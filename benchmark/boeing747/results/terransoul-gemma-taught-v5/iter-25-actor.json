@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 229324,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 292,
+    "tool_calls": {
+      "read_file": 6,
+      "edit_file": 2
+    },
+    "total_tool_calls": 8,
+    "text_chunks": 276,
+    "tool_failures": 2,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 6
+      },
+      {
+        "name": "edit_file",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "e3c01da022de711cf564cba90a87dd2a502bc7438f0c009158aacb1a0cd75b86",
+  "plane_sha256_after": "beef52076fcc6bf008e67f62e050820b51bda6a539a9c74ffc64cc7a7bca03ff",
+  "changed": true,
+  "claude_result_text": "The `window_door_lines` feature has been improved by:\n1.  Refining the cockpit windshields to have more precise geometry and better alignment with the fuselage nose (shifting them slightly back to x=24-27 and increasing their outward offset).\n2.  Correcting the door positions from a clustered layout [7, -20] to a more realistic and \"evenly spaced\" triple-door configuration on each side ([13, -5, -22]). This significantly improves the realism of the aircraft's fuselage profile.\n3.  Ensuring the main deck window line is consistent across its span while keeping existing proportions for standard 747 multi-window layouts.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 229324,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 292,
+        "tool_calls": {
+          "read_file": 6,
+          "edit_file": 2
+        },
+        "total_tool_calls": 8,
+        "text_chunks": 276,
+        "tool_failures": 2,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 6
+          },
+          {
+            "name": "edit_file",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

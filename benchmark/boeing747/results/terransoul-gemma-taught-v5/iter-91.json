@@ -1,0 +1,103 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 91,
+  "run_id": "terransoul-gemma-taught-v5-iter-91-mrpmq10t",
+  "plane_sha256": "726cd19dc11fdda5df85ff8ffe9a53ef581152a21f35716f695ea85f17eded30",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 57.58,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.38
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.28
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.02
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.15
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5.53
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.81
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.09
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.37
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.19
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.49,
+    "perCriterion": {
+      "engines_four_underwing": 4.49,
+      "upper_deck_hump": 5.14,
+      "fuselage_proportions": 5.51,
+      "wing_geometry": 6.07,
+      "empennage": 6.54,
+      "landing_gear": 7.43,
+      "window_door_lines": 4.89,
+      "livery_coherence": 6.38,
+      "silhouette_747": 6.36,
+      "craftsmanship": 5.33
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the existing engine nacelle geometry to create four total engines; distribute them along the leading edge of the swept wings with a 50% increase in lateral spacing from the center-line to match the reference layout.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two large engine nacelles visible under the wing.",
+        "reference": "Four engines total (two per wing).",
+        "direction_of_fix": "duplicate"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines are clustered near the center of the wing.",
+        "reference": "Engines are spaced out along the leading edge of the swept wings.",
+        "direction_of_fix": "move outward"
+      },
+      {
+        "feature": "Nacelle Geometry",
+        "observed": "The nacelles appear as simple, blocky cylinders.",
+        "reference": "Streamlined, tapered aerodynamic cowlings.",
+        "direction_of_fix": "scale/taper"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-18T00:32:25.002Z",
+  "actor_status": "edited"
+}

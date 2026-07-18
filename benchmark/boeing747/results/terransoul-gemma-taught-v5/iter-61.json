@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 61,
+  "run_id": "terransoul-gemma-taught-v5-iter-61-mrpcvrm5",
+  "plane_sha256": "eff91ad5ce011a37ba3bf3060dd614d369757dffffffb0dd5a18c0d69ed4fdf2",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 55.52,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.41
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.2
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.44
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.25
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.15
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.94
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.32
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.15
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.11
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.2,
+    "perCriterion": {
+      "engines_four_underwing": 4.2,
+      "upper_deck_hump": 4.6,
+      "fuselage_proportions": 5.07,
+      "wing_geometry": 5.73,
+      "empennage": 6.75,
+      "landing_gear": 6.94,
+      "window_door_lines": 5.14,
+      "livery_coherence": 6.27,
+      "silhouette_747": 6,
+      "craftsmanship": 5.6
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the engine geometry to achieve four total units; distribute them along the leading edge of each wing by offsetting the X-position (outward) and Z-position (forward) from the wing root. Simultaneously, replace the boxy nacelle primitives with cylinders, adjusting the radius and length to create a streamlined aerodynamic profile.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible under the wing",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines are clustered near the wing root",
+        "reference": "Engines distributed along the leading edge of the wing",
+        "direction_of_fix": "move outward and forward"
+      },
+      {
+        "feature": "Wing Sweep",
+        "observed": "Wings appear relatively straight/low sweep",
+        "reference": "Highly swept-back wings",
+        "direction_of_fix": "rotate wing geometry backward"
+      },
+      {
+        "feature": "Engine Nacelle Shape",
+        "observed": "Boxy, rectangular nacelles",
+        "reference": "Cylindrical, aerodynamic nacelles",
+        "direction_of_fix": "change cylinder radius and length"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 60.9,
+  "created_at": "2026-07-17T19:57:04.345Z",
+  "actor_status": "no_change"
+}

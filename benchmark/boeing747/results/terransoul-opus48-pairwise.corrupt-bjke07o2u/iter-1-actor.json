@@ -1,0 +1,111 @@
+{
+  "model": "claude-opus-4-8",
+  "effort": "max",
+  "ms": 1172689,
+  "cost_usd": 4.69918,
+  "timeout_ms": 1200000,
+  "observability": {
+    "event_count": 75,
+    "tool_calls": {
+      "Read": 9,
+      "Edit": 3,
+      "Grep": 2,
+      "Bash": 7
+    },
+    "total_tool_calls": 21,
+    "text_chunks": 33,
+    "tool_failures": 1,
+    "tool_calls_reported": [
+      {
+        "name": "Read",
+        "count": 9
+      },
+      {
+        "name": "Edit",
+        "count": 3
+      },
+      {
+        "name": "Grep",
+        "count": 2
+      },
+      {
+        "name": "Bash",
+        "count": 7
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "ba801ab7b5e5c3c21eed4fd817230871f4c9c87f973f1dd58a54134891a7c61c",
+  "plane_sha256_after": "cf31e8dfdcff8a92c104bea2466262efaf245e5b3a5056831a73e6cc8bde9c01",
+  "changed": true,
+  "claude_result_text": "Done. One targeted edit, verified by execution and by the real contract gate.\n\n**What I found when I went to edit.** I inspected view-9, view-1, and view-6 against `nose-hump.png`, `side.png`, and `front-quarter.png`, and diagnosed the hump exactly as the escalation predicted: it was a stand-alone `CapsuleGeometry` parked on a plain cylinder, with a sphere nose 2% wider than the tube. That stack carries three artifacts a 747 never has — capsule end-caps, a lobe/tube seam, and the proud equator ring you can literally see as a collar circling the fuselage in view-6. No dimension nudge deletes a cap or a seam.\n\n**But the file changed under me.** My first Edit was rejected: a concurrent writer had rewritten `plane.js` between my Read and my Edit. It already contained an iter-13 computed-mesh rebuild — a lofted `BufferGeometry` whose cross-section is a smooth-max union of the main lobe with an upper lobe whose prominence is a smoothstep in x. That rebuild had never been rendered or judged. **You have two writers racing on this one candidate file** — worth knowing, because the shots I was given (iter-1) are from the *old* capsule build, not from what's on disk now.\n\nRather than clobber it, I executed it and measured it. Two results:\n\n**The hump is genuinely good.** Measured off the built mesh (not the comments): crown holds 4.55 from x=20 to x=30, then fairs 4.51 → 4.14 → 3.58 → 3.10 → 3.00, fully merged into the crown by x≈11. With the nose tip at x=35, the deck ends 36% aft of the tip — \"around one third.\" Closed body, zero NaN.\n\n**All the glazing was broken.** Every one of the 74 panes, doors, and upper-deck windows sat at a mean **34.2°** tilt (worst 46.8°) off the true skin normal — a sign error in `addSkinPlate`. The outward normal is `N = (tz, −ty)/len`, and `rotation.x = a` sends local +Z to `(0, −sin a, cos a)`, so `a` must be `atan2(−tz, −ty)`; the code passed `+tz`. The error vanishes at the crown and equator but peaks in between — which is exactly where both g",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 600243,
+      "actor_error": "terransoul-cli agent-task timed out after 600000ms (7 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 25,
+        "tool_calls": {
+          "Read": 7
+        },
+        "total_tool_calls": 7,
+        "text_chunks": 11,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "edited",
+      "ms": 1172689,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 75,
+        "tool_calls": {
+          "Read": 9,
+          "Edit": 3,
+          "Grep": 2,
+          "Bash": 7
+        },
+        "total_tool_calls": 21,
+        "text_chunks": 33,
+        "tool_failures": 1,
+        "tool_calls_reported": [
+          {
+            "name": "Read",
+            "count": 9
+          },
+          {
+            "name": "Edit",
+            "count": 3
+          },
+          {
+            "name": "Grep",
+            "count": 2
+          },
+          {
+            "name": "Bash",
+            "count": 7
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

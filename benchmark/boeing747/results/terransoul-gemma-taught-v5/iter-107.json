@@ -1,0 +1,103 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 107,
+  "run_id": "terransoul-gemma-taught-v5-iter-107-mrprlrhg",
+  "plane_sha256": "86622469478e5e64d0d614bb54425bc9fe5ffaeb8a25518d8e99560b3ec491b4",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 60.91,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.25
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.96
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.63
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.38
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.91
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.62
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.62
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 8.36
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.09
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.36,
+    "perCriterion": {
+      "engines_four_underwing": 4.36,
+      "upper_deck_hump": 5.74,
+      "fuselage_proportions": 5.71,
+      "wing_geometry": 6.53,
+      "empennage": 6.82,
+      "landing_gear": 7.78,
+      "window_door_lines": 5.46,
+      "livery_coherence": 6.38,
+      "silhouette_747": 6.87,
+      "craftsmanship": 5.98
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the engine geometry on both wings to achieve four total engines; then, for each pair, translate the outboard engine along the wing's longitudinal axis by a factor of 1.5x its current distance from the fuselage to match the reference spacing.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible under the wing",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines are positioned very close to the fuselage",
+        "reference": "Engines are spaced further outboard along the wing span",
+        "direction_of_fix": "move outward along X-axis"
+      },
+      {
+        "feature": "Engine Nacelle Shape",
+        "observed": "Nacelles are simple rectangular blocks",
+        "reference": "Nacelles are cylindrical with tapered inlets and exhausts",
+        "direction_of_fix": "replace boxes with cylinders"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-18T02:49:19.824Z",
+  "actor_status": "edited"
+}

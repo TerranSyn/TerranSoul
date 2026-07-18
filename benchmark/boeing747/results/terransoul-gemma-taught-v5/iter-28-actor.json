@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 157054,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 287,
+    "tool_calls": {
+      "read_file": 2,
+      "edit_file": 1
+    },
+    "total_tool_calls": 3,
+    "text_chunks": 281,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 2
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "e3c01da022de711cf564cba90a87dd2a502bc7438f0c009158aacb1a0cd75b86",
+  "plane_sha256_after": "f5d810a1163c519a35cc6a2fd97f523b203a36d819f920a0d69f4e7f71561df9",
+  "changed": true,
+  "claude_result_text": "The cockpit windows in the Boeing 747 model were excessively large and blocky, which contributed to a poor representation of the windshield shape. I have reduced their width from 4.0 to 2.0 units in the `cw` helper function. This change makes them more appropriately scaled for the nose section while maintaining their position and rotation, leading to a more realistic \"cockpit windshield shape\" as requested by the design guide.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 157054,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 287,
+        "tool_calls": {
+          "read_file": 2,
+          "edit_file": 1
+        },
+        "total_tool_calls": 3,
+        "text_chunks": 281,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 2
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

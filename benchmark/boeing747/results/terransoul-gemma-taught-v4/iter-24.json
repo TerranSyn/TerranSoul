@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 24,
+  "run_id": "terransoul-gemma-taught-v4-iter-24-mrnob43a",
+  "plane_sha256": "d668b3c5d5cac448793cf6dabbc6192bd8c9bda632f4c859543b4d19c5f7c8e4",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 39.52,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 3.9
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.18
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 3.73
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 4.89
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.37
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.93
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.08
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.06
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 3.43
+    }
+  ],
+  "weakest_feature": {
+    "id": "craftsmanship",
+    "mean": 2.56,
+    "perCriterion": {
+      "engines_four_underwing": 4.16,
+      "upper_deck_hump": 3.91,
+      "fuselage_proportions": 4.04,
+      "wing_geometry": 3.71,
+      "empennage": 4.8,
+      "landing_gear": 5.51,
+      "window_door_lines": 3.89,
+      "livery_coherence": 3.38,
+      "silhouette_747": 3.91,
+      "craftsmanship": 2.56
+    }
+  },
+  "critic": {
+    "weakest_feature": "craftsmanship",
+    "fix_suggestion": "To resolve the floating landing gear, create three cylinder primitives to serve as struts for each wheel assembly. Position these cylinders such that they intersect both the underside of the fuselage and the center of the wheel geometry. Set the strut length to 0.8x the wheel diameter and rotate them at a -15 degree angle relative to the horizontal plane. Parent the wheels to the bottom face of these new cylinder struts, then parent the entire assembly to the main fuselage body to ensure a continuous geometric connection.",
+    "discrepancies": [
+      {
+        "feature": "Landing Gear Attachment",
+        "observed": "The nose and main landing gear wheels are floating independently below the fuselage.",
+        "reference": "Wheels are attached to struts which are connected to the fuselage and wings.",
+        "direction_of_fix": "Attach wheel geometries to strut cylinders, then attach struts to fuselage/wing."
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "The engines appear to be disconnected from the wing structure with visible gaps.",
+        "reference": "Engines are mounted directly onto pylons attached to the underside of the wings.",
+        "direction_of_fix": "Move engine geometries forward and upward to intersect with wing pylon positions."
+      },
+      {
+        "feature": "Wing Root Integration",
+        "observed": "The wing appears as a separate block intersecting the fuselage without smooth transition.",
+        "reference": "The wing blends smoothly into the lower fuselage structure.",
+        "direction_of_fix": "Adjust wing base geometry to overlap and merge with the fuselage cylinder."
+      },
+      {
+        "feature": "Tail Fin Connection",
+        "observed": "The vertical stabilizer is a floating rectangle behind the rear fuselage.",
+        "reference": "The tail fin is integrated into the rear fuselage structure.",
+        "direction_of_fix": "Move vertical stabilizer forward/downward to intersect with the rear fuselage."
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 41.49,
+  "created_at": "2026-07-16T15:40:47.572Z",
+  "actor_status": "no_change"
+}

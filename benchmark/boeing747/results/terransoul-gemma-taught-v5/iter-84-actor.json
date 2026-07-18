@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 132382,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 319,
+    "tool_calls": {
+      "read_file": 2,
+      "edit_file": 1
+    },
+    "total_tool_calls": 3,
+    "text_chunks": 313,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 2
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "plane_sha256_after": "40c00c6c0072e987453d8a12827cc18322fa63ea2dabf7f06adb321606ddb298",
+  "changed": true,
+  "claude_result_text": "The engines for the Boeing-747 have been improved by adjusting their spacing (`xOffset` and `zOffset`) to provide more plausible inboard/outboard separation under the wings, better adhering to the design reference requirements for large aircraft proportions. This change addresses feedback regarding misaligned or poorly spaced engine nacelles while maintaining the requested pylon mounting structure.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 132382,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 319,
+        "tool_calls": {
+          "read_file": 2,
+          "edit_file": 1
+        },
+        "total_tool_calls": 3,
+        "text_chunks": 313,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 2
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

@@ -105,10 +105,46 @@ export function formatDesignReferenceSection(answer, { header, maxChars = 1200 }
  * X question directly ("what is the wing sweep angle") correctly retrieved
  * the cited figures.
  */
-export async function buildDesignReferenceSection({ weakestId, subject, cliBinary, cliDataDir }) {
-  const topic = String(weakestId || 'overall design').replace(/_/g, ' ');
-  const scope = subject ? `${subject}'s ${topic}` : topic;
-  const query = `What are the specific geometry, dimensions, proportions, or design facts about ${scope}? Give concrete numbers and details, not generalities.`;
+export async function buildDesignReferenceSection({
+  weakestId,
+  subject,
+  criterionLabel,
+  criterionText,
+  cliBinary,
+  cliDataDir,
+}) {
+  const query = buildDesignReferenceQuery({ weakestId, subject, criterionLabel, criterionText });
   const answer = await askDesignReference({ query, cliBinary, cliDataDir });
   return formatDesignReferenceSection(answer);
+}
+
+/**
+ * PURE + exported (so it is directly vitest-covered without spawning the CLI):
+ * derive the per-iteration retrieval query. When the caller supplies the
+ * weakest criterion's own label (`criterionLabel`) and/or description text
+ * (`criterionText`) -- its rubric name and anchor prose -- the query is built
+ * FROM that text, so the semantic search matches the criterion's actual
+ * subject. This replaces a fixed geometry-biased template ("geometry,
+ * dimensions, proportions") that retrieved poorly for TECHNIQUE-shaped criteria
+ * (a craftsmanship-class feature is about assembly/joins/artifacts, not
+ * dimensions), which was a documented live retrieval miss. The phrasing stays a
+ * DIRECT concrete question (never a meta-question ABOUT the reference material,
+ * per this module's header note) and stays GENERIC: `subject`/`criterionLabel`/
+ * `criterionText` are all caller-supplied -- no criterion name is hardcoded
+ * here. With neither label nor text supplied, it falls back to the prior
+ * id-derived template (byte-identical query for that legacy call shape).
+ */
+export function buildDesignReferenceQuery({ weakestId, subject, criterionLabel, criterionText } = {}) {
+  const label = String(criterionLabel || '').trim();
+  const detail = String(criterionText || '').trim();
+  if (label || detail) {
+    const focus = [subject, label].map((s) => String(s || '').trim()).filter(Boolean).join(' ') || 'this feature';
+    const parts = [`What are the key dimensions, proportions, and construction techniques for ${focus}?`];
+    if (detail) parts.push(detail);
+    parts.push('Give concrete numbers and specifics, not generalities.');
+    return parts.join(' ');
+  }
+  const topic = String(weakestId || 'overall design').replace(/_/g, ' ');
+  const scope = subject ? `${subject}'s ${topic}` : topic;
+  return `What are the specific geometry, dimensions, proportions, or design facts about ${scope}? Give concrete numbers and details, not generalities.`;
 }

@@ -1,10 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  extractJsonArray,
   fetchPriorAttempts,
   fetchStrategyEvents,
   formatPriorAttemptsSection,
   ingestAttemptLesson,
   ingestStrategyEvent,
+  tagsIncludeToken,
 } from './self-learning.mjs';
 
 // These tests inject a fake `callTool` (mirrors lib/judge-parse.mjs's
@@ -60,6 +62,82 @@ describe('fetchPriorAttempts', () => {
     // NOTE: fetchPriorAttempts intentionally does not itself catch a
     // rejecting callTool — callers (loop-runner-terransoul.mjs) wrap the
     // call in their own try/catch, matching the real production call site.
+  });
+});
+
+describe('tagsIncludeToken (whole-token, prefix-safe tag membership)', () => {
+  it('matches a whole comma-delimited token', () => {
+    expect(tagsIncludeToken('bench-attempt,empennage,edited,trackA', 'trackA')).toBe(true);
+    expect(tagsIncludeToken('bench-attempt,empennage,edited,trackA', 'empennage')).toBe(true);
+  });
+
+  it('does NOT match a mere prefix/substring of a longer token', () => {
+    // The founding bug this guards: one track name is a PREFIX of another, so a
+    // naive substring `includes()` would wrongly treat the longer track's
+    // lessons as the shorter track's.
+    expect(tagsIncludeToken('bench-attempt,edited,track-base-taught', 'track-base')).toBe(false);
+    expect(tagsIncludeToken('bench-attempt,edited,track-base', 'track-base-taught')).toBe(false);
+  });
+
+  it('handles whitespace/comma mixed delimiters and empty inputs', () => {
+    expect(tagsIncludeToken('a, b ,  c', 'b')).toBe(true);
+    expect(tagsIncludeToken('', 'b')).toBe(false);
+    expect(tagsIncludeToken('a,b', '')).toBe(false);
+  });
+});
+
+describe('fetchPriorAttempts track-scoped read (actorTag)', () => {
+  // A mixed-track search hit set — the exact cross-contamination this fixes: a
+  // shared brain returns lessons from BOTH a purity track and a taught track
+  // (whose name has the purity track's name as a prefix), plus an untagged one.
+  const mixedTrackText = JSON.stringify([
+    { content: 'purity-track lesson: moved parts inboard', tags: 'bench-attempt,engines,edited,track-base', score: 0.9 },
+    { content: 'taught-track lesson: rebuilt as one object', tags: 'bench-attempt,engines,edited,track-base-taught', score: 0.85 },
+    { content: 'another purity-track lesson', tags: 'bench-attempt,engines,no_change,track-base', score: 0.7 },
+    { content: 'legacy untagged lesson', tags: 'bench-attempt,engines', score: 0.6 },
+  ]);
+
+  it('restricts results to the current track and drops other-track / untagged lessons', async () => {
+    const callTool = vi.fn().mockResolvedValue({ ok: true, text: mixedTrackText });
+    const out = await fetchPriorAttempts({ query: 'engines', limit: 5, actorTag: 'track-base', callTool });
+    expect(out.map((m) => m.content)).toEqual([
+      'purity-track lesson: moved parts inboard',
+      'another purity-track lesson',
+    ]);
+  });
+
+  it('prefix-safety: the shorter track name does NOT pick up the longer taught track\'s lesson', async () => {
+    const callTool = vi.fn().mockResolvedValue({ ok: true, text: mixedTrackText });
+    const base = await fetchPriorAttempts({ query: 'engines', actorTag: 'track-base', callTool });
+    expect(base.some((m) => m.content.includes('taught-track'))).toBe(false);
+
+    const taught = await fetchPriorAttempts({ query: 'engines', actorTag: 'track-base-taught', callTool });
+    expect(taught.map((m) => m.content)).toEqual(['taught-track lesson: rebuilt as one object']);
+  });
+
+  it('over-fetches from brain_search when filtering so a filtered set can still fill limit', async () => {
+    const callTool = vi.fn().mockResolvedValue({ ok: true, text: mixedTrackText });
+    await fetchPriorAttempts({ query: 'engines', limit: 3, actorTag: 'track-base', overFetch: 4, callTool });
+    expect(callTool).toHaveBeenCalledWith('brain_search', { query: 'engines', limit: 12 }, expect.any(Object));
+  });
+
+  it('slices the filtered result back down to limit', async () => {
+    const callTool = vi.fn().mockResolvedValue({ ok: true, text: mixedTrackText });
+    const out = await fetchPriorAttempts({ query: 'engines', limit: 1, actorTag: 'track-base', callTool });
+    expect(out).toHaveLength(1);
+    expect(out[0].content).toBe('purity-track lesson: moved parts inboard');
+  });
+
+  it('without actorTag, does NOT filter (byte-identical to the legacy read) and keeps the caller limit', async () => {
+    const callTool = vi.fn().mockResolvedValue({ ok: true, text: mixedTrackText });
+    const out = await fetchPriorAttempts({ query: 'engines', limit: 5, callTool });
+    expect(callTool).toHaveBeenCalledWith('brain_search', { query: 'engines', limit: 5 }, expect.any(Object));
+    expect(out).toHaveLength(4); // all four hits returned unfiltered
+  });
+
+  it('returns [] when no lesson matches the current track (a fresh track has no priors)', async () => {
+    const callTool = vi.fn().mockResolvedValue({ ok: true, text: mixedTrackText });
+    expect(await fetchPriorAttempts({ query: 'engines', actorTag: 'track-never-run', callTool })).toEqual([]);
   });
 });
 
@@ -240,7 +318,9 @@ describe('fetchStrategyEvents', () => {
       ]),
     });
     const events = await fetchStrategyEvents({ criterion: 'engines', callTool: fetchTool });
-    expect(fetchTool).toHaveBeenCalledWith('brain_search', { query: 'engines', limit: 10 }, expect.any(Object));
+    // Marker-anchored query (2026-07-16 contract change): a bare-criterion
+    // query ranked taught-KB documents above the events themselves.
+    expect(fetchTool).toHaveBeenCalledWith('brain_search', { query: 'STRATEGY engines gate_delta', limit: 10 }, expect.any(Object));
     expect(events).toHaveLength(1);
     expect(events[0]).toMatchObject({ strategyId: 's1', scope: 'strategy', technique: 'split nacelles into groups', outcome: 'helpful', gateDelta: 1.5 });
   });
@@ -257,5 +337,90 @@ describe('fetchStrategyEvents', () => {
       text: JSON.stringify([{ content: 'STRATEGY_EVENT_JSON: {broken json', tags: '', score: 1 }]),
     });
     expect(await fetchStrategyEvents({ criterion: 'c', callTool })).toEqual([]);
+  });
+});
+
+describe('fetchStrategyEvents track-scoped read (actorTag)', () => {
+  const MARKER = 'STRATEGY_EVENT_JSON:';
+  function mkRow(actorName, technique) {
+    return {
+      content: `STRATEGY (tag): scope=strategy, outcome=helpful.\n${MARKER} ${JSON.stringify({ strategyId: technique, scope: 'strategy', criterion: 'c1', outcome: 'helpful', actorName })}`,
+      tags: 'x',
+      score: 1,
+    };
+  }
+
+  it('filters parsed payloads to the requested track and over-fetches to fill the limit', async () => {
+    const calls = [];
+    const callTool = async (name, args) => {
+      calls.push(args);
+      return { ok: true, text: JSON.stringify([mkRow('track-a', 's1'), mkRow('track-b', 's2'), mkRow('track-a', 's3')]) };
+    };
+    const out = await fetchStrategyEvents({ criterion: 'c1', limit: 2, actorTag: 'track-a', callTool });
+    expect(out.map((e) => e.strategyId)).toEqual(['s1', 's3']);
+    expect(calls[0].limit).toBe(10); // limit 2 x overFetch 5
+  });
+
+  it('without actorTag keeps the legacy unfiltered behavior and caller limit', async () => {
+    const calls = [];
+    const callTool = async (name, args) => {
+      calls.push(args);
+      return { ok: true, text: JSON.stringify([mkRow('track-a', 's1'), mkRow('track-b', 's2')]) };
+    };
+    const out = await fetchStrategyEvents({ criterion: 'c1', limit: 10, callTool });
+    expect(out).toHaveLength(2);
+    expect(calls[0].limit).toBe(10);
+  });
+
+  it('a track that never wrote events yields [] (fail-open empty, not foreign events)', async () => {
+    const callTool = async () => ({ ok: true, text: JSON.stringify([mkRow('track-b', 's2')]) });
+    expect(await fetchStrategyEvents({ criterion: 'c1', actorTag: 'track-never', callTool })).toEqual([]);
+  });
+});
+
+describe('fetchStrategyEvents query construction (marker-anchored, live-caught 2026-07-16)', () => {
+  it('anchors the semantic query to the event content shape (bare criterion ranked docs above events)', async () => {
+    const calls = [];
+    const callTool = async (name, args) => { calls.push(args); return { ok: true, text: '[]' }; };
+    await fetchStrategyEvents({ criterion: 'craftsmanship', tag: 'boeing747-strategy-event', callTool });
+    expect(calls[0].query).toBe('STRATEGY boeing747-strategy-event craftsmanship gate_delta');
+  });
+
+  it('an explicit query overrides construction entirely (legacy behavior)', async () => {
+    const calls = [];
+    const callTool = async (name, args) => { calls.push(args); return { ok: true, text: '[]' }; };
+    await fetchStrategyEvents({ criterion: 'c', tag: 't', query: 'my exact query', callTool });
+    expect(calls[0].query).toBe('my exact query');
+  });
+
+  it('no criterion/tag/query -> no MCP call at all', async () => {
+    const callTool = async () => { throw new Error('should not be called'); };
+    expect(await fetchStrategyEvents({ callTool })).toEqual([]);
+  });
+});
+
+describe('extractJsonArray (tolerant tool-response parsing, live-caught 2026-07-16)', () => {
+  it('parses a clean JSON array unchanged', () => {
+    expect(extractJsonArray('[{"a":1}]')).toEqual([{ a: 1 }]);
+  });
+
+  it('survives a trailing MCP-compliance banner appended after the JSON (the live failure shape)', () => {
+    const banner = '[{"content":"x","tags":"t","score":1}]\n\n\nWARNING [MCP COMPLIANCE] Preflight steps incomplete. Call brain_health [really].';
+    expect(extractJsonArray(banner)).toEqual([{ content: 'x', tags: 't', score: 1 }]);
+  });
+
+  it('returns null for no-array / unparseable / non-array JSON', () => {
+    expect(extractJsonArray('no json here')).toBeNull();
+    expect(extractJsonArray('{"an":"object"}')).toBeNull();
+    expect(extractJsonArray('[broken')).toBeNull();
+    expect(extractJsonArray(null)).toBeNull();
+  });
+
+  it('fetchPriorAttempts and fetchStrategyEvents both survive the banner end-to-end', async () => {
+    const attempts = JSON.stringify([{ content: 'lesson', tags: 'a', score: 1 }]);
+    const ev = JSON.stringify([{ content: 'STRATEGY (t): scope=strategy, outcome=helpful.\nSTRATEGY_EVENT_JSON: {"strategyId":"s","scope":"strategy","outcome":"helpful"}', tags: 't', score: 1 }]);
+    const mk = (text) => async () => ({ ok: true, text: text + '\n\nWARNING [MCP COMPLIANCE] show a receipt [ok].' });
+    expect(await fetchPriorAttempts({ query: 'q', callTool: mk(attempts) })).toHaveLength(1);
+    expect(await fetchStrategyEvents({ criterion: 'c', tag: 't', callTool: mk(ev) })).toHaveLength(1);
   });
 });

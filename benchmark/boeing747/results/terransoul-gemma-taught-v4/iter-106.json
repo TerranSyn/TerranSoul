@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 106,
+  "run_id": "terransoul-gemma-taught-v4-iter-106-mro8dfpe",
+  "plane_sha256": "708b73dba8713478a9bf912f4b4f51d215de32b515b24e112990812396eaf828",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 52.19,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.75
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.75
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.81
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.12
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.27
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.52
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.36
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.32
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.07
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 1.97,
+    "perCriterion": {
+      "engines_four_underwing": 4.73,
+      "upper_deck_hump": 4.4,
+      "fuselage_proportions": 4.8,
+      "wing_geometry": 5.84,
+      "empennage": 6.2,
+      "landing_gear": 7.88,
+      "window_door_lines": 1.97,
+      "livery_coherence": 5.42,
+      "silhouette_747": 5.38,
+      "craftsmanship": 5.11
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Duplicate the 'Main deck window row' geometry along the Z-axis to create a second parallel row, offset by 1.5x the current height to represent the upper deck. Additionally, inset vertical rectangular faces into the forward fuselage at 45-degree intervals to define door outlines, and extrude a large rectangular panel on the rear lower fuselage to define the cargo door.",
+    "discrepancies": [
+      {
+        "feature": "Main deck window row",
+        "observed": "A single continuous line of small dots along the fuselage side",
+        "reference": "Two distinct rows of windows (main deck and upper deck)",
+        "direction_of_fix": "duplicate"
+      },
+      {
+        "feature": "Upper deck window count",
+        "observed": "No visible windows on the upper deck section",
+        "reference": "A prominent row of windows following the curve of the upper deck",
+        "direction_of_fix": "add"
+      },
+      {
+        "feature": "Forward door placement",
+        "observed": "No distinct door outlines or breaks in the fuselage geometry near the nose",
+        "reference": "Clear vertical break lines for forward passenger doors",
+        "direction_of_fix": "extrude/inset"
+      },
+      {
+        "feature": "Rear cargo door",
+        "observed": "Smooth continuous fuselage surface at the rear",
+        "reference": "A large rectangular door outline on the rear lower fuselage",
+        "direction_of_fix": "add"
+      }
+    ],
+    "critic_view": 5,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 54.13,
+  "created_at": "2026-07-17T01:02:25.882Z",
+  "actor_status": "edited"
+}

@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 38,
+  "run_id": "terransoul-gemma-taught-v4-iter-38-mrnqts3h",
+  "plane_sha256": "dc16591e007add5e6dadc1105b8af47b0094af8281518ffae0fce9cf6e0eea86",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 42.26,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.17
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.46
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.31
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.48
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.61
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.12
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.55
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.24
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.09
+    }
+  ],
+  "weakest_feature": {
+    "id": "craftsmanship",
+    "mean": 3.24,
+    "perCriterion": {
+      "engines_four_underwing": 3.71,
+      "upper_deck_hump": 4.43,
+      "fuselage_proportions": 4.09,
+      "wing_geometry": 4.13,
+      "empennage": 4.97,
+      "landing_gear": 7.2,
+      "window_door_lines": 3.77,
+      "livery_coherence": 3.27,
+      "silhouette_747": 4.44,
+      "craftsmanship": 3.24
+    }
+  },
+  "critic": {
+    "weakest_feature": "craftsmanship",
+    "fix_suggestion": "Perform a global parent-child attachment of the Wing and Engine geometries to the Fuselage root. Specifically, translate the Wing's local origin to the fuselage's wing-root coordinates (X: 0.0, Y: -1.5m, Z: 2.0m) and rotate it by 3 degrees to align with the fuselage centerline. For the Engines, parent them to the Wing pylons with a downward offset of 0.8m and a lateral distance of 1.2m from the wing's leading edge to ensure structural integration.",
+    "discrepancies": [
+      {
+        "feature": "Wing Attachment",
+        "observed": "Wings appear to be floating disconnected from the fuselage.",
+        "reference": "Wings are structurally integrated into the wing root of the fuselage.",
+        "direction_of_fix": "Move/Attach wings to fuselage center"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines are floating in space away from the wing structures.",
+        "reference": "Engines are mounted directly underneath and on the sides of the wing pylons.",
+        "direction_of_fix": "Move/Attach engines to wing underside"
+      },
+      {
+        "feature": "Tail Assembly",
+        "observed": "The vertical stabilizer is disconnected from the rear fuselage.",
+        "reference": "Vertical stabilizer is attached to the top-rear of the fuselage.",
+        "direction_of_fix": "Move/Attach tail to rear fuselage"
+      },
+      {
+        "feature": "Horizontal Stabilizer",
+        "observed": "Horizontal stabilizers are floating independently near the tail.",
+        "reference": "Horizontal stabilizers are attached to the base of the vertical stabilizer and rear fuselage.",
+        "direction_of_fix": "Move/Attach horizontal stabilizers to tail"
+      }
+    ],
+    "critic_view": 5,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 42.26,
+  "created_at": "2026-07-16T16:51:16.921Z",
+  "actor_status": "edited"
+}

@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 115,
+  "run_id": "terransoul-gemma-taught-v4-iter-115-mrob4nex",
+  "plane_sha256": "df74b625d168b767bab1866daa4e5f8558e61ab245621a9e3194cf5075eec79b",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 49.07,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.68
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.48
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.95
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.83
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.03
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.92
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.88
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.41
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 3.98
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 2.63,
+    "perCriterion": {
+      "engines_four_underwing": 4.24,
+      "upper_deck_hump": 4.37,
+      "fuselage_proportions": 4.36,
+      "wing_geometry": 5.29,
+      "empennage": 5.68,
+      "landing_gear": 7.76,
+      "window_door_lines": 2.63,
+      "livery_coherence": 5.24,
+      "silhouette_747": 5.04,
+      "craftsmanship": 4.56
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Apply a radial transformation to the main deck window array: instead of a linear Y-axis distribution, map the window positions along a cylindrical arc with a radius matching the fuselage curvature. Adjust the spacing parameter so that windows are equidistant along this arc, ensuring they follow the aircraft's body contour rather than a flat horizontal plane.",
+    "discrepancies": [
+      {
+        "feature": "Upper deck window line",
+        "observed": "A single continuous row of small dots on the upper hump.",
+        "reference": "A distinct, slightly curved horizontal row of windows following the hump's contour.",
+        "direction_of_fix": "increase count and adjust spacing"
+      },
+      {
+        "feature": "Main deck door outlines",
+        "observed": "No visible recessed lines or frames for doors.",
+        "reference": "Clearly defined rectangular indentations and seams around passenger doors.",
+        "direction_of_fix": "add thin extruded planes for door frames"
+      },
+      {
+        "feature": "Window row alignment",
+        "observed": "Windows are placed in a perfectly straight horizontal line across the fuselage.",
+        "reference": "Windows follow the slight curvature of the aircraft's cylindrical body.",
+        "direction_of_fix": "curve window positions along the cylinder arc"
+      },
+      {
+        "feature": "Cockpit window frame",
+        "observed": "A flat, single-plane surface for the cockpit windows.",
+        "reference": "A multi-faceted, recessed glass structure with distinct structural frames.",
+        "direction_of_fix": "extrude and bevel cockpit window faces"
+      }
+    ],
+    "critic_view": 9,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 54.13,
+  "created_at": "2026-07-17T02:19:35.744Z",
+  "actor_status": "edited"
+}

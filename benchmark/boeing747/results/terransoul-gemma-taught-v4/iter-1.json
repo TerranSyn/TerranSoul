@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 1,
+  "run_id": "terransoul-gemma-taught-v4-iter-1-mrnjl1cl",
+  "plane_sha256": "e97e2db05cae2f24d545df9809521932444d554e776ccaa5a79e5a58f3774300",
+  "rubric_sha256": "1f48fb4693187253d5067ca72dca5f160f6f076bf8c973a70383b1eb0152f55d",
+  "total_0_100": 36.1,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.05
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.05
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 3.41
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 3.21
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 2.97
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.61
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.36
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.57
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.26
+    }
+  ],
+  "weakest_feature": {
+    "id": "craftsmanship",
+    "mean": 2.73,
+    "perCriterion": {
+      "engines_four_underwing": 4.16,
+      "upper_deck_hump": 3.8,
+      "fuselage_proportions": 3.91,
+      "wing_geometry": 3.02,
+      "empennage": 4.25,
+      "landing_gear": 3.4,
+      "window_door_lines": 3.77,
+      "livery_coherence": 4.02,
+      "silhouette_747": 3.31,
+      "craftsmanship": 2.73
+    }
+  },
+  "critic": {
+    "weakest_feature": "craftsmanship",
+    "fix_suggestion": "Merge the fuselage into a single continuous hull by overlapping the primary cylinder geometries along the longitudinal axis. Adjust the 'Z-offset' of each subsequent cylinder segment to -0.5 units relative to its neighbor, ensuring a 10% overlap at every junction point to eliminate visible gaps and create a seamless aerodynamic shell.",
+    "discrepancies": [
+      {
+        "feature": "Engine placement",
+        "observed": "Four engines are floating in space away from the wings.",
+        "reference": "Engines are physically attached to pylons under the wing structure.",
+        "direction_of_fix": "Move and attach engine geometries to wing pylon positions."
+      },
+      {
+        "feature": "Wing attachment",
+        "observed": "The main wing is detached from the fuselage.",
+        "reference": "The wing root is seamlessly integrated into the lower side of the fuselage.",
+        "direction_of_fix": "Move wing geometry to intersect with fuselage side surface."
+      },
+      {
+        "feature": "Tail assembly",
+        "observed": "The vertical stabilizer and horizontal stabilizers are disconnected from the rear fuselage.",
+        "reference": "The empennage components are joined at a common root on the tail cone.",
+        "direction_of_fix": "Move and attach tail surfaces to the rear fuselage geometry."
+      },
+      {
+        "feature": "Fuselage continuity",
+        "observed": "The main body appears as separate, non-intersecting cylinders with gaps.",
+        "reference": "A continuous, smooth aerodynamic shell forming a single hull.",
+        "direction_of_fix": "Merge or overlap cylinder geometries to eliminate gaps."
+      }
+    ],
+    "critic_view": 7,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": false,
+  "best_total_after": 36.1,
+  "created_at": "2026-07-16T13:28:28.740Z",
+  "actor_status": "no_change"
+}

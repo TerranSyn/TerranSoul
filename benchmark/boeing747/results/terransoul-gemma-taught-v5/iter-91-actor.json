@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 496044,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 910,
+    "tool_calls": {
+      "read_file": 10,
+      "edit_file": 7
+    },
+    "total_tool_calls": 17,
+    "text_chunks": 876,
+    "tool_failures": 7,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 10
+      },
+      {
+        "name": "edit_file",
+        "count": 7
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "plane_sha256_after": "cd4415f220f68c0bbc80039b3c08e2d29f7c7797d38425e4e8e81fe0446ca727",
+  "changed": true,
+  "claude_result_text": "Okay, I'm struggling because the file keeps changing or my `old_string` is slightly off. I need to be extremely careful with the white space and indentation which are often tricky in these types of environments.\n\nLet me read the file again to see exactly what it looks like now after my previous edits (some succeeded, some failed).\n\nI'll check:\n1. `root.position.set` - I thought this succeeded? No, let me check the actual content of `plane.js`.\n2. `tip.position.set` - I thought this succeeded?\n3. `engineConfigs` - This definitely didn't succeed because it said \"old_string not found\".\n\nWait",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 496044,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 910,
+        "tool_calls": {
+          "read_file": 10,
+          "edit_file": 7
+        },
+        "total_tool_calls": 17,
+        "text_chunks": 876,
+        "tool_failures": 7,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 10
+          },
+          {
+            "name": "edit_file",
+            "count": 7
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

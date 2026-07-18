@@ -1,0 +1,103 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 85,
+  "run_id": "terransoul-gemma-taught-v5-iter-85-mrpknydk",
+  "plane_sha256": "40c00c6c0072e987453d8a12827cc18322fa63ea2dabf7f06adb321606ddb298",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 58.23,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.44
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.66
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.84
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.99
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5.81
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.22
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.84
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.85
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.76
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.84,
+    "perCriterion": {
+      "engines_four_underwing": 4.84,
+      "upper_deck_hump": 5.11,
+      "fuselage_proportions": 5.71,
+      "wing_geometry": 6.04,
+      "empennage": 6.65,
+      "landing_gear": 7.41,
+      "window_door_lines": 4.91,
+      "livery_coherence": 6.02,
+      "silhouette_747": 6.51,
+      "craftsmanship": 5.42
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Relocate the engine primitives along the wing's longitudinal axis to an outboard position (approx. 75% of the wingspan) and shift them aft by 10% of the total wing length to match the reference layout.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible under the wing",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines appear centered or slightly forward under the wing.",
+        "reference": "Engines are positioned further outboard and aft on the wing.",
+        "direction_of_fix": "move engine primitives outward and backward"
+      },
+      {
+        "feature": "Winglet Geometry",
+        "observed": "The wingtips end abruptly without vertical extensions.",
+        "reference": "Wings feature distinct upward-pointing winglets.",
+        "direction_of_fix": "attach small vertical rectangular prisms to wingtips"
+      }
+    ],
+    "critic_view": 6,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-17T23:34:49.918Z",
+  "actor_status": "no_change"
+}

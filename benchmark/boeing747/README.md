@@ -42,6 +42,74 @@ re-baseline the harness — **version-2 numbers are NOT comparable to version-1*
    at the same angle/target; view 9 (the tuned close-up) is preserved exactly on
    the v1 sphere frame.
 
+### Scoring & gate v3 (rubric `version: 3`, 2026-07-16) — measurement fidelity
+
+Two fixes, no judge-protocol change (same model, seeds, prompts, criteria,
+weights, cameras). **v3 totals are NOT numerically comparable to v2 records**;
+the v3 era runs in its own results track with a fresh `best.json` /
+`gate-state.json`, and all v2 evidence stays frozen in place as the v2-era
+floor (`rules/bench-never-regress.md`). The fresh-track rule is ENFORCED in
+code, not just prose: every `gate-state.json` save stamps `scoring_version`,
+and the loop refuses at startup (`assertGateStateEra`, before anything is
+rendered/judged/recorded) to resume a frozen-gemma-gated results dir whose
+gate-state carries a different (or missing, i.e. pre-v3) stamp — a cross-era
+resume would gate honest v3 totals against the v2-inflated bar and
+false-reject every iteration. The v3 success signal reads `seeds[].ok`
+(gemma) **or** `samples[].ok`/`judge_errors` (claude-vision, whose results
+projection now retains them — it used to strip both, which made v3 silently
+inert on that judge; caught by adversarial review before first launch).
+
+### Judge panel & structured critic v4 (rubric `version: 4`, 2026-07-16) — gate de-noising + render-grounded steering
+
+Judge-SAMPLING change only (same criteria/anchors/weights/cameras/prompts/model;
+scoring v3 aggregation unchanged). **v4 totals are NOT comparable to v3** — new
+results track (`terransoul-gemma-taught-v4`), reference re-probed under v4
+(`calibration/probe-gemma-reference-v4.json`) to re-anchor the parity target,
+all v3/v2 evidence frozen in place.
+
+1. **Self-consistency K-panel** (`rubric.json judge_panel`): per view, K draws
+   on DISTINCT FIXED seeds at temperature > 0 (diverse AND byte-reproducible —
+   Ollama is deterministic per seed), aggregated per criterion by MEAN
+   (arXiv:2203.11171; single-draw LLM-judge scoring is high-variance,
+   arXiv:2305.17926). Removing the block restores v3 byte-identically.
+2. **Live-measured gate epsilon**: every result stamps `panel_se_total` (the
+   /100 SE implied by each view's panel spread, `lib/scoring.mjs
+   panelSeTotal`); the frozen-gemma gate consumes
+   `judge_panel.epsilon_se_coefficient × panel_se_total` as `epsilonTotal` —
+   an edit is a regression/improvement only beyond what the judge's own
+   measured spread explains (replaces the uncalibrated static 0).
+3. **Structured two-stage critic** (`rubric.json critic_structured`): stage 1
+   = falsifiable render-vs-reference observations on the weakest criterion's
+   worst VISIBLE view (`pickWeakestView`); stage 2 = one parametric edit
+   instruction. Local judge model only; fail-open chain → legacy single-call
+   critic → deterministic anchors. Steering only — never touches scores.
+4. **Strategy memory on the frozen-gemma track**: the gemma gate now writes
+   the same credit events the pairwise gate always did, and the actor prompt
+   folds the promotion-gated cheatsheet + contrastive anti-examples
+   (`rubric.json strategy_certification`), track-scoped via `actorTag` so one
+   measurement era's events never steer another era's actor.
+
+### Scoring & gate v3 details
+
+1. **Successful-empty views count 0** (`lib/scoring.mjs` `applyScoringV3`,
+   wired in `loop-runner-terransoul.mjs` for the mean-aggregated judges —
+   gemma and claude-vision, never the pairwise parity total). v2 dropped every
+   `null` view from both sides of the /100 mean, conflating "the judge call
+   FAILED" (genuinely no signal — still dropped + renormalized in v3) with
+   "the judge call SUCCEEDED and found nothing assessable" (the rubric's own
+   0 anchors say absent = 0). v2 thereby *rewarded hiding a view*: the taught
+   track's real incumbent scored 55.64 over 8 views while its honest 9-view
+   total is 49.46 (regression-pinned in `lib/scoring.test.mjs`).
+2. **Relative per-view gate cap** (`rubric.json` `max_view_drop: 2.0` →
+   `lib/gemma-gate-wiring.mjs` → `lib/edit-gate.mjs`). The frozen-gemma edit
+   gate's absolute cleared-view bar (uniform 8.0) was empirically unreachable —
+   the committed reference build itself clears it on only 3 of 9 gemma-judged
+   views — and it rejected the only genuine improvement in 239 taught-track
+   iterations (iter-115: 56.8 > 55.64, killed for a 1.15-point dip in one
+   view). v3 rejects an aggregate improvement only when a single view drops by
+   **more than `max_view_drop`** vs the incumbent's same view (both sides
+   scored). The pairwise gate (calibrated per-view bars) is untouched.
+
 ## Layout
 
 ```

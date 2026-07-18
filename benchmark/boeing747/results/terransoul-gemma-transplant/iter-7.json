@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-transplant",
+  "iter": 7,
+  "run_id": "terransoul-gemma-transplant-iter-7-mrolixsy",
+  "plane_sha256": "084b2d709b6d9a58b38eaa037243a32a16b708c15454182ffa315d1b023261d0",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 60.98,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.84
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.57
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.73
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.09
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.49
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.23
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.63
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.97
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.33
+    }
+  ],
+  "weakest_feature": {
+    "id": "upper_deck_hump",
+    "mean": 4.51,
+    "perCriterion": {
+      "engines_four_underwing": 4.73,
+      "upper_deck_hump": 4.51,
+      "fuselage_proportions": 5.82,
+      "wing_geometry": 7.11,
+      "empennage": 7.78,
+      "landing_gear": 6.16,
+      "window_door_lines": 5.8,
+      "livery_coherence": 4.76,
+      "silhouette_747": 6.33,
+      "craftsmanship": 7.58
+    }
+  },
+  "critic": {
+    "weakest_feature": "upper_deck_hump",
+    "fix_suggestion": "Modify the 'front cylinder' geometry of the upper deck hump to increase its length, radial thickness, and vertical scale. Specifically: 1) Extend the longitudinal length by a factor of 1.5x to reach further back along the fuselage; 2) Increase the radial diameter by 30% to widen the cabin profile; 3) Scale the height vertically by 20% to create a more prominent 'double-decker' silhouette. Finally, apply a 45-degree taper/fillet at the junction where the cylinder meets the main fuselage to smooth the transition from the body diameter.",
+    "discrepancies": [
+      {
+        "feature": "Hump length",
+        "observed": "The upper deck hump ends very close to the cockpit area.",
+        "reference": "The hump extends significantly further back along the fuselage.",
+        "direction_of_fix": "increase length of front cylinder"
+      },
+      {
+        "feature": "Hump curvature",
+        "observed": "A sharp, abrupt transition from the main fuselage diameter to the hump.",
+        "reference": "A smooth, gradual blending between the upper deck and the main body.",
+        "direction_of_fix": "smooth/taper the junction geometry"
+      },
+      {
+        "feature": "Upper deck height",
+        "observed": "The top of the hump is relatively low compared to the nose.",
+        "reference": "The hump creates a distinct high-profile 'double-decker' look at the front.",
+        "direction_of_fix": "increase vertical scale of upper cylinder"
+      },
+      {
+        "feature": "Hump width",
+        "observed": "The hump appears narrow and thin relative to the fuselage diameter.",
+        "reference": "The hump is wide enough to accommodate a full cabin row.",
+        "direction_of_fix": "increase radial thickness of front cylinder"
+      }
+    ],
+    "critic_view": 7,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.11,
+  "created_at": "2026-07-17T07:10:45.165Z",
+  "actor_status": "edited"
+}

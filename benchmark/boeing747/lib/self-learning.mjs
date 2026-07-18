@@ -36,6 +36,50 @@ export function isBenchLesson({ content = '', tags = '', category = '' } = {}) {
 }
 
 /**
+ * Extract the leading JSON ARRAY from a tool-response text that may carry
+ * trailing non-JSON decoration (live-caught 2026-07-16: the brain tray appends
+ * an MCP-compliance banner to tool results in fresh sessions — strict
+ * JSON.parse then throws and every self-learning READ silently failed open to
+ * []). Returns the parsed array, or null when no parseable leading array
+ * exists. PURE + exported for vitest.
+ */
+export function extractJsonArray(text) {
+  const s = String(text ?? '');
+  const start = s.indexOf('[');
+  if (start < 0) return null;
+  const end = s.lastIndexOf(']');
+  if (end <= start) return null;
+  // Try widest-first, then shrink to the first parseable close bracket — the
+  // banner could itself contain `]`.
+  for (let e = end; e > start; e = s.lastIndexOf(']', e - 1)) {
+    try {
+      const parsed = JSON.parse(s.slice(start, e + 1));
+      return Array.isArray(parsed) ? parsed : null;
+    } catch {
+      // keep shrinking
+    }
+  }
+  return null;
+}
+
+/**
+ * True when a comma/space-delimited tag string contains `tag` as a WHOLE
+ * token (never a substring). GENERIC — used to keep the read path from
+ * confusing a track tag with a longer one that merely shares its prefix
+ * (e.g. a shorter track name is a prefix of a longer one), which a naive
+ * `tags.includes(tag)` would wrongly match. Exported so callers/tests can
+ * reuse the exact token semantics the read filter applies.
+ */
+export function tagsIncludeToken(tags, tag) {
+  if (!tag) return false;
+  return String(tags)
+    .split(/[,\s]+/)
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .includes(String(tag).trim());
+}
+
+/**
  * Query the brain for prior attempts relevant to `query`. Fails open: any
  * MCP error, unreachable tray, or unparsable response returns `[]` rather
  * than throwing — a self-learning READ must never block the caller's loop.
@@ -43,20 +87,47 @@ export function isBenchLesson({ content = '', tags = '', category = '' } = {}) {
  * injectable so this function's OWN logic (args built, response parsed,
  * fail-open behavior) is directly vitest-covered without a live tray —
  * mirrors lib/judge-parse.mjs's callWithParseRetry(call, ...) pattern.
+ *
+ * TRACK-SCOPED READ (`actorTag`): the WRITE path already stamps each lesson
+ * with the running track's name (ingestAttemptLesson's `extraTags:[actorName]`).
+ * When `actorTag` is supplied, this read RESTRICTS the returned lessons to that
+ * track — a lesson whose `tags` does not carry the token is dropped — so two
+ * tracks sharing one brain (e.g. a purity track and a taught track) can never
+ * cross-contaminate each other's per-attempt lessons. Client-side is the only
+ * reliable filter here: `brain_search` is a semantic search, not a tag-filtered
+ * query (lib/mcp-client.mjs forwards whatever `args` a caller passes, but the
+ * brain_search tool contract exposes only `query`/`limit`, no tag predicate),
+ * so we OVER-FETCH (`overFetch`× the caller's `limit`, bounded) and filter the
+ * hits down here, then slice back to `limit`. With NO `actorTag`, the call is
+ * byte-identical to the prior behavior (`{query, limit}`, no filtering).
  * @returns {Promise<Array<{content:string, tags:string, score:number}>>}
  */
-export async function fetchPriorAttempts({ query, limit = 5, mcpUrl, token, timeoutMs, callTool = callMcpTool } = {}) {
+export async function fetchPriorAttempts({
+  query,
+  limit = 5,
+  actorTag = null,
+  overFetch = 5,
+  mcpUrl,
+  token,
+  timeoutMs,
+  callTool = callMcpTool,
+} = {}) {
   if (!query) return [];
-  const res = await callTool('brain_search', { query, limit }, { mcpUrl, token, timeoutMs });
+  // Over-fetch ONLY when a track filter is active, so a filtered result set can
+  // still fill `limit` even if the top semantic hits belong to other tracks.
+  const fetchLimit = actorTag ? Math.min(limit * Math.max(1, overFetch), 100) : limit;
+  const res = await callTool('brain_search', { query, limit: fetchLimit }, { mcpUrl, token, timeoutMs });
   if (!res.ok || !res.text) return [];
   try {
-    const parsed = JSON.parse(res.text);
+    const parsed = extractJsonArray(res.text);
     if (!Array.isArray(parsed)) return [];
-    return parsed.map((m) => ({
+    let mapped = parsed.map((m) => ({
       content: String(m.content || ''),
       tags: String(m.tags || ''),
       score: Number(m.score) || 0,
     }));
+    if (actorTag) mapped = mapped.filter((m) => tagsIncludeToken(m.tags, actorTag));
+    return mapped.slice(0, limit);
   } catch {
     return [];
   }
@@ -214,22 +285,31 @@ export async function ingestStrategyEvent({
 export async function fetchStrategyEvents({
   criterion,
   query,
+  tag,
   limit = 10,
+  actorTag = null,
+  overFetch = 5,
   mcpUrl,
   token,
   timeoutMs,
   callTool = callMcpTool,
 } = {}) {
-  const q = (query || criterion || '').trim();
-  if (!q) return [];
-  const res = await callTool('brain_search', { query: q, limit }, { mcpUrl, token, timeoutMs });
+  // Query construction (live-caught fix, 2026-07-16): searching the BARE
+  // criterion word ranks taught-KB/document chunks far above the strategy
+  // events themselves (measured on the running v4 track: 25 hits, 0 events,
+  // while a marker-anchored query surfaced 6/10). Anchor the semantic query
+  // to the events' own content shape — `STRATEGY (<tag>): ... criterion=<id>
+  // ... gate_delta=` — so events outrank documents. An explicit `query`
+  // still overrides entirely (legacy behavior).
+  const q = (query || ['STRATEGY', tag, criterion, 'gate_delta'].filter(Boolean).join(' ')).trim();
+  if (!q || q === 'STRATEGY gate_delta') return [];
+  // TRACK-SCOPED READ (same rationale + over-fetch shape as fetchPriorAttempts'
+  // actorTag): the write half stamps payload.actorName, and a measurement-era
+  // change means one era's gate events must never steer another era's actor.
+  const fetchLimit = actorTag ? Math.min(limit * Math.max(1, overFetch), 100) : limit;
+  const res = await callTool('brain_search', { query: q, limit: fetchLimit }, { mcpUrl, token, timeoutMs });
   if (!res.ok || !res.text) return [];
-  let rows;
-  try {
-    rows = JSON.parse(res.text);
-  } catch {
-    return [];
-  }
+  const rows = extractJsonArray(res.text);
   if (!Array.isArray(rows)) return [];
   const events = [];
   for (const row of rows) {
@@ -240,10 +320,13 @@ export async function fetchStrategyEvents({
     if (jsonStart < 0) continue;
     try {
       const payload = JSON.parse(content.slice(jsonStart));
-      if (payload && typeof payload === 'object' && !Array.isArray(payload)) events.push(payload);
+      if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+        if (actorTag && payload.actorName !== actorTag) continue;
+        events.push(payload);
+      }
     } catch {
       // fail-open per item: skip an unparseable payload, keep the rest
     }
   }
-  return events;
+  return events.slice(0, limit);
 }

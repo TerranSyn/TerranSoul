@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 82,
+  "run_id": "terransoul-gemma-taught-v4-iter-82-mro2qs4b",
+  "plane_sha256": "d93117d5f4ed62bf3df49d6a09f5657285bfa96364d82847cf9b5ba1f6e3c5ef",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 51.83,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.63
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.78
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.83
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.43
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.67
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.86
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.22
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.15
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.08
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 2.91,
+    "perCriterion": {
+      "engines_four_underwing": 4.2,
+      "upper_deck_hump": 4.34,
+      "fuselage_proportions": 4.71,
+      "wing_geometry": 5.76,
+      "empennage": 6.38,
+      "landing_gear": 7.58,
+      "window_door_lines": 2.91,
+      "livery_coherence": 5.82,
+      "silhouette_747": 5.44,
+      "craftsmanship": 5.33
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Replace the large irregular cutouts on the upper deck with a linear array of 12 small rectangular windows. Set each window to a width-to-height ratio of 1:3, and space them uniformly along the horizontal axis of the fuselage with a constant gap of 0.5 units between frames to ensure a consistent, repeating architectural pattern.",
+    "discrepancies": [
+      {
+        "feature": "Upper deck window line",
+        "observed": "A single large rectangular opening on the side of the hump.",
+        "reference": "A continuous row of small, individual windows along the upper deck.",
+        "direction_of_fix": "replace with multiple small rectangles"
+      },
+      {
+        "feature": "Main deck door geometry",
+        "observed": "Flat surface planes without depth or framing.",
+        "reference": "Recessed doors with distinct frames and hinges.",
+        "direction_of_fix": "extrude inward to create recessed panels"
+      },
+      {
+        "feature": "Window spacing",
+        "observed": "Irregularly placed large rectangular cutouts.",
+        "reference": "Uniformly spaced, small oval/rectangular windows in a straight line.",
+        "direction_of_fix": "reposition and scale down windows into a linear array"
+      },
+      {
+        "feature": "Nose door detail",
+        "observed": "A single large cutout near the cockpit.",
+        "reference": "A specific rectangular service door with defined borders.",
+        "direction_of_fix": "add thin border frames around the nose door"
+      }
+    ],
+    "critic_view": 9,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": false,
+  "best_total_after": 51.83,
+  "created_at": "2026-07-16T22:24:49.217Z",
+  "actor_status": "edited"
+}

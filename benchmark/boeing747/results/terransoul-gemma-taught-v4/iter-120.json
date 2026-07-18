@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 120,
+  "run_id": "terransoul-gemma-taught-v4-iter-120-mroc70vt",
+  "plane_sha256": "8613dd7d41f90ea35644a12b468c75fb019fe2452a36b1914333f85c03763a6f",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 44.52,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 3.95
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.39
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.95
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.94
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 3.69
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.25
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.91
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.95
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.04
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 0.09,
+    "perCriterion": {
+      "engines_four_underwing": 3.51,
+      "upper_deck_hump": 4.66,
+      "fuselage_proportions": 4.07,
+      "wing_geometry": 4.87,
+      "empennage": 5.61,
+      "landing_gear": 7.3,
+      "window_door_lines": 0.09,
+      "livery_coherence": 4.53,
+      "silhouette_747": 4.67,
+      "craftsmanship": 4.18
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Add two horizontal rows of small rectangular planes along the fuselage side hull. Each row should consist of 30 individual planes, spaced at a constant interval of 15cm with a width of 40cm and a height of 20cm. Position these rows symmetrically above and below the cabin centerline to replicate the continuous window line of the reference model.",
+    "discrepancies": [
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A single large dark block at the nose",
+        "reference": "A series of distinct individual panes arranged in a wrap-around cockpit structure",
+        "direction_of_fix": "subdivide and arrange multiple small planes"
+      },
+      {
+        "feature": "Passenger windows",
+        "observed": "No visible window lines along the fuselage",
+        "reference": "Two long, continuous rows of small rectangular windows running the length of the cabin",
+        "direction_of_fix": "add repeated small plane geometries in two horizontal rows"
+      },
+      {
+        "feature": "Main cabin door",
+        "observed": "A solid grey fuselage surface with no break or outline",
+        "reference": "A clearly defined large rectangular door outline near the front and rear of the cabin",
+        "direction_of_fix": "insert a slightly recessed or outlined rectangle on the side hull"
+      },
+      {
+        "feature": "Cargo door",
+        "observed": "Continuous smooth fuselage geometry at the rear",
+        "reference": "A distinct large cargo door outline located towards the tail section",
+        "direction_of_fix": "add a rectangular plane outline near the rear fuselage"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 55.49,
+  "created_at": "2026-07-17T02:49:26.918Z",
+  "actor_status": "edited"
+}

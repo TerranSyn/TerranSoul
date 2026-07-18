@@ -1,0 +1,72 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 197743,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 24,
+    "tool_calls": {
+      "read_file": 4,
+      "edit_file": 2
+    },
+    "total_tool_calls": 6,
+    "text_chunks": 12,
+    "tool_failures": 3,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 4
+      },
+      {
+        "name": "edit_file",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "f9b9caefe41c55a63a8e751b3d5dd905f5e39f649c2641cefe6ec0ac7e93e043",
+  "plane_sha256_after": "6e98aa40ec770224dc737b4bc27ad22bd354f951477383d1438ffb82fac97b6d",
+  "changed": true,
+  "claude_result_text": "I have updated the window and door lines to improve the `window_door_lines` criterion. Specifically, I increased the number of main deck windows for a more continuous look, adjusted their vertical position for better alignment with the fuselage surface, raised the upper-deck windows significantly (to $y=8.5$) so they correctly sit on the crown of the 747's hump rather than just in front of it, and slightly increased the count/spacing of those windows to improve coverage of the iconic partial-length upper deck.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 197743,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 24,
+        "tool_calls": {
+          "read_file": 4,
+          "edit_file": 2
+        },
+        "total_tool_calls": 6,
+        "text_chunks": 12,
+        "tool_failures": 3,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 4
+          },
+          {
+            "name": "edit_file",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}

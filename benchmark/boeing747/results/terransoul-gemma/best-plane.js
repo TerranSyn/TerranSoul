@@ -9,20 +9,28 @@
 // a bare cylinder fuselage, a flat box wing, a flat box tail — nothing else.
 export function buildPlane(THREE) {
   const group = new THREE.Group();
-  const grey = new THREE.MeshStandardMaterial({ color: 0xd8dde3 });
-  const dark = new THREE.MeshStandardMaterial({ color: 0x6b7280 });
+  const grey = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  const dark = new THREE.MeshStandardMaterial({ color: 0x9ca3af });
 
   // Fuselage: single cylinder along +X (nose = +X per the frozen contract).
   const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, 60, 24), grey);
   fuselage.rotation.z = -Math.PI / 2;
   group.add(fuselage);
 
+  // Hump: iconic partial-length upper deck blended into the fuselage crown.
+  const hump = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 3.2, 22), grey);
+  hump.rotation.z = -Math.PI / 2;
+  // Positioned to span from roughly x=9 to x=31 (front third + cockpit area).
+  // Center Y is set so that the smaller back radius blends with the fuselage crown at y=3.
+  hump.position.set(20, 6.2, 0);
+  group.add(hump);
+
   // Wings: Swept-back configuration with four pylon-mounted engines and dihedral.
   const wingGroup = new THREE.Group();
   group.add(wingGroup);
   const createWingHalf = (side) => {
     const half = new THREE.Mesh(new THREE.BoxGeometry(1, 0.4, 35), dark);
-    half.position.set(side * 8, -1.2, side * 15);
+    half.position.set(side * 2, -1.2, side * 15);
     half.rotation.x = Math.PI / 180 * 3; // Dihedral
     half.rotation.z = -Math.PI / 180 * 30; // Sweep back
     half.rotation.y = side === 1 ? Math.PI / 2 : -Math.PI / 2; // Align span with Z axis
@@ -35,7 +43,7 @@ export function buildPlane(THREE) {
     [1, -1].forEach(side => {
       const engine = new THREE.Mesh(engineGeo, dark);
       engine.rotation.z = Math.PI / 2; // Align with fuselage X axis
-      engine.position.set(side * (idx === 0 ? 14 : 26), -5.0, side * zDist);
+      engine.position.set(side * (idx === 0 ? 14 : 26), -3.4, side * zDist);
       wingGroup.add(engine);
 
       const pylon = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.2, 1.8), dark);

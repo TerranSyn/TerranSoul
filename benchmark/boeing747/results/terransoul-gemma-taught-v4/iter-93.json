@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 93,
+  "run_id": "terransoul-gemma-taught-v4-iter-93-mro4vol9",
+  "plane_sha256": "4465c9179bb34a7df7e7cea126373fb15c48ca740b7581143cbabdd7f6de3281",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 50.67,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.77
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.64
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.68
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.12
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5.22
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.89
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.74
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.96
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.58
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 3.83,
+    "perCriterion": {
+      "engines_four_underwing": 4.18,
+      "upper_deck_hump": 4.14,
+      "fuselage_proportions": 4.73,
+      "wing_geometry": 5.16,
+      "empennage": 5.43,
+      "landing_gear": 7.68,
+      "window_door_lines": 3.83,
+      "livery_coherence": 5.62,
+      "silhouette_747": 5.33,
+      "craftsmanship": 5.07
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Add vertical rectangular planes at the main cabin door locations to represent structural seams. Set the width of these planes to 0.15 units (or 2% of the fuselage diameter) and position them along the fuselage's curvature. For each door, include a recessed frame effect by offsetting the plane slightly inward from the skin surface by 0.05 units.",
+    "discrepancies": [
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A single large dark block at the nose",
+        "reference": "A multi-paneled cockpit window array with distinct vertical and horizontal dividers",
+        "direction_of_fix": "subdivide into smaller rectangles"
+      },
+      {
+        "feature": "Main cabin windows",
+        "observed": "A series of small, evenly spaced dots along the fuselage",
+        "reference": "Continuous rows of rectangular windows following the curvature of the hull",
+        "direction_of_fix": "replace dots with elongated thin boxes"
+      },
+      {
+        "feature": "Door outlines",
+        "observed": "No visible door lines or structural breaks in the fuselage skin",
+        "reference": "Distinct vertical seams and recessed frames for main cabin doors",
+        "direction_of_fix": "add vertical rectangular planes at door locations"
+      },
+      {
+        "feature": "Window row alignment",
+        "observed": "Windows appear to be placed on a flat plane across the side",
+        "reference": "Windows follow the slight taper and curvature of the fuselage body",
+        "direction_of_fix": "curve window positions along the cylinder's arc"
+      }
+    ],
+    "critic_view": 2,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 52.71,
+  "created_at": "2026-07-16T23:24:39.087Z",
+  "actor_status": "edited"
+}

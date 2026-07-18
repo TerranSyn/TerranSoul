@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 350204,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 528,
+    "tool_calls": {
+      "read_file": 4,
+      "edit_file": 4
+    },
+    "total_tool_calls": 8,
+    "text_chunks": 512,
+    "tool_failures": 1,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 4
+      },
+      {
+        "name": "edit_file",
+        "count": 4
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "615e3af12db747f03fc3d893e77be5cacbd84786fe49fbf3ed61525eecc0e12b",
+  "plane_sha256_after": "866c72084b19697a46960459451b1e22150e6ca0baff2e9d6e9d6d9122c11e09",
+  "changed": true,
+  "claude_result_text": "The aircraft model for the Boeing-747 is now significantly improved in terms of its primary visual features, particularly window and door lines.\n\nSignificant updates include:\n1.  **Window Improvements**:\n    *   Main deck windows are larger (1.3x0.7x0.4) and correctly positioned on the fuselage surface ($y=2.4$, $z=\\pm1.8$), ensuring they are clearly visible.\n    *   Upper-deck windows were moved higher ($y=3.5$) over the hump area to better represent the 747's distinctive upper deck while remaining distinct from the main row.\n    *   Cockpit windshields were significantly upsized (6x2x0.5) at the nose (+X) for much better visibility.\n\n2.  **Door Improvements**:\n    *   The cargo/passenger doors were moved vertically ($y=1.5$) to ensure they are positioned on the visible side surface of the fuselage rather than buried within its volume.\n\n3.  **Geometry Fixes**:\n    *   Removed a redundant `createWingHalf(1)` call, ensuring the wing configuration is correctly symmetric with one left and one right wing.\n\nThe model now better adheres to the structural details required for a high-scoring 747 primitive representation.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 350204,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 528,
+        "tool_calls": {
+          "read_file": 4,
+          "edit_file": 4
+        },
+        "total_tool_calls": 8,
+        "text_chunks": 512,
+        "tool_failures": 1,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 4
+          },
+          {
+            "name": "edit_file",
+            "count": 4
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 128,
+  "run_id": "terransoul-gemma-taught-v4-iter-128-mrody17g",
+  "plane_sha256": "b48b8bacebe889aafa0cd15cbd7e263282ee9b102fbe540360fc6e41bb2ae893",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 55.31,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.92
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.09
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.43
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.11
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.57
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.17
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.89
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.86
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.74
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 4.11,
+    "perCriterion": {
+      "engines_four_underwing": 4.62,
+      "upper_deck_hump": 4.74,
+      "fuselage_proportions": 4.96,
+      "wing_geometry": 6.11,
+      "empennage": 6.38,
+      "landing_gear": 7.47,
+      "window_door_lines": 4.11,
+      "livery_coherence": 5.51,
+      "silhouette_747": 6,
+      "craftsmanship": 5.62
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Modify the 'Main deck window row' primitive array to implement variable spacing. Instead of a uniform distribution, apply a linear interpolation (lerp) to the X-position of each window: increase the gap between windows by 15% in the front and rear sections of the fuselage, while maintaining standard spacing in the mid-section to accommodate door placements.",
+    "discrepancies": [
+      {
+        "feature": "Main deck window row",
+        "observed": "A single continuous line of small dots along the fuselage side.",
+        "reference": "Two distinct rows of windows (main deck and upper deck) with specific spacing.",
+        "direction_of_fix": "Duplicate and offset the window primitive to create a second upper-deck row."
+      },
+      {
+        "feature": "Upper deck curvature",
+        "observed": "A straight, flat cylinder for the upper deck section.",
+        "reference": "A distinct 'hump' that curves smoothly into the main fuselage.",
+        "direction_of_fix": "Taper and curve the front of the upper deck primitive to blend with the nose."
+      },
+      {
+        "feature": "Door outlines",
+        "observed": "No visible door frames or structural breaks in the fuselage geometry.",
+        "reference": "Clearly defined rectangular door outlines along the side.",
+        "direction_of_fix": "Add small, thin rectangular planes at specific intervals along the fuselage sides."
+      },
+      {
+        "feature": "Window spacing",
+        "observed": "Uniformly spaced dots across the entire length of the fuselage.",
+        "reference": "Variable spacing with larger gaps around doors and cockpit area.",
+        "direction_of_fix": "Increase the distance between window primitives near the front and rear sections."
+      }
+    ],
+    "critic_view": 5,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 55.49,
+  "created_at": "2026-07-17T03:38:27.836Z",
+  "actor_status": "edited"
+}

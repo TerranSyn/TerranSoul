@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 68,
+  "run_id": "terransoul-gemma-taught-v4-iter-68-mrnxgtx2",
+  "plane_sha256": "487aac40831c3a93783ed04b14eda3aad0b3313fc5dc9ccac9d6f6b019700e00",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 44.14,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.6
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.79
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.13
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.08
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.41
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.07
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.42
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.87
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.36
+    }
+  ],
+  "weakest_feature": {
+    "id": "craftsmanship",
+    "mean": 3.56,
+    "perCriterion": {
+      "engines_four_underwing": 3.93,
+      "upper_deck_hump": 4.11,
+      "fuselage_proportions": 4.22,
+      "wing_geometry": 4.07,
+      "empennage": 4.94,
+      "landing_gear": 7.35,
+      "window_door_lines": 3.6,
+      "livery_coherence": 4.87,
+      "silhouette_747": 4.53,
+      "craftsmanship": 3.56
+    }
+  },
+  "critic": {
+    "weakest_feature": "craftsmanship",
+    "fix_suggestion": "Merge the vertical stabilizer geometry into the rear fuselage mesh. Translate the tail fin's local origin to align with the fuselage's rear-most vertex, and rotate it -90 degrees on the Z-axis to ensure a seamless flush transition without gaps or floating artifacts.",
+    "discrepancies": [
+      {
+        "feature": "Tail Fin Attachment",
+        "observed": "The vertical stabilizer appears to be a separate floating geometry with a visible gap at the base.",
+        "reference": "The tail fin is seamlessly integrated into the rear fuselage structure.",
+        "direction_of_fix": "Move/attach vertical stabilizer to the fuselage origin."
+      },
+      {
+        "feature": "Wing Root Integration",
+        "observed": "The wings appear to intersect or float slightly away from the main fuselage body.",
+        "reference": "Wings are structurally joined to the lower mid-fuselage with a smooth transition.",
+        "direction_of_fix": "Move/align wing roots to the fuselage center."
+      },
+      {
+        "feature": "Engine Pylon Attachment",
+        "observed": "The engines appear to be floating near the wings without clear structural pylons.",
+        "reference": "Engines are connected to the wings via distinct, angled pylon structures.",
+        "direction_of_fix": "Add/attach pylon geometries between wing and engine."
+      },
+      {
+        "feature": "Landing Gear Connection",
+        "observed": "The landing gear struts appear disconnected from the fuselage and wing underside.",
+        "reference": "Struts are structurally joined to the main body and wing spars.",
+        "direction_of_fix": "Move/attach landing gear to fuselage and wing bottom."
+      }
+    ],
+    "critic_view": 7,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 46.81,
+  "created_at": "2026-07-16T19:57:07.483Z",
+  "actor_status": "edited"
+}

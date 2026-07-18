@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 233881,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 267,
+    "tool_calls": {
+      "read_file": 2,
+      "edit_file": 1
+    },
+    "total_tool_calls": 3,
+    "text_chunks": 261,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 2
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "316ceb5defc7cf79bbb800a0477cb4278e5d9d5d77051cdab8a66c91bd3b3545",
+  "plane_sha256_after": "90c51d31eb929154b6fe3bd2f143bacb70c013f37cc1cb93fbdf7eadc9396b3a",
+  "changed": true,
+  "claude_result_text": "The Boeing-747 model has been improved to specifically address the \"Partial-length upper-deck hump\" (upper_deck_hump) which was identified as a weak feature in previous judge feedback. The following changes were made:\n\n1.  **Hump Proportions**: Updated the `hump.scale` from `(9, 2.5, 2.25)` to `(9, 3.15, 2.85)`. This uses proportions that better reflect the actual size and shape of a Boeing 747's hump as described in design references.\n2.  **Correct Positioning**: Moved the hump forward from $x=14$ to $x=20$. Given that $+X$ is forward (nose-wise) and the fuselage length spans approximately $-30$ to $30$, moving it to 20 ensures the hump covers the distinctive front third of the aircraft, including the cockpit area, rather than being positioned too far back over the middle section.\n\nThese changes directly address judge comments regarding the hump looking like a \"crude block\" or being \"poorly proportioned,\" by providing better scale and more accurate placement relative to the fuselage geometry.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 233881,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 267,
+        "tool_calls": {
+          "read_file": 2,
+          "edit_file": 1
+        },
+        "total_tool_calls": 3,
+        "text_chunks": 261,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 2
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

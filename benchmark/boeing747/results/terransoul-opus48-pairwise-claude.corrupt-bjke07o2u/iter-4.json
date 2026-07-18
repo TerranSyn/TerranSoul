@@ -1,0 +1,91 @@
+{
+  "actor": "terransoul-opus48-pairwise-claude",
+  "judge_track": "claude-opus-4-8-pairwise-vision",
+  "iter": 4,
+  "run_id": "terransoul-opus48-pairwise-iter-4-mriiya1i",
+  "plane_sha256": "64b2d936a2d36fdb42c010851ecfc1bccf73e1924e683b0161169cae33b9b3ee",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 46.29,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 3.9,
+      "notes": "engines_four_underwing: reference shows Two cylindrical nacelles with visible circular open inlets are clearly hung below and forward of the wing on the port side (inboard and outboard), plus wedge pylon shapes joining them to the wing, so four engines are implied by the two visible port pods. | upper_deck_hump: reference shows A distinct raised dome sits on top of the fuselage just aft of the coc"
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 2.55,
+      "notes": "engines_four_underwing: reference shows Two clearly cylindrical nacelles are visible under the wing (near and far side pairs implied by staggered depth), each with a rounded barrel form and a darker rear, hung below the wing on visible pylon structure | upper_deck_hump: reference shows A distinct raised upper-deck lobe sits above the forward fuselage, starting near the cockpit and blending down ab"
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 3.47,
+      "notes": "engines_four_underwing: reference shows Four nacelles with visible ring cowls, darker open inlets and clear vertical pylons dropping from the wing, with wider, more plausible inboard/outboard spacing | upper_deck_hump: reference shows Head-on, a smaller cockpit/upper-deck lobe is visible sitting on top of the larger lower fuselage sphere, giving a two-tier crown outline like the real 747's hump | "
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.39,
+      "notes": "livery_coherence: reference shows Grey fuselage and wings with a dark navy tail fin, echoing the photo's accent-colored tail"
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.37,
+      "notes": "livery_coherence: reference shows White fuselage, grey wings and nacelles, plus a navy blue accent on the vertical fin, matching the reference practice of a colored tail"
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.26,
+      "notes": "engines_four_underwing: reference shows Four nacelles with dark ringed inlets on pylons under both wings, inboard/outboard pairs visible with forward offset | wing_geometry: reference shows Both wings sweep back sharply, taper to the tips, low-mounted with dihedral and visible root fairing into the belly | empennage: reference shows Taller swept dark-blue fin with a swept horizontal stabilizer pai"
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.08,
+      "notes": "engines_four_underwing: reference shows Four dark cylindrical nacelles hang on visible short pylons beneath both swept wings, offset forward of the leading edge with plausible inboard/outboard spacing | empennage: reference shows Tall swept blue-and-white vertical fin, but the horizontal stabilizers are straight slabs bolted onto a blunt cylinder tail | landing_gear: reference shows Distinct nose "
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.32,
+      "notes": "engines_four_underwing: reference shows Four separate cylindrical nacelles are visible — two on the near wing (one inboard near the belly, one further out) and two on the far wing, each showing a dark open inlet ring and a short pylon connecting up to the wing underside, with inboard/outboard spacing. | upper_deck_hump: reference shows A distinct raised upper-deck lobe sits over the forward fusela"
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 7.32,
+      "notes": "landing_gear: reference shows Two-wheel nose strut plus four clearly separated multi-wheel main bogies (body pair and wing pair) with distinct wheels. | livery_coherence: reference shows White fuselage with a navy cheatline and a matching navy vertical fin, grey wings and nacelles."
+    }
+  ],
+  "weakest_feature": {
+    "id": "landing_gear",
+    "mean": 2.19,
+    "perCriterion": {
+      "engines_four_underwing": 3.59,
+      "upper_deck_hump": 3.25,
+      "fuselage_proportions": 7.22,
+      "wing_geometry": 5.94,
+      "empennage": 2.71,
+      "landing_gear": 2.19,
+      "window_door_lines": 4.29,
+      "livery_coherence": 2.22,
+      "silhouette_747": 3.96,
+      "craftsmanship": 7.14
+    }
+  },
+  "critic": {
+    "weakest_feature": "landing_gear",
+    "fix_suggestion": "Improve 'Landing gear (nose gear + 4-truck main gear) when visible' (mean 2.19/10). Target the 8 anchor: nose gear plus four main-gear trucks under the wing/body junction with wheels; then the 10 anchor: recognizable 747 gear layout: two-wheel nose strut, four multi-wheel main bogies (two under the body, two under the wings), plausible strut lengths.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 6.501541,
+  "regressed": false,
+  "best_total_after": 46.29,
+  "created_at": "2026-07-13T01:22:03.944Z",
+  "actor_status": "edited"
+}

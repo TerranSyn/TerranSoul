@@ -1,0 +1,91 @@
+{
+  "actor": "terransoul-opus48-open-mesh-claude",
+  "judge_track": "claude-opus-4-8-vision",
+  "iter": 1,
+  "run_id": "terransoul-opus48-open-mesh-iter-1-mrhqff4t",
+  "plane_sha256": "ba801ab7b5e5c3c21eed4fd817230871f4c9c87f973f1dd58a54134891a7c61c",
+  "rubric_sha256": "1ee64f89c93a71f553a8588b8b49ab5c2f84e9332c1c807c1184cfe23627ea5b",
+  "total_0_100": 60.32,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.16,
+      "notes": "Slender grey tube with a boxy raised upper deck over the front third and a dashed main-deck window line plus upper-deck windows. Under the wing only two or three blunt box nacelles are discernible, intersecting each other with no clear pylons. Wing reads as a thin swept sliver, no taper depth. Tall swept fin present; tiny horizontal stab. Nose gear is a single thin stick; main wheels are bare cyli"
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.85,
+      "notes": "Slender light-grey tube with a front-mounted rounded upper-deck capsule sitting proud of the crown (visible seam, no fairing). Even main-deck window band plus upper-deck windows; no cockpit windshield. Two blocky box nacelles, one extending aft of the wing, pylons unclear. Wings read as thin flat slivers. Tall swept fin present; thin tailplane. Gear: single nose wheel, three tiny wheels, no bogies"
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 7.48,
+      "notes": "Head-on: four dark-inlet nacelles on pylons under swept wings, correct inboard/outboard spacing. Nose bulges with a raised crown reading as the hump; a thin cockpit windshield band is the only surface detail — no other windows or doors. Tall fin visible; horizontal stabilizers read as thin slivers. Nose gear plus two visible main struts; wing dihedral is minimal and wings look slab-thin."
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.07,
+      "notes": "Rear head-on: four pylon-mounted nacelles under swept wings with plausible inboard/outboard spacing. Wings show mild dihedral and taper. Tail shows only a tall, very thin spike-like fin; no horizontal stabilizers are visible from this angle. Gear: nose strut plus several main bogies. Surfaces are uniformly flat grey; no windows, doors, or livery accents."
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.07,
+      "notes": "Top-down: slender light-grey tube, rounded nose, oval hump fairing in front third. Four grey cylinders sit on the wing leading edges, reading as upright stubs rather than underslung nacelles with open inlets; no forward-offset pylon shape. Wings swept and tapered but span looks short. Dashed side lines suggest windows. Small swept fin and tailplanes present; assembly clean, engine junctions crude."
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.32,
+      "notes": "Fuselage is a plain slender tube with a rounded nose and no upper-deck hump at all, so it reads as a generic four-engine narrow-body, not a 747. Four nacelles hang on pylons under swept, tapered wings. Single window band of dark specks, no cockpit glazing. Only a small nose gear; no main gear. Visible seam ring behind the nose. Uniform grey/white finish."
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 6.24,
+      "notes": "Nacelles read as short cylinders bunched near the wing root/trailing area rather than four evenly spaced pylon-hung pods offset ahead of the leading edge; they intersect the wing. Partial front hump with upper-deck windows is clear, main-deck window line is even. Wings swept but slab-like; rear fuselage ends in a blunt flat cylinder cut, no upswept tail cone. Gear struts small but present."
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.25,
+      "notes": "Slender grey tube with tapered nose and tail cone; swept fin plus horizontal stabilizers. Upper-deck crown is only a faint step near the nose, not an iconic hump. Four nacelle-like cylinders present but scattered, one hanging low, pylons not visible; wings read as thin edge-on slabs. Nose strut and two main bogies visible. Uniform flat grey, no accent."
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 6.85,
+      "notes": "Hump is a separate cylinder capped with a hard circular seam sitting on the crown, starting behind the nose rather than faired from the cockpit; no cockpit windshield. Dashed main-deck and upper-deck window rows are even. Swept wings, dark-inlet pylon nacelles, swept fin and tailplane, nose and clustered main gear visible. Coherent grey/white livery; visible fuselage step."
+    }
+  ],
+  "weakest_feature": {
+    "id": "landing_gear",
+    "mean": 5.38,
+    "perCriterion": {
+      "engines_four_underwing": 6,
+      "upper_deck_hump": 5.43,
+      "fuselage_proportions": 6.71,
+      "wing_geometry": 6.11,
+      "empennage": 6.44,
+      "landing_gear": 5.38,
+      "window_door_lines": 6.86,
+      "livery_coherence": 6.56,
+      "silhouette_747": 5.56,
+      "craftsmanship": 5.67
+    }
+  },
+  "critic": {
+    "weakest_feature": "landing_gear",
+    "fix_suggestion": "Improve 'Landing gear (nose gear + 4-truck main gear) when visible' (mean 5.38/10). Target the 8 anchor: nose gear plus four main-gear trucks under the wing/body junction with wheels; then the 10 anchor: recognizable 747 gear layout: two-wheel nose strut, four multi-wheel main bogies (two under the body, two under the wings), plausible strut lengths.",
+    "source": "anchor"
+  },
+  "total_cost_usd": 3.197807,
+  "regressed": false,
+  "best_total_after": 60.32,
+  "created_at": "2026-07-12T11:56:18.687Z",
+  "actor_status": "edited"
+}

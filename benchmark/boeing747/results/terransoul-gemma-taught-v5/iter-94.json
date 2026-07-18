@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 94,
+  "run_id": "terransoul-gemma-taught-v5-iter-94-mrpnpz30",
+  "plane_sha256": "8d82046307b4ef06a76c4ab731ee3feddf3a601dbeb859f0231f45b3b8af843e",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 60.83,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.99
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.98
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.43
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.69
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.54
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 6.11
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.57
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.53
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.91
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 5.18,
+    "perCriterion": {
+      "engines_four_underwing": 5.18,
+      "upper_deck_hump": 5.37,
+      "fuselage_proportions": 5.8,
+      "wing_geometry": 6.76,
+      "empennage": 6.7,
+      "landing_gear": 7.56,
+      "window_door_lines": 5.29,
+      "livery_coherence": 6.29,
+      "silhouette_747": 6.78,
+      "craftsmanship": 5.29
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "For the wing engine assemblies, create four distinct pylon primitives (rectangular prisms) to bridge the gap between the wings and engines. Position these pylons at a 30-degree rearward sweep relative to the fuselage. Attach them to the underside of the wing geometry using a local offset of 15% along the spanwise axis from the fuselage, and mount the engine geometries onto the distal end of these pylons. This will resolve the 'floating' appearance and correctly distribute the engines outward along the swept wing surface.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible under the wings",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines are positioned very close to the fuselage",
+        "reference": "Engines are spaced further out along the swept wing span",
+        "direction_of_fix": "move engines outward along X/Y axis"
+      },
+      {
+        "feature": "Wing Sweep",
+        "observed": "Wings appear relatively straight or only slightly angled",
+        "reference": "Significant rearward sweep of the wings",
+        "direction_of_fix": "rotate wing geometry backward"
+      },
+      {
+        "feature": "Engine Pylon Attachment",
+        "observed": "Engines appear to be floating or poorly joined to the wing surface",
+        "reference": "Engines are mounted on distinct pylons extending from the wing",
+        "direction_of_fix": "attach pylon primitives between wing and engine"
+      }
+    ],
+    "critic_view": 9,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-18T01:00:22.974Z",
+  "actor_status": "edited"
+}

@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 468914,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 849,
+    "tool_calls": {
+      "read_file": 4,
+      "edit_file": 4
+    },
+    "total_tool_calls": 8,
+    "text_chunks": 833,
+    "tool_failures": 4,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 4
+      },
+      {
+        "name": "edit_file",
+        "count": 4
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "no_change",
+  "plane_sha256_before": "90c51d31eb929154b6fe3bd2f143bacb70c013f37cc1cb93fbdf7eadc9396b3a",
+  "plane_sha256_after": "90c51d31eb929154b6fe3bd2f143bacb70c013f37cc1cb93fbdf7eadc9396b3a",
+  "changed": false,
+  "claude_result_text": "The user wants me to fix the `createWingHalf` function in `plane.js`.\nI've attempted this multiple times and it was cut",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "no_change",
+      "ms": 468914,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 849,
+        "tool_calls": {
+          "read_file": 4,
+          "edit_file": 4
+        },
+        "total_tool_calls": 8,
+        "text_chunks": 833,
+        "tool_failures": 4,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 4
+          },
+          {
+            "name": "edit_file",
+            "count": 4
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

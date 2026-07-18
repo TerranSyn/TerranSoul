@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 137,
+  "run_id": "terransoul-gemma-taught-v4-iter-137-mrog87b7",
+  "plane_sha256": "00ce6e957973f70d0ae9c30df8aecd27eeb05f13519f68e12716f15890db596d",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 49.96,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.26
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.74
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.85
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.04
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.13
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.45
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.1
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.24
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.15
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 0.17,
+    "perCriterion": {
+      "engines_four_underwing": 4.24,
+      "upper_deck_hump": 5.03,
+      "fuselage_proportions": 4.58,
+      "wing_geometry": 5.47,
+      "empennage": 5.9,
+      "landing_gear": 7.73,
+      "window_door_lines": 0.17,
+      "livery_coherence": 5.02,
+      "silhouette_747": 5.49,
+      "craftsmanship": 4.69
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Replace the single solid grey block on the fuselage side with an array of 12 small rectangular planes. Each plane should have a width of 0.4 units, a height of 0.8 units, and be spaced 0.2 units apart along the longitudinal axis of the cabin section to simulate individual windows.",
+    "discrepancies": [
+      {
+        "feature": "Main cabin window row",
+        "observed": "A single solid grey block or missing detail along the fuselage side",
+        "reference": "A continuous horizontal line of small, individual rectangular windows",
+        "direction_of_fix": "replace with a repeated array of small cubes/planes"
+      },
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A single large blocky shape at the nose",
+        "reference": "Four distinct panes arranged in a wrap-around cockpit configuration",
+        "direction_of_fix": "subdivide into 4 separate planes"
+      },
+      {
+        "feature": "Forward cabin doors",
+        "observed": "No visible vertical breaks or outlines for passenger doors",
+        "reference": "Distinct vertical door outlines near the front of the fuselage",
+        "direction_of_fix": "add thin vertical planes to break the fuselage surface"
+      },
+      {
+        "feature": "Overwing exit lines",
+        "observed": "Smooth continuous fuselage geometry above the wing",
+        "reference": "Visible breaks/outlines for emergency exits over the wing section",
+        "direction_of_fix": "add small rectangular indentations or planes"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 55.83,
+  "created_at": "2026-07-17T04:42:21.307Z",
+  "actor_status": "runtime_failed"
+}

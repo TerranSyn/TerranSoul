@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 421446,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 662,
+    "tool_calls": {
+      "read_file": 11,
+      "edit_file": 1
+    },
+    "total_tool_calls": 12,
+    "text_chunks": 638,
+    "tool_failures": 10,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 11
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "no_change",
+  "plane_sha256_before": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "plane_sha256_after": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "changed": false,
+  "claude_result_text": "I am sorry, but I am unable to find any files in the `D:\\Git\\TerranSoulApp\\benchmark\\boeing747\\candidates\\terransoul-gemma-taught-v5` directory. I have tried several common filenames and subdirectories without success. Please provide the correct path or filename for the source code.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "no_change",
+      "ms": 421446,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 662,
+        "tool_calls": {
+          "read_file": 11,
+          "edit_file": 1
+        },
+        "total_tool_calls": 12,
+        "text_chunks": 638,
+        "tool_failures": 10,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 11
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

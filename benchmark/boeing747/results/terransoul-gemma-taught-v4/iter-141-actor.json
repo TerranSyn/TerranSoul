@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 208143,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 233,
+    "tool_calls": {
+      "read_file": 3,
+      "edit_file": 1
+    },
+    "total_tool_calls": 4,
+    "text_chunks": 225,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 3
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "ddac9c380ed2023a115f8e94ac3010b54f07b1a2af952df107fd125b85021700",
+  "plane_sha256_after": "c84d9a7146986a1722123671c406e5a084f01fb477b80d500e0e03c50d3c639f",
+  "changed": true,
+  "claude_result_text": "Since I have made a targeted change to the window sizes in the main deck which were identified as being too small and represented as mere \"stripes\", I believe we have addressed one of the key criticisms of the `window_door_lines` feature. I will wait for the next cycle to see if further refinements are needed or if other windows (upper-deck, cockpit) need attention based on new feedback.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 208143,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 233,
+        "tool_calls": {
+          "read_file": 3,
+          "edit_file": 1
+        },
+        "total_tool_calls": 4,
+        "text_chunks": 225,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 3
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

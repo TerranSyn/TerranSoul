@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 78,
+  "run_id": "terransoul-gemma-taught-v5-iter-78-mrpj5bv9",
+  "plane_sha256": "fe093555a7dfc9e67dcddad6d3db6391009faac2adb43b5a064dba25e2c1be96",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 59,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.58
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.48
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 5.22
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.94
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.02
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.91
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.46
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.34
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.15
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 4.71,
+    "perCriterion": {
+      "engines_four_underwing": 4.98,
+      "upper_deck_hump": 5.06,
+      "fuselage_proportions": 5.36,
+      "wing_geometry": 6.16,
+      "empennage": 6.93,
+      "landing_gear": 7.64,
+      "window_door_lines": 4.71,
+      "livery_coherence": 6.38,
+      "silhouette_747": 6.42,
+      "craftsmanship": 5.71
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Modify the 'Main deck window row' primitive array to introduce variable spacing. Instead of a uniform distribution, implement a step function that creates 15cm gaps at regular intervals (every 4th window) to accommodate door outlines, and reduce the count by 20% in specific segments to create emergency exit clearances.",
+    "discrepancies": [
+      {
+        "feature": "Main deck window row",
+        "observed": "A single continuous line of small dots along the fuselage side.",
+        "reference": "Two distinct rows of windows (upper and lower decks) with specific spacing.",
+        "direction_of_fix": "duplicate and offset"
+      },
+      {
+        "feature": "Cockpit window layout",
+        "observed": "Small, indistinct dots at the nose tip.",
+        "reference": "Large, multi-pane wrap-around cockpit windows.",
+        "direction_of_fix": "increase size and count"
+      },
+      {
+        "feature": "Door outlines",
+        "observed": "No visible door frames or outlines on the fuselage.",
+        "reference": "Clearly defined rectangular door outlines along the fuselage side.",
+        "direction_of_fix": "add small extruded rectangles"
+      },
+      {
+        "feature": "Window spacing",
+        "observed": "Uniformly spaced dots across the entire length of the fuselage.",
+        "reference": "Variable spacing with gaps for doors and emergency exits.",
+        "direction_of_fix": "remove specific indices"
+      }
+    ],
+    "critic_view": 5,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-17T22:52:19.381Z",
+  "actor_status": "edited"
+}

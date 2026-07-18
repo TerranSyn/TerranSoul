@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 204836,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 199,
+    "tool_calls": {
+      "read_file": 4,
+      "edit_file": 1
+    },
+    "total_tool_calls": 5,
+    "text_chunks": 189,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 4
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "ddac9c380ed2023a115f8e94ac3010b54f07b1a2af952df107fd125b85021700",
+  "plane_sha256_after": "046f831eef81c39f9f836c3f57d5aaeca6f3e763e68b63d84132ae17ccbf78df",
+  "changed": true,
+  "claude_result_text": "The change successfully adjusted the upper deck window positions from $y=6.0$ (which was too high for the fuselage hull) to $y=4.2$, placing them appropriately on the front humps of the Boeing 747 model while maintaining their separate row configuration. This should improve both visual coherence and clarity as per the judge's requirements. No further changes are planned at this time.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 204836,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 199,
+        "tool_calls": {
+          "read_file": 4,
+          "edit_file": 1
+        },
+        "total_tool_calls": 5,
+        "text_chunks": 189,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 4
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

@@ -1,0 +1,82 @@
+{
+  "actor": "terransoul-gemma",
+  "iter": 148,
+  "run_id": "terransoul-gemma-iter-148-mrl3b30s",
+  "plane_sha256": "d28b1644bd7e61e2287d6bcf0b0229337ecf3b1e1a267c24b578af44836c3c2a",
+  "rubric_sha256": "fc881e55aacfebe892505a8db6e4e5d82865a92fa370119fa15a48ebe83180ff",
+  "total_0_100": 49.68,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.02
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.12
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 3.59
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 3.25
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 8.91
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.63
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 6.88
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.51
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 6.8
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4,
+    "perCriterion": {
+      "engines_four_underwing": 4,
+      "upper_deck_hump": 4.86,
+      "fuselage_proportions": 5.11,
+      "wing_geometry": 4.44,
+      "empennage": 5.71,
+      "landing_gear": 8,
+      "window_door_lines": 5.71,
+      "livery_coherence": 5.78,
+      "silhouette_747": 5.33,
+      "craftsmanship": 4.78
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Improve 'Four engines under swept wings' (mean 4/10). Target the 8 anchor: four nacelles hung under the swept wings on visible pylons, plausible inboard/outboard spacing; then the 10 anchor: four underslung pylon-mounted nacelles with correct relative size, spacing, and forward offset ahead of the wing leading edge, inlet visibly open/darker.",
+    "source": "anchor"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 55.51,
+  "created_at": "2026-07-14T20:20:21.187Z",
+  "actor_status": "no_change"
+}

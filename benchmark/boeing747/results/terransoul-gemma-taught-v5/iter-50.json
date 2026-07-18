@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 50,
+  "run_id": "terransoul-gemma-taught-v5-iter-50-mrp9037n",
+  "plane_sha256": "316ceb5defc7cf79bbb800a0477cb4278e5d9d5d77051cdab8a66c91bd3b3545",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 59.69,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.16
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.25
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.81
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.29
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5.23
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.62
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.62
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.45
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.29
+    }
+  ],
+  "weakest_feature": {
+    "id": "upper_deck_hump",
+    "mean": 4.6,
+    "perCriterion": {
+      "engines_four_underwing": 5.04,
+      "upper_deck_hump": 4.6,
+      "fuselage_proportions": 5.71,
+      "wing_geometry": 6.67,
+      "empennage": 6.68,
+      "landing_gear": 8.07,
+      "window_door_lines": 5.11,
+      "livery_coherence": 6.2,
+      "silhouette_747": 6.56,
+      "craftsmanship": 5.82
+    }
+  },
+  "critic": {
+    "weakest_feature": "upper_deck_hump",
+    "fix_suggestion": "Modify the upper deck primitive to extend its longitudinal length by 40% toward the rear of the fuselage. Apply a 15-degree taper to the width of this section as it moves posteriorly, and increase its vertical height by 20%. Finally, replace the sharp junction with a fillet radius of 3 units where the upper deck meets the main fuselage to create a smooth transition.",
+    "discrepancies": [
+      {
+        "feature": "Upper-deck hump length",
+        "observed": "The upper deck section ends abruptly near the middle of the fuselage.",
+        "reference": "The upper deck extends significantly further back toward the rear of the aircraft.",
+        "direction_of_fix": "Increase length along the longitudinal axis"
+      },
+      {
+        "feature": "Hump curvature",
+        "observed": "A sharp, angular transition where the upper deck meets the main fuselage.",
+        "reference": "A smooth, continuous curve from the nose to the end of the hump.",
+        "direction_of_fix": "Smooth/round the junction geometry"
+      },
+      {
+        "feature": "Upper-deck height",
+        "observed": "The hump appears relatively flat and low compared to the main fuselage diameter.",
+        "reference": "A prominent, rounded protrusion that rises significantly above the main cabin line.",
+        "direction_of_fix": "Increase vertical scale of the upper deck primitive"
+      },
+      {
+        "feature": "Hump taper",
+        "observed": "The top of the hump remains wide until it cuts off.",
+        "reference": "The hump tapers gradually toward its rear terminus.",
+        "direction_of_fix": "Taper the width of the upper deck geometry towards the rear"
+      }
+    ],
+    "critic_view": 7,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": false,
+  "best_total_after": 59.69,
+  "created_at": "2026-07-17T18:08:17.943Z",
+  "actor_status": "edited"
+}

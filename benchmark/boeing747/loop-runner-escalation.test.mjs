@@ -5,7 +5,7 @@
 // (a) the gap/streak decision and (b) the escalation text's AGI purity so a
 // future edit can never quietly turn it into an answer-seeding hint.
 import { describe, expect, it } from 'vitest';
-import { MESH_ESCALATION_GAP, buildMeshEscalation, meshEscalationStreak } from './loop-runner-terransoul.mjs';
+import { MESH_ESCALATION_GAP, buildFrozenEscalation, buildMeshEscalation, meshEscalationStreak } from './loop-runner-terransoul.mjs';
 
 const VIEW_THRESHOLD = 8.0;
 
@@ -82,5 +82,49 @@ describe('buildMeshEscalation text is AGI-pure (strategy only, no seeded geometr
     expect(text).toContain('3 consecutive iterations');
     const noStreak = buildMeshEscalation({ weakest: { id: 'x', mean: 4 }, streak: 1, gap: 4, viewThreshold: 8 });
     expect(noStreak).not.toContain('consecutive iterations');
+  });
+});
+
+describe('buildFrozenEscalation (frozen-track plateau breaker, 2026-07-17)', () => {
+  const args = {
+    weakest: { id: 'craftsmanship', mean: 3.4 },
+    streak: 12,
+    gap: 4.6,
+    viewThreshold: 8.0,
+    stallIters: 15,
+  };
+
+  it('directs exactly ONE bounded change and stays frozen-contract safe (single-shot rewrite, 2026-07-17)', () => {
+    const text = buildFrozenEscalation(args);
+    expect(text).toContain('exactly ONE bounded change');
+    expect(text).toContain('frozen contract');
+    // The open-track escalation directives must NEVER leak into the frozen text:
+    expect(text).not.toMatch(/BufferGeometry|LatheGeometry|ExtrudeGeometry|COMPUTED MESH|open contract/);
+  });
+
+  it('bans every recompose-class verb (measured: all rebuild attempts by this actor declined and were restored)', () => {
+    const text = buildFrozenEscalation(args);
+    // The verbs may only appear inside the explicit prohibition sentence.
+    expect(text).toContain('Do not rebuild, redesign, rework, or recompose');
+    const outsideBan = text.replace('Do not rebuild, redesign, rework, or recompose anything', '');
+    expect(outsideBan).not.toMatch(/\bREBUILD\b|\bre-?architect|\brecompose\b|\bredesign\b|from scratch/i);
+  });
+
+  it('carries the grounded 3-item pre-commit check instead of a dip-tolerance promise the gate does not grant', () => {
+    const text = buildFrozenEscalation(args);
+    expect(text).toContain('name the ONE visible difference');
+    expect(text).toContain('zero lines changed outside the block');
+    expect(text).toContain('SMALLER');
+    // The old aggregate-dip promise is gone — the gate never implemented it.
+    expect(text).not.toContain('will NOT be scored as a regression');
+  });
+
+  it('names only rubric-derived facts (feature id, mean, gap, stall) — no seeded geometry', () => {
+    const text = buildFrozenEscalation(args);
+    expect(text).toContain("'craftsmanship'");
+    expect(text).toContain('3.4/10');
+    expect(text).toContain('15 iterations');
+    // AGI purity: no coordinates/dimensions are seeded by the escalation itself.
+    expect(text).not.toMatch(/\d+\s*(m|units|deg|degrees)\b/i);
   });
 });

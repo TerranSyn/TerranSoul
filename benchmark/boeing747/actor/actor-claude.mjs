@@ -190,6 +190,8 @@ function buildActorPrompt({
   badAttemptsSection = null,
   rejectedEditsSection = null,
   plateauEscalation = null,
+  burstStatusSection = null,
+  measuredFeedbackSection = null,
   contractOpen = false,
   contractPathLabel = 'lib/contract.mjs',
   antiSmugglingRule = null,
@@ -288,12 +290,53 @@ function buildActorPrompt({
     lines.push(plateauEscalation);
     lines.push('');
   }
+  if (burstStatusSection) {
+    lines.push(burstStatusSection);
+    lines.push('');
+  }
+  if (measuredFeedbackSection) {
+    lines.push(measuredFeedbackSection);
+    lines.push('');
+  }
+  // ASSEMBLY COHERENCE SELF-CHECK (shared prompt, domain-GENERIC — serves every
+  // track): the single most common failure mode of a procedurally-assembled
+  // model is that the individual parts look plausible in isolation but do not
+  // form ONE connected object — components float in empty space, sit detached,
+  // sink into the ground/base, or scatter apart — and an actor steered only by
+  // the critic's abstract per-feature text never notices it, because the critic
+  // names a feature, not the assembly. This check runs FIRST, before any edit is
+  // chosen. It names no domain, no part, and no measurement — only the generic
+  // property that the object must read as a single connected whole.
+  lines.push('ASSEMBLY COHERENCE SELF-CHECK (do this BEFORE choosing an edit):');
+  lines.push(
+    'Open the rendered views yourself and verify the model reads as ONE coherent, connected object:',
+  );
+  lines.push(
+    '  - every component is attached to the structure it belongs to — nothing floating in empty space, detached, sunk into the ground/base, or scattered away from the main body;',
+  );
+  lines.push(
+    '  - the parts assemble into a single connected object from EVERY view, not a loose pile of separate shapes seen from different angles;',
+  );
+  lines.push('  - relative positions and proportions of the parts are plausible for the target object.');
+  lines.push(
+    'If ANY incoherence is visible (a detached, floating, sunken, or scattered part; the object failing to read as one connected whole), then FIXING that attachment/placement takes PRIORITY over the critic\'s named weakest feature this iteration — a structurally incoherent assembly caps every criterion no matter how well-shaped the individual parts are.',
+  );
+  lines.push('');
+  lines.push('CRAFT GUIDANCE (generic):');
+  lines.push(
+    '  - Prefer a parameterized, named-part structure: derive each part\'s size and position from a small set of shared, named variables rather than independent magic numbers, so the parts stay proportionate to one another and to the whole.',
+  );
+  lines.push(
+    '  - Before editing, write yourself a brief COORDINATE PLAN — the intended position and dimensions of each major component — and confirm the parts actually connect in that plan.',
+  );
+  lines.push('  - Make ONE minimal, targeted change per iteration; do not rewrite unrelated, already-acceptable parts.');
+  lines.push('');
   lines.push('YOUR TASK:');
   lines.push('1. Use the Read tool to open several rendered view PNGs above yourself, plus the reference photos most relevant to the weakest-scoring feature named above.');
   lines.push(`2. Use the Read tool to open the current source: ${candidatePath}`);
   lines.push(
     plateauEscalation
-      ? '3. As directed by the PLATEAU ESCALATION above, REBUILD the weakest feature from scratch as COMPUTED MESH geometry (do NOT merely nudge the existing primitive). A bold re-architecture of THIS ONE feature is expected: you MAY briefly touch adjacent geometry to blend it and accept a small transient dip in an already-good view, provided you do NOT regress the overall aggregate score across the nine views.'
+      ? '3. As directed by the PLATEAU section above, make exactly ONE bounded, targeted change to the named weakest feature\'s existing code block — set one parameter, add one missing element, or swap one named geometry one-for-one — leaving every other line of the file untouched. Do not rebuild, redesign, or recompose anything: in this loop a sequence of small kept changes is how progress is banked, and sprawling rewrites have always been rolled back. Keep the frozen export contract (`export function buildPlane(THREE)`) and stay strictly inside the contract stated above.'
       : '3. Make ONE focused, concrete geometric edit (or a small tightly-related set of edits) that fixes the weakest feature identified above, WITHOUT regressing any criterion that already scores well (>=7) on either judge track.',
   );
   lines.push(`4. Apply the change using the Edit tool DIRECTLY to ${candidatePath}. Do not create, write, or touch any other file.`);
@@ -473,6 +516,8 @@ export async function runActorEdit({
   badAttemptsSection,
   rejectedEditsSection,
   plateauEscalation,
+  burstStatusSection,
+  measuredFeedbackSection,
   cliBinary,
   cliDataDir,
   execImpl,
@@ -530,6 +575,8 @@ export async function runActorEdit({
     badAttemptsSection,
     rejectedEditsSection,
     plateauEscalation,
+    burstStatusSection,
+    measuredFeedbackSection,
     contractOpen: Boolean(openContractPath),
     contractPathLabel: contractLabel || (openContractPath ? path.basename(openContractPath) : 'lib/contract.mjs'),
     antiSmugglingRule,

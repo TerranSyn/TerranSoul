@@ -1,0 +1,62 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 166365,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 7,
+    "tool_calls": {
+      "read_file": 1
+    },
+    "total_tool_calls": 1,
+    "text_chunks": 5,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "no_change",
+  "plane_sha256_before": "310c1da44296d09eeeda00d6a723e0555072e093b0041e08e849e619366fd18e",
+  "plane_sha256_after": "310c1da44296d09eeeda00d6a723e0555072e093b0041e08e849e619366fd18e",
+  "changed": false,
+  "claude_result_text": "",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "no_change",
+      "ms": 166365,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 7,
+        "tool_calls": {
+          "read_file": 1
+        },
+        "total_tool_calls": 1,
+        "text_chunks": 5,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 96,
+  "run_id": "terransoul-gemma-taught-v5-iter-96-mrpoe3as",
+  "plane_sha256": "ba5d0b14031e7bdf343765939266f1e05d4204465d5ac68f33ca42b69b16adb4",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 55.42,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.09
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.09
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.55
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.54
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.16
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.93
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.73
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.76
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.03
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 4.16,
+    "perCriterion": {
+      "engines_four_underwing": 4.16,
+      "upper_deck_hump": 4.66,
+      "fuselage_proportions": 5.11,
+      "wing_geometry": 6.04,
+      "empennage": 6.6,
+      "landing_gear": 7.35,
+      "window_door_lines": 4.66,
+      "livery_coherence": 5.91,
+      "silhouette_747": 6.07,
+      "craftsmanship": 5.11
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the existing engine geometry to achieve four total engines (two per wing). For each new set, apply a translation along the X-axis to move them 15% further outboard from the fuselage. Additionally, insert a rectangular prism pylon between the engine and the wing underside, with dimensions scaled to 20% of the engine's width, to provide a distinct structural attachment point.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible under the wing",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines are positioned very close to the fuselage",
+        "reference": "Engines are spaced further outboard along the wing span",
+        "direction_of_fix": "move outward along X-axis"
+      },
+      {
+        "feature": "Engine Pylon Attachment",
+        "observed": "Engines appear to float or lack distinct pylon structures",
+        "reference": "Engines are connected via distinct pylons to the wing underside",
+        "direction_of_fix": "add small rectangular prisms between engine and wing"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.71,
+  "created_at": "2026-07-18T01:19:13.273Z",
+  "actor_status": "no_change"
+}

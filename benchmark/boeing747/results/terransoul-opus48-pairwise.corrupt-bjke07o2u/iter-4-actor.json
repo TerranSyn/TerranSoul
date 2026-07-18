@@ -1,0 +1,101 @@
+{
+  "model": "claude-opus-4-8",
+  "effort": "max",
+  "ms": 1156922,
+  "cost_usd": 5.0052625,
+  "timeout_ms": 1200000,
+  "observability": {
+    "event_count": 88,
+    "tool_calls": {
+      "Read": 12,
+      "Edit": 1,
+      "Bash": 11
+    },
+    "total_tool_calls": 24,
+    "text_chunks": 40,
+    "tool_failures": 1,
+    "tool_calls_reported": [
+      {
+        "name": "Read",
+        "count": 12
+      },
+      {
+        "name": "Edit",
+        "count": 1
+      },
+      {
+        "name": "Bash",
+        "count": 11
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "64b2d936a2d36fdb42c010851ecfc1bccf73e1924e683b0161169cae33b9b3ee",
+  "plane_sha256_after": "9fe5823922e4806758d4efeff32c7c7f78f28b608eb1953f7f518451c4185c89",
+  "changed": true,
+  "claude_result_text": "Verified. The header carries the Iter 16 note, and the hump (`DECK_HALF 1.85`/`DECK_FILLET 0.22`), body loft (`NX 168`), wings (`WING_SWEEP 0.767`), engines and empennage are all byte-identical to what I read before the edit. The module parsing at all proves there's no const redeclaration.\n\n---\n\n## Summary\n\n**What I inspected:** the contact sheet and views 1, 3, 4, 8, 9 myself, plus the `side.png` (Air New Zealand, gear down) and `front-quarter.png` (Thai) references.\n\n**Diagnosis.** The gear had collapsed to **2.19/10** on the Claude track — below the 3-anchor (\"a few floating wheels\"). Iter 11 had already tried the parameter answer (keep the layout, scale every primitive up ~30%) and it bought nothing, which is the proof that no dimension was the bug. Reading the renders, it failed for three reasons, none of which is a number:\n\n1. **The legs were invisible.** The struts were `0x9aa3ad` pins — the same light grey as the belly they hang from *and* as the sky behind them. All that survived was black wheel discs with nothing joining them to the aeroplane. That is literally the 3-anchor's wording. No thickness rescues a shape with no contrast and no form.\n2. **A cylinder is not a wheel.** A flat-capped disc has no hub, no sidewall, no tread; at render scale it is a dot, and four dots in a row smear into one instead of reading as a four-wheel truck.\n3. **The gear was attached to nothing** — pins pushed into a bare tube, where the reference has legs coming *out of structure*.\n\n**The rebuild** (computed geometry, sections derived off the two gear-down references):\n- **Tyres** are `LatheGeometry` with a real rubber section — widest at the *sidewall bulge*, not the tread — and a dished, vertex-coloured **bright hub** inside near-black rubber. The hub is what lets four touching tyres still count as four.\n- **Oleos** are `LatheGeometry`: a wide trunnion barrel stepping down at a machined shoulder onto a **polished chrome slider**, so the leg finally reads against both the lig",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 600240,
+      "actor_error": "terransoul-cli agent-task timed out after 600000ms (7 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 23,
+        "tool_calls": {
+          "Read": 7
+        },
+        "total_tool_calls": 7,
+        "text_chunks": 9,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "edited",
+      "ms": 1156922,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 88,
+        "tool_calls": {
+          "Read": 12,
+          "Edit": 1,
+          "Bash": 11
+        },
+        "total_tool_calls": 24,
+        "text_chunks": 40,
+        "tool_failures": 1,
+        "tool_calls_reported": [
+          {
+            "name": "Read",
+            "count": 12
+          },
+          {
+            "name": "Edit",
+            "count": 1
+          },
+          {
+            "name": "Bash",
+            "count": 11
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

@@ -1,0 +1,101 @@
+{
+  "model": "claude-opus-4-8",
+  "effort": "max",
+  "ms": 977106,
+  "cost_usd": 4.133629999999999,
+  "timeout_ms": 1200000,
+  "observability": {
+    "event_count": 87,
+    "tool_calls": {
+      "Read": 9,
+      "Edit": 7,
+      "Bash": 5
+    },
+    "total_tool_calls": 21,
+    "text_chunks": 45,
+    "tool_failures": 1,
+    "tool_calls_reported": [
+      {
+        "name": "Read",
+        "count": 9
+      },
+      {
+        "name": "Edit",
+        "count": 7
+      },
+      {
+        "name": "Bash",
+        "count": 5
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "cf31e8dfdcff8a92c104bea2466262efaf245e5b3a5056831a73e6cc8bde9c01",
+  "plane_sha256_after": "64b2d936a2d36fdb42c010851ecfc1bccf73e1924e683b0161169cae33b9b3ee",
+  "changed": true,
+  "claude_result_text": "Done. The edit is applied and verified against the real contract gate.\n\n## What I found first — a concurrent writer\n\n`plane.js` **changed under me mid-session** (mtime 10:58:48, six minutes into my run, between my first and second Read). My first read ended at iter 13; the file on disk then contained a complete \"Iter 14\" hump rebuild I did not write. The candidate dir is untracked, so there's no git history to attribute it — almost certainly a duplicate actor invocation on the same candidate. **Worth investigating as a loop-integrity bug: two actors on one file means edits silently clobber each other and score attribution breaks.**\n\nSo rather than stack a second re-architecture on top of an unrendered one, I audited it. It's sound, and it independently reaches the same root cause I did from the images: the forward fuselage reads as one **fat egg**, not a deck on a tube.\n\n## The defect I fixed\n\nThe iter-14 rebuild **reproduces, in its own numbers, the exact bug it names.** Its comment argues — correctly — that the previous attempt had \"no shoulder to show\" because it blended the lobe \"with a fillet WIDER than the step it is hiding.\" Then it sets:\n\n- `DECK_HALF = 2.15` on a hull radius of 3 → the lobe is **0.72×** the hull (the reference upper deck is ~4.0 m outer on a 6.5 m hull = **0.62×**).\n- At the lobe's widest (y = 2.35), the hull's own half-width is √(9 − 2.35²) = 1.865 — so the lobe protrudes by **only 0.285**. That is the entire shoulder.\n- It then fairs that 0.285 step with a **0.34 fillet**. The fillet is bigger than the step, so the chine is rounded away and the section relaxes back into the egg every judge note describes.\n\nThe crest was never the problem, so I left it untouched. The fix is forced by arithmetic:\n\n- `DECK_HALF` 2.15 → **1.85** (the reference ratio; step grows 0.285 → **0.444**)\n- `DECK_FILLET` 0.34 → **0.22** (now half the step, so the corner *rounds* instead of vanishing)\n\nThe circles now cross at (y 2.38, z ±1.83) — a ~63° corner. Head-on",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 600245,
+      "actor_error": "terransoul-cli agent-task timed out after 600000ms (12 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 32,
+        "tool_calls": {
+          "Read": 12
+        },
+        "total_tool_calls": 12,
+        "text_chunks": 8,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "edited",
+      "ms": 977106,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 87,
+        "tool_calls": {
+          "Read": 9,
+          "Edit": 7,
+          "Bash": 5
+        },
+        "total_tool_calls": 21,
+        "text_chunks": 45,
+        "tool_failures": 1,
+        "tool_calls_reported": [
+          {
+            "name": "Read",
+            "count": 9
+          },
+          {
+            "name": "Edit",
+            "count": 7
+          },
+          {
+            "name": "Bash",
+            "count": 5
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

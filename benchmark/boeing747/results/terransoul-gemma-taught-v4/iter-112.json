@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 112,
+  "run_id": "terransoul-gemma-taught-v4-iter-112-mro9zs3o",
+  "plane_sha256": "0f20307192e92b531559ba24e237fa9f1bc0ca56c8d8c174f4a34d4b7efd6450",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 47.93,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.81
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.27
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.32
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 4.92
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.46
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.88
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.84
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.92
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.72
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 3.71,
+    "perCriterion": {
+      "engines_four_underwing": 3.71,
+      "upper_deck_hump": 4.26,
+      "fuselage_proportions": 4.36,
+      "wing_geometry": 5.42,
+      "empennage": 5.63,
+      "landing_gear": 7.62,
+      "window_door_lines": 4.86,
+      "livery_coherence": 5.13,
+      "silhouette_747": 4.93,
+      "craftsmanship": 3.71
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Apply a rotation transform to the wing primitives along their local normal axis (perpendicular to the fuselage) to increase the rearward sweep angle from approximately 15 degrees to 35 degrees, ensuring the leading edge aligns with the intended aerodynamic profile of the Boeing 747.",
+    "discrepancies": [
+      {
+        "feature": "Engine Count",
+        "observed": "Two engines visible under the wing",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate engine geometry"
+      },
+      {
+        "feature": "Wing Sweep",
+        "observed": "Wings are nearly perpendicular to the fuselage",
+        "reference": "Significant rearward sweep of the wings",
+        "direction_of_fix": "rotate wing primitives backward along the longitudinal axis"
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "Engines are positioned close to the fuselage",
+        "reference": "Engines are spaced out along the leading edge of the wing",
+        "direction_of_fix": "move engine primitives outward away from the fuselage"
+      },
+      {
+        "feature": "Wing Thickness",
+        "observed": "Wings appear as thin, flat planes",
+        "reference": "Wings have significant aerodynamic thickness and airfoil shape",
+        "direction_of_fix": "increase thickness dimension of wing primitives"
+      }
+    ],
+    "critic_view": 6,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 54.13,
+  "created_at": "2026-07-17T01:47:48.598Z",
+  "actor_status": "edited"
+}

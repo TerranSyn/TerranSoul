@@ -1,0 +1,108 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 1,
+  "run_id": "terransoul-gemma-taught-v4-iter-1-mrnj9zyi",
+  "plane_sha256": "e97e2db05cae2f24d545df9809521932444d554e776ccaa5a79e5a58f3774300",
+  "rubric_sha256": "db00aa23527fd7a5e64babaf94a59afefadc67141e99554fe41c05ea06956572",
+  "total_0_100": 55.4,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.11
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 8.86
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 3.54
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 3.84
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 8.86
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.27
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 6.79
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.46
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 7.13
+    }
+  ],
+  "weakest_feature": {
+    "id": "craftsmanship",
+    "mean": 4.98,
+    "perCriterion": {
+      "engines_four_underwing": 5.04,
+      "upper_deck_hump": 5.23,
+      "fuselage_proportions": 5.76,
+      "wing_geometry": 5.33,
+      "empennage": 6.34,
+      "landing_gear": 7.2,
+      "window_door_lines": 6.29,
+      "livery_coherence": 5.73,
+      "silhouette_747": 5.81,
+      "craftsmanship": 4.98
+    }
+  },
+  "critic": {
+    "weakest_feature": "craftsmanship",
+    "fix_suggestion": "Parent the four engine geometries to the wing pylon structures. Apply a translation transform to move each engine from its current floating position to an offset of 0.5 units below and 1.2 units outboard of the wing's primary spar, ensuring they are flush against the pylons with a rotation of 0 degrees relative to the wing's longitudinal axis.",
+    "discrepancies": [
+      {
+        "feature": "Engine Attachment",
+        "observed": "Four engines are floating independently in space away from the wings.",
+        "reference": "Engines are physically attached to pylons under the wings.",
+        "direction_of_fix": "Move and parent engine geometries to wing pylon positions."
+      },
+      {
+        "feature": "Wing Connection",
+        "observed": "The main wing structure is detached from the fuselage.",
+        "reference": "Wings are integrated into the side of the fuselage.",
+        "direction_of_fix": "Move wings to intersect with the fuselage sides."
+      },
+      {
+        "feature": "Tail Assembly",
+        "observed": "The vertical stabilizer and horizontal stabilizers are floating behind the fuselage.",
+        "reference": "Stabilizers are attached to the rear fuselage structure.",
+        "direction_of_fix": "Move tail components to attach to the rear of the fuselage geometry."
+      },
+      {
+        "feature": "Nose Landing Gear",
+        "observed": "The nose gear is detached from the front underside of the plane.",
+        "reference": "Nose gear is connected to the forward fuselage.",
+        "direction_of_fix": "Move and align nose gear with the front fuselage bottom."
+      }
+    ],
+    "critic_view": 6,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": false,
+  "best_total_after": 55.4,
+  "created_at": "2026-07-16T13:20:10.894Z"
+}

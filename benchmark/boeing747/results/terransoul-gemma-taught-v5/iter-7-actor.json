@@ -1,0 +1,92 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 175479,
+  "cost_usd": 0,
+  "timeout_ms": 1200000,
+  "observability": {
+    "event_count": 240,
+    "tool_calls": {
+      "read_file": 3,
+      "edit_file": 1
+    },
+    "total_tool_calls": 4,
+    "text_chunks": 232,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 3
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "ddac9c380ed2023a115f8e94ac3010b54f07b1a2af952df107fd125b85021700",
+  "plane_sha256_after": "dd7a3a515b2738dd3968acc599cb099a52ad9410911009dd184c67498d2c0a73",
+  "changed": true,
+  "claude_result_text": "The model's window and door lines have been improved by adjusting the cockpit windshield placements to be more integrated into the fuselage surface, preventing them from protruding outside the nominal radius of the cylinder. The side wrap-around panes now sit correctly on the fuselage profile at x=26, and the front-facing glazing has been lowered slightly to better follow the nose's curvature while remaining flush with the main body. This addresses several structural inconsistencies where windows were previously \"floating\" in 3D space outside the plane's model bounds. Based on the current progress, these refinements represent the most significant achievable improvements within the constraints of this specific code block for a primitives-only geometry pass.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 600236,
+      "actor_error": "terransoul-cli agent-task timed out after 600000ms (10 tool call(s) observed before kill)",
+      "timed_out": true,
+      "denied": false,
+      "observability": {
+        "event_count": 292,
+        "tool_calls": {
+          "read_file": 5,
+          "edit_file": 5
+        },
+        "total_tool_calls": 10,
+        "text_chunks": 272,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "edited",
+      "ms": 175479,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 240,
+        "tool_calls": {
+          "read_file": 3,
+          "edit_file": 1
+        },
+        "total_tool_calls": 4,
+        "text_chunks": 232,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 3
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

@@ -1,0 +1,102 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 70,
+  "run_id": "terransoul-gemma-taught-v4-iter-70-mrnycz70",
+  "plane_sha256": "6def6477afc2d43a992e82a90beeb3558e5133360e8cac88ff4a6f579234391f",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 44.7,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.69
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.85
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.37
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.27
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.71
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.28
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.74
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 3.85
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.47
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 3.67,
+    "perCriterion": {
+      "engines_four_underwing": 3.67,
+      "upper_deck_hump": 4.49,
+      "fuselage_proportions": 4.24,
+      "wing_geometry": 4.11,
+      "empennage": 4.99,
+      "landing_gear": 7.31,
+      "window_door_lines": 3.69,
+      "livery_coherence": 5.33,
+      "silhouette_747": 4.49,
+      "craftsmanship": 3.87
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the engine nacelle geometry to achieve four total engines; move the outboard pair 30% further toward the wingtips and scale/taper the rectangular faces by a factor of 1.5 to create an aerodynamic cylindrical shape.",
+    "discrepancies": [
+      {
+        "feature": "Engine count",
+        "observed": "Two large engine nacelles on the visible side",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate"
+      },
+      {
+        "feature": "Engine placement",
+        "observed": "Engines are attached directly under the wing root area",
+        "reference": "Engines are mounted further outboard on the wings",
+        "direction_of_fix": "move outward"
+      },
+      {
+        "feature": "Nacelle shape",
+        "observed": "Boxy, rectangular engine nacelles",
+        "reference": "Cylindrical/aerodynamic tapered nacelles",
+        "direction_of_fix": "scale/reshape"
+      }
+    ],
+    "critic_view": 1,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 46.81,
+  "created_at": "2026-07-16T20:22:07.118Z"
+}

@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v5",
+  "iter": 47,
+  "run_id": "terransoul-gemma-taught-v5-iter-47-mrp81e89",
+  "plane_sha256": "fb32451d705e7ef3664db87de019dcc2252ff395cfca186d34e93d3b5d5b10f4",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 50.99,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.59
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.68
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.82
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 7.4
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.25
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.05
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.05
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 7.18
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 3.87
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 1.8,
+    "perCriterion": {
+      "engines_four_underwing": 4.38,
+      "upper_deck_hump": 4.43,
+      "fuselage_proportions": 4.82,
+      "wing_geometry": 5.31,
+      "empennage": 6.43,
+      "landing_gear": 7.45,
+      "window_door_lines": 1.8,
+      "livery_coherence": 5.42,
+      "silhouette_747": 5.4,
+      "craftsmanship": 5.04
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Replace the current 'dot' primitives on the fuselage with an array of 40 rectangular prisms (dimensions: 0.2m x 0.15m x 0.05m). Arrange these prisms in a linear path following the fuselage curvature, using a uniform spacing of 0.8m between each prism center. Align the prisms perpendicular to the surface normal at every point along the curve to ensure consistent orientation across the hull.",
+    "discrepancies": [
+      {
+        "feature": "Upper deck window row",
+        "observed": "A single continuous line of small dots on the upper hump.",
+        "reference": "A distinct row of individual rectangular windows with defined spacing.",
+        "direction_of_fix": "replace dots with repeated small box geometries"
+      },
+      {
+        "feature": "Main deck door outlines",
+        "observed": "Flat surface with no visible door frames or structural breaks.",
+        "reference": "Clearly defined vertical and horizontal recessed lines for passenger doors.",
+        "direction_of_fix": "add thin rectangular prisms to define door boundaries"
+      },
+      {
+        "feature": "Cockpit window layout",
+        "observed": "A single large, flat white face at the nose.",
+        "reference": "Multiple distinct panes arranged in a wrap-around cockpit window structure.",
+        "direction_of_fix": "replace front face with multiple angled planes"
+      },
+      {
+        "feature": "Window row alignment",
+        "observed": "Windows are placed randomly or as simple dots without structural spacing.",
+        "reference": "Uniformly spaced windows following the curvature of the fuselage.",
+        "direction_of_fix": "reposition window primitives along a curved path"
+      }
+    ],
+    "critic_view": 9,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 57.44,
+  "created_at": "2026-07-17T17:41:26.464Z",
+  "actor_status": "edited"
+}

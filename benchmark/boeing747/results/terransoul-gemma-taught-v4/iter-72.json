@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 72,
+  "run_id": "terransoul-gemma-taught-v4-iter-72-mrnyzjay",
+  "plane_sha256": "927c7260a4f9f00e8d672f905a8888606f54696313cbf4edbf4fa35dc330712a",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 42.19,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.18
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.03
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.32
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 4.28
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.53
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.87
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.33
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.27
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.16
+    }
+  ],
+  "weakest_feature": {
+    "id": "craftsmanship",
+    "mean": 3.27,
+    "perCriterion": {
+      "engines_four_underwing": 3.98,
+      "upper_deck_hump": 4.09,
+      "fuselage_proportions": 4.11,
+      "wing_geometry": 3.76,
+      "empennage": 4.93,
+      "landing_gear": 5.78,
+      "window_door_lines": 3.69,
+      "livery_coherence": 5.22,
+      "silhouette_747": 4.24,
+      "craftsmanship": 3.27
+    }
+  },
+  "critic": {
+    "weakest_feature": "craftsmanship",
+    "fix_suggestion": "Adjust the Engine geometry's local position transform to move it inward along the X-axis and downward along the Y-axis. Specifically, decrease the offset from the wing root by 15% of the engine's total width and reduce the vertical clearance by 20% until the engine pylon geometry intersects with the wing surface mesh, ensuring a flush mount without visible gaps.",
+    "discrepancies": [
+      {
+        "feature": "Engine Attachment",
+        "observed": "Engines appear to be floating slightly away from the wing surface.",
+        "reference": "Engines are flush-mounted and integrated into the wing structure.",
+        "direction_of_fix": "Move engines inward/downward to intersect with wing geometry."
+      },
+      {
+        "feature": "Landing Gear Connection",
+        "observed": "The landing gear struts do not appear to connect to the fuselage or wing roots.",
+        "reference": "Struts are structurally joined to the main body and wing spars.",
+        "direction_of_fix": "Move strut endpoints to intersect with fuselage/wing surfaces."
+      },
+      {
+        "feature": "Tail Fin Base",
+        "observed": "The vertical stabilizer appears detached from the rear fuselage.",
+        "reference": "The tail fin is seamlessly integrated into the aft fuselage.",
+        "direction_of_fix": "Move tail fin forward and down to merge with fuselage geometry."
+      },
+      {
+        "feature": "Wing Root Integration",
+        "observed": "There is a visible gap between the wing base and the fuselage side.",
+        "reference": "The wings emerge smoothly from the fuselage skin.",
+        "direction_of_fix": "Move wing roots inward/downward to eliminate gaps."
+      }
+    ],
+    "critic_view": 6,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 46.81,
+  "created_at": "2026-07-16T20:39:39.104Z",
+  "actor_status": "edited"
+}

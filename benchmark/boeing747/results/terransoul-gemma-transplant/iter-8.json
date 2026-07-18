@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-transplant",
+  "iter": 8,
+  "run_id": "terransoul-gemma-transplant-iter-8-mrom4emv",
+  "plane_sha256": "39caa6722ac651534a2f2d6fa8a487da036b08f350fd993eedf557be8a438c84",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 60.68,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 5.69
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.91
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.39
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.61
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.62
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 5.76
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.91
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.65
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.07
+    }
+  ],
+  "weakest_feature": {
+    "id": "livery_coherence",
+    "mean": 4.27,
+    "perCriterion": {
+      "engines_four_underwing": 5.13,
+      "upper_deck_hump": 4.69,
+      "fuselage_proportions": 5.53,
+      "wing_geometry": 7.04,
+      "empennage": 7.65,
+      "landing_gear": 6.51,
+      "window_door_lines": 5.29,
+      "livery_coherence": 4.27,
+      "silhouette_747": 6.07,
+      "craftsmanship": 7.71
+    }
+  },
+  "critic": {
+    "weakest_feature": "livery_coherence",
+    "fix_suggestion": "Apply a blue material override to the vertical stabilizer geometry and construct a white 'saltire' cross using two intersecting rectangular prisms. Position the first prism at a 45-degree angle across the center of the fin, and the second at a -45-degree angle, ensuring both have a width-to-height ratio of 0.2 to create a balanced cross shape.",
+    "discrepancies": [
+      {
+        "feature": "Tail Livery",
+        "observed": "Solid grey tail fin with no markings.",
+        "reference": "Blue vertical stabilizer with a large white saltire (cross).",
+        "direction_of_fix": "Add/color"
+      },
+      {
+        "feature": "Fuselage Stripe",
+        "observed": "Solid grey fuselage without horizontal stripes.",
+        "reference": "A distinct blue cheatline running along the lower half of the fuselage.",
+        "direction_of_fix": "Add/color"
+      },
+      {
+        "feature": "Engine Livery",
+        "observed": "Plain grey engine cowlings.",
+        "reference": "White and blue livery on engines matching the fuselage.",
+        "direction_of_fix": "Color"
+      },
+      {
+        "feature": "Text Branding",
+        "observed": "No text or logos visible on the fuselage.",
+        "reference": "Large 'HIGHLAND EXPRESS' text above the windows.",
+        "direction_of_fix": "Add/color"
+      }
+    ],
+    "critic_view": 4,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 63.11,
+  "created_at": "2026-07-17T07:27:24.153Z",
+  "actor_status": "no_change"
+}

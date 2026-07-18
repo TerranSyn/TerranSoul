@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 71,
+  "run_id": "terransoul-gemma-taught-v4-iter-71-mrnyp2ym",
+  "plane_sha256": "70b1174f34196da687ab759ef9b88453b3893b5db5055d4ece34944b2d1acbfb",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 45.86,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.35
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.59
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.45
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.73
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.43
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.43
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.01
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.65
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.63
+    }
+  ],
+  "weakest_feature": {
+    "id": "craftsmanship",
+    "mean": 3.73,
+    "perCriterion": {
+      "engines_four_underwing": 3.84,
+      "upper_deck_hump": 4.26,
+      "fuselage_proportions": 4.38,
+      "wing_geometry": 4.69,
+      "empennage": 4.86,
+      "landing_gear": 6.88,
+      "window_door_lines": 3.77,
+      "livery_coherence": 5.4,
+      "silhouette_747": 4.82,
+      "craftsmanship": 3.73
+    }
+  },
+  "critic": {
+    "weakest_feature": "craftsmanship",
+    "fix_suggestion": "Parent the 'Main Landing Gear Wheel' and 'Strut' geometries to the 'Wing Root' geometry. Apply a local translation of [0, 0, 0] to align their origins at the wing-fuselage junction, then rotate the strut assembly by -90 degrees on the X-axis to ensure the wheels are flush against the fuselage surface rather than floating independently.",
+    "discrepancies": [
+      {
+        "feature": "Landing Gear Attachment",
+        "observed": "The main landing gear wheels and struts are floating independently from the fuselage.",
+        "reference": "Wheels and struts are physically attached to the wing root and fuselage structure.",
+        "direction_of_fix": "Attach/parent wheel geometries to the main landing gear strut geometry."
+      },
+      {
+        "feature": "Engine Placement",
+        "observed": "The engines appear to be detached or floating near the wings without clear mounting pylons.",
+        "reference": "Engines are mounted to the wing underside via distinct structural pylons.",
+        "direction_of_fix": "Attach engine geometries to pylon geometries and position them under the wings."
+      },
+      {
+        "feature": "Tail Assembly Connection",
+        "observed": "The vertical stabilizer appears disconnected from the rear fuselage structure.",
+        "reference": "The vertical stabilizer is integrated into the rear fuselage.",
+        "direction_of_fix": "Move/attach vertical stabilizer geometry to the rear of the fuselage cylinder."
+      },
+      {
+        "feature": "Wing-to-Fuselage Join",
+        "observed": "There is a visible gap or lack of connection between the wing roots and the main body.",
+        "reference": "The wings are seamlessly integrated into the lower fuselage.",
+        "direction_of_fix": "Move/overlap wing root geometries with the fuselage cylinder."
+      }
+    ],
+    "critic_view": 7,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 46.81,
+  "created_at": "2026-07-16T20:31:35.066Z",
+  "actor_status": "edited"
+}

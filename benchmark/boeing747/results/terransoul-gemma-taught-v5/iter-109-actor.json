@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 227158,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 543,
+    "tool_calls": {
+      "read_file": 3,
+      "edit_file": 1
+    },
+    "total_tool_calls": 4,
+    "text_chunks": 535,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 3
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "plane_sha256_after": "488b85ade2affd7ef3692645eec8039d6fa3dfd59b609a4f6a9619c12566747e",
+  "changed": true,
+  "claude_result_text": "The engine configurations were corrected to ensure proper symmetry and sweep-back orientation on both sides of the aircraft. By removing the `side *` multiplier from the `xOffset`, engines now maintain a consistent horizontal position relative to the wing span, where they move backwards (more negative $X$) as they move outwards (larger $|Z|$). This resolves a geometry bug where one side was horizontally flipped compared to the other.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 227158,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 543,
+        "tool_calls": {
+          "read_file": 3,
+          "edit_file": 1
+        },
+        "total_tool_calls": 4,
+        "text_chunks": 535,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 3
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

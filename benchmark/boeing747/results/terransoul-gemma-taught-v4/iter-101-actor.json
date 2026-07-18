@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 145114,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 236,
+    "tool_calls": {
+      "read_file": 2,
+      "edit_file": 1
+    },
+    "total_tool_calls": 3,
+    "text_chunks": 230,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 2
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "26381b918dcd6ad79b374192d4a5ef8550cf7c668c14813bcab10a371be7afad",
+  "plane_sha256_after": "3b80cc8246c48ae402543a8a1545fea57a137e258117d066b7d861e1334824da",
+  "changed": true,
+  "claude_result_text": "The Boeing 747 model has been improved by refining the window and door lines:\n1.  **Main Deck Windows**: Reduced the density from 50 overlapping windows to 20 properly spaced windows, eliminating the \"dark streaks\" effect and giving a more realistic appearance along the fuselage.\n2.  **Upper-Deck Windows**: Repositioned and adjusted the count of upper-deck windows on the hump to better follow its curvature and provide a distinct separation from the main deck line.\n3.  **Cockpit Windshields**: Rescaled the cockpit windows slightly and moved them further back from the nose tip to improve their proportions and ensure they sit correctly within the aircraft's geometry.\n4.  **Coherence**: These changes ensure that windows are absent from inappropriate areas (nose/tail) while being present in a consistent, realistic pattern along the main body.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 145114,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 236,
+        "tool_calls": {
+          "read_file": 2,
+          "edit_file": 1
+        },
+        "total_tool_calls": 3,
+        "text_chunks": 230,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 2
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

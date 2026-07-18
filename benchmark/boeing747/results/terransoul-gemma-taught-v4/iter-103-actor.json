@@ -1,0 +1,74 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 340801,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 481,
+    "tool_calls": {
+      "read_file": 4,
+      "edit_file": 2
+    },
+    "total_tool_calls": 6,
+    "text_chunks": 469,
+    "tool_failures": 1,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 4
+      },
+      {
+        "name": "edit_file",
+        "count": 2
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "runtime_failed",
+  "runtime_error": "SyntaxError: Unexpected token ')'\n    at new Function (<anonymous>)\n    at smokeCheckPlane (file:///D:/Git/TerranSoulApp/benchmark/boeing747/actor/actor-claude.mjs:743:24)\n    at runActorEdit (file:///D:/Git/TerranSoulApp/benchmark/boeing747/actor/actor-claude.mjs:681:23)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async runActorWithRetries (file:///D:/Git/TerranSoulApp/benchmark/boeing747/loop-runner-terransoul.mjs:629:14)\n    at async runIterationTerransoul (file:///D:/Git/TerranSoulApp/benchmark/boeing747/loop-runner-terransoul.mjs:1353:19)\n    at async runLoopTerransoul (file:///D:/Git/TerranSoulApp/benchmark/boeing747/loop-runner-terransoul.mjs:1625:14)",
+  "plane_sha256_before": "26381b918dcd6ad79b374192d4a5ef8550cf7c668c14813bcab10a371be7afad",
+  "plane_sha256_after": "26381b918dcd6ad79b374192d4a5ef8550cf7c668c14813bcab10a371be7afad",
+  "plane_sha256_rejected": "1e8e689ec8fdb6b54dee3e5f196764de897d345e6508da205b84b694af194758",
+  "changed": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "runtime_failed",
+      "ms": 340801,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 481,
+        "tool_calls": {
+          "read_file": 4,
+          "edit_file": 2
+        },
+        "total_tool_calls": 6,
+        "text_chunks": 469,
+        "tool_failures": 1,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 4
+          },
+          {
+            "name": "edit_file",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

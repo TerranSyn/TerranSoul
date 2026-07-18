@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 76,
+  "run_id": "terransoul-gemma-taught-v4-iter-76-mro08wz9",
+  "plane_sha256": "d8b5f62093534123aa23450609226fc0f4eb9862c0721e3e08f8f19ec44ddbdd",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 43.43,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.7
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.55
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.65
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 4.95
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 4.38
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 3.85
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.86
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.37
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 3.78
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 0.86,
+    "perCriterion": {
+      "engines_four_underwing": 3.76,
+      "upper_deck_hump": 4.4,
+      "fuselage_proportions": 4.29,
+      "wing_geometry": 4.29,
+      "empennage": 5.18,
+      "landing_gear": 7.53,
+      "window_door_lines": 0.86,
+      "livery_coherence": 4.49,
+      "silhouette_747": 4.51,
+      "craftsmanship": 3.67
+    }
+  },
+  "critic": {
+    "weakest_feature": "window_door_lines",
+    "fix_suggestion": "Add 4 thin box geometries to the fuselage cylinder to represent door frames. Position them at X-coordinates -150, -50, 50, and 150 relative to the center axis; set their height to 60% of the fuselage diameter and width to 20% of the diameter. Additionally, place 8 thin plane geometries as horizontal panel lines across the fuselage at 25% intervals along the Y-axis to break up the smooth surface.",
+    "discrepancies": [
+      {
+        "feature": "Window row count",
+        "observed": "A single continuous line of small dots along the fuselage",
+        "reference": "Multiple distinct rows of windows with specific spacing and grouping",
+        "direction_of_fix": "increase number of primitive objects"
+      },
+      {
+        "feature": "Door outlines",
+        "observed": "No discernible door geometry or structural breaks in the fuselage cylinder",
+        "reference": "Clearly defined rectangular door frames with visible seams",
+        "direction_of_fix": "add thin box geometries for doors"
+      },
+      {
+        "feature": "Window alignment",
+        "observed": "Windows are placed randomly or uniformly without vertical grouping",
+        "reference": "Windows are organized into distinct horizontal rows and cabin sections",
+        "direction_of_fix": "reposition window primitives along Y-axis"
+      },
+      {
+        "feature": "Fuselage detail",
+        "observed": "Smooth, unbroken cylinder surface",
+        "reference": "Visible panel lines and structural breaks around windows and doors",
+        "direction_of_fix": "add thin plane geometries for paneling"
+      }
+    ],
+    "critic_view": 7,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": true,
+  "best_total_after": 46.81,
+  "created_at": "2026-07-16T21:14:57.486Z",
+  "actor_status": "edited"
+}

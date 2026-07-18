@@ -1,0 +1,72 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 260324,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 21,
+    "tool_calls": {
+      "read_file": 3,
+      "edit_file": 1
+    },
+    "total_tool_calls": 4,
+    "text_chunks": 13,
+    "tool_failures": 0,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 3
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "420bdcbc397c7254460b281055e4cbaa38a9ac6689c9dba103b7b2fd6e824275",
+  "plane_sha256_after": "dbf8826f0e954056d7c895c3f564ddf2ad7d2d95d198f9605a4918967e027eb4",
+  "changed": true,
+  "claude_result_text": "I have added a landing gear system to the Boeing 747 model, addressing the weakest feature identified by the judge feedback (landing_gear). This includes:\n1.  A nose strut at the front of the fuselage with a twin-wheel arrangement.\n2.  Four main-gear bogies positioned under the wing and body areas, each equipped with four wheels in a 2x2 configuration.\n3.  Correct vertical offset to ensure all gears are positioned beneath the airframe rather than floating or intersecting the fuselage.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 260324,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 21,
+        "tool_calls": {
+          "read_file": 3,
+          "edit_file": 1
+        },
+        "total_tool_calls": 4,
+        "text_chunks": 13,
+        "tool_failures": 0,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 3
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  }
+}

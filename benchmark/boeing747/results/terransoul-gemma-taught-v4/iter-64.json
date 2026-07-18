@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-gemma-taught-v4",
+  "iter": 64,
+  "run_id": "terransoul-gemma-taught-v4-iter-64-mrnwexhj",
+  "plane_sha256": "a91b928a5f3dc9d5788f1dbbf18bca92469f0014f769bcd114c9fed79ca7fd5d",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 46.81,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.54
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 4.78
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.5
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.56
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.03
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.4
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 3.81
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.14
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 4.37
+    }
+  ],
+  "weakest_feature": {
+    "id": "craftsmanship",
+    "mean": 3.67,
+    "perCriterion": {
+      "engines_four_underwing": 3.89,
+      "upper_deck_hump": 4.26,
+      "fuselage_proportions": 4.36,
+      "wing_geometry": 4.6,
+      "empennage": 5.43,
+      "landing_gear": 7.6,
+      "window_door_lines": 3.83,
+      "livery_coherence": 5.16,
+      "silhouette_747": 4.91,
+      "craftsmanship": 3.67
+    }
+  },
+  "critic": {
+    "weakest_feature": "craftsmanship",
+    "fix_suggestion": "Apply a translation and rotation transform to the engine geometry to merge it with the wing structure. Specifically, move the engine's local origin along the X-axis (longitudinal) by 15% of its length toward the fuselage, and rotate it -2 degrees on the Y-axis (pitch) to align with the wing's leading edge angle. Adjust the Z-axis position so that the bottom face of the engine intersects the top surface of the wing at a 0mm gap, ensuring no visible void exists between the two primitive groups.",
+    "discrepancies": [
+      {
+        "feature": "Engine Attachment",
+        "observed": "Engines are floating away from the wing surface with visible gaps.",
+        "reference": "Engines are flush-mounted and integrated into the wing structure.",
+        "direction_of_fix": "Move engines inward to intersect/merge with wing geometry."
+      },
+      {
+        "feature": "Landing Gear Connection",
+        "observed": "Landing gear struts are detached from the fuselage and wings, floating in space.",
+        "reference": "Struts are physically connected to the underside of the fuselage and wing roots.",
+        "direction_of_fix": "Move landing gear bases to intersect with fuselage/wing bottom surfaces."
+      },
+      {
+        "feature": "Tail Fin Connection",
+        "observed": "The vertical stabilizer is detached from the rear fuselage.",
+        "reference": "The tail fin is seamlessly joined to the aft section of the fuselage.",
+        "direction_of_fix": "Move and align tail fin base to merge with rear fuselage geometry."
+      },
+      {
+        "feature": "Wing Root Integration",
+        "observed": "Wings appear as separate floating objects rather than continuous extensions of the body.",
+        "reference": "Wings emerge smoothly from the lower side of the fuselage.",
+        "direction_of_fix": "Shift wing origins to intersect with the fuselage sides."
+      }
+    ],
+    "critic_view": 6,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": false,
+  "best_total_after": 46.81,
+  "created_at": "2026-07-16T19:27:42.010Z",
+  "actor_status": "edited"
+}

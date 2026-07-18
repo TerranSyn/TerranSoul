@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 271365,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 230,
+    "tool_calls": {
+      "read_file": 4,
+      "edit_file": 3
+    },
+    "total_tool_calls": 7,
+    "text_chunks": 216,
+    "tool_failures": 2,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 4
+      },
+      {
+        "name": "edit_file",
+        "count": 3
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "edited",
+  "plane_sha256_before": "a91b928a5f3dc9d5788f1dbbf18bca92469f0014f769bcd114c9fed79ca7fd5d",
+  "plane_sha256_after": "487aac40831c3a93783ed04b14eda3aad0b3313fc5dc9ccac9d6f6b019700e00",
+  "changed": true,
+  "claude_result_text": "The Craftsmanship score and the specific issues of \"disconnected floating primitives\" were improved by making structural connections between major aircraft components:\n\n1.  **Wing Root Connection**: The root distance for the wings was adjusted from `z=18` to `z=14`. This significantly reduces the horizontal gap between the wing's primary structure and the fuselage, providing a more continuous visual join that aligns with standard wide-body aircraft designs.\n2.  **Engine/Pylon Integration**: The pylon position was moved from $y=-3$ to $y=-1.3$. Given that the wings are at $y=-1$, this places the pylons (which have a height of 1.5) directly in contact with the wing's lower surface. This ensures the engines \"sit\" on the pylon and wing units rather than floating independently in space, rectifying one of the primary causes for low craftsmanship scores in primitive-only models.\n\nThese targeted edits improve structural coherence without introducing new artifacts or deviating from the frozen contract geometry requirements.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "edited",
+      "ms": 271365,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 230,
+        "tool_calls": {
+          "read_file": 4,
+          "edit_file": 3
+        },
+        "total_tool_calls": 7,
+        "text_chunks": 216,
+        "tool_failures": 2,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 4
+          },
+          {
+            "name": "edit_file",
+            "count": 3
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}
