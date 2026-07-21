@@ -237,6 +237,133 @@
       <figcaption><span class="fignum">Fig 11</span>The memory-evolution timeline. Qualitative era bands only &mdash; there is no value axis, so no magnitude may be read from band length. Source: the evolution-timeline table of <code>docs/brain-advanced-design.md</code> [<a href="#cref-51">51</a>].</figcaption>
     </figure>
 
+    <h3>The moving picture: how memory retrieval actually works</h3>
+    <p>Before the eleven stages in detail, the mechanism most of them share &mdash; the vector-database + RAG core of Stages&nbsp;3 and&nbsp;5 &mdash; as a single loop. Raw data becomes vectors, vectors are indexed, a question becomes a vector, the nearest neighbours are found and filtered, and the top matches ground a language model's grounded, cited answer. The animation runs the nine steps in order and repeats.</p>
+
+    <!-- ==== Animated explainer (self-contained; scoped `vx-` classes; theme-token colours; honours prefers-reduced-motion) ==== -->
+    <figure class="chart vx-fig">
+      <style>
+        .vx-fig svg{padding:0}
+        .vx-stage{--vx-cyc:13.5s;--vx-doc:oklch(0.62 0.14 45);--vx-qry:oklch(0.55 0.13 250);--vx-hit:oklch(0.58 0.15 140);}
+        .vx-lbl{fill:var(--ink-soft);font-family:var(--sans);font-size:12px}
+        .vx-lbl-b{fill:var(--ink);font-family:var(--sans);font-size:12.5px;font-weight:600}
+        .vx-panel{fill:var(--bg);stroke:var(--rule);stroke-width:1}
+        .vx-chip{fill:var(--bg-deep);stroke:var(--rule);stroke-width:1}
+        .vx-chip-t{fill:var(--ink);font-family:var(--sans);font-size:11px;font-weight:600}
+        .vx-mono{fill:var(--ink-faint);font-family:var(--mono);font-size:9.5px;letter-spacing:.04em}
+        .vx-flow{stroke:var(--rule);stroke-width:1.4;fill:none;stroke-dasharray:3 4}
+        .vx-dot{fill:var(--doc,var(--accent));}
+        /* source dots stream into the vector space */
+        .vx-emit{opacity:0;offset-rotate:0deg}
+        .vx-e1{offset-path:path("M96 96 C 190 96, 250 128, 322 150");animation:vx-run var(--vx-cyc) linear infinite}
+        .vx-e2{offset-path:path("M96 150 C 190 150, 250 150, 330 176");animation:vx-run var(--vx-cyc) linear infinite;animation-delay:calc(var(--vx-cyc) * -0.04)}
+        .vx-e3{offset-path:path("M96 204 C 190 204, 250 176, 318 200");animation:vx-run var(--vx-cyc) linear infinite;animation-delay:calc(var(--vx-cyc) * -0.08)}
+        @keyframes vx-run{0%{opacity:0;offset-distance:0%}4%{opacity:1}22%{opacity:1;offset-distance:100%}26%{opacity:0;offset-distance:100%}100%{opacity:0;offset-distance:100%}}
+        /* query dot enters, lands, pulses */
+        .vx-q{offset-path:path("M96 300 C 200 300, 300 300, 402 224");animation:vx-q var(--vx-cyc) ease-in-out infinite}
+        @keyframes vx-q{0%,26%{opacity:0;offset-distance:0%}30%{opacity:1}42%{opacity:1;offset-distance:100%}92%{opacity:1;offset-distance:100%}100%{opacity:0;offset-distance:100%}}
+        .vx-ring{fill:none;stroke:var(--vx-qry);stroke-width:1.5;transform-box:fill-box;transform-origin:center;opacity:0}
+        .vx-ring1{animation:vx-ring var(--vx-cyc) ease-out infinite;animation-delay:calc(var(--vx-cyc) * 0.44)}
+        .vx-ring2{animation:vx-ring var(--vx-cyc) ease-out infinite;animation-delay:calc(var(--vx-cyc) * 0.48)}
+        @keyframes vx-ring{0%,42%{opacity:0;transform:scale(.2)}46%{opacity:.7}58%{opacity:0;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+        /* neighbour hits glow, then flow to the LLM */
+        .vx-hit{fill:var(--vx-hit);opacity:.25;transform-box:fill-box;transform-origin:center;animation:vx-hit var(--vx-cyc) ease-in-out infinite}
+        @keyframes vx-hit{0%,46%{opacity:.25;transform:scale(1)}52%{opacity:1;transform:scale(1.5)}68%{opacity:1;transform:scale(1.3)}74%{opacity:.25;transform:scale(1)}100%{opacity:.25;transform:scale(1)}}
+        .vx-pull{fill:var(--vx-hit);opacity:0;offset-path:path("M402 176 C 470 150, 540 150, 560 178");animation:vx-pull var(--vx-cyc) ease-in-out infinite}
+        .vx-pull2{animation-delay:calc(var(--vx-cyc) * 0.02)}
+        .vx-pull3{animation-delay:calc(var(--vx-cyc) * 0.04)}
+        @keyframes vx-pull{0%,60%{opacity:0;offset-distance:0%}64%{opacity:1}74%{opacity:1;offset-distance:100%}78%{opacity:0;offset-distance:100%}100%{opacity:0;offset-distance:100%}}
+        /* LLM box + answer reveal */
+        .vx-llm{transform-box:fill-box;transform-origin:center;animation:vx-llm var(--vx-cyc) ease-in-out infinite}
+        @keyframes vx-llm{0%,66%{stroke:var(--rule)}74%{stroke:var(--vx-hit)}86%{stroke:var(--vx-hit)}92%{stroke:var(--rule)}100%{stroke:var(--rule)}}
+        .vx-answer{opacity:0;animation:vx-ans var(--vx-cyc) ease-out infinite}
+        @keyframes vx-ans{0%,74%{opacity:0;transform:translateY(4px)}80%{opacity:1;transform:translateY(0)}96%{opacity:1}100%{opacity:0}}
+        /* numbered step legend — each lights in its slot (9 steps over the cycle) */
+        .vx-step text.n{fill:var(--ink-faint);font-family:var(--mono);font-size:10px;font-weight:600}
+        .vx-step text.t{fill:var(--ink-soft);font-family:var(--sans);font-size:11px}
+        .vx-step rect{fill:var(--bg-card);stroke:var(--rule);stroke-width:1;transform-box:fill-box;transform-origin:center}
+        .vx-step .lit{opacity:0;animation:vx-lit var(--vx-cyc) ease-in-out infinite}
+        @keyframes vx-lit{0%{opacity:0}4%{opacity:1}11%{opacity:1}16%{opacity:0}100%{opacity:0}}
+        @media (prefers-reduced-motion: reduce){
+          .vx-fig .vx-emit,.vx-fig .vx-q,.vx-fig .vx-ring,.vx-fig .vx-pull,.vx-fig .vx-answer,.vx-fig .vx-step .lit{animation:none}
+          .vx-fig .vx-emit,.vx-fig .vx-q,.vx-fig .vx-answer,.vx-fig .vx-step .lit{opacity:1}
+          .vx-fig .vx-emit{offset-distance:100%}.vx-fig .vx-hit{animation:none;opacity:1;transform:scale(1.3)}
+          .vx-fig .vx-llm{animation:none;stroke:var(--vx-hit)}
+        }
+      </style>
+      <svg class="vx-stage" viewBox="0 0 720 470" role="img" aria-label="Animated nine-step explainer of the vector-database plus RAG memory loop. Step one: unstructured text, image and audio data are ingested. Step two: an embedding model converts each into a dense vector. Step three: the vectors, with metadata, are stored in an approximate-nearest-neighbour index such as HNSW or IVF. Step four: an incoming question is embedded into the same vector space. Step five: similarity search finds the nearest vectors by cosine distance. Step six: the top K nearest are returned with similarity scores. Step seven: metadata filters constrain the candidates. Step eight: the top matching chunks are passed to a language model. Step nine: the model returns a grounded, cited answer. The loop then repeats.">
+        <text class="vx-lbl-b" x="16" y="22">The vector-database + RAG loop, one full cycle</text>
+        <text class="vx-mono" x="704" y="22" text-anchor="end">STAGES 3 &amp; 5 &middot; LOOPS</text>
+
+        <!-- sources -->
+        <text class="vx-mono" x="20" y="72" >INGEST</text>
+        <rect class="vx-chip" x="20" y="80" width="72" height="30" rx="6"/><text class="vx-chip-t" x="56" y="99" text-anchor="middle">text</text>
+        <rect class="vx-chip" x="20" y="134" width="72" height="30" rx="6"/><text class="vx-chip-t" x="56" y="153" text-anchor="middle">image</text>
+        <rect class="vx-chip" x="20" y="188" width="72" height="30" rx="6"/><text class="vx-chip-t" x="56" y="207" text-anchor="middle">audio</text>
+
+        <!-- embed marker -->
+        <path class="vx-flow" d="M96 122 H 150 M96 176 H 150 M96 230 H 150"/>
+        <rect class="vx-chip" x="150" y="132" width="86" height="50" rx="8"/>
+        <text class="vx-chip-t" x="193" y="153" text-anchor="middle">embed</text>
+        <text class="vx-mono" x="193" y="169" text-anchor="middle">&#8594; vector</text>
+
+        <!-- vector space panel -->
+        <text class="vx-mono" x="322" y="72">VECTOR INDEX &middot; HNSW / IVF + metadata</text>
+        <rect class="vx-panel" x="308" y="80" width="188" height="164" rx="10"/>
+        <!-- scattered stored vectors -->
+        <g fill="var(--ink-faint)" opacity=".55">
+          <circle cx="336" cy="112" r="3"/><circle cx="372" cy="98" r="3"/><circle cx="418" cy="106" r="3"/><circle cx="462" cy="120" r="3"/>
+          <circle cx="352" cy="140" r="3"/><circle cx="446" cy="150" r="3"/><circle cx="330" cy="176" r="3"/><circle cx="480" cy="172" r="3"/>
+          <circle cx="360" cy="206" r="3"/><circle cx="430" cy="214" r="3"/><circle cx="470" cy="206" r="3"/><circle cx="400" cy="230" r="3"/>
+        </g>
+        <!-- neighbour hits (near the query landing point ~402,214) -->
+        <circle class="vx-hit" cx="386" cy="196" r="4"/>
+        <circle class="vx-hit" cx="420" cy="200" r="4"/>
+        <circle class="vx-hit" cx="404" cy="228" r="4" style="animation-delay:calc(var(--vx-cyc) * 0.01)"/>
+        <!-- query landing rings -->
+        <circle class="vx-ring vx-ring1" cx="402" cy="214" r="30"/>
+        <circle class="vx-ring vx-ring2" cx="402" cy="214" r="30"/>
+
+        <!-- query source -->
+        <text class="vx-mono" x="20" y="288">QUERY</text>
+        <rect class="vx-chip" x="20" y="286" width="72" height="30" rx="6" style="stroke:var(--vx-qry)"/>
+        <text class="vx-chip-t" x="56" y="305" text-anchor="middle" style="fill:var(--vx-qry)">question</text>
+
+        <!-- LLM + answer -->
+        <text class="vx-mono" x="536" y="150" text-anchor="middle">GENERATE</text>
+        <rect class="vx-chip vx-llm" x="536" y="158" width="150" height="44" rx="8" style="stroke-width:1.6"/>
+        <text class="vx-chip-t" x="611" y="177" text-anchor="middle">language model</text>
+        <text class="vx-mono" x="611" y="193" text-anchor="middle">top-K chunks in</text>
+        <g class="vx-answer" style="transform-box:fill-box;transform-origin:center">
+          <rect x="536" y="216" width="150" height="40" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1"/>
+          <text x="551" y="234" style="fill:var(--accent-ink);font-family:var(--sans);font-size:11px;font-weight:600">grounded answer</text>
+          <text x="551" y="249" style="fill:var(--accent-ink);font-family:var(--mono);font-size:9.5px">+ citation [1]</text>
+        </g>
+
+        <!-- animated dots -->
+        <circle class="vx-dot vx-emit vx-e1" r="3.5"/>
+        <circle class="vx-dot vx-emit vx-e2" r="3.5"/>
+        <circle class="vx-dot vx-emit vx-e3" r="3.5"/>
+        <circle class="vx-emit vx-q" r="4" style="fill:var(--vx-qry)"/>
+        <circle class="vx-pull" r="3.5"/><circle class="vx-pull vx-pull2" r="3.5"/><circle class="vx-pull vx-pull3" r="3.5"/>
+
+        <!-- numbered step legend (2 rows of ~4-5) -->
+        <g transform="translate(16,336)">
+          <g class="vx-step"><rect x="0" y="0" width="132" height="34" rx="6"/><rect class="lit" x="0" y="0" width="132" height="34" rx="6" fill="var(--accent-soft)" stroke="var(--accent)" style="animation-delay:calc(var(--vx-cyc) * 0.0)"/><text class="n" x="10" y="15">1</text><text class="t" x="24" y="15">Ingest data</text><text class="t" x="24" y="28" style="fill:var(--ink-faint);font-size:10px">text &middot; image &middot; audio</text></g>
+          <g class="vx-step" transform="translate(140,0)"><rect x="0" y="0" width="132" height="34" rx="6"/><rect class="lit" x="0" y="0" width="132" height="34" rx="6" fill="var(--accent-soft)" stroke="var(--accent)" style="animation-delay:calc(var(--vx-cyc) * -0.111)"/><text class="n" x="10" y="15">2</text><text class="t" x="24" y="15">Embed</text><text class="t" x="24" y="28" style="fill:var(--ink-faint);font-size:10px">dense vectors</text></g>
+          <g class="vx-step" transform="translate(280,0)"><rect x="0" y="0" width="132" height="34" rx="6"/><rect class="lit" x="0" y="0" width="132" height="34" rx="6" fill="var(--accent-soft)" stroke="var(--accent)" style="animation-delay:calc(var(--vx-cyc) * -0.222)"/><text class="n" x="10" y="15">3</text><text class="t" x="24" y="15">Index + metadata</text><text class="t" x="24" y="28" style="fill:var(--ink-faint);font-size:10px">HNSW / IVF / PQ</text></g>
+          <g class="vx-step" transform="translate(420,0)"><rect x="0" y="0" width="132" height="34" rx="6"/><rect class="lit" x="0" y="0" width="132" height="34" rx="6" fill="var(--accent-soft)" stroke="var(--accent)" style="animation-delay:calc(var(--vx-cyc) * -0.333)"/><text class="n" x="10" y="15">4</text><text class="t" x="24" y="15">Embed the query</text><text class="t" x="24" y="28" style="fill:var(--ink-faint);font-size:10px">same space</text></g>
+          <g class="vx-step" transform="translate(560,0)"><rect x="0" y="0" width="132" height="34" rx="6"/><rect class="lit" x="0" y="0" width="132" height="34" rx="6" fill="var(--accent-soft)" stroke="var(--accent)" style="animation-delay:calc(var(--vx-cyc) * -0.444)"/><text class="n" x="10" y="15">5</text><text class="t" x="24" y="15">Similarity search</text><text class="t" x="24" y="28" style="fill:var(--ink-faint);font-size:10px">cosine / L2 (ANN)</text></g>
+          <g class="vx-step" transform="translate(0,42)"><rect x="0" y="0" width="132" height="34" rx="6"/><rect class="lit" x="0" y="0" width="132" height="34" rx="6" fill="var(--accent-soft)" stroke="var(--accent)" style="animation-delay:calc(var(--vx-cyc) * -0.555)"/><text class="n" x="10" y="15">6</text><text class="t" x="24" y="15">Top-K + scores</text><text class="t" x="24" y="28" style="fill:var(--ink-faint);font-size:10px">ranked neighbours</text></g>
+          <g class="vx-step" transform="translate(140,42)"><rect x="0" y="0" width="132" height="34" rx="6"/><rect class="lit" x="0" y="0" width="132" height="34" rx="6" fill="var(--accent-soft)" stroke="var(--accent)" style="animation-delay:calc(var(--vx-cyc) * -0.666)"/><text class="n" x="10" y="15">7</text><text class="t" x="24" y="15">Metadata filter</text><text class="t" x="24" y="28" style="fill:var(--ink-faint);font-size:10px">boolean constraints</text></g>
+          <g class="vx-step" transform="translate(280,42)"><rect x="0" y="0" width="132" height="34" rx="6"/><rect class="lit" x="0" y="0" width="132" height="34" rx="6" fill="var(--accent-soft)" stroke="var(--accent)" style="animation-delay:calc(var(--vx-cyc) * -0.777)"/><text class="n" x="10" y="15">8</text><text class="t" x="24" y="15">RAG &#8594; LLM</text><text class="t" x="24" y="28" style="fill:var(--ink-faint);font-size:10px">chunks as context</text></g>
+          <g class="vx-step" transform="translate(420,42)"><rect x="0" y="0" width="132" height="34" rx="6"/><rect class="lit" x="0" y="0" width="132" height="34" rx="6" fill="var(--accent-soft)" stroke="var(--accent)" style="animation-delay:calc(var(--vx-cyc) * -0.888)"/><text class="n" x="10" y="15">9</text><text class="t" x="24" y="15">Grounded answer</text><text class="t" x="24" y="28" style="fill:var(--ink-faint);font-size:10px">with provenance</text></g>
+          <g transform="translate(560,42)"><rect x="0" y="0" width="132" height="34" rx="6" fill="var(--bg-deep)" stroke="var(--rule)"/><text class="t" x="12" y="15" style="fill:var(--ink-soft);font-weight:600">Ecosystem</text><text class="t" x="12" y="28" style="fill:var(--ink-faint);font-size:9.5px">FAISS &middot; pgvector &middot; Milvus</text></g>
+        </g>
+      </svg>
+      <figcaption><span class="fignum">Fig 12</span>The vector-database + RAG loop, animated. The same nine steps a &ldquo;vector-database cheat sheet&rdquo; enumerates, shown as one repeating cycle: ingest &rarr; embed &rarr; index &rarr; embed-query &rarr; similarity &rarr; top-K &rarr; filter &rarr; generate &rarr; grounded answer. This is the mechanism Stages&nbsp;3 (vector databases, [<a href="#cref-10">10</a>&ndash;<a href="#cref-13">13</a>]) and&nbsp;5 (RAG, [<a href="#cref-19">19</a>]) share; the later stages of this article each add a governing loop <em>around</em> it. Animation pauses under a reduced-motion preference.</figcaption>
+    </figure>
+
     <h2><span class="scene-num">Stage 1</span>Lexical / keyword search (inverted index + TF-IDF/BM25) &mdash; 1970s&ndash;2000s</h2>
     <p><strong>What it solved.</strong> The inverted index plus statistical ranking &mdash; TF-IDF, then Okapi BM25 at TREC-3 in 1994 [<a href="#cref-1">1</a>] &mdash; gave fast, ranked full-text retrieval over huge collections, and it never left. It is still a 2026 production default: a benchmark of 23,088 queries over 7,318 financial documents found plain BM25 scoring above <code>text-embedding-3-large</code> on most metrics, because exact identifiers reward exact-term matching (Akarsu et al. [<a href="#cref-2">2</a>]).</p>
     <p><strong>The documented limitation.</strong> Exact-term matching suffers vocabulary mismatch: synonyms are missed and polysemous words confused. The founding measurement is Furnas et al. (CACM 1987): two people choose the same term for a concept less than 20% of the time [<a href="#cref-3">3</a>]. The 2026 practice is hybrid BM25+dense <em>fusion</em>, not replacement &mdash; BM25 fails on paraphrase where dense retrieval fails on exact identifiers.</p>
