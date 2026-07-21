@@ -364,6 +364,79 @@
       <figcaption><span class="fignum">Fig 12</span>The vector-database + RAG loop, animated. The same nine steps a &ldquo;vector-database cheat sheet&rdquo; enumerates, shown as one repeating cycle: ingest &rarr; embed &rarr; index &rarr; embed-query &rarr; similarity &rarr; top-K &rarr; filter &rarr; generate &rarr; grounded answer. This is the mechanism Stages&nbsp;3 (vector databases, [<a href="#cref-10">10</a>&ndash;<a href="#cref-13">13</a>]) and&nbsp;5 (RAG, [<a href="#cref-19">19</a>]) share; the later stages of this article each add a governing loop <em>around</em> it. Animation pauses under a reduced-motion preference.</figcaption>
     </figure>
 
+    <h3>Beyond the cheat sheet: the governing loops TerranSoul wraps around the core</h3>
+    <p>The nine steps above are the shared core &mdash; every serious system has them. The field's last five stages (Stages&nbsp;6&ndash;11) are not new cores; each is a <em>governing loop</em> wrapped <em>around</em> that core, fixing a failure the bare loop exposes at scale. TerranSoul implements all nine cheat-sheet concepts and then adds those governing loops as real, measured modules. The animation below lights each addition in turn, naming the code that carries it and the number the main paper records [<a href="#cref-52">52</a>]; the full &ldquo;addressed / contained / open&rdquo; honesty table is Stage&nbsp;11 below.</p>
+
+    <!-- ==== "Beyond the cheat sheet" animated extras (self-contained; `bx-` scoped) ==== -->
+    <figure class="chart vx-fig">
+      <style>
+        .bx-stage{--bx-cyc:16s}
+        .bx-core{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+        .bx-core-t{fill:var(--accent-ink);font-family:var(--sans);font-weight:600}
+        .bx-mono{fill:var(--ink-faint);font-family:var(--mono);font-size:9.5px;letter-spacing:.03em}
+        .bx-lbl-b{fill:var(--ink);font-family:var(--sans);font-size:12.5px;font-weight:600}
+        .bx-card rect.bg{fill:var(--bg-card);stroke:var(--rule);stroke-width:1}
+        .bx-card rect.lit{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.2;opacity:0;transform-box:fill-box;transform-origin:left center;animation:bx-lit var(--bx-cyc) ease-in-out infinite}
+        .bx-card text.cap{fill:var(--ink);font-family:var(--sans);font-size:11.5px;font-weight:600}
+        .bx-card text.mod{fill:var(--accent-ink);font-family:var(--mono);font-size:9px}
+        .bx-card text.num{fill:var(--ink-soft);font-family:var(--sans);font-size:10px}
+        .bx-conn{stroke:var(--rule);stroke-width:1.2;fill:none}
+        .bx-pulse{fill:var(--accent);r:3;opacity:0}
+        @keyframes bx-lit{0%{opacity:0}3%{opacity:1}12%{opacity:1}16%{opacity:0}100%{opacity:0}}
+        @keyframes bx-flow{0%{opacity:0;offset-distance:0%}2%{opacity:1}9%{opacity:1;offset-distance:100%}12%{opacity:0;offset-distance:100%}100%{opacity:0;offset-distance:100%}}
+        .bx-status{font-family:var(--mono);font-size:8.5px;letter-spacing:.04em}
+        @media (prefers-reduced-motion: reduce){.bx-fig .bx-card rect.lit,.bx-fig .bx-pulse{animation:none;opacity:.9}}
+      </style>
+      <svg class="bx-stage vx-fig" viewBox="0 0 720 476" role="img" aria-label="Animated diagram: the nine-step vector-database plus RAG core sits at the left; eight governing loops TerranSoul wraps around it fan out to the right and light up in turn. One: hybrid BM25-plus-dense fusion with reciprocal-rank fusion, module fusion and store dot rs, holding LongMemEval-S NDCG at 10 of 95.1 or higher. Two: a CJK trigram retrieval channel, module cjk rs, lifting Japanese NDCG at 10 from 9.5 to between 42 and 65 at one million rows. Three: sharded HNSW plus IVF-PQ plus TurboVec indexing, modules shard router, ann index and ivf pq, holding routed recall at 60.5 percent versus 59.5 at one million rows. Four: corrective RAG with verify, hard-abstain and claim-level checking, module crag rs, reaching 100 percent on the English, Vietnamese and Japanese one-million gate. Five: parent-child and synthetic-question chunking, modules chunking and late chunking, reuniting a sub-chunk with its parent's fuller text. Six: a governed write gate, module governance rs, reducing MINJA and PoisonedRAG attack success to zero percent with the gate on. Seven: a typed knowledge graph, module graph rag rs, marked honestly as contained not solved at zero percentage-point gain for twice the latency. Eight: self-consolidating memory, modules consolidation and reconsolidation, curating memory during idle time. The status colours mark addressed-and-measured, addressed-and-built, and contained-not-solved.">
+        <text class="bx-lbl-b" x="16" y="22">What TerranSoul adds on top of the nine-step core</text>
+        <text class="bx-mono" x="704" y="22" text-anchor="end">STAGES 6&ndash;11 &middot; MEASURED</text>
+
+        <!-- the core, condensed -->
+        <rect class="bx-core" x="18" y="150" width="150" height="150" rx="12"/>
+        <text class="bx-core-t" x="93" y="196" text-anchor="middle" font-size="13">the 9-step</text>
+        <text class="bx-core-t" x="93" y="214" text-anchor="middle" font-size="13">core</text>
+        <text class="bx-mono" x="93" y="236" text-anchor="middle">Fig 12 &mdash; every</text>
+        <text class="bx-mono" x="93" y="249" text-anchor="middle">system has it</text>
+        <circle cx="93" cy="278" r="4" fill="var(--accent)"/><circle cx="79" cy="272" r="3" fill="var(--accent)" opacity=".6"/><circle cx="107" cy="272" r="3" fill="var(--accent)" opacity=".6"/>
+
+        <!-- connectors + flow pulses from core to each card -->
+        <path class="bx-conn" id="bxp0" d="M168 175 C 210 120, 250 74, 300 74"/>
+        <path class="bx-conn" id="bxp1" d="M168 200 C 210 150, 250 122, 300 122"/>
+        <path class="bx-conn" id="bxp2" d="M168 215 C 210 185, 250 170, 300 170"/>
+        <path class="bx-conn" id="bxp3" d="M168 228 C 220 220, 250 218, 300 218"/>
+        <path class="bx-conn" id="bxp4" d="M168 240 C 220 250, 250 266, 300 266"/>
+        <path class="bx-conn" id="bxp5" d="M168 252 C 210 285, 250 314, 300 314"/>
+        <path class="bx-conn" id="bxp6" d="M168 262 C 210 320, 250 362, 300 362"/>
+        <path class="bx-conn" id="bxp7" d="M168 275 C 210 355, 250 410, 300 410"/>
+        <circle class="bx-pulse" style="offset-path:path('M168 175 C 210 120, 250 74, 300 74');animation:bx-flow var(--bx-cyc) linear infinite;animation-delay:calc(var(--bx-cyc) * 0.0)"/>
+        <circle class="bx-pulse" style="offset-path:path('M168 200 C 210 150, 250 122, 300 122');animation:bx-flow var(--bx-cyc) linear infinite;animation-delay:calc(var(--bx-cyc) * -0.125)"/>
+        <circle class="bx-pulse" style="offset-path:path('M168 215 C 210 185, 250 170, 300 170');animation:bx-flow var(--bx-cyc) linear infinite;animation-delay:calc(var(--bx-cyc) * -0.25)"/>
+        <circle class="bx-pulse" style="offset-path:path('M168 228 C 220 220, 250 218, 300 218');animation:bx-flow var(--bx-cyc) linear infinite;animation-delay:calc(var(--bx-cyc) * -0.375)"/>
+        <circle class="bx-pulse" style="offset-path:path('M168 240 C 220 250, 250 266, 300 266');animation:bx-flow var(--bx-cyc) linear infinite;animation-delay:calc(var(--bx-cyc) * -0.5)"/>
+        <circle class="bx-pulse" style="offset-path:path('M168 252 C 210 285, 250 314, 300 314');animation:bx-flow var(--bx-cyc) linear infinite;animation-delay:calc(var(--bx-cyc) * -0.625)"/>
+        <circle class="bx-pulse" style="offset-path:path('M168 262 C 210 320, 250 362, 300 362');animation:bx-flow var(--bx-cyc) linear infinite;animation-delay:calc(var(--bx-cyc) * -0.75)"/>
+        <circle class="bx-pulse" style="offset-path:path('M168 275 C 210 355, 250 410, 300 410');animation:bx-flow var(--bx-cyc) linear infinite;animation-delay:calc(var(--bx-cyc) * -0.875)"/>
+
+        <!-- 8 governing-loop cards; each `.lit` overlay fires in sequence -->
+        <g class="bx-card"><rect class="bg" x="300" y="52" width="404" height="44" rx="8"/><rect class="lit" x="300" y="52" width="404" height="44" rx="8" style="animation-delay:calc(var(--bx-cyc)*0.0)"/><text class="cap" x="314" y="72">Hybrid BM25 + dense fusion (RRF)</text><text class="mod" x="314" y="88">fusion.rs &middot; store.rs</text><text class="num" x="690" y="80" text-anchor="end">LongMemEval-S NDCG@10 &ge; 95.1</text><text class="bx-status" x="690" y="90" text-anchor="end" fill="var(--vx-hit,#3c7a3c)" style="fill:oklch(0.5 0.12 145)">ADDRESSED &middot; MEASURED</text></g>
+        <g class="bx-card"><rect class="bg" x="300" y="100" width="404" height="44" rx="8"/><rect class="lit" x="300" y="100" width="404" height="44" rx="8" style="animation-delay:calc(var(--bx-cyc)*-0.125)"/><text class="cap" x="314" y="120">CJK trigram retrieval channel</text><text class="mod" x="314" y="136">cjk.rs</text><text class="num" x="690" y="128" text-anchor="end">JA NDCG@10 9.5 &rarr; 42&ndash;65 @1M</text><text class="bx-status" x="690" y="138" text-anchor="end" style="fill:oklch(0.5 0.12 145)">ADDRESSED &middot; MEASURED</text></g>
+        <g class="bx-card"><rect class="bg" x="300" y="148" width="404" height="44" rx="8"/><rect class="lit" x="300" y="148" width="404" height="44" rx="8" style="animation-delay:calc(var(--bx-cyc)*-0.25)"/><text class="cap" x="314" y="168">Sharded HNSW + IVF-PQ + TurboVec</text><text class="mod" x="314" y="184">shard_router.rs &middot; ann_index.rs &middot; ivf_pq.rs</text><text class="num" x="690" y="176" text-anchor="end">routed 60.5% vs 59.5% R@10 @1M</text><text class="bx-status" x="690" y="186" text-anchor="end" style="fill:oklch(0.5 0.12 145)">ADDRESSED &middot; MEASURED</text></g>
+        <g class="bx-card"><rect class="bg" x="300" y="196" width="404" height="44" rx="8"/><rect class="lit" x="300" y="196" width="404" height="44" rx="8" style="animation-delay:calc(var(--bx-cyc)*-0.375)"/><text class="cap" x="314" y="216">Corrective RAG: verify + abstain + claim-level</text><text class="mod" x="314" y="232">crag.rs &middot; agentic_verify_rank.rs</text><text class="num" x="690" y="224" text-anchor="end">100% en/vi/ja on the 1M gate</text><text class="bx-status" x="690" y="234" text-anchor="end" style="fill:oklch(0.5 0.12 145)">ADDRESSED &middot; MEASURED</text></g>
+        <g class="bx-card"><rect class="bg" x="300" y="244" width="404" height="44" rx="8"/><rect class="lit" x="300" y="244" width="404" height="44" rx="8" style="animation-delay:calc(var(--bx-cyc)*-0.5)"/><text class="cap" x="314" y="264">Parent-child + synthetic-question chunking</text><text class="mod" x="314" y="280">chunking.rs &middot; late_chunking.rs</text><text class="num" x="690" y="272" text-anchor="end">sub-chunk &rarr; parent's fuller text</text><text class="bx-status" x="690" y="282" text-anchor="end" style="fill:oklch(0.52 0.10 250)">ADDRESSED &middot; BUILT</text></g>
+        <g class="bx-card"><rect class="bg" x="300" y="292" width="404" height="44" rx="8"/><rect class="lit" x="300" y="292" width="404" height="44" rx="8" style="animation-delay:calc(var(--bx-cyc)*-0.625)"/><text class="cap" x="314" y="312">Governed write gate (provenance + ACL + CRDT)</text><text class="mod" x="314" y="328">governance.rs</text><text class="num" x="690" y="320" text-anchor="end">MINJA / PoisonedRAG 0% with gate</text><text class="bx-status" x="690" y="330" text-anchor="end" style="fill:oklch(0.5 0.12 145)">ADDRESSED &middot; MEASURED</text></g>
+        <g class="bx-card"><rect class="bg" x="300" y="340" width="404" height="44" rx="8"/><rect class="lit" x="300" y="340" width="404" height="44" rx="8" style="animation-delay:calc(var(--bx-cyc)*-0.75)"/><text class="cap" x="314" y="360">Typed knowledge graph (multi-hop)</text><text class="mod" x="314" y="376">graph_rag.rs &middot; edges.rs</text><text class="num" x="690" y="368" text-anchor="end">0pp @ 2&times; latency &mdash; honest</text><text class="bx-status" x="690" y="378" text-anchor="end" style="fill:oklch(0.55 0.11 65)">CONTAINED &middot; NOT SOLVED</text></g>
+        <g class="bx-card"><rect class="bg" x="300" y="388" width="404" height="44" rx="8"/><rect class="lit" x="300" y="388" width="404" height="44" rx="8" style="animation-delay:calc(var(--bx-cyc)*-0.875)"/><text class="cap" x="314" y="408">Self-consolidating memory (sleep-time curation)</text><text class="mod" x="314" y="424">consolidation.rs &middot; reconsolidation.rs</text><text class="num" x="690" y="416" text-anchor="end">idle-time re-scoring + forgetting</text><text class="bx-status" x="690" y="426" text-anchor="end" style="fill:oklch(0.52 0.10 250)">ADDRESSED &middot; BUILT</text></g>
+
+        <!-- legend -->
+        <g transform="translate(18,450)">
+          <rect x="0" y="-9" width="10" height="10" rx="2" fill="oklch(0.5 0.12 145)"/><text class="bx-mono" x="16" y="0">addressed &amp; measured</text>
+          <rect x="170" y="-9" width="10" height="10" rx="2" fill="oklch(0.52 0.10 250)"/><text class="bx-mono" x="186" y="0">addressed &amp; built</text>
+          <rect x="320" y="-9" width="10" height="10" rx="2" fill="oklch(0.55 0.11 65)"/><text class="bx-mono" x="336" y="0">contained, not solved (honest)</text>
+        </g>
+      </svg>
+      <figcaption><span class="fignum">Fig 13</span>Beyond the cheat sheet &mdash; the governing loops TerranSoul wraps around the nine-step core, each a real module with the number the main paper [<a href="#cref-52">52</a>] records and an honest status. The colours are not marketing: one loop (the knowledge graph) is marked <em>contained, not solved</em> because its measured retrieval gain is 0pp at 2&times; latency at current local-model scale &mdash; the same three-column honesty as the Stage&nbsp;11 table. Each addition maps directly to a stage below (fusion&nbsp;&harr;&nbsp;Stages&nbsp;1&ndash;2, sharding&nbsp;&harr;&nbsp;3, graph&nbsp;&harr;&nbsp;4, corrective&nbsp;RAG&nbsp;&harr;&nbsp;5&ndash;6, write&nbsp;governance&nbsp;&harr;&nbsp;8&ndash;9, consolidation&nbsp;&harr;&nbsp;9). Animation pauses under a reduced-motion preference.</figcaption>
+    </figure>
+
     <h2><span class="scene-num">Stage 1</span>Lexical / keyword search (inverted index + TF-IDF/BM25) &mdash; 1970s&ndash;2000s</h2>
     <p><strong>What it solved.</strong> The inverted index plus statistical ranking &mdash; TF-IDF, then Okapi BM25 at TREC-3 in 1994 [<a href="#cref-1">1</a>] &mdash; gave fast, ranked full-text retrieval over huge collections, and it never left. It is still a 2026 production default: a benchmark of 23,088 queries over 7,318 financial documents found plain BM25 scoring above <code>text-embedding-3-large</code> on most metrics, because exact identifiers reward exact-term matching (Akarsu et al. [<a href="#cref-2">2</a>]).</p>
     <p><strong>The documented limitation.</strong> Exact-term matching suffers vocabulary mismatch: synonyms are missed and polysemous words confused. The founding measurement is Furnas et al. (CACM 1987): two people choose the same term for a concept less than 20% of the time [<a href="#cref-3">3</a>]. The 2026 practice is hybrid BM25+dense <em>fusion</em>, not replacement &mdash; BM25 fails on paraphrase where dense retrieval fails on exact identifiers.</p>
