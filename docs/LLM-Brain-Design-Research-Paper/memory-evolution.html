@@ -175,7 +175,7 @@
   <article>
     <div class="eyebrow"><span class="dot"></span>Research companion &middot; field history with citations</div>
     <h1>The Evolution of Memory for AI Systems: <em>from inverted indexes to governed self-consolidating stores.</em></h1>
-    <p class="deck">Eleven stages of worldwide memory and retrieval technology &mdash; each with the problem it solved for the field, the limitation eventually documented against it, and why that limitation forced the next stage into existence. <a href="index.html"><em>Three Falsifiable Hypotheses About External Memory for Frozen Language Models</em></a>.</p>
+    <p class="deck">Twelve stages of worldwide memory and retrieval technology &mdash; each with the problem it solved for the field, the limitation eventually documented against it, and why that limitation forced the next stage into existence. <a href="index.html"><em>Three Falsifiable Hypotheses About External Memory for Frozen Language Models</em></a>.</p>
 
     <div class="disclosure-card">
       <strong>What this article is, and is not.</strong> This is industry-wide history, not any one project's development log. The narrative follows the evolution-timeline table maintained in TerranSoul's design contract, <code>docs/brain-advanced-design.md</code> [<a href="#cref-51">51</a>], whose citations were web-researched and dated (through July 2026) at research time; every external claim below carries its citation, and figures are quoted as their sources state them &mdash; none is re-measured here. A row near the end names TerranSoul's real peers before the final section records, honestly, which of the chain's limitations TerranSoul has measurably addressed, which it has merely contained, and which remain open in its design exactly as they remain open industry-wide. The measurement paper this accompanies is <a href="index.html"><em>Three Falsifiable Hypotheses About External Memory for Frozen Language Models</em></a> [<a href="#cref-52">52</a>].
@@ -188,10 +188,10 @@
     </div>
 
     <h2><span class="scene-num">Overview</span>One chain, not a story of replacement</h2>
-    <p>The history of machine memory is often told as a sequence of replacements: keywords gave way to embeddings, embeddings to vector databases, retrieval to graphs, graphs to agents. Read closely, the chain is nothing of the sort. Earlier substrates keep resurfacing as load-bearing infrastructure inside their successors &mdash; BM25 inside hybrid retrievers, ANN indexes inside every &quot;semantic&quot; product, knowledge graphs inside 2026's agent-memory startups. What actually moves forward is the <em>failure mode</em>: each stage solved its predecessor's documented limitation and, in production at scale, exposed a new one that forced the next stage into existence. This article walks the eleven stages in order, quoting each stage's founding results and each limitation's documenting study.</p>
+    <p>The history of machine memory is often told as a sequence of replacements: keywords gave way to embeddings, embeddings to vector databases, retrieval to graphs, graphs to agents. Read closely, the chain is nothing of the sort. Earlier substrates keep resurfacing as load-bearing infrastructure inside their successors &mdash; BM25 inside hybrid retrievers, ANN indexes inside every &quot;semantic&quot; product, knowledge graphs inside 2026's agent-memory startups. What actually moves forward is the <em>failure mode</em>: each stage solved its predecessor's documented limitation and, in production at scale, exposed a new one that forced the next stage into existence. This article walks the twelve stages in order, quoting each stage's founding results and each limitation's documenting study &mdash; through the 2025&ndash;2026 frontier where memory turns learned, multi-vector, and provably robust.</p>
     <figure class="chart">
-      <svg viewBox="0 0 720 440" role="img" aria-label="Timeline of eleven stages of memory and retrieval technology from the 1970s to 2026, drawn as horizontal era bands: lexical search from the 1970s to the 2000s, knowledge graphs from 2001, semantic search 2013 to 2021, vector databases 2016 to 2023, RAG 2020 to 2024, then agentic RAG, observability, two-way memory, and governed memory clustering in 2023 to 2026, with memory infrastructure and TerranSoul marked as current in mid-2026.">
-        <text class="c-title" x="16" y="20">Eleven stages, 1970s &rarr; mid-2026 (qualitative timeline &mdash; no value axis)</text>
+      <svg viewBox="0 0 720 440" role="img" aria-label="Timeline of twelve stages of memory and retrieval technology from the 1970s to 2026, drawn as horizontal era bands: lexical search from the 1970s to the 2000s, knowledge graphs from 2001, semantic search 2013 to 2021, vector databases 2016 to 2023, RAG 2020 to 2024, then agentic RAG, observability, two-way memory, and governed memory clustering in 2023 to 2026, then the 2025 to 2026 learned-and-robust frontier of multi-vector late interaction, learned memory management and certified-robust RAG, with memory infrastructure and TerranSoul marked as current in mid-2026.">
+        <text class="c-title" x="16" y="20">Twelve stages, 1970s &rarr; mid-2026 (qualitative timeline &mdash; no value axis)</text>
         <line class="c-axis" x1="180" y1="380" x2="660" y2="380"/>
         <!-- x = 180 + (year-1970)*(480/56) = 180 + (y-1970)*8.571 -->
         <line class="c-grid" x1="180" y1="36" x2="180" y2="380"/>
@@ -211,27 +211,29 @@
         <!-- rows, y = 44 + i*30 -->
         <text class="c-cat-sm" x="172" y="56" text-anchor="end">1 &middot; Lexical / keyword</text>
         <rect class="c-band" x="180" y="46" width="334" height="14" rx="4"/>
-        <text class="c-cat-sm" x="172" y="86" text-anchor="end">2 &middot; Semantic search</text>
-        <rect class="c-band-alt" x="549" y="76" width="68" height="14" rx="4"/>
-        <text class="c-cat-sm" x="172" y="116" text-anchor="end">3 &middot; Vector database</text>
-        <rect class="c-band" x="574" y="106" width="60" height="14" rx="4"/>
-        <text class="c-cat-sm" x="172" y="146" text-anchor="end">4 &middot; Knowledge graph</text>
-        <rect class="c-band-alt" x="446" y="136" width="154" height="14" rx="4"/>
-        <text class="c-cat-sm" x="172" y="176" text-anchor="end">5 &middot; RAG</text>
-        <rect class="c-band" x="608" y="166" width="35" height="14" rx="4"/>
-        <text class="c-cat-sm" x="172" y="206" text-anchor="end">6 &middot; Agentic / corrective RAG</text>
-        <rect class="c-band-alt" x="634" y="196" width="26" height="14" rx="4"/>
-        <text class="c-cat-sm" x="172" y="236" text-anchor="end">7 &middot; Observability &amp; evals</text>
-        <rect class="c-band" x="634" y="226" width="17" height="14" rx="4"/>
-        <text class="c-cat-sm" x="172" y="266" text-anchor="end">8 &middot; Two-way agent memory</text>
-        <rect class="c-band-alt" x="634" y="256" width="26" height="14" rx="4"/>
-        <text class="c-cat-sm" x="172" y="296" text-anchor="end">9 &middot; Governed self-consolidating</text>
-        <rect class="c-band" x="651" y="286" width="9" height="14" rx="4"/>
-        <text class="c-cat-sm" x="172" y="326" text-anchor="end">10 &middot; Memory infrastructure</text>
-        <rect class="c-band-now" x="646" y="316" width="14" height="14" rx="4"/>
-        <text class="c-cat-sm" x="172" y="356" text-anchor="end">11 &middot; TerranSoul (this project)</text>
-        <rect class="c-band-now" x="646" y="346" width="14" height="14" rx="4"/>
-        <text class="c-tick" x="420" y="414" text-anchor="middle">bands span the era ranges the source table dates each stage to; rows 10&ndash;11 are undated</text>
+        <text class="c-cat-sm" x="172" y="84" text-anchor="end">2 &middot; Semantic search</text>
+        <rect class="c-band-alt" x="549" y="74" width="68" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="112" text-anchor="end">3 &middot; Vector database</text>
+        <rect class="c-band" x="574" y="102" width="60" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="140" text-anchor="end">4 &middot; Knowledge graph</text>
+        <rect class="c-band-alt" x="446" y="130" width="154" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="168" text-anchor="end">5 &middot; RAG</text>
+        <rect class="c-band" x="608" y="158" width="35" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="196" text-anchor="end">6 &middot; Agentic / corrective RAG</text>
+        <rect class="c-band-alt" x="634" y="186" width="26" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="224" text-anchor="end">7 &middot; Observability &amp; evals</text>
+        <rect class="c-band" x="634" y="214" width="17" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="252" text-anchor="end">8 &middot; Two-way agent memory</text>
+        <rect class="c-band-alt" x="634" y="242" width="26" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="280" text-anchor="end">9 &middot; Governed self-consolidating</text>
+        <rect class="c-band" x="651" y="270" width="9" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="308" text-anchor="end">10 &middot; Memory infrastructure</text>
+        <rect class="c-band-now" x="646" y="298" width="14" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="336" text-anchor="end">11 &middot; Learned &amp; robust frontier</text>
+        <rect class="c-band-now" x="643" y="326" width="17" height="14" rx="4"/>
+        <text class="c-cat-sm" x="172" y="364" text-anchor="end">12 &middot; TerranSoul (this project)</text>
+        <rect class="c-band-now" x="646" y="354" width="14" height="14" rx="4"/>
+        <text class="c-tick" x="420" y="414" text-anchor="middle">bands span the era ranges the source table dates each stage to; rows 10 and 12 are undated</text>
         <text class="c-tick" x="420" y="428" text-anchor="middle">in the source and marked only as current (mid-2026); band colors alternate for row separation only</text>
       </svg>
       <figcaption><span class="fignum">Fig 11</span>The memory-evolution timeline. Qualitative era bands only &mdash; there is no value axis, so no magnitude may be read from band length. Source: the evolution-timeline table of <code>docs/brain-advanced-design.md</code> [<a href="#cref-51">51</a>].</figcaption>
@@ -368,7 +370,7 @@
 
         <text class="px-mono" x="16" y="454">Every panel labelled with a real module + measured number &mdash; the highlight sweeps 1 &rarr; 9. Animation pauses under a reduced-motion preference.</text>
       </svg>
-      <figcaption><span class="fignum">Fig 12</span>The &ldquo;Vector Databases&rdquo; cheat sheet's <strong>nine panels</strong>, in its own 3&times;3 order &mdash; each labelled with the TerranSoul module that implements it and, where a benchmark isolates it, the measured number. All nine are covered on a fully-local stack (no cloud vector database). The numbers were code-traced and independently verified against the repository (Stage&nbsp;11 and the main paper [<a href="#cref-52">52</a>] carry the honest caveats behind each). This is the cheat sheet's <em>core</em>; Fig&nbsp;13 shows the same mechanism as one loop, Fig&nbsp;14 the governing loops wrapped around it, and Fig&nbsp;15 the ~190 techniques beyond the nine.</figcaption>
+      <figcaption><span class="fignum">Fig 12</span>The &ldquo;Vector Databases&rdquo; cheat sheet's <strong>nine panels</strong>, in its own 3&times;3 order &mdash; each labelled with the TerranSoul module that implements it and, where a benchmark isolates it, the measured number. All nine are covered on a fully-local stack (no cloud vector database). The numbers were code-traced and independently verified against the repository (Stage&nbsp;12 and the main paper [<a href="#cref-52">52</a>] carry the honest caveats behind each). This is the cheat sheet's <em>core</em>; Fig&nbsp;13 shows the same mechanism as one loop, Fig&nbsp;14 the governing loops wrapped around it, and Fig&nbsp;15 the ~190 techniques beyond the nine.</figcaption>
     </figure>
 
     <p>Those nine panels describe one mechanism. Here it is as a single animated loop &mdash; raw data becomes vectors, vectors are indexed, a question becomes a vector, the nearest neighbours are found and filtered, and the top matches ground a language model's grounded, cited answer. The animation runs the steps in order and repeats.</p>
@@ -498,7 +500,7 @@
     </figure>
 
     <h3>Beyond the cheat sheet: the governing loops TerranSoul wraps around the core</h3>
-    <p>The nine panels above are the shared core &mdash; every serious system has them. The field's last five stages (Stages&nbsp;6&ndash;11) are not new cores; each is a <em>governing loop</em> wrapped <em>around</em> that core, fixing a failure the bare loop exposes at scale. TerranSoul implements all nine cheat-sheet panels and then adds those governing loops as real, measured modules (Fig&nbsp;14). The animation below lights each addition in turn, naming the code that carries it and the number the main paper records [<a href="#cref-52">52</a>]; the full &ldquo;addressed / contained / open&rdquo; honesty table is Stage&nbsp;11 below. These governing loops are only the headline eight &mdash; Fig&nbsp;15 catalogues the full ~200-technique surface they sit within.</p>
+    <p>The nine panels above are the shared core &mdash; every serious system has them. Stages&nbsp;6&ndash;10 of the field are not new cores; each is a <em>governing loop</em> wrapped <em>around</em> that core, fixing a failure the bare loop exposes at scale. TerranSoul implements all nine cheat-sheet panels and then adds those governing loops as real, measured modules (Fig&nbsp;14). The animation below lights each addition in turn, naming the code that carries it and the number the main paper records [<a href="#cref-52">52</a>]; the full &ldquo;addressed / contained / open&rdquo; honesty table is Stage&nbsp;12 below. These governing loops are only the headline eight &mdash; Fig&nbsp;15 catalogues the full ~200-technique surface they sit within.</p>
 
     <!-- ==== "Beyond the cheat sheet" animated extras (self-contained; `bx-` scoped) ==== -->
     <figure class="chart vx-fig">
@@ -567,7 +569,7 @@
           <rect x="320" y="-9" width="10" height="10" rx="2" fill="oklch(0.55 0.11 65)"/><text class="bx-mono" x="336" y="0">contained, not solved (honest)</text>
         </g>
       </svg>
-      <figcaption><span class="fignum">Fig 14</span>Beyond the cheat sheet &mdash; the governing loops TerranSoul wraps around the nine-panel core, each a real module with the number the main paper [<a href="#cref-52">52</a>] records and an honest status. The colours are not marketing: one loop (the knowledge graph) is marked <em>contained, not solved</em> because its measured retrieval gain is 0pp at 2&times; latency at current local-model scale &mdash; the same three-column honesty as the Stage&nbsp;11 table. Each addition maps directly to a stage below (fusion&nbsp;&harr;&nbsp;Stages&nbsp;1&ndash;2, sharding&nbsp;&harr;&nbsp;3, graph&nbsp;&harr;&nbsp;4, corrective&nbsp;RAG&nbsp;&harr;&nbsp;5&ndash;6, write&nbsp;governance&nbsp;&harr;&nbsp;8&ndash;9, consolidation&nbsp;&harr;&nbsp;9). Animation pauses under a reduced-motion preference.</figcaption>
+      <figcaption><span class="fignum">Fig 14</span>Beyond the cheat sheet &mdash; the governing loops TerranSoul wraps around the nine-panel core, each a real module with the number the main paper [<a href="#cref-52">52</a>] records and an honest status. The colours are not marketing: one loop (the knowledge graph) is marked <em>contained, not solved</em> because its measured retrieval gain is 0pp at 2&times; latency at current local-model scale &mdash; the same three-column honesty as the Stage&nbsp;12 table. Each addition maps directly to a stage below (fusion&nbsp;&harr;&nbsp;Stages&nbsp;1&ndash;2, sharding&nbsp;&harr;&nbsp;3, graph&nbsp;&harr;&nbsp;4, corrective&nbsp;RAG&nbsp;&harr;&nbsp;5&ndash;6, write&nbsp;governance&nbsp;&harr;&nbsp;8&ndash;9, consolidation&nbsp;&harr;&nbsp;9). Animation pauses under a reduced-motion preference.</figcaption>
     </figure>
 
     <h3>The full surface: ~200 techniques, not nine</h3>
@@ -610,11 +612,11 @@
           <rect x="392" y="-9" width="10" height="10" rx="2" fill="var(--ink-faint)"/><text class="fx-mono" x="407" y="0">8 researched, not yet applied</text>
         </g>
       </svg>
-      <figcaption><span class="fignum">Fig 15</span>The full applied surface &mdash; ~200 RAG + memory techniques in the repository, grouped into twelve families and sorted by count. Bars animate on a repeating grow-in; the status legend is the same three-column honesty as the Stage&nbsp;11 table, plus a fourth bucket for techniques that are <em>researched but not yet applied</em>. Every technique traces to a real module or design-doc section; the headline numbers behind the &ldquo;measured&rdquo; bucket were independently code-verified. Animation pauses under a reduced-motion preference.</figcaption>
+      <figcaption><span class="fignum">Fig 15</span>The full applied surface &mdash; ~200 RAG + memory techniques in the repository, grouped into twelve families and sorted by count. Bars animate on a repeating grow-in; the status legend is the same three-column honesty as the Stage&nbsp;12 table, plus a fourth bucket for techniques that are <em>researched but not yet applied</em>. Every technique traces to a real module or design-doc section; the headline numbers behind the &ldquo;measured&rdquo; bucket were independently code-verified. Animation pauses under a reduced-motion preference.</figcaption>
     </figure>
 
     <h3>Measured against the 2026 state of the art</h3>
-    <p>Breadth is not the same as being current. To keep this honest, the field was re-surveyed against the <strong>2025&ndash;2026 literature</strong> &mdash; rerankers, embeddings, ANN indexing, RAG architectures, agent memory, GraphRAG, chunking, RAG safety, evaluation, and the long-context frontier &mdash; and each finding flagged as already-shipped, partial, or a genuine gap. TerranSoul already ships a large share of the current frontier (hybrid + RRF, Anthropic-style contextual retrieval, Jina late chunking, CRAG + Self-RAG, a governed write gate that drives MINJA/PoisonedRAG persistence to 0%, cross-lingual CJK retrieval, complementary-learning-systems consolidation with FSRS-spaced reconsolidation, and an LLM-as-judge cross-encoder rerank). The largest true gaps are research-scale and recorded as open frontier, <em>not</em> quietly claimed: multi-vector late interaction (ColBERT/ColPali + MUVERA), HippoRAG-2 personalized-PageRank memory, RaBitQ quantization (which provably dominates the current TurboQuant), the LEANN low-storage recompute index, KV-cache reuse / cache-augmented generation (CacheBlend, TurboRAG), an RL-trained memory manager (Memory-R1), reasoning rerankers (ReasonRank/Rank-R1), and certified-robust RAG (RobustRAG) with information-flow control (CaMeL).</p>
+    <p>Breadth is not the same as being current. To keep this honest, the field was re-surveyed against the <strong>2025&ndash;2026 literature</strong> &mdash; rerankers, embeddings, ANN indexing, RAG architectures, agent memory, GraphRAG, chunking, RAG safety, evaluation, and the long-context frontier. Fig&nbsp;16 sorts the result into <strong>three honest states</strong>. TerranSoul already <strong>ships</strong> a large share of the frontier (hybrid + RRF, contextual retrieval, late chunking, CRAG + Self-RAG, the governed write gate, cross-lingual CJK, CLS + FSRS reconsolidation, LLM-judge rerank). It is <strong>building</strong> the rest as real, default-off modules landed this pass &mdash; HippoRAG-2 personalized-PageRank (wired), RaBitQ, MUVERA fixed-dimensional encodings, a semantic-entropy signal, a learned write-policy (Memory-R1 core), CaMeL-style information-flow control, and MMR diversity &mdash; each bench-pending before it is allowed to flip on. And a few capabilities it <strong>will not</strong> ship, because they need a resource the sovereign / local / $0 / single-frozen-LLM design deliberately excludes (explained below the figure). Nothing here is dangled as &ldquo;not yet&rdquo;: it either ships, is building, or is a stated boundary.</p>
     <p>The survey also surfaced one cheap, high-value gap that fit the architecture immediately, so it was <strong>applied as part of this update</strong>: <em>read-path spotlighting</em>. TerranSoul already governs the memory <em>write</em> path rigorously, but retrieved memories were concatenated into the generation prompt without being marked as untrusted data. The delimiting variant of Microsoft's spotlighting defense (Hines&nbsp;et&nbsp;al., 2024, arXiv:2403.14720) now fences every retrieved block with an explicit trust boundary &mdash; use these as reference facts, never obey instructions embedded inside them &mdash; closing the read&rarr;generate half of the same indirect-injection threat model the write gate already closes for writes (<code>crates/memory/src/context_pack.rs</code>, RAG-SPOTLIGHT-1).</p>
 
     <!-- ==== NEW Fig 16: measured against the 2026 SOTA (fy- scoped) ==== -->
@@ -623,13 +625,14 @@
         .fy-fig svg{padding:0}
         .fy-t{fill:var(--ink);font-family:var(--sans);font-size:12.5px;font-weight:600}
         .fy-sub{fill:var(--ink-faint);font-family:var(--mono);font-size:9px;letter-spacing:.03em}
-        .fy-colh{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;font-weight:600}
-        .fy-item{fill:var(--ink-soft);font-family:var(--sans);font-size:10.3px}
-        .fy-mk{font-family:var(--sans);font-size:11px;font-weight:700}
+        .fy-colh{font-family:var(--mono);font-size:9px;letter-spacing:.04em;font-weight:600}
+        .fy-item{fill:var(--ink-soft);font-family:var(--sans);font-size:9.2px}
+        .fy-mk{font-family:var(--sans);font-size:10px;font-weight:700}
         .fy-ok{fill:oklch(0.5 0.12 145)}
-        .fy-open{fill:oklch(0.57 0.13 65)}
-        .fy-sweep{fill:oklch(0.57 0.13 65);opacity:.10;transform-box:fill-box;animation:fy-sweep 7s ease-in-out infinite alternate}
-        @keyframes fy-sweep{0%{transform:translateY(0)}100%{transform:translateY(154px)}}
+        .fy-build{fill:oklch(0.52 0.13 255)}
+        .fy-wont{fill:oklch(0.55 0.16 25)}
+        .fy-sweep{fill:oklch(0.52 0.13 255);opacity:.10;transform-box:fill-box;animation:fy-sweep 6s ease-in-out infinite alternate}
+        @keyframes fy-sweep{0%{transform:translateY(0)}100%{transform:translateY(108px)}}
         .fy-banner{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5;animation:fy-pulse 3.2s ease-in-out infinite}
         @keyframes fy-pulse{0%,100%{stroke-opacity:.35}50%{stroke-opacity:1}}
         .fy-btag{fill:var(--accent);font-family:var(--mono);font-size:9px;letter-spacing:.08em;font-weight:700}
@@ -637,48 +640,60 @@
         .fy-bmod{fill:var(--accent-ink);font-family:var(--mono);font-size:9px}
         @media (prefers-reduced-motion: reduce){.fy-fig .fy-sweep{animation:none;opacity:0}.fy-fig .fy-banner{animation:none;stroke-opacity:1}}
       </style>
-      <svg class="fy-fig" viewBox="0 0 720 336" role="img" aria-label="Two columns comparing TerranSoul against the 2025-2026 state of the art. Left, frontier techniques TerranSoul already ships: hybrid plus reciprocal-rank fusion at NDCG-at-10 of 95.1, Anthropic contextual retrieval at ingest, Jina late chunking plus parent-child, CRAG plus Self-RAG corrective loop, a governed write gate driving MINJA and PoisonedRAG to 0 percent, a cross-lingual CJK channel lifting Japanese from 9.5 to 65, complementary-learning-systems consolidation with FSRS reconsolidation, and an LLM-as-judge cross-encoder rerank with agentic verify-rank. Right, open frontier not yet in TerranSoul: multi-vector late interaction with ColBERT, ColPali and MUVERA; HippoRAG 2 personalized PageRank memory; RaBitQ quantization; the LEANN low-storage index; cache-augmented generation and KV-cache reuse; an RL-trained memory manager; reasoning rerankers; and certified-robust RAG. A highlighted banner records the technique applied as part of this update: read-path spotlighting in context_pack.rs.">
+      <svg class="fy-fig" viewBox="0 0 720 306" role="img" aria-label="Three columns sorting TerranSoul against the 2025-2026 state of the art into ships, building, and will-not. SHIPS (benched, on by default): hybrid FTS5 plus dense plus RRF at NDCG-at-10 95.1; contextual retrieval at ingest; late chunking plus parent-child; CRAG plus Self-RAG; the governed write gate driving MINJA and PoisonedRAG to zero percent; a cross-lingual CJK channel lifting Japanese 9.5 to 65; complementary-learning-systems consolidation with FSRS reconsolidation; and LLM-judge rerank with verify-rank. BUILDING (core landed, default-off, bench-pending, committed this pass): HippoRAG-2 personalized-PageRank (wired); the RaBitQ quantizer; MUVERA fixed-dimensional encodings plus MaxSim; a semantic-entropy signal; a learned write-policy (Memory-R1 core); CaMeL-style information-flow control plus canary; and MMR diversity re-rank. WILL NOT (deliberate sovereign boundary): a per-token cloud or GPU embedder; offline RL fine-tuning; decoding-logit aggregation; a second privileged planner LLM; deep KV-cache blending; and a recompute index on the hot path. A highlighted banner records the technique applied as part of this update: read-path spotlighting in context_pack.rs.">
         <text class="fy-t" x="16" y="20">Measured against the 2026 state of the art</text>
-        <text class="fy-sub" x="704" y="20" text-anchor="end">72 gaps surveyed &middot; frontier already shipped vs. honestly open</text>
+        <text class="fy-sub" x="704" y="20" text-anchor="end">72 gaps surveyed &middot; ships / building / will not</text>
 
-        <text class="fy-colh fy-ok" x="16" y="44">&#10003; ALREADY SHIPS THE 2026 FRONTIER</text>
-        <text class="fy-colh fy-open" x="376" y="44">&#9702; OPEN FRONTIER &mdash; NOT YET IN TERRANSOUL</text>
-        <line x1="368" y1="34" x2="368" y2="232" stroke="var(--rule)"/>
+        <text class="fy-colh fy-ok" x="16" y="42">&#10003; SHIPS (benched, on)</text>
+        <text class="fy-colh fy-build" x="250" y="42">&#9679; BUILDING (core landed, off)</text>
+        <text class="fy-colh fy-wont" x="486" y="42">&#10007; WILL NOT (sovereign boundary)</text>
+        <line x1="240" y1="32" x2="240" y2="200" stroke="var(--rule)"/>
+        <line x1="480" y1="32" x2="480" y2="200" stroke="var(--rule)"/>
 
-        <!-- animated sweep over the open column -->
-        <rect class="fy-sweep" x="368" y="56" width="336" height="20" rx="3"/>
+        <!-- animated sweep over the BUILDING column (the active work) -->
+        <rect class="fy-sweep" x="244" y="54" width="232" height="18" rx="3"/>
 
-        <!-- left: shipped -->
+        <!-- col 1: SHIPS -->
         <g>
-          <text class="fy-mk fy-ok" x="16" y="70">&#10003;</text><text class="fy-item" x="32" y="70">Hybrid FTS5 + dense + RRF &mdash; NDCG@10 95.1</text>
-          <text class="fy-mk fy-ok" x="16" y="92">&#10003;</text><text class="fy-item" x="32" y="92">Contextual Retrieval (Anthropic) at ingest</text>
-          <text class="fy-mk fy-ok" x="16" y="114">&#10003;</text><text class="fy-item" x="32" y="114">Late chunking (Jina) + parent-child small-to-big</text>
-          <text class="fy-mk fy-ok" x="16" y="136">&#10003;</text><text class="fy-item" x="32" y="136">CRAG evaluator + Self-RAG reflection loop</text>
-          <text class="fy-mk fy-ok" x="16" y="158">&#10003;</text><text class="fy-item" x="32" y="158">Governed write gate &mdash; MINJA/PoisonedRAG &rarr; 0%</text>
-          <text class="fy-mk fy-ok" x="16" y="180">&#10003;</text><text class="fy-item" x="32" y="180">Cross-lingual CJK channel &mdash; JA 9.5 &rarr; 65.0 @1M</text>
-          <text class="fy-mk fy-ok" x="16" y="202">&#10003;</text><text class="fy-item" x="32" y="202">CLS consolidation + FSRS reconsolidation</text>
-          <text class="fy-mk fy-ok" x="16" y="224">&#10003;</text><text class="fy-item" x="32" y="224">LLM-judge cross-encoder rerank + verify-rank</text>
+          <text class="fy-mk fy-ok" x="16" y="62">&#10003;</text><text class="fy-item" x="28" y="62">Hybrid FTS5+dense+RRF &middot; 95.1</text>
+          <text class="fy-mk fy-ok" x="16" y="80">&#10003;</text><text class="fy-item" x="28" y="80">Contextual Retrieval (ingest)</text>
+          <text class="fy-mk fy-ok" x="16" y="98">&#10003;</text><text class="fy-item" x="28" y="98">Late chunking + parent-child</text>
+          <text class="fy-mk fy-ok" x="16" y="116">&#10003;</text><text class="fy-item" x="28" y="116">CRAG + Self-RAG loop</text>
+          <text class="fy-mk fy-ok" x="16" y="134">&#10003;</text><text class="fy-item" x="28" y="134">Write gate &middot; MINJA/Poison &rarr; 0%</text>
+          <text class="fy-mk fy-ok" x="16" y="152">&#10003;</text><text class="fy-item" x="28" y="152">CJK cross-lingual &middot; JA 9.5 &rarr; 65</text>
+          <text class="fy-mk fy-ok" x="16" y="170">&#10003;</text><text class="fy-item" x="28" y="170">CLS + FSRS reconsolidation</text>
+          <text class="fy-mk fy-ok" x="16" y="188">&#10003;</text><text class="fy-item" x="28" y="188">LLM-judge rerank + verify-rank</text>
         </g>
-        <!-- right: open -->
+        <!-- col 2: BUILDING -->
         <g>
-          <text class="fy-mk fy-open" x="376" y="70">&#9702;</text><text class="fy-item" x="392" y="70">Multi-vector late interaction (ColBERT/ColPali)+MUVERA</text>
-          <text class="fy-mk fy-open" x="376" y="92">&#9702;</text><text class="fy-item" x="392" y="92">HippoRAG-2 &mdash; personalized-PageRank memory</text>
-          <text class="fy-mk fy-open" x="376" y="114">&#9702;</text><text class="fy-item" x="392" y="114">RaBitQ quantization (dominates TurboQuant)</text>
-          <text class="fy-mk fy-open" x="376" y="136">&#9702;</text><text class="fy-item" x="392" y="136">LEANN low-storage recompute index</text>
-          <text class="fy-mk fy-open" x="376" y="158">&#9702;</text><text class="fy-item" x="392" y="158">CAG / KV-cache reuse (CacheBlend, TurboRAG)</text>
-          <text class="fy-mk fy-open" x="376" y="180">&#9702;</text><text class="fy-item" x="392" y="180">RL-trained memory manager (Memory-R1)</text>
-          <text class="fy-mk fy-open" x="376" y="202">&#9702;</text><text class="fy-item" x="392" y="202">Reasoning rerankers (ReasonRank / Rank-R1)</text>
-          <text class="fy-mk fy-open" x="376" y="224">&#9702;</text><text class="fy-item" x="392" y="224">Certified-robust RAG (RobustRAG) + IFC (CaMeL)</text>
+          <text class="fy-mk fy-build" x="246" y="62">&#9679;</text><text class="fy-item" x="258" y="62">HippoRAG-2 PPR (wired)</text>
+          <text class="fy-mk fy-build" x="246" y="80">&#9679;</text><text class="fy-item" x="258" y="80">RaBitQ quantizer</text>
+          <text class="fy-mk fy-build" x="246" y="98">&#9679;</text><text class="fy-item" x="258" y="98">MUVERA FDE + MaxSim</text>
+          <text class="fy-mk fy-build" x="246" y="116">&#9679;</text><text class="fy-item" x="258" y="116">Semantic-entropy signal</text>
+          <text class="fy-mk fy-build" x="246" y="134">&#9679;</text><text class="fy-item" x="258" y="134">Write-policy (Memory-R1 core)</text>
+          <text class="fy-mk fy-build" x="246" y="152">&#9679;</text><text class="fy-item" x="258" y="152">IFC + canary (CaMeL core)</text>
+          <text class="fy-mk fy-build" x="246" y="170">&#9679;</text><text class="fy-item" x="258" y="170">MMR diversity re-rank</text>
+        </g>
+        <!-- col 3: WILL NOT -->
+        <g>
+          <text class="fy-mk fy-wont" x="486" y="62">&#10007;</text><text class="fy-item" x="498" y="62">Per-token cloud/GPU embedder</text>
+          <text class="fy-mk fy-wont" x="486" y="80">&#10007;</text><text class="fy-item" x="498" y="80">Offline RL fine-tuning</text>
+          <text class="fy-mk fy-wont" x="486" y="98">&#10007;</text><text class="fy-item" x="498" y="98">Decoding-logit aggregation</text>
+          <text class="fy-mk fy-wont" x="486" y="116">&#10007;</text><text class="fy-item" x="498" y="116">2nd privileged planner LLM</text>
+          <text class="fy-mk fy-wont" x="486" y="134">&#10007;</text><text class="fy-item" x="498" y="134">Deep KV-cache blending</text>
+          <text class="fy-mk fy-wont" x="486" y="152">&#10007;</text><text class="fy-item" x="498" y="152">Recompute index on hot path</text>
         </g>
 
         <!-- applied-today banner -->
-        <rect class="fy-banner" x="16" y="250" width="688" height="70" rx="9"/>
-        <text class="fy-btag" x="32" y="272">APPLIED FROM THIS AUDIT &middot; 2026-07-22</text>
-        <text class="fy-btxt" x="32" y="292">RAG-SPOTLIGHT-1 &mdash; untrusted-retrieved-context spotlighting on the read &rarr; generate path</text>
-        <text class="fy-bmod" x="32" y="309">crates/memory/src/context_pack.rs &middot; closes the injection hole the write gate already closes for writes (Hines et al. 2024)</text>
+        <rect class="fy-banner" x="16" y="216" width="688" height="70" rx="9"/>
+        <text class="fy-btag" x="32" y="238">APPLIED FROM THIS AUDIT &middot; 2026-07-22</text>
+        <text class="fy-btxt" x="32" y="258">RAG-SPOTLIGHT-1 &mdash; untrusted-retrieved-context spotlighting on the read &rarr; generate path</text>
+        <text class="fy-bmod" x="32" y="275">crates/memory/src/context_pack.rs &middot; closes the injection hole the write gate already closes for writes (Hines et al. 2024)</text>
       </svg>
-      <figcaption><span class="fignum">Fig 16</span>TerranSoul against the 2025&ndash;2026 literature. Left: frontier techniques already shipping. Right: the largest genuinely-open gaps, recorded as open frontier rather than overclaimed &mdash; each a research-scale item (multi-vector late interaction, HippoRAG-2, RaBitQ, LEANN, cache-augmented generation, RL memory managers, reasoning rerankers, certified-robust RAG). The pulsing banner is the one cheap, architecturally-aligned gap <em>applied as part of this update</em>: read-path spotlighting, which fences retrieved memory as untrusted data so an indirect prompt injection sitting inside a memory cannot hijack the turn. Animation pauses under a reduced-motion preference.</figcaption>
+      <figcaption><span class="fignum">Fig 16</span>TerranSoul against the 2025&ndash;2026 literature, in three honest states. <strong>Ships</strong>: benched and on. <strong>Building</strong>: real modules landed this pass, default-off and bench-pending (each flips on only after a bench clears the never-regress floor). <strong>Will not</strong>: deliberate boundaries &mdash; not a backlog. There is no &ldquo;not yet&rdquo; column, because every gap either ships, is building, or is a stated boundary (why, below). The pulsing banner is the one gap applied inline during this audit: read-path spotlighting. Animation pauses under a reduced-motion preference.</figcaption>
     </figure>
+
+    <p><strong>Why &ldquo;will not,&rdquo; not &ldquo;not yet.&rdquo;</strong> The right column of Fig&nbsp;16 is not a backlog &mdash; each item needs a resource the sovereign / local-first / $0-cloud / single-frozen-LLM design forecloses on purpose. End-to-end multi-vector late interaction needs a <em>per-token</em> embedder, and the local Ollama path returns one mean-pooled vector per text; a learned memory policy's full form needs an <em>offline RL training loop</em>, not a frozen model; RobustRAG's stronger aggregator needs <em>decoding logits</em> the local server does not expose; full CaMeL needs a <em>second, privileged planner LLM</em>; CacheBlend-style KV reuse needs deep control of the <em>llama.cpp KV cache</em>; and a recompute-on-read index trades away the <em>sub-second latency floor</em> for storage. Where a tractable local variant <em>does</em> exist &mdash; MUVERA's fixed-dimensional-encoding machinery (built), the CaMeL information-flow kernel (built), a reason-then-rank prompt for the existing judge, a pinned-prefix cache &mdash; it sits in the <em>building</em> column instead. So these are stated boundaries, not gaps dangled as &ldquo;not yet.&rdquo;</p>
 
     <h2><span class="scene-num">Stage 1</span>Lexical / keyword search (inverted index + TF-IDF/BM25) &mdash; 1970s&ndash;2000s</h2>
     <p><strong>What it solved.</strong> The inverted index plus statistical ranking &mdash; TF-IDF, then Okapi BM25 at TREC-3 in 1994 [<a href="#cref-1">1</a>] &mdash; gave fast, ranked full-text retrieval over huge collections, and it never left. It is still a 2026 production default: a benchmark of 23,088 queries over 7,318 financial documents found plain BM25 scoring above <code>text-embedding-3-large</code> on most metrics, because exact identifiers reward exact-term matching (Akarsu et al. [<a href="#cref-2">2</a>]).</p>
@@ -729,7 +744,11 @@
     <p><strong>What they industrialized.</strong> The agent-memory layer itself: Mem0's extract-consolidate-update vector pipeline (~47k GitHub stars), Zep/Graphiti's bitemporal knowledge graph for facts that change over time, and Letta's OS-style runtime where the model pages its own memory via sleep-time curation [<a href="#cref-45">45</a>]. Adjacent, same problem class with a different deployment shape: ApeRAG, an agentic GraphRAG platform built as a deeply modified fork of LightRAG (Guo, Xia, Yu, Ao &amp; Huang [<a href="#cref-46">46</a>]) with five backing services, Kubernetes/Helm deployment, and optional MinerU document parsing [<a href="#cref-47">47</a>] &mdash; ApeRAG publishes no quantitative benchmark suite, so it is compared by architecture, not number [<a href="#cref-48">48</a>].</p>
     <p><strong>The documented limitation.</strong> Headless developer infrastructure built for developers, not end users: Mem0's vector-first design scores 49.0% beside Zep's 63.8% on LongMemEval temporal reasoning [<a href="#cref-45">45</a>]; Letta remains a runtime, not a product.</p>
 
-    <h2><span class="scene-num">Stage 11</span>TerranSoul's position &mdash; addressed, contained, open</h2>
+    <h2><span class="scene-num">Stage 11</span>The learned &amp; robust frontier &mdash; 2025&ndash;2026</h2>
+    <p><strong>What it is solving.</strong> Three shifts arrive at once. <em>Retrieval goes multi-vector:</em> ColBERT-style late interaction [<a href="#cref-61">61</a>] scales via PLAID and MUVERA's fixed-dimensional encodings [<a href="#cref-62">62</a>] and jumps to page images with ColPali [<a href="#cref-63">63</a>], recovering the token-level matching a single pooled vector loses. <em>Memory management becomes learned, not heuristic:</em> Memory-R1 [<a href="#cref-64">64</a>] trains a reinforcement-learning policy over add/update/delete/noop from downstream reward, and HippoRAG-2 [<a href="#cref-65">65</a>] runs personalized PageRank over a passage graph for single-shot multi-hop recall. <em>RAG gains provable robustness:</em> RobustRAG's isolate-then-aggregate [<a href="#cref-66">66</a>] and CaMeL's capability / information-flow control [<a href="#cref-67">67</a>] give certified resistance to injected passages, while extended RaBitQ [<a href="#cref-68">68</a>] pushes vector quantization past the previous accuracy/compression frontier.</p>
+    <p><strong>The documented limitation.</strong> Each win is bought with a resource the sovereign, single-frozen-local-LLM, $0-cloud setting deliberately excludes: late interaction needs a per-token (multi-vector) embedder, which Ollama does not expose; RL memory management needs an offline training loop; RobustRAG's stronger aggregator needs decoding logits; and CaMeL needs a second, privileged planner model. So the frontier's gains are real but not free &mdash; adopting them <em>locally</em> means shipping the tractable core and honestly marking the rest as a deliberate boundary. That is exactly TerranSoul's Stage&nbsp;12 record, and the three-state map (ships / building / will&nbsp;not) in Fig&nbsp;16.</p>
+
+    <h2><span class="scene-num">Stage 12</span>TerranSoul's position &mdash; addressed, contained, open</h2>
     <p>The final row of the source table records where TerranSoul sits against the whole chain, in three honest columns [<a href="#cref-51">51</a>]. Where a claim below is a measurement, its number and source file are in the main paper [<a href="#cref-52">52</a>].</p>
     <div class="tablewrap"><table class="compare">
       <tr><th>Status</th><th>Chain limitation</th><th>TerranSoul's record</th></tr>
@@ -835,6 +854,17 @@
       <li id="cref-46" value="46">Guo, Z., Xia, L., Yu, Y., Ao, T., Huang, C. <cite>LightRAG: Simple and Fast Retrieval-Augmented Generation.</cite> 2024. arXiv:2410.05779 (MIT). ApeRAG's graph-RAG lineage.</li>
       <li id="cref-47" value="47">apecloud/ApeRAG (Apache-2.0) and its optional MinerU parsing service (tools, cited by name).</li>
       <li id="cref-48" value="48">ApeRAG architecture comparison record: <code>benchmark/APERAG_COMPARISON.md</code> (ApeRAG publishes no quantitative benchmark suite &mdash; architecture-only comparison).</li>
+    </ol>
+    <div class="refgroup">Stage 11 &mdash; the learned &amp; robust frontier (2025&ndash;2026)</div>
+    <ol class="refs">
+      <li id="cref-61" value="61">Santhanam, K., Khattab, O., Saad-Falcon, J., Potts, C., Zaharia, M. <cite>ColBERTv2: Effective and Efficient Retrieval via Lightweight Late Interaction</cite> (and the PLAID engine). 2022. arXiv:2112.01488. The multi-vector / late-interaction line.</li>
+      <li id="cref-62" value="62">Dhulipala, L., Hadian, M., Jayaram, R., Lee, J., Mirrokni, V. <cite>MUVERA: Multi-Vector Retrieval via Fixed Dimensional Encodings.</cite> NeurIPS 2024. arXiv:2405.19504 (reduces MaxSim to a single vector that rides a standard ANN index).</li>
+      <li id="cref-63" value="63">Faysse, M., et al. <cite>ColPali: Efficient Document Retrieval with Vision Language Models.</cite> 2024. arXiv:2407.01449 (late interaction over page images; ColQwen extends it).</li>
+      <li id="cref-64" value="64">Yan, S., et al. <cite>Memory-R1: reinforcement-learned memory management</cite> (add/update/delete/noop from downstream reward); with Mem-&alpha; learned memory construction. 2025.</li>
+      <li id="cref-65" value="65">Gutiérrez, B. J., et al. <cite>HippoRAG</cite> (arXiv:2405.14831, 2024) and <cite>From RAG to Memory: Non-Parametric Continual Learning for LLMs</cite> (HippoRAG&nbsp;2, arXiv:2502.14802, 2025) &mdash; personalized-PageRank passage-graph retrieval.</li>
+      <li id="cref-66" value="66">Xiang, C., et al. <cite>Certifiably Robust RAG against Retrieval Corruption</cite> (RobustRAG, isolate-then-aggregate). USENIX Security 2025. arXiv:2405.15556.</li>
+      <li id="cref-67" value="67">Debenedetti, E., et al. <cite>Defeating Prompt Injections by Design</cite> (CaMeL; capability + information-flow control). 2025. arXiv:2503.18813.</li>
+      <li id="cref-68" value="68">Gao, J., Long, C. <cite>RaBitQ / Extended RaBitQ</cite> &mdash; quantization with a provable per-vector error bound, dominating prior methods at equal compression. SIGMOD 2024/2025.</li>
     </ol>
     <div class="refgroup">Design lineage and the self-evolution boundary</div>
     <ol class="refs">
