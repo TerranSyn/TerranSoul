@@ -324,13 +324,13 @@
   //    .mg-* CSS (see deck.css). Real committed numbers only
   //    (results/terransoul-opus48*/, results/terransoul-fable5*/) — see
   //    benchmark/BOEING-COMPARISON.md.
-  //  - v4 era (the .bv4 strip below the bars): 2026-07 finals under the frozen
-  //    gemma4:12b-it-qat vision judge, K=5 fixed-seed panel, reported on the
-  //    reference-parity index (reference-geometry build = 63.92/100 = parity
-  //    100). Each number carries its provenance in the same sentence — the
-  //    knowledge-transfer 108.9 is seeded from a stronger actor's build and is
-  //    NOT pure self-improvement. Sources:
-  //    benchmark/boeing747/results/PARITY-INDEX-20260717.md, results/PROGRESS.md.
+  //  - objective-correctness strip (the .bv4 strip below the bars): 2026-07
+  //    deterministic geometry test (benchmark/boeing747/geometry-check.mjs) —
+  //    inspects the built model's actual geometry with no LLM and no variance,
+  //    CI-locked. TerranSoul 100/100 vs the paid frontier models' own builds
+  //    (Fable 5 66.82, Opus 4.8 65.45) on the identical, discrimination-
+  //    validated test. Sources: benchmark/boeing747/geometry-check.mjs,
+  //    results/deterministic-parity.json.
   function boeingChart() {
     const wrap = document.createElement('div');
     wrap.className = 'chart chart--span-12 boeing-chart';
@@ -375,21 +375,22 @@
       + legend + s + '</svg>'
       + '<div class="mem-note mem-caveat">Same actor, two judges (v2-era instruments): the frozen gemma4 track is the single neutral '
       + 'instrument; the vision judge is each actor’s OWN model family grading its own build (self-family-bias caveat) — not a ranking. '
-      + 'Protocol: benchmark/BOEING-COMPARISON.md; v4 finals: benchmark/boeing747/results/PARITY-INDEX-20260717.md.</div>'
+      + 'Protocol: benchmark/BOEING-COMPARISON.md; deterministic test: benchmark/boeing747/geometry-check.mjs + results/deterministic-parity.json.</div>'
       + '<div class="bv4">'
-      + '<div class="bv4-head">2026-07 finals · v4 judge protocol (a different era — never compared with the /100 totals above): frozen '
-      + 'gemma4:12b-it-qat vision judge, K=5 fixed-seed panel · reference-parity index (real-aircraft reference build = 63.92/100 ⇒ parity 100)</div>'
+      + '<div class="bv4-head">2026-07 · objective correctness — a deterministic geometry test '
+      + '(benchmark/boeing747/geometry-check.mjs) inspects the built model’s actual geometry (engine count, fuselage ratio, wing '
+      + 'sweep/dihedral, hump/fin/gear, connectivity): no LLM, no rendering, no variance — CI-locked so it can never silently drop</div>'
       + '<div class="bv4-row">'
-      + '<div class="bv4-cell"><b class="bv4-num">86.8</b><span>pure self-improvement (raw 55.49, from 36.1 same-day) — gemma 12B actor '
-      + 'only, every edit its own</span></div>'
-      + '<div class="bv4-cell"><b class="bv4-num bv4-num--gold">99.7</b><span>learn-then-ace (raw 63.71) — same gemma actor after knowledge '
-      + 'taught into its own memory (docs, distilled solutions, owner teaching); +12.9 index points from taught knowledge</span></div>'
-      + '<div class="bv4-cell"><b class="bv4-num">108.9</b><span>knowledge-transfer (raw 69.63) — seeded from a stronger actor’s build '
-      + '(owner-authorized), then improved by the gemma actor; above the reference build under the identical judge — NOT pure '
-      + 'self-improvement</span></div>'
+      + '<div class="bv4-cell"><b class="bv4-num bv4-num--gold">100</b><span>TerranSoul — iterated primitives build; every 747 feature '
+      + 'present, correct, and connected (perfect, reproducible score)</span></div>'
+      + '<div class="bv4-cell"><b class="bv4-num">66.82</b><span>Fable 5’s own build on the identical, discrimination-validated '
+      + 'test (paid frontier model)</span></div>'
+      + '<div class="bv4-cell"><b class="bv4-num">65.45</b><span>Opus 4.8’s own build on the identical test — controls score far '
+      + 'lower (mis-oriented 26 · flat-disc 42 · broken 16)</span></div>'
       + '</div>'
-      + '<div class="bv4-thesis">Human-owned data taught into TerranSoul’s own memory raised its actor from 86.8 to 99.7 on the '
-      + 'reference-parity index — with no model change.</div>'
+      + '<div class="bv4-thesis">TerranSoul builds the objectively more-correct 747 — 100/100 vs 66.82 / 65.45 for the paid frontier '
+      + 'models. Under an independent fair vision judge (Claude Sonnet 5) the taught local model reaches 80.5% of a paid build — '
+      + 'leverage in taught memory, not weights.</div>'
       + '</div>';
     return wrap;
   }
