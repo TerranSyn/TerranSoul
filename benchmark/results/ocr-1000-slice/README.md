@@ -1,5 +1,40 @@
 # OCR engine A/B — Unlimited-OCR vs gemma4 vision (2026-07-27)
 
+> ## ⚠️ CORRECTED — the first published figures were 5× too pessimistic
+>
+> The original numbers below (**2.71 % overall, ko 17.10 %**) were distorted by **one page of 105**.
+> Page 48 transcribed correctly and then entered a **degenerate repetition loop**, emitting
+> `전문대학 컴퓨터공학 전공 졸업.` until it hit the 2,048-token cap — **1,426 characters against 403
+> expected**, i.e. 1,030 edits. Against ~6,045 Korean reference characters that single page IS the
+> "17.10 % Korean weakness", and it also inflated the whole-corpus figure.
+>
+> A greedy decoder at temperature 0 cannot escape such a loop unaided, so `run-ocr.mjs` now applies
+> repetition penalties and a tail-based degenerate check with one hard-penalty retry (`eae3ae6b`).
+> The detector flags exactly that page across the slice — 1 flagged, 104 clean, no false positives.
+>
+> **RE-MEASURED with the guard active, 106 pages of the natural corpus distribution, ZERO runaway
+> pages:**
+>
+> | lang | n | CER |
+> |---|---:|---:|
+> | fr | 7 | **0.00 %** |
+> | en | 35 | **0.01 %** |
+> | es | 5 | 0.12 % |
+> | ja | 14 | 0.25 % |
+> | zh | 8 | 1.20 % |
+> | **ko** | 10 | **1.38 %** |
+> | vi | 27 | 2.08 % |
+> | **overall** | **106** | **0.77 %** |
+>
+> So Korean is **~1.4 %, not 17.10 %**, and **Vietnamese — not Korean — is the weakest language.**
+> The earlier "Korean is not solved" caveat is **withdrawn**; it described a decoding failure, not a
+> recognition one.
+>
+> **The lesson, which generalises past OCR:** a length-weighted corpus metric is dominated by its
+> worst page, so ONE pathological output can manufacture a per-language "weakness" that does not
+> exist. Always look at the per-item distribution before attributing an aggregate to a property of
+> the subject — the same trap as `recall_ANY@5` reading 100 % on the multi-gold subset.
+
 **Unlimited-OCR is 12× faster and 4× more accurate than the default LLM, at the same time.**
 
 | | gemma4:12b-it-qat (vision) | **baidu/Unlimited-OCR Q4_K_M** |
