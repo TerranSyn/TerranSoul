@@ -479,14 +479,37 @@ async function run(rawEntries, options) {
       const entry = entries[index];
       const sessions = sessionPayloads(entry);
 
-      await client.send({ op: 'reset' });
-      await client.send({
-        op: 'add_sessions',
-        question_id: entry.question_id,
-        sessions,
-      });
-
+      // MEASUREMENT BUG, fixed 2026-07-27 (forensics on the 95.1 floor).
+      //
+      // This used to `reset` + `add_sessions` ONCE and then loop the systems
+      // over that SHARED store, so every system after the first ran against a
+      // store the earlier ones had already touched. That is not a fair
+      // comparison — it is a sequence.
+      //
+      // MEASURED CONSEQUENCE: the two runs that produced the published 95.1
+      // floor used `systems=search,rrf,rrf_emb`, so `search` ran first and
+      // heated `access_count`, which feeds the activation multiplier and moved
+      // `rrf`'s post-fusion score. `rrf` and `rrf_emb` flipped in LOCKSTEP on
+      // the affected query while the sparse `search` row stayed byte-identical
+      // — a perturbed shared input, not a fusion change. HEAD, run as `rrf`
+      // ALONE, reads 95.0402; the multi-system runs read 95.1108 / 95.1296.
+      // The "floor" and the current value were never the same experiment.
+      //
+      // `3803f33c` epoch-pinned activation counts so identical queries are
+      // order-idempotent, which removes the known instance. This removes the
+      // CLASS: each system now gets a cold store, so no system can observe
+      // another's side effects through any shared state, present or future.
+      //
+      // Cost is one extra reset+ingest per system per question — real, but a
+      // benchmark that silently compares a sequence is worth nothing.
       for (const system of systems) {
+        await client.send({ op: 'reset' });
+        await client.send({
+          op: 'add_sessions',
+          question_id: entry.question_id,
+          sessions,
+        });
+
         const start = performance.now();
         const response = await client.send({
           op: 'search',
