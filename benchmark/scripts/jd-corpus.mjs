@@ -243,7 +243,10 @@ export const LANG_WEIGHTS = [
 
 // Template placeholders: {role} {years} {skillA} {skillB}
 // nameOrder: how given/family compose; joiner between the two parts.
-const LANGS = {
+// Exported so harness-side JD generators (e.g. Real-E2E/jd/gen-scenarios.mjs)
+// can reuse the SAME localized role/seniority tables instead of duplicating
+// this curated vocabulary (single source of truth — no drift).
+export const LANGS = {
   en: {
     given: ['James', 'Mary', 'Robert', 'Patricia', 'John', 'Jennifer', 'Michael', 'Linda',
       'David', 'Elizabeth', 'William', 'Susan', 'Richard', 'Jessica', 'Joseph', 'Sarah',
