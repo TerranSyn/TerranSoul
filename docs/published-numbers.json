@@ -19,10 +19,37 @@
   ],
   "artifacts": {
     "$comment-arms": "head-full500-* is the canonical set: one embedder (embeddinggemma) AND one code version (HEAD, 2026-07-27), one arm per process. The max100-full500-* arms are 2026-07-25 code, and max100-full500/ additionally ran the harness-default embedder — both kept on disk as evidence, neither safe to compare across.",
+    "$comment-arms-2": "CORRECTED 2026-07-27: full500-think and full500-research still pointed at the max100-* (2026-07-25 code) arms while the comment above declared head-full500-* canonical — so the manifest contradicted itself, and any claim bound to `think` would have been checked against a different code version from every other arm. Both now point at head-full500-*, and all four are embeddinggemma. The repoint MOVES the think numbers a long way (NDCG@10 93.78 on 2026-07-25 code, 87.25 at HEAD) — that delta is a real regression under investigation, not a manifest artifact, which is precisely why it must be the checked value.",
     "full500-rrf": "benchmark/results/head-full500-rrf/longmemeval_s_terransoul.json",
     "full500-chat": "benchmark/results/head-full500-chat/longmemeval_s_terransoul.json",
-    "full500-think": "benchmark/results/max100-full500-think/longmemeval_s_terransoul.json",
-    "full500-research": "benchmark/results/max100-full500-research/longmemeval_s_terransoul.json"
+    "full500-think": "benchmark/results/head-full500-think/longmemeval_s_terransoul.json",
+    "full500-research": "benchmark/results/head-full500-research/longmemeval_s_terransoul.json"
+  },
+  "hundredPercentGuard": {
+    "$comment": [
+      "MAX-100-26. docs/bench-100-percent-semantics.md records, per bench, whether 100 is emittable AT ALL.",
+      "Until this block existed that file was prose, and prose does not stop anyone publishing a 100 % target",
+      "next to a bench whose judge cannot produce one - which is how a cross-bench '100 % in thinking MAX'",
+      "goal got set over benches with incompatible ceilings. The checker now parses the table and fails any",
+      "perfect-score claim it can attribute to a row marked capped.",
+      "",
+      "aliases: page prose spells benches more loosely than the table's first column. An alias declared for a",
+      "bench with no row in the table is REPORTED, so deleting a row cannot silently disarm the guard.",
+      "exempt: an escape hatch that costs a written reason, and the quote must SPAN the number it exempts",
+      "(quoting text that merely sits nearby would silence every other claim on the page). Prefer wording the",
+      "sentence so it states the cap - the checker already reads 'not emittable', 'cannot emit', 'is not",
+      "reached' and friends as honouring the table rather than breaking it."
+    ],
+    "semantics": "docs/bench-100-percent-semantics.md",
+    "files": [
+      "docs/LLM-Brain-Design-Research-Paper/index.html",
+      "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html"
+    ],
+    "aliases": {
+      "LongMemEval-S": ["LongMemEval-S", "LongMemEval"],
+      "Boeing 747": ["Boeing 747", "Boeing"]
+    },
+    "exempt": []
   },
   "requireSameEmbedder": {
     "$comment": "Every artifact compared against another in the same claim must share an embedder. The chat arm was run without LONGMEM_EMBED_MODEL and silently used the harness default (mxbai-embed-large) while the others used embeddinggemma, which invalidated a cross-arm comparison for a full day before anyone read the report headers. This turns that into a failure.",
@@ -30,42 +57,82 @@
   },
   "claims": [
     {
-      "id": "me-fig8-cov-ndcg",
+      "$comment-floors": [
+        "The four `me-*-rrf` / `index-rrf-*` entries below are the 95.1 / 95.9 FLOOR family. They are EXPECTED to",
+        "report MISMATCH against the current artifacts (95.04 / 95.76) and that is the point: under",
+        "rules/bench-never-regress.md a published number is regained, not lowered, so the mismatch is the open",
+        "obligation made loud. Do NOT silence them by editing the page down. They go green when a run clears the",
+        "floor - or, if the old record is ever forensically proven to be a measurement error, when the owner signs",
+        "off on retiring it. The 2026-07-27 audit annotated every one of these on-page with the measured value, its",
+        "artifact, and its date, so a reader sees the floor and the measurement together."
+      ],
+      "id": "me-fig12-cov-ndcg",
       "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
       "needle": "LongMemEval NDCG@10 {value}",
       "artifact": "full500-rrf",
       "metric": "ndcg_at_10",
       "scale": 100,
-      "decimals": 1
+      "decimals": 1,
+      "note": "Fig 12, panel 10 (Hybrid Fusion). Renamed 2026-07-27 from `me-fig8-cov-ndcg`, which sent a reader to a figure that does not carry this number."
     },
     {
-      "id": "me-fig17-ships-rrf",
+      "id": "me-fig16-ships-rrf",
       "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
       "needle": "Hybrid FTS5+dense+RRF &middot; {value}",
       "artifact": "full500-rrf",
       "metric": "ndcg_at_10",
       "scale": 100,
-      "decimals": 1
+      "decimals": 1,
+      "note": "Fig 16, left column. Renamed 2026-07-27 from `me-fig17-ships-rrf` - it is Fig 16, not Fig 17."
     },
     {
       "id": "me-addressed-table-rrf",
       "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
-      "needle": "LongMemEval-S NDCG@10 &ge; {value}",
+      "needle": "LongMemEval-S NDCG@10 {value}",
       "artifact": "full500-rrf",
       "metric": "ndcg_at_10",
       "scale": 100,
       "decimals": 1,
-      "note": "The >= makes this strictly false whenever the measured value is below the published one."
+      "note": "Fig 14 card 1 and the Stage-12 table. The needle read `NDCG@10 &ge; {value}` until 2026-07-27: the `>=` asserted the floor was CURRENTLY being met, which is a strictly stronger claim than citing the floor and is false while the measurement sits below it. The operator was removed from the page (not the number), so the needle drops it too."
     },
     {
       "id": "me-fig17-chat-ndcg",
       "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
-      "needle": "validated retrieval path (LongMemEval-S NDCG@10 {value})",
+      "needle": "chat NDCG@10 {value}",
       "artifact": "full500-chat",
       "metric": "ndcg_at_10",
       "scale": 100,
       "decimals": 1,
-      "note": "Claim 3 of the inventory. Binds to the CHAT arm because the sentence describes chat. The surrounding 'byte-identical' assertion is a prose claim this checker cannot evaluate - it is refuted by any measured difference between chat and rrf."
+      "note": "Claim 3 of the inventory, REBOUND 2026-07-27. The old needle quoted the sentence calling chat 'byte-identical to the validated retrieval path (LongMemEval-S NDCG@10 95.1)'. That sentence was deleted rather than re-numbered: chat measures 93.78 against rrf's 95.04 and 140 of 500 orderings differ, so the identity assertion was false in kind, not off by digits - a never-regress question does not arise for a claim that was never a measurement of chat. Fig 17 now publishes chat's own measured value and this needle binds it."
+    },
+    {
+      "id": "me-fig17-ladder-rrf",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "research = rrf {value} &gt;",
+      "artifact": "full500-rrf",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 2,
+      "note": "Fig 17's measured-state footer, added 2026-07-27. The figure used to draw four increasing rungs; it now prints the measured order underneath, and these three claims pin every number in it so the shape cannot silently drift back."
+    },
+    {
+      "id": "me-fig17-ladder-chat",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "&gt; chat {value} &gt;",
+      "artifact": "full500-chat",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 2
+    },
+    {
+      "id": "me-fig17-ladder-think",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "&gt; think {value};",
+      "artifact": "full500-think",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 2,
+      "note": "think is BELOW chat here. That is a real regression on current code - the same arm on 2026-07-25 code matched chat to four decimals - and it is published as such rather than omitted."
     },
     {
       "id": "index-rrf-r5",
@@ -93,18 +160,83 @@
       "metric": "mrr",
       "scale": 100,
       "decimals": 1
+    },
+    {
+      "$comment-measured": [
+        "Added 2026-07-27. The entries above pin the FLOORS; these pin the MEASUREMENTS the pages now print",
+        "beside them. They are expected to be GREEN, and going red means the artifact moved without the page",
+        "following - the opposite failure from the floor family, and equally worth catching."
+      ],
+      "id": "index-rrf-ndcg-measured",
+      "file": "docs/LLM-Brain-Design-Research-Paper/index.html",
+      "needle": "at <strong>NDCG@10 {value} / MRR",
+      "artifact": "full500-rrf",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 2,
+      "note": "Section 5.1's provenance paragraph, which states the current measurement next to the published floor."
+    },
+    {
+      "id": "index-rrf-mrr-measured",
+      "file": "docs/LLM-Brain-Design-Research-Paper/index.html",
+      "needle": "/ MRR {value}</strong> (<code>benchmark/results/head-full500-rrf/</code>",
+      "artifact": "full500-rrf",
+      "metric": "mrr",
+      "scale": 100,
+      "decimals": 2
+    },
+    {
+      "$comment-aria": [
+        "Added 2026-07-27. The checker reads raw page source, so `aria-label` text is bindable - and it had to be,",
+        "because four instances of the 95.1 floor and two shape claims lived ONLY inside role=img descriptions,",
+        "i.e. on the accessible surface, where no needle reached them. A number that is corrected for sighted",
+        "readers and left stale for screen-reader users is still a wrong page."
+      ],
+      "id": "me-fig12-aria-rrf",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "reciprocal-rank fusion at LongMemEval NDCG-at-ten {value}",
+      "artifact": "full500-rrf",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1,
+      "note": "FLOOR family - expected MISMATCH until 95.1 is regained. The aria text names the measured 95.04 in the same sentence."
+    },
+    {
+      "id": "me-fig14-aria-rrf",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "LongMemEval-S NDCG at 10 floor of {value}",
+      "artifact": "full500-rrf",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1,
+      "note": "FLOOR family - expected MISMATCH until 95.1 is regained."
+    },
+    {
+      "id": "me-fig16-aria-rrf",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "published NDCG-at-10 floor of {value}",
+      "artifact": "full500-rrf",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1,
+      "note": "FLOOR family - expected MISMATCH until 95.1 is regained."
     }
   ],
   "untraceable": [
     {
       "id": "index-competitor-figures",
-      "what": "R@10 57.2, R@100 76.9/43.7, NDCG@10 45.0/100.0, R@10 90.0/100.0 in index.html",
-      "why": "Competitor/baseline numbers quoted from cited papers. They must trace to a source citation, not to a run of ours; checking them against our artifacts would be a category error."
+      "what": "agentmemory R@5 95.2 / R@10 98.6 / R@20 99.4 / NDCG@10 87.9 / MRR 88.2, MemPalace ~96.6 / ~97.6, and the SIA figures in index.html",
+      "why": "Competitor/baseline numbers quoted from cited papers or vendor self-reports. They must trace to a source citation, not to a run of ours; checking them against our artifacts would be a category error. NOTE 2026-07-27: this entry used to list 'R@10 57.2, R@100 76.9/43.7, NDCG@10 45.0/49.9' as competitor figures. They were not competitor figures - they were OURS, from a 2026-06-09 LoCoMo run, spliced against a 2026-06-27 rrf_emb run to manufacture a dense-channel lift that the matched data reverses. Section 5.2 now carries the corrected within-run pair and the forensic note; misfiling our own stale numbers as somebody else's is how they escaped checking for a month."
     },
     {
-      "id": "me-external-rag-survey",
-      "what": "'use in RAG ... recall-at-ten 68.3 percent' in memory-evolution.html",
-      "why": "External survey figure, not ours."
+      "id": "me-locomo-rrf-rerank",
+      "what": "'use in RAG ... recall-at-ten 68.3 percent' in memory-evolution.html (Fig 12, panel 8)",
+      "why": "CORRECTED 2026-07-27. This entry previously read 'External survey figure, not ours' and was therefore deliberately unbound - wrongly. 68.3 % IS ours: MTEB LoCoMo R@10 for `rrf_rerank`, BENCH-LCM-8, 2026-05-12 (benchmark/terransoul/locomo-mteb/README.md, benchmark/README.md). It stays untraceable here for a different and honest reason: the LoCoMo harness commits a Markdown report, not a systems[] JSON, so there is nothing for this checker to read. The page now names the bench inline ('LoCoMo R@10 68.3%') because printing a bare R@10 beside LongMemEval panels invited exactly the cross-bench misread that docs/published-claims-inventory.md forbids. Binding this properly needs a JSON emitter on the LoCoMo runner."
+    },
+    {
+      "id": "me-locomo-full-run",
+      "what": "LoCoMo rrf 69.3 / 91.7 / 54.9 / 53.6 and rrf_emb 66.6 / 87.1 / 53.5 / 52.5 in index.html 5.2 + Fig 2",
+      "why": "Same reason: benchmark/results/locomo_mteb_terransoul.md is Markdown-only, so the checker cannot read it. Both rows come from the SAME committed 2026-06-28 run, which is the whole point of the 5.2 correction - the numbers they replaced came from two runs three weeks apart. A JSON emitter on the LoCoMo runner would make this bindable and is the right fix."
     },
     {
       "id": "index-longmem-archaeology",

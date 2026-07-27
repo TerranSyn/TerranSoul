@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { spawn } from 'node:child_process';
+import { buildJudgePrompt, chunkSessionToText } from './lib/longmem-judge-prompt.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -194,10 +195,6 @@ function filteredEntries(raw, limit) {
   return limit > 0 ? entries.slice(0, limit) : entries;
 }
 
-function chunkSessionToText(turns) {
-  return turns.map(turn => `${turn.role}: ${turn.content}`).join('\n');
-}
-
 function sessionPayloads(entry) {
   return entry.haystack_session_ids.map((sessionId, index) => {
     const turns = entry.haystack_sessions[index];
@@ -342,23 +339,8 @@ class JsonlClient {
   }
 }
 
-function retrievedContexts(entry, sessionIds, topK, maxChars) {
-  const byId = new Map(entry.haystack_session_ids.map((id, index) => [id, entry.haystack_sessions[index]]));
-  return sessionIds.slice(0, topK).map((sessionId, index) => {
-    const text = chunkSessionToText(byId.get(sessionId) ?? []);
-    const capped = Array.from(text).slice(0, maxChars).join('');
-    return `#${index + 1} session ${sessionId}\n${capped}`;
-  }).join('\n\n');
-}
-
 async function judgeEvidence(entry, retrievedSessionIds, options) {
-  const context = retrievedContexts(
-    entry,
-    retrievedSessionIds,
-    options.judgeTopK,
-    options.judgeMaxSessionChars,
-  );
-  const prompt = `You are judging retrieval evidence for LongMemEval-S.\n\nQuestion:\n${entry.question}\n\nReference answer:\n${entry.answer}\n\nRetrieved sessions:\n${context}\n\nReturn JSON only with keys supported (boolean) and reason (short string). supported=true means the retrieved sessions contain enough evidence to answer the question consistently with the reference answer.`;
+  const prompt = buildJudgePrompt(entry, retrievedSessionIds, options);
   const response = await fetch(`${options.ollamaUrl.replace(/\/$/, '')}/api/chat`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
