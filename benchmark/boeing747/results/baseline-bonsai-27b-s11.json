@@ -1,0 +1,18 @@
+{
+  "protocol": "boeing747-primitives-vision-bench (single-shot baseline)",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "builder_model": "bonsai-27b-s11",
+  "builder_seed": 7,
+  "builder_options": {
+    "temperature": 0,
+    "num_ctx": 8192,
+    "num_predict": 4096
+  },
+  "plane_sha256": "23ce828f7c4126e78b719203b818a15390bddffa85629865a400a74ede387400",
+  "contract_ok": true,
+  "contract_violations": [],
+  "created_at": "2026-07-23T04:08:49.478Z",
+  "status": "rig_failed",
+  "rig_error": "page.evaluate: Error: camera spec: degenerate bounding box (radius=NaN)\n    at computeCamera (http://127.0.0.1:64758/benchmark/boeing747/lib/cameras.mjs:159:11)\n    at Object.setView (http://127.0.0.1:64758/benchmark/boeing747/rig/rig.html:123:20)\n    at eval (eval at evaluate (:303:30), <anonymous>:2:34)\n    at UtilityScript.evaluate (<anonymous>:305:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+  "total_0_100": null
+}

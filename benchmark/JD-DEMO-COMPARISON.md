@@ -93,6 +93,17 @@ the CLI's usage, gold scored after.
 
 ## 3. Honest note on the 100 %
 
+> ⚠️ **CORRECTION (2026-07-25) — "Max" here is NOT the product's `max` thinking mode.**
+> These numbers come from `benchmark/scripts/jd-max-bench.mjs`, which contains no reference
+> to `ChatMode::Max`, `thinking_mode`, or `agentic_verify_rank`. It implements its own
+> retrieval loop (`op: 'search'`) plus a hand-rolled `domainJudge` that POSTs to Ollama
+> `/api/chat` directly from JavaScript — `rules/completion-log.md:5604` records it as having
+> "no Rust port". So the 100 % figures describe a **bench-local pipeline that resembles Max**,
+> not the shipped mode, and they must not be cited as evidence that the product's `max`
+> achieves 100 % on 1M résumés. The product mode is currently UNMEASURED on this bench.
+> Until the harness is routed through the real max path, treat every "Max" row in §1 as
+> "JD-bench agentic pipeline". Tracked as a required fix; see `docs/agent-parity-2026.md`.
+
 Max's 100 % is real **on this synthetic corpus**, and it is earned fairly: the
 generator renders each candidate's area-indicative role, years, and skills
 explicitly into the résumé prose, so an oracle-quality reader can re-derive the

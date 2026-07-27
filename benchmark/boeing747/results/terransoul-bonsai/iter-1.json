@@ -1,0 +1,109 @@
+{
+  "actor": "terransoul-bonsai",
+  "iter": 1,
+  "run_id": "terransoul-bonsai-iter-1-mrxjwsgd",
+  "plane_sha256": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "total_0_100": 55.84,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 6.78
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 3.73
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.65
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 6.69
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 6.73
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.14
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 5.67
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 6.77
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 5.1
+    }
+  ],
+  "weakest_feature": {
+    "id": "engines_four_underwing",
+    "mean": 3.93,
+    "perCriterion": {
+      "engines_four_underwing": 3.93,
+      "upper_deck_hump": 5.46,
+      "fuselage_proportions": 5.58,
+      "wing_geometry": 6.04,
+      "empennage": 6.97,
+      "landing_gear": 6.12,
+      "window_door_lines": 4.23,
+      "livery_coherence": 5.91,
+      "silhouette_747": 6.38,
+      "craftsmanship": 5.13
+    }
+  },
+  "critic": {
+    "weakest_feature": "engines_four_underwing",
+    "fix_suggestion": "Duplicate the existing engine geometry to create four total engines. For each wing, position two engines along the leading edge: place Engine 1 at a distance of 20% from the wing root and Engine 2 at 60% from the wing root. Rotate both sets of engines -35 degrees relative to the fuselage centerline to align with the swept wing angle.",
+    "discrepancies": [
+      {
+        "feature": "Engine count",
+        "observed": "Two engines visible under the wing",
+        "reference": "Four engines total (two per wing)",
+        "direction_of_fix": "duplicate"
+      },
+      {
+        "feature": "Engine placement",
+        "observed": "Engines are clustered near the fuselage/wing root",
+        "reference": "Engines are spaced out along the leading edge of the wing",
+        "direction_of_fix": "move outward"
+      },
+      {
+        "feature": "Wing sweep alignment",
+        "observed": "The wings appear relatively straight or only slightly swept",
+        "reference": "Wings have a significant rearward sweep",
+        "direction_of_fix": "rotate/tilt backward"
+      },
+      {
+        "feature": "Engine pylon attachment",
+        "observed": "Engines are attached directly to the wing underside without distinct pylons",
+        "reference": "Engines are mounted on prominent pylons extending from the wing",
+        "direction_of_fix": "add/extend geometry"
+      }
+    ],
+    "critic_view": 2,
+    "source": "structured-llm"
+  },
+  "scored_views": 9,
+  "missing_views": 0,
+  "regressed": false,
+  "best_total_after": 55.84,
+  "created_at": "2026-07-23T13:37:31.367Z",
+  "actor_status": "actor_exhausted_retries"
+}

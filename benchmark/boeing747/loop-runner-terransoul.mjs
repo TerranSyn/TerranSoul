@@ -15,7 +15,7 @@
 //        honest judge_track label from Task 1's fix)
 //     -> runActorWithRetries (retry-with-backoff wrapper around
 //        actor/actor-claude.mjs's runActorEdit: TerranSoul's OWN generic
-//        agentic-edit CLI capability, `terransoul-cli --agent-task`
+//        agentic-edit CLI capability, `terransoul --agent-task`
 //        (WIRE-CLI-PARITY-GAP-3 rewire, 2026-07-10 — replaces the OLD
 //        bespoke direct `claude` spawn), its own vision inspection,
 //        Read+Edit only, gated end-to-end through the `action_trust`
@@ -41,7 +41,7 @@
 // short-circuits the retry loop immediately, since no timeout can fix a
 // ledger decision; lib/actor-retry.mjs's `shouldRetryActor`), (3) gets
 // streaming observability on every actor call (lib/actor-stream.mjs, wired
-// inside actor-claude.mjs itself; rewritten for the terransoul-cli
+// inside actor-claude.mjs itself; rewritten for the terransoul
 // stderr-progress-line format — see that module's header), and (4) surfaces
 // prior-attempt context to the actor and records a lesson once an edit's
 // effect becomes observable (lib/self-learning.mjs, generic MCP brain
@@ -54,7 +54,7 @@
 //
 // Judge calls stay strictly sequential (existing discipline — the GPU/CLI may
 // be shared); this script itself is the only thing looping, so there is
-// exactly one `terransoul-cli --agent-task` subprocess in flight at any time.
+// exactly one `terransoul --agent-task` subprocess in flight at any time.
 //
 // CLI:
 //   node loop-runner-terransoul.mjs --plane <plane.js> [--actor terransoul-fable5]
@@ -235,7 +235,7 @@ async function runActorWithRetries({ retryCfg, ...actorArgs }) {
   let result;
   for (;;) {
     const timeoutMs = computeAttemptTimeoutMs(attemptIdx, retryCfg.baseTimeoutMs, retryCfg.timeoutCapMs);
-    // Sequential by design (existing discipline): one `terransoul-cli
+    // Sequential by design (existing discipline): one `terransoul
     // --agent-task` subprocess in flight at a time.
     result = await runActorEdit({ ...actorArgs, timeoutMs });
     attempts.push({
@@ -1323,7 +1323,7 @@ if (isMain) {
     bestOfN: args['best-of-n'] ? Number(args['best-of-n']) : 0,
     // --design-reference: ask TerranSoul's own memory (pointed at THIS run's
     // --cli-data-dir) for reference material an operator ingested ahead of
-    // time via `terransoul-cli --ingest-resume <path>`, scoped to the current
+    // time via `terransoul --ingest-resume <path>`, scoped to the current
     // weakest feature, and inject the answer into the actor prompt. Default
     // OFF — a bare run stays byte-identical to every prior track. See
     // buildDesignReferenceSection / lib/design-reference.mjs.

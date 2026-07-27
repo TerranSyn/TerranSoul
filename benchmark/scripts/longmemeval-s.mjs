@@ -29,7 +29,9 @@ const ABSTENTION_TYPES = new Set([
   'knowledge-update_abs',
   'temporal-reasoning_abs',
 ]);
-const DEFAULT_SYSTEMS = ['search', 'rrf'];
+// Published bench surface = the four real thinking modes (rules/bench-thinking-modes.md);
+// each routes through the production pipeline in longmemeval_ipc::thinking_mode_search.
+const DEFAULT_SYSTEMS = ['chat', 'think', 'research', 'max'];
 
 function option(name, defaultValue) {
   const prefix = `--${name}=`;
@@ -603,8 +605,34 @@ async function main() {
     .map(system => system.trim())
     .filter(Boolean);
   for (const system of systems) {
-    if (!['search', 'rrf', 'emb', 'rrf_emb'].includes(system)) {
-      throw new Error(`unsupported system ${system}; use search, rrf, emb, or rrf_emb`);
+    // Thinking modes are the published surface; legacy rrf_*/search/emb are kept
+    // during the transition for A/B and removed once the thinking-mode floors lock.
+    const published = ['chat', 'think', 'research', 'max', 'search', 'rrf', 'emb', 'rrf_emb'];
+    // A/B arms: every one of these is implemented in `longmemeval_ipc.rs`'s mode
+    // dispatch but was unreachable behind this allow-list, so no bench could ever
+    // measure the SOTA-adopt features (MMR, HippoRAG PPR, reason-rerank, HyDE…).
+    // A feature that cannot be benched cannot clear the never-regress floor, and
+    // therefore can never leave "built & available" for "benched, on" — this gate
+    // was the structural reason the ● column never emptied.
+    const abArms = [
+      'rrf_mmr',
+      'rrf_mmr_rerank',
+      'rrf_multihop',
+      'rrf_rerank',
+      'rrf_kg',
+      'rrf_temporal',
+      'rrf_hyde',
+      'rrf_hyde_rerank',
+      'rrf_iterative',
+      'rrf_ctx',
+      'ivfpq',
+    ];
+    const allowed = [...published, ...abArms];
+    if (!allowed.includes(system)) {
+      throw new Error(
+        `unsupported system ${system}; published surface = chat, think, research, max ` +
+          `(rules/bench-thinking-modes.md); A/B arms = ${abArms.join(', ')}`,
+      );
     }
   }
 

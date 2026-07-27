@@ -1,5 +1,12 @@
 # Boeing 747 primitives vision benchmark — model comparison
 
+> **Naming note (2026-07-27).** The CLI is now `terransoul`, installed by
+> `npm run build:cli` into `src-tauri/target/<profile>/cli/`. Every
+> `terransoul-cli` below is left as written: it is the name the binary actually
+> had during those runs, and this file records what happened, not what to type
+> today. The recorded `actor_error` strings under `results/` are captured
+> process output and are likewise never rewritten.
+
 > **The test.** Build the most realistic Boeing 747 using **Three.js primitives
 > only** (`Box`, `Cylinder`, `Sphere`, `Cone`, `Torus`, `Capsule`, `Lathe`,
 > `Extrude` — no meshes, loaders, or textures). A rig screenshots **nine fixed

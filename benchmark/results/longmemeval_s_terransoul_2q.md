@@ -1,30 +1,47 @@
 # TerranSoul LongMemEval-S Retrieval Report
 
-Date: 2026-05-26T14:09:28.773Z
+Date: 2026-07-24T14:33:22.606Z
 Dataset: built-in sample
 Questions: 2 (0 abstention rows excluded)
 Methodology: retrieval-only recall_any@K, matching agentmemory benchmark/longmemeval-bench.ts
+Env: (no LONGMEM_* vars set) | effective embed model: none (LONGMEM_EMBED unset — dense channel OFF)
 
 | System | R@5 | R@10 | R@20 | NDCG@10 | MRR | Avg latency | Avg retrieved tokens |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| search | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 0.97ms | 42 |
-| rrf | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 47.98ms | 0 |
+| chat | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 638.07ms | 41 |
+| think | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 158.73ms | 41 |
+| research | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 106.60ms | 41 |
+| max | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% | 109.27ms | 0 |
 
 ## By Question Type
 
-### search
+### chat
 
 | Type | Count | R@5 | R@10 | NDCG@10 | MRR |
 |---|---:|---:|---:|---:|---:|
 | single-session-user | 1 | 100.0% | 100.0% | 100.0% | 100.0% |
 | multi-session | 1 | 100.0% | 100.0% | 100.0% | 100.0% |
 
-### rrf
+### think
 
 | Type | Count | R@5 | R@10 | NDCG@10 | MRR |
 |---|---:|---:|---:|---:|---:|
 | single-session-user | 1 | 100.0% | 100.0% | 100.0% | 100.0% |
 | multi-session | 1 | 100.0% | 100.0% | 100.0% | 100.0% |
+
+### research
+
+| Type | Count | R@5 | R@10 | NDCG@10 | MRR |
+|---|---:|---:|---:|---:|---:|
+| single-session-user | 1 | 100.0% | 100.0% | 100.0% | 100.0% |
+| multi-session | 1 | 100.0% | 100.0% | 100.0% | 100.0% |
+
+### max
+
+| Type | Count | R@5 | R@10 | NDCG@10 | MRR |
+|---|---:|---:|---:|---:|---:|
+| single-session-user | 1 | 0.0% | 0.0% | 0.0% | 0.0% |
+| multi-session | 1 | 0.0% | 0.0% | 0.0% | 0.0% |
 
 ## Methodology Notes
 

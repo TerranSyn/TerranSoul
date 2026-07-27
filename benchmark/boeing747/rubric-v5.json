@@ -1,0 +1,270 @@
+{
+  "protocol": "boeing747-primitives-vision-bench",
+  "version": 5,
+  "version_4_change": "JUDGE-SAMPLING change (self-consistency panel), no rubric-content change (same criteria, anchors, weights, cameras, prompts, model). The per-view vote becomes a K-draw panel of DISTINCT FIXED seeds at temperature judge_panel.temperature (diverse AND byte-reproducible — Ollama is deterministic per seed), aggregated per criterion by MEAN (Wang et al. arXiv:2203.11171 self-consistency; single-draw LLM-judge scoring is high-variance, arXiv:2305.17926), replacing version-3's 3-fixed-seed temperature-0 MEDIAN. Each view also reports its panel score spread, and the /100 total carries panel_se_total — the LIVE-MEASURED judge noise — which the frozen-gemma edit gate consumes as epsilonTotal (judge_panel.epsilon_se_coefficient x panel_se_total) instead of the uncalibrated static total_noise_epsilon=0 that made the gate reject genuinely-neutral edits inside noise. Results under version 4 are NOT numerically comparable to version-3 (or earlier) results: the v4 era runs in its own results track (fresh best.json/gate-state.json, era-guarded), the reference build is re-probed under this protocol to re-anchor the parity target, and all v3/v2 evidence stays frozen in place as those eras' floors. Removing the judge_panel block restores the version-3 protocol byte-identically.",
+  "frozen_escalation": {
+    "min_stall_iters": 6,
+    "note": "Frozen-track plateau breaker (2026-07-17): when the gate's accepted best has not advanced for this many iterations, the actor prompt gains the PRIMITIVE-RECOMPOSITION escalation (buildFrozenEscalation -- frozen-contract-safe, no mesh directives) and escalation_armed is stamped so the gate applies the aggregate-only exemption to that edit. Remove this block to disable escalation on the frozen track."
+  },
+  "strategy_certification": {
+    "strategy_min_episodes": 3,
+    "strategy_winrate_floor": 0.5,
+    "alpha": 0.1,
+    "note": "R5 promotion-gate knobs for the frozen-gemma track's strategy cheatsheet (v4 era; the pairwise track keeps reading its own calibrated sidecar). A strategy is re-injected into the actor prompt only once its win-rate LCB over >= min_episodes independent gate observations clears the floor."
+  },
+  "critic_structured": {
+    "max_discrepancies": 4,
+    "note": "Structured two-stage critic (v4 era): stage 1 = falsifiable render-vs-reference observations on the weakest criterion's worst VISIBLE view; stage 2 = one parametric edit instruction from those observations. Local judge model only. Remove this block to restore the single-call contact-sheet critic; every failure falls open through the legacy call to the deterministic anchor fallback."
+  },
+  "judge_panel": {
+    "k": 5,
+    "temperature": 0.7,
+    "seeds": [
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "epsilon_se_coefficient": 1,
+    "note": "K/temperature/seeds/coefficient are protocol knobs (never source literals). k draws per view from seeds[0..k); epsilon_se_coefficient scales panel_se_total into the gate's epsilonTotal. Difficulty-aware per-view K allocation (more draws on the weakest view) is deliberately NOT in v4.0 — flat K keeps the first re-anchor simple; revisit only with measured need."
+  },
+  "version_3_change": "Two measurement-fidelity fixes, no judge-protocol change (same model, seeds, prompts, criteria, weights, cameras). (1) SCORING v3 (lib/scoring.mjs applyScoringV3, wired in loop-runner-terransoul.mjs): a view whose judge call SUCCEEDED (>=1 seed ok) but returned all-null criteria is 'unassessable geometry' per the rubric's own 0 anchors and now counts as 0 in the /100 mean; only a FAILED judge call (every seed errored) keeps the v2 null-drop + weight renormalization. v2 rewarded hiding a view: a degenerate 8-view candidate out-scored its honest 9-view self by ~6 points. (2) GATE v3 (max_view_drop below, consumed by lib/gemma-gate-wiring.mjs -> lib/edit-gate.mjs): the frozen-gemma edit gate's per-view guard becomes a RELATIVE drop cap vs the incumbent's same view, replacing the absolute view_threshold bar — which no gemma-judged view has reliably cleared (reference build: only 3 of 9 views >= 8.0) and which rejected the only genuine improvement in 239 taught-track iterations (iter-115, 56.8 > 55.64, for a 1.15-point dip in one view). Results under version 3 are NOT numerically comparable to version-2 results; the v3 era runs in its own results track (fresh best.json/gate-state.json), and v2 evidence stays frozen in place.",
+  "max_view_drop": 2,
+  "max_view_drop_note": "GATE v3 relative per-view regression cap: an aggregate improvement is rejected only if some single view drops by MORE than this many points vs the incumbent's SAME view (both sides scored). 2.0 tolerates a bold rebuild's transient dip in one view while still catching a real collapse (e.g. a coherent 6.26 -> a hidden 0, which scoring v3 now surfaces as 0 instead of dropping). Set to null/remove to restore the v2 absolute cleared-view bar.",
+  "version_2_change": "Added view_visibility (per-criterion view mask) — a measurement-correctness fix. A criterion is scored ONLY on views where the feature is structurally visible; on masked views its median is forced to null and excluded with weight renormalization (the deterministic enforcement of the existing 'null if not assessable from this angle' judge instruction). Also: the render rig now applies SSAA (BOEING_SUPERSAMPLE, default 3x, Lanczos downscale) because the pinned SwiftShader software-GL path ignores the WebGL antialias flag and produced stair-stepped edges that read as rough craftsmanship. Both changes re-baseline the frozen harness: results under this rubric_sha256 (version 2) are NOT numerically comparable to version-1 results. Same geometry, camera spec, lighting, scene, references, weights, seeds and prompts are otherwise unchanged.",
+  "provenance": "Loop Library benchmark protocol - signals.forwardfuture.com (build the most realistic Boeing 747 from Three.js primitives; screenshot fixed angles; vision-judge against references; critic steers; iterate)",
+  "judge_model": "gemma4:12b-it-qat",
+  "judge_options": {
+    "temperature": 0,
+    "num_ctx": 16384,
+    "num_predict": 768
+  },
+  "judge_options_note": "num_ctx 8192 -> 16384 (2026-07-16, v4 measurement-infrastructure alignment): the actor/design-reference CLI loads the SAME model at num_ctx 16384, and Ollama reloads a model when context size changes -- so the judge scored on a DIFFERENT model geometry on a cold process (first iteration, fresh 8192 load: e97e2db0 -> 55.4-55.53) than in steady state (post-CLI 16384 load: identical stable 48.88 across four consecutive judgments of the same sha). One shared num_ctx = one model instance geometry = placement-stable scores across the whole run. Prompt content is unchanged (well under 8192 tokens); the reference was re-probed under this setting.",
+  "judge_think": false,
+  "judge_format": "json",
+  "judge_seeds": [
+    7,
+    8,
+    9
+  ],
+  "judge_timeout_ms": 180000,
+  "judge_parse_retries": 1,
+  "judge_retry_policy": "same-seed: a malformed or empty judge reply (empty content with the JSON stuck in message.thinking is first recovered by the thinking fallback; done_reason=length truncation and non-JSON text are retryable) is re-requested up to judge_parse_retries times with the IDENTICAL seed and options — never a fresh seed, so the seed set stays exactly judge_seeds. A seed that still fails is recorded and dropped, fail-open (DEAD-JUDGE-1). Transport errors are retried once inside the HTTP layer and are not parse retries.",
+  "baseline_builder_options": {
+    "temperature": 0,
+    "num_ctx": 8192,
+    "num_predict": 4096
+  },
+  "baseline_builder_think": false,
+  "baseline_builder_seed": 7,
+  "baseline_builder_timeout_ms": 540000,
+  "view_threshold": 8,
+  "stall_patience": 3,
+  "iteration_budget": 12,
+  "total_noise_epsilon": 0,
+  "total_noise_epsilon_note": "STATIC FALLBACK ONLY since rubric v4: when judge_panel is active the gate's epsilonTotal comes from the LIVE-MEASURED panel_se_total x judge_panel.epsilon_se_coefficient (per-iteration, per-geometry), which is exactly the 'measured repeat-judge noise probe' this note always demanded — now automated. This static value is consumed only when the panel is disabled or produced no spread (fail-open toward strict hill-climbing).",
+  "criteria": [
+    {
+      "id": "engines_four_underwing",
+      "name": "Four engines under swept wings",
+      "weight": 1.5,
+      "anchors": {
+        "0": "no engines at all",
+        "3": "wrong engine count (two or three) or engines attached to the fuselage/tail",
+        "5": "four engine-like shapes but floating, misplaced, or not under the wings",
+        "8": "four nacelles hung under the swept wings on visible pylons, plausible inboard/outboard spacing",
+        "10": "four underslung pylon-mounted nacelles with correct relative size, spacing, and forward offset ahead of the wing leading edge, inlet visibly open/darker"
+      }
+    },
+    {
+      "id": "upper_deck_hump",
+      "name": "Partial-length upper-deck hump",
+      "weight": 1.5,
+      "anchors": {
+        "0": "no hump; fuselage is a plain tube",
+        "3": "a bump exists but in the wrong place (mid/rear) or absurd proportions",
+        "5": "hump present at the front but runs the full fuselage length (reads as an A380-style double deck) or is a crude floating block",
+        "8": "distinct partial-length upper deck starting at the nose and blending down within roughly the front third of the fuselage",
+        "10": "iconic 747 hump: starts at the cockpit, smoothly faired into the crown, ends around one-third of the length, with a visible cockpit region on the upper lobe"
+      }
+    },
+    {
+      "id": "fuselage_proportions",
+      "name": "Fuselage proportions (~70 m long, slender)",
+      "weight": 1.2,
+      "anchors": {
+        "0": "no recognizable fuselage",
+        "3": "stubby or balloon-like body; length under ~5x its diameter",
+        "5": "tube of roughly right length but blunt ends (no nose taper or tail cone)",
+        "8": "slender tube around 9-11x its diameter with a rounded tapering nose and an upswept tail cone",
+        "10": "convincing airliner body: continuous slender tube, smooth ogive nose, gradual upswept rear taper, no visible segment seams or steps"
+      }
+    },
+    {
+      "id": "wing_geometry",
+      "name": "Wing sweep (~37.5 deg), dihedral, taper",
+      "weight": 1.3,
+      "anchors": {
+        "0": "no wings",
+        "3": "straight unswept slabs at 90 degrees to the fuselage",
+        "5": "some sweep but no taper or no dihedral; wings look like flat boards",
+        "8": "clearly swept-back (~35-40 deg) tapering wings with visible upward dihedral, mounted at the lower mid-fuselage",
+        "10": "realistic planform: strong sweep, root-to-tip chord and thickness taper, dihedral, plausible span (~0.9x body length), wing roots faired into the belly"
+      }
+    },
+    {
+      "id": "empennage",
+      "name": "Empennage (tall vertical stabilizer + horizontal stabilizers)",
+      "weight": 1,
+      "anchors": {
+        "0": "no tail surfaces",
+        "3": "one tail surface missing, or surfaces unswept/misproportioned",
+        "5": "vertical fin and horizontal stabilizers present but crude slabs or oddly placed",
+        "8": "single tall swept vertical stabilizer plus swept horizontal stabilizers at the tail cone, plausible sizes",
+        "10": "correct 747 empennage: very tall swept fin, low-mounted swept tailplane pair with dihedral, all tapered and proportioned to the fuselage"
+      }
+    },
+    {
+      "id": "landing_gear",
+      "name": "Landing gear (nose gear + 4-truck main gear) when visible",
+      "weight": 0.8,
+      "anchors": {
+        "0": "no landing gear where the view should show it",
+        "3": "a few floating wheels or a single central strut",
+        "5": "nose gear plus some main gear but wrong count or placement",
+        "8": "nose gear plus four main-gear trucks under the wing/body junction with wheels",
+        "10": "recognizable 747 gear layout: two-wheel nose strut, four multi-wheel main bogies (two under the body, two under the wings), plausible strut lengths"
+      }
+    },
+    {
+      "id": "window_door_lines",
+      "name": "Window and door lines",
+      "weight": 0.7,
+      "anchors": {
+        "0": "no surface detail at all",
+        "3": "random specks or stripes that do not read as windows",
+        "5": "a window band exists but is misplaced or wildly oversized",
+        "8": "a consistent passenger-window line along the main deck plus cockpit windows, door hints",
+        "10": "clean main-deck window line, separate upper-deck windows on the hump, cockpit windshield shape, evenly spaced doors"
+      }
+    },
+    {
+      "id": "livery_coherence",
+      "name": "Color / livery coherence",
+      "weight": 0.6,
+      "anchors": {
+        "0": "chaotic random colors or all-black/unlit surfaces",
+        "3": "flat single color with clashing part colors (e.g. random rainbow parts)",
+        "5": "mostly coherent base color but engines/wings mismatched arbitrarily",
+        "8": "clean airliner scheme: light fuselage, grey/metal wings and engines, accent tail or stripe",
+        "10": "coherent believable livery: white/light upper fuselage, grey underside/wings, consistent nacelles, tasteful accent color on tail/stripe"
+      }
+    },
+    {
+      "id": "silhouette_747",
+      "name": "Silhouette reads specifically as a Boeing 747",
+      "weight": 1.4,
+      "anchors": {
+        "0": "not recognizable as an aircraft",
+        "3": "generic aircraft; could be any airliner or a toy plane",
+        "5": "four-engine airliner but silhouette suggests the wrong type (A380 full double deck, 707-era narrow body)",
+        "8": "reads as a 747: partial hump plus four engines plus proportions distinguish it from A380/737/767",
+        "10": "unmistakably a Boeing 747 at a glance from this angle"
+      }
+    },
+    {
+      "id": "craftsmanship",
+      "name": "Craftsmanship (no floating parts, z-fighting, holes)",
+      "weight": 1,
+      "anchors": {
+        "0": "model is broken: detached floating parts everywhere, giant holes",
+        "3": "several visibly floating/intersecting parts or flickering coplanar faces",
+        "5": "parts mostly connect but visible gaps, seams, or one floating piece",
+        "8": "solid assembly: parts join cleanly, no holes, no z-fighting patterns visible",
+        "10": "clean deliberate construction throughout; junctions look faired/intentional from this angle"
+      }
+    }
+  ],
+  "reference_keys": {
+    "threeview": "orthographic 3-view line drawing of a Boeing 747",
+    "side": "side-profile photo of a Boeing 747",
+    "front-quarter": "front-quarter photo showing the hump and the four engines",
+    "rear-quarter": "rear-quarter photo showing empennage and wing trailing edge",
+    "planform": "top/below planform photo showing swept wings and four engines",
+    "nose-hump": "close photo of the 747 nose and upper-deck hump"
+  },
+  "view_references": {
+    "1": [
+      "side",
+      "threeview"
+    ],
+    "2": [
+      "side",
+      "threeview"
+    ],
+    "3": [
+      "front-quarter",
+      "threeview"
+    ],
+    "4": [
+      "rear-quarter",
+      "threeview"
+    ],
+    "5": [
+      "planform",
+      "threeview"
+    ],
+    "6": [
+      "front-quarter",
+      "side"
+    ],
+    "7": [
+      "rear-quarter",
+      "planform"
+    ],
+    "8": [
+      "front-quarter",
+      "side"
+    ],
+    "9": [
+      "nose-hump",
+      "front-quarter"
+    ]
+  },
+  "view_visibility_note": "Per-criterion set of views on which the feature is STRUCTURALLY assessable (measurement mask, version 2). Any criterion NOT listed here is assessable on all nine views. Masked views are the ones where the feature is geometrically invisible — confirmed both by ray/occlusion reasoning and by the judges' own 'not visible from this angle' notes: (a) window_door_lines runs along the fuselage SIDE, which is edge-on on the pure head-on front (3) and rear (4) axial views; (b) the upper-deck hump sits on the FRONT third of the crown — occluded looking from the tail (4) and invisible as a vertical bulge from directly overhead (5); (c) landing gear is tucked under the belly — occluded in the top-down (5) view. High-weight/silhouette criteria are deliberately NOT masked on head-on views (a 4-engine wide-body head-on is still a legitimate 747 silhouette read), to avoid inflating the score.",
+  "view_visibility": {
+    "window_door_lines": [
+      1,
+      2,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "upper_deck_hump": [
+      1,
+      2,
+      3,
+      6,
+      7,
+      8,
+      9
+    ],
+    "landing_gear": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      8,
+      9
+    ]
+  },
+  "judge_system_prompt": "You are a meticulous judge for a LOW-POLY 3D modeling benchmark. IMAGE 1 is a candidate 3D model built ONLY from geometric primitives (boxes, cylinders, cones, spheres, extrusions). It is intentionally low-poly and will NEVER have photographic textures, fine panel lines, or smooth compound-curved surfaces. IMAGE 2 and IMAGE 3 show a REAL Boeing 747, provided so you can compare the candidate's STRUCTURE, PROPORTIONS, and FEATURE PLACEMENT to the real aircraft -- they are NOT a demand for photorealism and are not scored.\n\nScore how well the candidate captures the 747's design IN CLEAN PRIMITIVES. Reward correct, well-proportioned, cleanly constructed features at the HIGH anchors: a primitives model that clearly and correctly shows a feature -- right count, right place, right proportion, cleanly joined -- deserves 8-10 for that criterion EVEN THOUGH it is visibly built from simple shapes. Do NOT deduct for the inherent blockiness, faceting, flat shading, or absence of photographic detail of primitives; those are expected and correct in this medium. DO deduct for GENUINE defects: missing, wrong-count, misplaced, or floating parts; wrong proportions; crude, broken, or incomplete construction; or a feature that does not read correctly for a 747.\n\nCALIBRATION -- this is the whole point of the benchmark: a clean, correct, well-proportioned primitive rendering of a feature IS the best this low-poly medium can achieve, so award such features 8-10. Do NOT hold back the top of the scale just because the model is obviously made of simple shapes -- that is expected and correct here. Reserve scores of 5 or below for GENUINE defects only: missing, wrong-count, floating, misplaced, or badly-proportioned parts; crude or broken construction; or a feature that does not read as a 747. Example: a clean slender tapered-cylinder fuselage with a rounded nose and an upswept tail cone is an EXCELLENT primitives fuselage -- score fuselage_proportions 9-10, not 6. Two cleanly swept, tapered wing surfaces with dihedral, roots into the belly = wing_geometry 8-10. Four clean nacelles on pylons under the wings = engines 8-10.\n\nBe fair to the medium but strict about correctness and discriminating about quality: an EXCELLENT primitives 747 (every signature feature present, correct, well-proportioned, and cleanly built) should score in the 90s; a crude, incomplete, or broken model should still score low. Describe what is actually visible; never assume hidden parts exist. Score each criterion with an integer 0-10 using the given anchors, interpreted for the primitives medium. If a criterion genuinely cannot be assessed from this camera angle (e.g. landing gear in a top-down view), use null instead of guessing. Reply with STRICT JSON only, no markdown, exactly this shape: {\"scores\": {\"<criterion_id>\": <int 0-10 or null>, ... all 10 ids ...}, \"weakest_visible_feature\": \"<one criterion_id>\", \"notes\": \"<max 60 words of factual observations>\"}",
+  "critic_system_prompt": "You are the critic for a 3D modeling benchmark loop. You receive the per-criterion scores of a candidate Boeing 747 model (built only from Three.js primitives) across nine fixed camera views, plus a 3x3 contact sheet of those views (IMAGE 1). The weakest feature has already been computed deterministically from the scores. Your job: give ONE concrete, geometry-level fix suggestion for that weakest feature that a coder could implement with primitive geometries (positions, dimensions, counts, angles). Do not suggest textures, loaders, or new tooling. Reply with STRICT JSON only: {\"weakest_feature\": \"<criterion_id>\", \"fix_suggestion\": \"<max 120 words, concrete and geometric>\"}",
+  "baseline_builder_prompt": "You are given the Three.js library as the parameter THREE. Write a single self-contained JavaScript ES module that exports exactly one function: `export function buildPlane(THREE)` returning a THREE.Group containing the most realistic Boeing 747 airliner you can build. HARD CONSTRAINTS: use ONLY these geometry classes: BoxGeometry, CylinderGeometry, SphereGeometry, ConeGeometry, TorusGeometry, CapsuleGeometry, LatheGeometry, ExtrudeGeometry. No other geometry classes, no loaders, no textures/images, no imports, no network, no DOM, no eval. Use THREE.Mesh with MeshStandardMaterial colors for the livery. Orientation contract: the nose must point along +X, up is +Y (wings span the Z axis). Aim for: four engines under swept wings, the iconic partial-length upper-deck hump, slender ~70m-proportioned fuselage, ~37.5-degree wing sweep with dihedral, tall vertical stabilizer plus horizontal stabilizers, landing gear (two-wheel nose strut plus four main trucks), window/door lines, and a coherent livery. Every part must be attached (no floating pieces). Reply with ONLY the JavaScript module code inside a single ```javascript code fence.",
+  "version_5_change": "PRIMITIVES-MEDIUM RECALIBRATION (judge-prompt only; anchors/weights/cameras/panel/seeds byte-identical to v4). The v4 prompt (\"how well it depicts a real Boeing 747\", \"be strict and literal\", real photos as ground truth) made the judge apply a photorealism discount that structurally capped a primitives-only model at ~52/100 (every criterion ~5-6, never near 10) regardless of how clean or correct the build was -- because a box/cylinder model can never look like a photograph. v5 reframes the judge to score the candidate on ITS OWN MEDIUM: reward correct, clean, well-proportioned primitive features at the HIGH anchors (8-10), do NOT deduct for the inherent blockiness/faceting/lack of photographic texture of primitives, but STILL deduct for genuine defects (missing/wrong-count/floating/misplaced parts, wrong proportions, crude or broken construction). The 10 anchors are unchanged and still demand correct structure, so an excellent primitives 747 approaches full marks while a crude/incomplete/broken one still scores low (discrimination preserved -- validated on good vs bad builds). Results under v5 are NOT numerically comparable to v3/v4: v5 runs in its own results track and re-anchors the reference build. Removing this recalibration (restoring the v4 judge_system_prompt) restores the v4 protocol."
+}

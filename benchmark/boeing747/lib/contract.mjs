@@ -82,10 +82,16 @@ export function validatePlaneSource(source) {
     if (match) violations.push(`forbidden token \`${match[0].trim()}\`: ${reason}`);
   }
 
-  // Geometry whitelist: every *Geometry identifier used must be a primitive.
-  // This bans PlaneGeometry, TorusKnotGeometry, raw BufferGeometry, etc.
+  // Geometry whitelist: every geometry CLASS CONSTRUCTED must be a primitive.
+  // Match `new <X>Geometry(` (optionally `new THREE.<X>Geometry(`), NOT a bare
+  // `<X>Geometry` identifier — the bare match false-positived on ordinary
+  // variable names like `humpGeometry`/`wingGeometry` (a naming style, not a
+  // forbidden class), unfairly failing valid planes. This still bans
+  // `new PlaneGeometry(`, `new BufferGeometry(`, `new TorusKnotGeometry(`, etc.
+  // (fairness bug fix 2026-07-23, owner-authorized — aligns the check to its
+  // stated intent; gemma results unaffected, they never constructed a non-primitive.)
   const geometryIds = new Set();
-  for (const m of source.matchAll(/\b(\w+Geometry)\b/g)) geometryIds.add(m[1]);
+  for (const m of source.matchAll(/\bnew\s+(?:THREE\.)?(\w+Geometry)\s*\(/g)) geometryIds.add(m[1]);
   for (const id of geometryIds) {
     if (!ALLOWED_GEOMETRIES.includes(id)) {
       violations.push(

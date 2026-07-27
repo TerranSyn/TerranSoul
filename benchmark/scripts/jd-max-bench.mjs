@@ -201,6 +201,11 @@ async function run() {
   const mode = option('mode', 'million');
   const corpusDir = resolve(REPO_ROOT, option('corpus-dir', DEFAULT_CORPUS_DIR));
   const rrfMode = option('rrf-mode', 'rrf'); // 'rrf' (lexical+dense) — 'rrf_kg' if edges present
+  // `product` (default) = the real ChatMode::Max pipeline via op:search mode=max.
+  // `legacy`  = the JavaScript reimplementation retained for A/B only. Its output
+  // is NOT a Max number (see the block in the JD loop and docs/agent-parity-2026.md).
+  const engine = option('engine', 'product');
+  const productTopK = numOpt('product-top-k', 20);
   const perQ = numOpt('per-q', 1000);
   const discoverN = numOpt('discover', 14);
   const maxRounds = numOpt('max-rounds', 2);
@@ -240,16 +245,94 @@ async function run() {
   const tWall = performance.now();
   try {
     const data = await client.send({ op: 'count' });
-    if (Number(data.count) !== expected) {
-      throw new Error(`store holds ${data.count} rows, expected ${expected} — wrong LONGMEM_DATA_DIR?`);
+    // The shim writes ONE `system:default-system-setting` row per entry in
+    // LONGMEM_SET_FLAGS, and on a persistent store (LONGMEM_DATA_DIR) those
+    // rows land in the same `memories` table the corpus lives in. They are
+    // config, not corpus — but `op:count` counts rows, so this guard has to
+    // account for them or it mis-reports a healthy store as the wrong
+    // directory (observed 2026-07-25: "store holds 1000002 rows, expected
+    // 1000000"). The shim purges stale override rows first, so at most one
+    // row per currently-set flag is present.
+    const flagRows = (process.env.LONGMEM_SET_FLAGS ?? '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(s => s.includes(':') && s.includes('=')).length;
+    const tolerated = expected + flagRows;
+    if (Number(data.count) !== tolerated) {
+      throw new Error(
+        `store holds ${data.count} rows, expected ${expected}` +
+          (flagRows ? ` (+${flagRows} LONGMEM_SET_FLAGS override rows = ${tolerated})` : '') +
+          ' — wrong LONGMEM_DATA_DIR?',
+      );
     }
-    console.log(`[jd-max] store verified at ${data.count} rows (mode=${rrfMode}, dense=${denseQuery})`);
+    console.log(
+      `[jd-max] store verified at ${data.count} rows` +
+        (flagRows ? ` (${expected} corpus + ${flagRows} flag override)` : '') +
+        ` (mode=${rrfMode}, dense=${denseQuery})`,
+    );
 
     const results = [];
     for (const jd of JD_QUERIES) {
       if (jdFilter && jd.id !== jdFilter) continue;
       const surfaces = jd.requiredSkills.map(s => SKILL_SURFACES[s]);
       const goldSet = new Set(goldDoc.gold[jd.id] ?? []);
+
+      // ── ENGINE: product ──────────────────────────────────────────────────
+      // Owner directive 2026-07-25: "All bench must use our same workflow of
+      // Desktop chat, cli and mcp." One `op:'search'` with `mode:'max'` routes
+      // through the SAME Rust pipeline the product uses —
+      // `thinking_mode_search` -> deep_research (decomposition + coverage
+      // rounds) -> agentic_verify_rank (deterministic_verify + rankVerified +
+      // domain judge + windowed reorder).
+      //
+      // The legacy engine below is a JAVASCRIPT REIMPLEMENTATION of that same
+      // pipeline (`discoverTokens` = decomposition, the round loop = coverage
+      // widening, `domainJudge` = the judge). It never calls ChatMode::Max, so
+      // its numbers — including the published "Max 100%" in
+      // benchmark/JD-DEMO-COMPARISON.md — describe the harness, not the
+      // product. Kept only for A/B against the product path; never publish it
+      // as a Max number.
+      if (engine === 'product') {
+        const tAll = performance.now();
+        const res = await client.send({
+          op: 'search',
+          query: jd.queryText,
+          mode: 'max',
+          limit: productTopK,
+          include_content: false,
+        });
+        const rankedIds = [];
+        const seen = new Set();
+        for (const h of res.results ?? []) {
+          if (!h.session_id || seen.has(h.session_id)) continue;
+          seen.add(h.session_id);
+          rankedIds.push(h.session_id);
+        }
+        const totalMs = performance.now() - tAll;
+        const m = metricsFor(rankedIds, goldSet);
+        const goldInRanked = rankedIds.filter(id => goldSet.has(id));
+        results.push({
+          jd_id: jd.id,
+          jd_lang: jd.lang,
+          gold_size: goldSet.size,
+          engine: 'product',
+          retrieval: {
+            mode: 'max',
+            note: 'single op:search mode=max — the product path (thinking_mode_search)',
+            returned: rankedIds.length,
+            gold_in_returned: goldInRanked.length,
+            latency_ms: Number(totalMs.toFixed(0)),
+          },
+          accuracy: { ...m, top_10: rankedIds.slice(0, 10), top_3: rankedIds.slice(0, 3) },
+          total_ms: totalMs,
+        });
+        console.log(
+          `[jd-max] ${jd.id} (${jd.lang}) engine=product mode=max ` +
+            `p@10=${m.precision_at_10.toFixed(3)} ndcg@10=${m.ndcg_at_10.toFixed(3)} ` +
+            `returned=${rankedIds.length} ${Math.round(totalMs)}ms`,
+        );
+        continue;
+      }
 
       // ── (a) Agentic wide retrieval ───────────────────────────────────────
       const pool = new Map();
@@ -402,6 +485,10 @@ async function run() {
       generated_at: new Date().toISOString(),
       mode,
       config: {
+        // `engine` is load-bearing for artifact honesty: only engine=product
+        // measures ChatMode::Max. engine=legacy measures a JS reimplementation
+        // and must never be published as a Max number.
+        engine,
         rrf_mode: rrfMode, dense: denseQuery, per_q: perQ, discover_n: discoverN,
         max_rounds: maxRounds, epsilon, judge_model: judgeModel, judge_head: judgeHead,
         judge_batch: judgeBatch, judge_ctx: judgeCtx, no_judge: noJudge,

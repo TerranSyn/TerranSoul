@@ -1,0 +1,18 @@
+{
+  "protocol": "boeing747-primitives-vision-bench (single-shot baseline)",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "builder_model": "bonsai-27b-s10",
+  "builder_seed": 7,
+  "builder_options": {
+    "temperature": 0,
+    "num_ctx": 8192,
+    "num_predict": 4096
+  },
+  "plane_sha256": "bf372776ea120cf3a47075253ac6daceb5e97c5733e9c84bc1f7d37280055d18",
+  "contract_ok": true,
+  "contract_violations": [],
+  "created_at": "2026-07-23T04:08:48.788Z",
+  "status": "rig_failed",
+  "rig_error": "page.evaluate: TypeError: Cannot read properties of undefined (reading 'ExtrudeGeometry')\n    at Module.buildPlane (blob:http://127.0.0.1:61546/c96bb724-950a-46d4-bad2-e6b6756ca266:37:36)\n    at Object.loadPlane (http://127.0.0.1:61546/benchmark/boeing747/rig/rig.html:100:25)\n    at async <anonymous>:329:30",
+  "total_0_100": null
+}

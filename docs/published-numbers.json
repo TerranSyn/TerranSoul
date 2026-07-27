@@ -1,0 +1,120 @@
+{
+  "$comment": [
+    "DOCS-AUDIT-3. Binds every published number that traces to a benchmark run to the artifact it",
+    "came from, so a future measurement change makes the published page FAIL a check instead of",
+    "silently diverging from it. This is the machine-readable half of docs/published-claims-inventory.md",
+    "(DOCS-AUDIT-1); that file stays the human narrative, this one is what CI can run.",
+    "",
+    "Deliberately a CHECKER, not a generator: both published artifacts are hand-authored HTML with no",
+    "build step (see the two-artifacts rule), and regenerating them would replace prose written by a",
+    "person with template output. Making divergence loud achieves the chunk's goal without that.",
+    "",
+    "Claims with NO artifact - external/competitor figures cited from papers, and narrative about",
+    "past runs - are listed in `untraceable` so their absence here is a recorded decision rather",
+    "than an oversight.",
+    "",
+    "metric: a key of a systems[] entry in the run's longmemeval_s_terransoul.json.",
+    "scale/decimals: how the artifact value is rendered before matching (0.9504 -> 95.0 at 1dp).",
+    "needle: the EXACT published substring, with {value} where the number appears."
+  ],
+  "artifacts": {
+    "$comment-arms": "head-full500-* is the canonical set: one embedder (embeddinggemma) AND one code version (HEAD, 2026-07-27), one arm per process. The max100-full500-* arms are 2026-07-25 code, and max100-full500/ additionally ran the harness-default embedder — both kept on disk as evidence, neither safe to compare across.",
+    "full500-rrf": "benchmark/results/head-full500-rrf/longmemeval_s_terransoul.json",
+    "full500-chat": "benchmark/results/head-full500-chat/longmemeval_s_terransoul.json",
+    "full500-think": "benchmark/results/max100-full500-think/longmemeval_s_terransoul.json",
+    "full500-research": "benchmark/results/max100-full500-research/longmemeval_s_terransoul.json"
+  },
+  "requireSameEmbedder": {
+    "$comment": "Every artifact compared against another in the same claim must share an embedder. The chat arm was run without LONGMEM_EMBED_MODEL and silently used the harness default (mxbai-embed-large) while the others used embeddinggemma, which invalidated a cross-arm comparison for a full day before anyone read the report headers. This turns that into a failure.",
+    "artifacts": ["full500-rrf", "full500-chat", "full500-think", "full500-research"]
+  },
+  "claims": [
+    {
+      "id": "me-fig8-cov-ndcg",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "LongMemEval NDCG@10 {value}",
+      "artifact": "full500-rrf",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1
+    },
+    {
+      "id": "me-fig17-ships-rrf",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "Hybrid FTS5+dense+RRF &middot; {value}",
+      "artifact": "full500-rrf",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1
+    },
+    {
+      "id": "me-addressed-table-rrf",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "LongMemEval-S NDCG@10 &ge; {value}",
+      "artifact": "full500-rrf",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1,
+      "note": "The >= makes this strictly false whenever the measured value is below the published one."
+    },
+    {
+      "id": "me-fig17-chat-ndcg",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "validated retrieval path (LongMemEval-S NDCG@10 {value})",
+      "artifact": "full500-chat",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1,
+      "note": "Claim 3 of the inventory. Binds to the CHAT arm because the sentence describes chat. The surrounding 'byte-identical' assertion is a prose claim this checker cannot evaluate - it is refuted by any measured difference between chat and rrf."
+    },
+    {
+      "id": "index-rrf-r5",
+      "file": "docs/LLM-Brain-Design-Research-Paper/index.html",
+      "needle": "reaches R@5 {value}%",
+      "artifact": "full500-rrf",
+      "metric": "recall_any_at_5",
+      "scale": 100,
+      "decimals": 1
+    },
+    {
+      "id": "index-rrf-ndcg",
+      "file": "docs/LLM-Brain-Design-Research-Paper/index.html",
+      "needle": "NDCG@10 {value}% / MRR",
+      "artifact": "full500-rrf",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1
+    },
+    {
+      "id": "index-rrf-mrr",
+      "file": "docs/LLM-Brain-Design-Research-Paper/index.html",
+      "needle": "MRR {value}%",
+      "artifact": "full500-rrf",
+      "metric": "mrr",
+      "scale": 100,
+      "decimals": 1
+    }
+  ],
+  "untraceable": [
+    {
+      "id": "index-competitor-figures",
+      "what": "R@10 57.2, R@100 76.9/43.7, NDCG@10 45.0/100.0, R@10 90.0/100.0 in index.html",
+      "why": "Competitor/baseline numbers quoted from cited papers. They must trace to a source citation, not to a run of ours; checking them against our artifacts would be a category error."
+    },
+    {
+      "id": "me-external-rag-survey",
+      "what": "'use in RAG ... recall-at-ten 68.3 percent' in memory-evolution.html",
+      "why": "External survey figure, not ours."
+    },
+    {
+      "id": "index-longmem-archaeology",
+      "what": "'A suspected NDCG@10 95.1 -> 90.5 regression' in index.html",
+      "why": "Narrative about a past investigation, not a current claim. Records what was believed at the time."
+    },
+    {
+      "id": "me-cjk-japanese",
+      "what": "'Japanese NDCG@10 9.5 -> 42.3-65.0 at 1M' in memory-evolution.html",
+      "why": "No full-500 artifact exists for it. MAX-100-3 fixed the cross-lingual tokenizer but the JD vi/ja re-measurement is still owed, so there is nothing to bind to yet."
+    }
+  ]
+}

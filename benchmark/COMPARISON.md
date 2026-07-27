@@ -231,6 +231,27 @@ This is the same retrieval-only shape used by agentmemory's LongMemEval-S script
 
 Per-type `search` R@5: single-session-user 98.6 %, multi-session 98.5 %, single-session-preference 96.7 %, temporal-reasoning 98.5 %, knowledge-update 98.7 %, single-session-assistant 100.0 %.
 
+### Thinking-mode mapping (2026-07-23)
+
+Per [`rules/bench-thinking-modes.md`](../rules/bench-thinking-modes.md), the harness now runs
+through TerranSoul's four production **thinking modes** (`chat` / `think` / `research` / `max`)
+instead of ad-hoc retrieval variants — measuring what a user actually selects. The mapping to
+the rows above is **verified**: on the diagnostic subset, `chat` retrieval is byte-identical to
+`rrf` (NDCG@10 93.2 for both), because `chat` *is* the one hybrid + graph-edge pass.
+
+- **`chat`** (fast grounded retrieval) = the `rrf` row: **R@5 99.4 % / R@10 99.8 % / R@20 100.0 % / NDCG@10 95.1 % / MRR 95.9 %**.
+- **`think`** (+ single-pass reasoning rerank) ≈ `rrf_rerank`.
+- **`research`** (deep search: multihop + completeness-critic + KG-edge expansion + cited
+  synthesis) and **`max`** (research's engine, then verify-every-claim + rank) run correctly
+  end-to-end (validated 2026-07-23, all four modes through `longmemeval_ipc::thinking_mode_search`).
+  They optimise for *verified-answer ranking*, not raw recall@k, so their full 500-question
+  numbers are reported separately after a staged run — on this host the 12B they load for
+  reasoning contends with the embed model for VRAM, so research/max full runs are overnight-scale.
+
+Run recipe (set the embed model explicitly — the harness default `mxbai-embed-large` may be
+absent): `LONGMEM_EMBED=1 LONGMEM_EMBED_MODEL=embeddinggemma LONGMEM_CHAT_MODEL=gemma4:12b-it-qat
+node benchmark/scripts/longmemeval-s.mjs run --systems=chat,think,research,max`.
+
 Adapter runbook: [docs/longmemeval-s-adapter.md](longmemeval-s-adapter.md).
 
 ## MTEB LoCoMo retrieval adapter (BENCH-LCM-1)
