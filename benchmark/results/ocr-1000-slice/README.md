@@ -20,13 +20,19 @@ Per language, full corpus:
 | en | 429 | **0.15 %** | 416 |
 | es | 69 | 0.23 % | 35 |
 | ja | 127 | 0.41 % | 29 |
-| ko | 76 | 1.42 % | 1 |
+| ko † | 76 | 1.42 % | 1 |
 | zh | 74 | 1.75 % | 59 |
-| **vi** | 152 | **2.20 %** | 4 |
+| **vi** † | 152 | **2.20 %** | 4 |
 | **overall** | **1,000** | **0.67 %** | **614** |
 
 **Vietnamese is the weakest language** — 2.20 % CER and only 4 perfect pages of 152. Diacritics are
 the plausible cause but that is a hypothesis, not a measurement.
+
+> † **These two rows are measured WITHOUT crop-to-ink, and that is now a non-default flag.**
+> `run-ocr.mjs` crops to the ink bounding box by default; reproducing the table above requires
+> nothing (the crop is off by default). The crop was re-measured on the full vi and ko sets (OCR-11) and **made both languages
+> worse** — see *Crop-to-ink: measured on the full sets, and rejected* below. **The numbers in this
+> table remain the record**; the crop did not replace them.
 
 ## This is NOT 100 % accuracy, and the gap is structural
 
@@ -37,10 +43,116 @@ Every one of those 16 is the same failure: **the model duplicates a line it alre
 Not misrecognition — duplication. Where a text layer exists, extracting it is exact and ~1,000×
 faster; OCR is the fallback for genuinely image-only pages, not the primary path.
 
-## Three corrections to this file, and what caused each
+## Crop-to-ink: measured on the full sets, and rejected
+
+**OCR-11, 2026-07-27.** All 152 vi + all 76 ko pages re-run with `trimToInk()` active, same corpus,
+same `unlimited-ocr` Q4_K_M on the same llama-server, same guard. The only variable is the crop.
+(Verified not confounded: **zero** of the 228 baseline vi/ko outputs trip the current
+`looksDegenerate`, so the duplicate-line guard added after the original run is a no-op here.)
+
+| | vi no-crop | vi **crop** | ko no-crop | ko **crop** |
+|---|---:|---:|---:|---:|
+| n | 152 | 152 | 76 | 76 |
+| CER (length-weighted) | **2.20 %** | 2.28 % | **1.42 %** | **11.70 %** |
+| CER (macro, per page) | 2.22 % | 2.31 % | 1.43 % | 11.59 % |
+| CER (median page) | 1.40 % | **0.90 %** | 1.18 % | **0.74 %** |
+| perfect pages | 4 | **11** | 1 | **6** |
+| pages > 5 % CER | 8 | 13 | 1 | **28** |
+| engine failures | 0 | 0 | 0 | **2** |
+
+**Verdict: not adopted.** ko is **8.2× worse**; vi is a wash on the corpus metric (2.20 → 2.28 %).
+
+### The crop does two opposite things at once
+
+It is not simply "bad". **The typical page gets better** — median CER falls by a third in both
+languages and perfect pages go 5 → 17. That part of the pilot's reasoning was sound. But it also
+**induces line re-emission on a large minority of pages**, and that tail costs more than the median
+gain wins. 147 of 228 pages improved, 71 got worse — and the 71 are worse by far more than the 147
+are better.
+
+### This is NOT the one-bad-page artifact of correction (2) — checked explicitly
+
+The obvious objection, given this file's history, is that `ko 11.70 %` is another single pathological
+page. **It is not, and here is the distribution that settles it:**
+
+| | no-crop | crop |
+|---|---:|---:|
+| ko pages > 5 % CER | 1 / 76 | **28 / 76** |
+| ko pages > 10 % CER | 0 / 76 | **24 / 76** |
+| ko pages > 25 % CER | 0 / 76 | **14 / 76** |
+| share of ko error carried by the single worst page | — | **11.9 %** |
+| ko CER dropping the worst 1 / 5 / 10 pages | — | 10.45 % / 6.85 % / **4.77 %** |
+
+Throwing away the worst **ten of seventy-six** pages still leaves ko at 4.77 %, **3.4× the 1.42 %
+record**. In the retracted `ko 17.10 %` case one page *was* the entire weakness; here the worst page
+is 11.9 % of the error and the damage is broad. The same test applied to vi: dropping its worst page
+gives 2.09 %, so vi's aggregate is mildly tail-driven, but even its median-page gain cannot pull the
+corpus metric below the 2.20 % record.
+
+### Two pages now fail outright, and the crop causes it
+
+`resume-0000071.pdf` and `resume-0000430.pdf` (both ko) return
+`llama-server 500: The model produced output that does not match the expected peg-native format`.
+
+**This is not a transient `fetch failed`, and it was verified rather than assumed:** each page was
+re-run 3× cropped and 3× uncropped. **Cropped fails 3/3 on both pages; the full page succeeds 3/3 on
+both** (445 and 452 chars, stable). The harder-penalty retry path also 500s. Scored as total loss
+they contribute 897 of ko's 3,798 edits; **excluding them entirely, ko is still 9.19 %**, so they are
+not what makes the crop lose. This is the same failure class that got the 2× upscale rejected in
+OWNER DECISION 21 — the crop alone reaches it too, just more rarely.
+
+### Mechanism: near-duplicate re-emission, invisible to the existing guard
+
+The tail pages are **longer than their references**. ko pages more than 15 % longer than the
+reference: **0 / 76 without the crop, 17 / 74 with it** (74, not 76, because the two 500s produced no
+output to measure). The failure is the model re-emitting lines
+it has already transcribed — but *not verbatim*, because each copy carries its own OCR substitutions:
+
+```
+ref    Tốt nghiệp loại giỏi ngành Kỹ thuật Máy tính.      (vi, page 655: 0.93 % -> 32.17 %)
+hyp    Tố nghiệp loại giỏi ngành Kỹ thuật Máy tính.
+hyp    Tố nghiệp loại giỏi ngành Kỹ thuật Máy tính.
+hyp    Tố nghiệp loại giới ngành Kỹ thuật Mây tính.
+```
+
+`looksDegenerate` counts **exact** duplicate lines against a threshold of `> 5`, calibrated on
+genuine references. These pages reach at most **4** exact duplicates (5 by an ≥ 85 %-similarity
+measure), so the guard flags **0 of 26** bad ko pages and **0 of 13** bad vi pages. It is not
+malfunctioning — near-duplicates are outside what it measures. Any future attempt at this crop needs
+a similarity-based check, not a tighter equality count.
+
+### A hypothesis I tested and discarded
+
+That the crop's extreme aspect ratio (page 0.71 w/h, crop ~2.3–3.2) destabilises the vision encoder.
+**Refuted:** mean crop aspect for bad vs good pages is 3.20 vs 3.00 (vi) and 2.32 vs 2.36 (ko), and
+Spearman correlation between crop aspect ratio and CER is **0.150 (vi) / −0.083 (ko)** — no
+relationship. Crop area and crop height likewise do not separate the two groups.
+
+### The n=12 pilot was misleading, and the full set wins
+
+OWNER DECISION 21 adopted the crop on `vi 2.83 % → 1.92 %` over **12 pages**. That pilot reproduces
+exactly — the **first 12 vi pages** score 2.83 % no-crop and 1.88 % cropped — but the slice is not
+the corpus: on all 152, the crop is 2.20 % → 2.28 %.
+
+**Resampled 12-page vi slices (20,000 draws from the measured per-page results): the crop looks
+better in 55.3 % of them and "≥ 30 % better" in 41.0 %.** At n=12 the pilot's headline was close to a
+coin flip. **ko was never piloted with the crop at all** — and only 0.4 % of 12-page ko slices would
+have shown the crop winning, so even n=12 would have caught it there.
+
+**Where the crop stands:** `trimToInk()` is measured, tested and correct at what it does — 228/228
+pages cropped, ink coverage 0.924–1.520 %, latency unchanged at 1.2 s/page. It is the *downstream
+effect on the decoder* that fails. It must not ship on by default while ko is 8.2× worse.
+
+### Unrelated but confirmed while running: the OCR-12 blank guard
+
+The low-ink guard fired on **0 of 228** pages. The emptiest real page in this set carries 0.924 % ink
+against a 0.1 % threshold — a 9.2× margin, consistent with the calibration claimed for it.
+
+## Four corrections to this benchmark, and what caused each
 
 Each was a real published number that had to be withdrawn. They are kept here because the *pattern*
-is the lesson, not the individual figures.
+is the lesson, not the individual figures. (1)–(3) are corrections to this file; (4) withdraws a
+figure published in `rules/milestones.md`.
 
 1. **`13.1 s/page` → `1.1 s/page`.** The first run was silently on **CPU**. The llama.cpp b10144 zip
    ships binaries only; CUDA needs the **separate cudart zip** or it falls back without saying so.
@@ -52,11 +164,22 @@ is the lesson, not the individual figures.
    decoding failure, not a recognition one.
 3. **`overall 2.71 %` → `0.67 %`.** Same cause as (2) plus a second, distinct failure mode found only
    at full scale — see below.
+4. **`crop-to-ink: vi 2.83 % → 1.92 %, −32 %` (OWNER DECISION 21) → withdrawn.** Measured on **12**
+   pages. The full 152-page vi set gives **2.20 % → 2.28 %**, and ko — never piloted with the crop —
+   goes **1.42 % → 11.70 %**. The pilot number is not wrong about *its twelve pages*; resampling the
+   measured per-page results shows a 12-page vi slice favours the crop **55 %** of the time, so it
+   carried almost no information. *A direction taken from n=12 is a hypothesis, not a result — and
+   this is the third time on this benchmark that a small sample has pointed the wrong way.*
 
 **The generalisable lesson:** a length-weighted corpus metric is dominated by its worst page, so ONE
 pathological output manufactures a per-language "weakness" that does not exist. Look at the
 per-item distribution before attributing an aggregate to a property of the subject. Same trap as
 `recall_ANY@5` reading 100 % on the multi-gold subset.
+
+**The second lesson, from (4):** that check cuts *both* ways. The distribution must also be able to
+*confirm* an aggregate — `ko 11.70 %` survives deleting its ten worst pages, which is precisely what
+`ko 17.10 %` did not. "Look at the distribution" is not a licence to dismiss every bad number as an
+outlier artifact.
 
 ## The second failure mode, and why the original guard missed it
 
@@ -118,12 +241,25 @@ resumable output file is what made that a 30-second fix rather than a 31-minute 
 
 ## Reproduce
 
+No flag is needed to reproduce the table above: `run-ocr.mjs` does NOT crop by default, because
+the crop changes the vi and ko numbers (see the OCR-11 section).
+
 ```bash
 npm run ocr:build-scanned -- --count 1000 --out D:/TerranSoul/jd-1000-scanned --degrade medium
 # llama-server -m unlimited-ocr-Q4_K_M.gguf --mmproj unlimited-ocr-mmproj-f16.gguf --port 8085 -ngl 99
 npm run ocr:run -- --corpus D:/TerranSoul/jd-1000-scanned --out hyp.jsonl \
   --engine unlimited --model unlimited-ocr
 npm run ocr:score -- --truth D:/TerranSoul/jd-1000-scanned/manifest.jsonl --hyp hyp.jsonl
+```
+
+The OCR-11 crop A/B, which is a 228-page / 4.5-minute run rather than a full 1,000 (`--lang` takes a
+comma-separated list and **throws** on a language the corpus does not have, so a typo shrinks nothing
+silently):
+
+```bash
+npm run ocr:run -- --corpus D:/TerranSoul/jd-1000-scanned --out crop-viko.jsonl \
+  --engine unlimited --model unlimited-ocr --lang vi,ko          # crop on (default)
+npm run ocr:score -- --truth D:/TerranSoul/jd-1000-scanned/manifest.jsonl --hyp crop-viko.jsonl
 ```
 
 ## Remaining caveats
