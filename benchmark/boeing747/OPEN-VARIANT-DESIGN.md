@@ -63,7 +63,7 @@ modeling; record here that if the owner wants a third
 
 Identical loop (render → judge → weakest-feature critic → one targeted
 fix), actor = `claude-fable-5 --effort max` through
-`terransoul-cli --agent-task`. Seed candidate: START from the frozen
+`terransoul --agent-task`. Seed candidate: START from the frozen
 track's 71.66 geometry (a strong primitive scaffold the agent may then
 re-mesh/texture freely) — this measures the VALUE ADDED by the opened
 medium over the same starting point. The actor prompt must state the

@@ -1,5 +1,5 @@
 // Query TerranSoul's own real, isolated `--cli-data-dir` memory (via
-// `terransoul-cli --ask ... --mode chat`, the SAME transport the actor's own
+// `terransoul --ask ... --mode chat`, the SAME transport the actor's own
 // `--agent-task` edit call already uses — see actor/actor-claude.mjs's
 // callTerranSoulAgentTask) for reference material ingested into that store
 // ahead of time. Distinct from lib/self-learning.mjs's fetchPriorAttempts,
@@ -30,7 +30,7 @@ const DEFAULT_TIMEOUT_MS = 120000;
 /** Default location of the built CLI binary (mirrors actor-claude.mjs's own resolver). */
 export function resolveTerranSoulCliBinary() {
   const ext = process.platform === 'win32' ? '.exe' : '';
-  return path.join(REPO_ROOT, 'src-tauri', 'target', 'release', `terransoul-cli${ext}`);
+  return path.join(REPO_ROOT, 'src-tauri', 'target', 'release', `terransoul${ext}`);
 }
 
 /**
@@ -91,7 +91,7 @@ export function formatDesignReferenceSection(answer, { header, maxChars = 1200 }
  * rules/milestones.md): once a prior AGI-purity-only track had proven the
  * frozen-model-plus-generic-scaffolding thesis, ask TerranSoul's own memory
  * (pointed at THIS run's `--cli-data-dir`) for whatever reference material a
- * human operator ingested into it ahead of time (`terransoul-cli
+ * human operator ingested into it ahead of time (`terransoul
  * --ingest-resume <path>` against the same data dir), scoped to the current
  * weakest feature. Fails open (askDesignReference never throws) — an empty
  * store, an unbuilt binary, or any spawn error simply means no

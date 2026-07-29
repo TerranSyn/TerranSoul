@@ -7,7 +7,7 @@
 // WIRE-CLI-PARITY-GAP-3 REWIRE (2026-07-10): this module used to spawn the
 // bare `claude` binary directly (`--allowedTools "Read Edit" --add-dir ...`).
 // It now spawns TerranSoul's OWN generic agentic-edit CLI capability instead
-// — `terransoul-cli --agent-task <prompt> --grant-dir <dir> [--grant-dir
+// — `terransoul --agent-task <prompt> --grant-dir <dir> [--grant-dir
 // <dir> ...] [--model <m>] [--effort <e>]` (src-tauri/src/cli.rs) — which:
 //   - gates the call through the SAME `action_trust` earned-autonomy ledger
 //     `SelfImproveEngine`'s own DAG uses (a DENY returns before `claude` is
@@ -34,7 +34,7 @@
 //
 // Effort: `claude --help` exposes `--effort <low|medium|high|xhigh|max>`; this
 // is the highest available extended-thinking/effort level and is applied by
-// default (DEFAULT_EFFORT), forwarded through terransoul-cli's own `--effort`
+// default (DEFAULT_EFFORT), forwarded through terransoul's own `--effort`
 // flag. There is no separate "thinking" flag beyond this.
 //
 // Contract gate (mirrors run-baselines.mjs's `status: 'contract_failed'`):
@@ -81,6 +81,9 @@ import { smokeCheckPlane } from '../lib/candidate-smoke.mjs';
 import { loadRubric } from '../judge/judge.mjs';
 import { sha256 } from '../rig/render-rig.mjs';
 import { parseActorStreamBuffer, summarizeActorStream } from '../lib/actor-stream.mjs';
+// Single source of truth for where the CLI lands on disk — see its header for
+// why the CLI and the desktop/MCP binary are separate artifacts.
+import { cliCandidatePaths } from '../../../scripts/build-cli.mjs';
 
 const execFileAsync = promisify(execFile);
 const BENCH_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -94,10 +97,9 @@ const DEFAULT_MODEL = 'claude-fable-5';
 // CLI build removes this flag, callers should override --effort explicitly;
 // no invented flag is used in its place.
 const DEFAULT_EFFORT = 'max';
-// `terransoul-cli`'s own build output — mirrors `.cargo/config.toml`'s
+// `terransoul`'s own build output — mirrors `.cargo/config.toml`'s
 // `target-dir = "src-tauri/target"` pin; this is not a new build-output
 // convention, just where cargo already puts every workspace binary.
-const CLI_BIN_NAME = process.platform === 'win32' ? 'terransoul-cli.exe' : 'terransoul-cli';
 const DEFAULT_CARGO_TARGET_DIR = path.join(REPO_ROOT, 'src-tauri', 'target');
 
 /**
@@ -359,17 +361,22 @@ function buildActorPrompt({
 }
 
 /**
- * Resolve the built `terransoul-cli` binary this actor drives
+ * Resolve the built `terransoul` binary this actor drives
  * (WIRE-CLI-PARITY-GAP-3 rewire — replaces the old bespoke direct `claude`
  * spawn). Resolution order:
  *   1. An explicit `TERRANSOUL_CLI_BIN` env var (absolute path, or a name
  *      resolvable on `$PATH`) wins outright.
- *   2. This repo's own `cargo build --bin terransoul-cli` output under
- *      `CARGO_TARGET_DIR` (or the default `src-tauri/target`) — release
- *      profile checked before debug.
+ *   2. `<target>/<profile>/cli/terransoul` — `npm run build:cli`'s installed
+ *      copy — then `<target>/<profile>/terransoul-console`, cargo's own
+ *      output, under `CARGO_TARGET_DIR` (or the default `src-tauri/target`).
+ *      Release profile checked before debug.
+ * `<target>/<profile>/terransoul` is deliberately NOT a candidate: that name
+ * belongs to the DESKTOP APP / MCP host (`src/main.rs`), a console-less GUI
+ * binary that would hang this actor rather than answer it. See
+ * scripts/build-cli.mjs for why the two are separate artifacts.
  * Never invokes cargo itself (this is a Node-only phase); throws a clear,
- * actionable error naming the exact build command if neither profile has
- * been built yet, so a missing binary surfaces as an honest `actor_failed`
+ * actionable error naming the exact build command if nothing has been built
+ * yet, so a missing binary surfaces as an honest `actor_failed`
  * (never a silent fallback to the old bare-`claude` behavior).
  * `env`/`existsSyncFn` are injectable so this resolution logic is directly
  * vitest-covered without depending on this machine's actual build state.
@@ -378,18 +385,18 @@ export function resolveTerranSoulCliBinary({ env = process.env, existsSyncFn = e
   const explicit = env.TERRANSOUL_CLI_BIN;
   if (explicit && explicit.trim()) return explicit.trim();
   const targetDir = env.CARGO_TARGET_DIR || DEFAULT_CARGO_TARGET_DIR;
-  const candidates = ['release', 'debug'].map((profile) => path.join(targetDir, profile, CLI_BIN_NAME));
+  const candidates = ['release', 'debug'].flatMap((profile) => cliCandidatePaths(targetDir, profile));
   for (const candidate of candidates) {
     if (existsSyncFn(candidate)) return candidate;
   }
   throw new Error(
-    `terransoul-cli binary not found (checked: ${candidates.join(', ')}). Build it first: ` +
-      `cd src-tauri && cargo build --release --bin terransoul-cli — or set TERRANSOUL_CLI_BIN to an existing binary path.`,
+    `terransoul binary not found (checked: ${candidates.join(', ')}). Build it first: ` +
+      `npm run build:cli — or set TERRANSOUL_CLI_BIN to an existing binary path.`,
   );
 }
 
 /**
- * ONE `terransoul-cli --agent-task` call (WIRE-CLI-PARITY-GAP-3 rewire —
+ * ONE `terransoul --agent-task` call (WIRE-CLI-PARITY-GAP-3 rewire —
  * replaces the OLD bespoke direct `claude --allowedTools "Read Edit" ...`
  * spawn). Contract:
  *   - exit 0: stdout is ONE line of JSON (`AgenticTaskOutcome`: result_text/
@@ -397,7 +404,7 @@ export function resolveTerranSoulCliBinary({ env = process.env, existsSyncFn = e
  *     reconstruction needed since the CLI already tallies tool calls.
  *   - a `timeout`-triggered kill, an `action_trust` DENIAL (exit 1, stderr
  *     starts with `agent-task denied:`), or any other non-zero exit: stderr
- *     carries terransoul-cli's own progress-line trace
+ *     carries terransoul's own progress-line trace
  *     (lib/actor-stream.mjs's NEW stderr-line format) plus, on denial, the
  *     exact ledger message — both surfaced so a killed/denied call still
  *     leaves real evidence instead of a black box (LESSON BOEING-747-ACTOR-
@@ -415,7 +422,7 @@ export function resolveTerranSoulCliBinary({ env = process.env, existsSyncFn = e
  * dedicated data dir instead of the operator's real production one; when
  * omitted, the child inherits this process's environment unchanged, i.e.
  * the real production `action_trust` ledger/`coding_llm_config.json` —
- * matching exactly what a user running `terransoul-cli --agent-task`
+ * matching exactly what a user running `terransoul --agent-task`
  * themselves would get, which is the most honest default measurement.
  */
 async function callTerranSoulAgentTask({
@@ -455,10 +462,10 @@ async function callTerranSoulAgentTask({
     const denied = /\bagent-task denied:/.test(stderrText);
     const detail = stderrText.trim().slice(0, 500) || String(err.message || err);
     const reason = timedOut
-      ? `terransoul-cli agent-task timed out after ${effectiveTimeout}ms (${observability.total_tool_calls} tool call(s) observed before kill)`
+      ? `terransoul agent-task timed out after ${effectiveTimeout}ms (${observability.total_tool_calls} tool call(s) observed before kill)`
       : denied
-        ? `terransoul-cli agent-task denied: ${detail}`
-        : `terransoul-cli agent-task failed (exit ${err.code ?? 'unknown'}): ${detail}`;
+        ? `terransoul agent-task denied: ${detail}`
+        : `terransoul agent-task failed (exit ${err.code ?? 'unknown'}): ${detail}`;
     const wrapped = new Error(reason);
     wrapped.observability = observability;
     wrapped.timed_out = timedOut;
@@ -472,7 +479,7 @@ async function callTerranSoulAgentTask({
     outcome = JSON.parse(stdoutText.trim());
   } catch (parseErr) {
     const err = new Error(
-      `terransoul-cli agent-task exited 0 but stdout was not the expected JSON outcome: ${String(parseErr.message || parseErr)}`,
+      `terransoul agent-task exited 0 but stdout was not the expected JSON outcome: ${String(parseErr.message || parseErr)}`,
     );
     err.observability = observability;
     throw err;
@@ -487,7 +494,7 @@ async function callTerranSoulAgentTask({
 
 /**
  * Run one autonomous actor-edit step: build the prompt from the rubric,
- * contract, and this iteration's two judge tracks; spawn `terransoul-cli
+ * contract, and this iteration's two judge tracks; spawn `terransoul
  * --agent-task` (Read+Edit scoped to the candidate dir + shots dir, gated
  * through the `action_trust` ledger — see callTerranSoulAgentTask's doc);
  * re-validate the edited source against the FROZEN contract; restore-and-

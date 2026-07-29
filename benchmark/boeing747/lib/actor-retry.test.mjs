@@ -174,7 +174,7 @@ describe('shouldRetryActor', () => {
 
   // WIRE-CLI-PARITY-GAP-3 rewire: `denied` (an `action_trust` ledger DENIAL,
   // a NEW failure mode introduced by driving the edit through
-  // `terransoul-cli --agent-task`) short-circuits retrying even on attempt 0
+  // `terransoul --agent-task`) short-circuits retrying even on attempt 0
   // with a full retry budget remaining — a longer timeout cannot change a
   // trust decision, so retrying is guaranteed-futile.
   it('refuses to retry a denied call even with retry budget remaining', () => {

@@ -21,6 +21,7 @@ import { fileURLToPath } from 'node:url';
 import { validatePlaneSource } from './lib/contract.mjs';
 import { extractReplyText } from './lib/judge-parse.mjs';
 import { judgeShots, loadRubric, ollamaChat } from './judge/judge.mjs';
+import { openaiActorChat } from './lib/openai-actor.mjs';
 import { runRig, sha256 } from './rig/render-rig.mjs';
 
 const BENCH_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -28,6 +29,15 @@ const BENCH_DIR = path.dirname(fileURLToPath(import.meta.url));
 // gemma4:12b-it-qat is the sole local baseline. The hero configuration is
 // Claude Opus 4.8 + TerranSoul self-improve (see run-loop), not a local model.
 const DEFAULT_MODELS = ['gemma4:12b-it-qat'];
+
+// Optional OpenAI-compat ACTOR endpoint (env-gated, default OFF). When
+// ACTOR_OPENAI_BASE_URL is set, ONLY the baseline actor (generateCandidate) is
+// driven via POST /v1/chat/completions — e.g. the Bonsai 27B 1-bit fork on
+// http://127.0.0.1:8092 — for a gemma4-vs-Bonsai head-to-head. The frozen judge
+// (judge/judge.mjs) is untouched and keeps hitting Ollama gemma4:12b-it-qat.
+// Unset => the default path below is byte-identical to before this branch.
+const ACTOR_OPENAI_BASE_URL = process.env.ACTOR_OPENAI_BASE_URL || '';
+const ACTOR_OPENAI_MODEL = process.env.ACTOR_OPENAI_MODEL || 'bonsai-27b';
 
 const sanitize = (model) => model.replace(/[^a-z0-9._-]+/gi, '_');
 
@@ -50,15 +60,29 @@ async function generateCandidate({ rubric, model, outDir, force }) {
     return { planePath, reused: true };
   }
   mkdirSync(outDir, { recursive: true });
-  console.log(`  generating plane.js with ${model} (single shot, temperature 0, seed ${rubric.baseline_builder_seed})...`);
+  const via = ACTOR_OPENAI_BASE_URL
+    ? `OpenAI-compat ${ACTOR_OPENAI_BASE_URL} (${ACTOR_OPENAI_MODEL})`
+    : `Ollama ${model}`;
+  console.log(`  generating plane.js via ${via} (single shot, temperature 0, seed ${rubric.baseline_builder_seed})...`);
   const started = Date.now();
-  const { body, ms } = await ollamaChat({
-    model,
-    messages: [{ role: 'user', content: rubric.baseline_builder_prompt }],
-    options: { ...rubric.baseline_builder_options, seed: rubric.baseline_builder_seed },
-    think: rubric.baseline_builder_think,
-    timeoutMs: rubric.baseline_builder_timeout_ms,
-  });
+  const messages = [{ role: 'user', content: rubric.baseline_builder_prompt }];
+  const options = { ...rubric.baseline_builder_options, seed: rubric.baseline_builder_seed };
+  // Actor transport is env-gated; the judge path is never affected (see above).
+  const { body, ms } = ACTOR_OPENAI_BASE_URL
+    ? await openaiActorChat({
+        baseUrl: ACTOR_OPENAI_BASE_URL,
+        model: ACTOR_OPENAI_MODEL,
+        messages,
+        options,
+        timeoutMs: rubric.baseline_builder_timeout_ms,
+      })
+    : await ollamaChat({
+        model,
+        messages,
+        options,
+        think: rubric.baseline_builder_think,
+        timeoutMs: rubric.baseline_builder_timeout_ms,
+      });
   // Same extraction discipline as the judge: content -> thinking fallback,
   // with done_reason recorded (a truncated builder reply is a factual result).
   const reply = extractReplyText(body);

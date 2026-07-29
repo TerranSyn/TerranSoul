@@ -49,7 +49,12 @@ const BENCH_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 const OLLAMA_BASE = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
 
 export function loadRubric() {
-  const rubricPath = path.join(BENCH_DIR, 'rubric.json');
+  // BOEING_RUBRIC (opt-in) points the judge at an alternate rubric file, e.g. the
+  // v5 primitives-recalibrated track. Unset => the frozen v4 rubric.json, byte
+  // for byte (no behaviour change to the existing era).
+  const rubricPath = process.env.BOEING_RUBRIC
+    ? path.resolve(process.env.BOEING_RUBRIC)
+    : path.join(BENCH_DIR, 'rubric.json');
   const raw = readFileSync(rubricPath);
   return {
     rubric: JSON.parse(raw.toString('utf8')),

@@ -1,5 +1,5 @@
 // Tests for the WIRE-CLI-PARITY-GAP-3 rewire: actor-claude.mjs now spawns
-// `terransoul-cli --agent-task` instead of the bare `claude` binary. Every
+// `terransoul --agent-task` instead of the bare `claude` binary. Every
 // test here mocks the subprocess boundary via `execImpl` (mirrors
 // lib/self-learning.mjs's injectable `callTool` pattern) AND the
 // reference-photo boundary via `copyReferenceImagesFn` (the real
@@ -10,7 +10,7 @@
 // from prior manual bench setup, then failed on a clean CI checkout that
 // never ran `fetch-references.mjs`) — no real subprocess is spawned and no
 // real filesystem reference lookup happens, so this suite is deterministic
-// and CI-safe (the real terransoul-cli binary + live `claude` calls +
+// and CI-safe (the real terransoul binary + live `claude` calls +
 // prepared reference photos stay local-only).
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -115,7 +115,7 @@ const okOutcome = (overrides = {}) =>
     ...overrides,
   });
 
-describe('runActorEdit (terransoul-cli --agent-task wiring)', () => {
+describe('runActorEdit (terransoul --agent-task wiring)', () => {
   let candidateDir;
   let shotsDir;
   let candidatePath;
@@ -132,13 +132,13 @@ describe('runActorEdit (terransoul-cli --agent-task wiring)', () => {
     rmSync(shotsDir, { recursive: true, force: true });
   });
 
-  it('spawns terransoul-cli with the documented --agent-task/--grant-dir/--model/--effort argv shape', async () => {
+  it('spawns terransoul with the documented --agent-task/--grant-dir/--model/--effort argv shape', async () => {
     const execImpl = vi.fn(async () => ({ stdout: okOutcome(), stderr: '' }));
-    await runActorEdit({ candidatePath, shotsDir, gemmaResult, claudeResult, cliBinary: 'fake-terransoul-cli', execImpl });
+    await runActorEdit({ candidatePath, shotsDir, gemmaResult, claudeResult, cliBinary: 'fake-terransoul', execImpl });
 
     expect(execImpl).toHaveBeenCalledTimes(1);
     const [binary, args, opts] = execImpl.mock.calls[0];
-    expect(binary).toBe('fake-terransoul-cli');
+    expect(binary).toBe('fake-terransoul');
     expect(args[0]).toBe('--agent-task');
     expect(typeof args[1]).toBe('string');
     expect(args.slice(2)).toEqual([
@@ -162,7 +162,7 @@ describe('runActorEdit (terransoul-cli --agent-task wiring)', () => {
       shotsDir,
       gemmaResult,
       claudeResult,
-      cliBinary: 'fake-terransoul-cli',
+      cliBinary: 'fake-terransoul',
       model: 'claude-opus-4-8',
       effort: 'high',
       execImpl,
@@ -173,7 +173,7 @@ describe('runActorEdit (terransoul-cli --agent-task wiring)', () => {
 
   it('omits the Claude judge section from the prompt and does not crash when claudeResult is absent (--secondary-judge none / gemma-only run)', async () => {
     const execImpl = vi.fn(async () => ({ stdout: okOutcome(), stderr: '' }));
-    await runActorEdit({ candidatePath, shotsDir, gemmaResult, cliBinary: 'fake-terransoul-cli', execImpl });
+    await runActorEdit({ candidatePath, shotsDir, gemmaResult, cliBinary: 'fake-terransoul', execImpl });
 
     expect(execImpl).toHaveBeenCalledTimes(1);
     const [, args] = execImpl.mock.calls[0];
@@ -184,7 +184,7 @@ describe('runActorEdit (terransoul-cli --agent-task wiring)', () => {
 
   it('accepts a valid edit: re-reads plane.js from disk, records edited + cost/duration, and tallies reported tool calls', async () => {
     const execImpl = vi.fn(async () => {
-      // Simulates the real terransoul-cli process's side effect: its Edit
+      // Simulates the real terransoul process's side effect: its Edit
       // tool wrote the new source to disk before the process exited.
       writeFileSync(candidatePath, EDITED_VALID_PLANE_SOURCE);
       return {
@@ -260,7 +260,7 @@ describe('runActorEdit (terransoul-cli --agent-task wiring)', () => {
     expect(readFileSync(candidatePath, 'utf8')).toBe(VALID_PLANE_SOURCE);
   });
 
-  it('reports no_change when terransoul-cli exits cleanly without touching the candidate', async () => {
+  it('reports no_change when terransoul exits cleanly without touching the candidate', async () => {
     const execImpl = vi.fn(async () => ({
       stdout: okOutcome({ result_text: 'Current geometry already matches the target; no edit made.' }),
       stderr: '[tool] Read {}\n[tool-result] Read ok\n',
@@ -346,7 +346,7 @@ describe('runActorEdit (terransoul-cli --agent-task wiring)', () => {
     expect(result.actor_error).toContain('not the expected JSON outcome');
   });
 
-  it('injects a supplied priorAttemptsSection into the prompt sent to terransoul-cli', async () => {
+  it('injects a supplied priorAttemptsSection into the prompt sent to terransoul', async () => {
     let capturedPrompt;
     const execImpl = vi.fn(async (binary, args) => {
       capturedPrompt = args[1];
@@ -509,17 +509,17 @@ describe('resolveTerranSoulCliBinary', () => {
   it('returns an explicit TERRANSOUL_CLI_BIN override verbatim, without touching the filesystem', () => {
     const existsSyncFn = vi.fn();
     const bin = resolveTerranSoulCliBinary({
-      env: { TERRANSOUL_CLI_BIN: '/custom/path/to/terransoul-cli' },
+      env: { TERRANSOUL_CLI_BIN: '/custom/path/to/terransoul' },
       existsSyncFn,
     });
-    expect(bin).toBe('/custom/path/to/terransoul-cli');
+    expect(bin).toBe('/custom/path/to/terransoul');
     expect(existsSyncFn).not.toHaveBeenCalled();
   });
 
-  it('resolves the release-profile binary when it exists', () => {
+  it('resolves the release-profile installed CLI when it exists', () => {
     const targetDir = path.join(tmpdir(), 'fake-cargo-target');
-    const binName = process.platform === 'win32' ? 'terransoul-cli.exe' : 'terransoul-cli';
-    const releasePath = path.join(targetDir, 'release', binName);
+    const exe = process.platform === 'win32' ? '.exe' : '';
+    const releasePath = path.join(targetDir, 'release', 'cli', `terransoul${exe}`);
     const existsSyncFn = vi.fn((p) => p === releasePath);
 
     const bin = resolveTerranSoulCliBinary({ env: { CARGO_TARGET_DIR: targetDir }, existsSyncFn });
@@ -527,10 +527,21 @@ describe('resolveTerranSoulCliBinary', () => {
     expect(bin).toBe(releasePath);
   });
 
-  it('falls back to the debug-profile binary when release is missing', () => {
+  it("accepts cargo's own terransoul-console output when build:cli has not installed it", () => {
     const targetDir = path.join(tmpdir(), 'fake-cargo-target');
-    const binName = process.platform === 'win32' ? 'terransoul-cli.exe' : 'terransoul-cli';
-    const debugPath = path.join(targetDir, 'debug', binName);
+    const exe = process.platform === 'win32' ? '.exe' : '';
+    const rawPath = path.join(targetDir, 'release', `terransoul-console${exe}`);
+    const existsSyncFn = vi.fn((p) => p === rawPath);
+
+    const bin = resolveTerranSoulCliBinary({ env: { CARGO_TARGET_DIR: targetDir }, existsSyncFn });
+
+    expect(bin).toBe(rawPath);
+  });
+
+  it('falls back to the debug profile when release is missing', () => {
+    const targetDir = path.join(tmpdir(), 'fake-cargo-target');
+    const exe = process.platform === 'win32' ? '.exe' : '';
+    const debugPath = path.join(targetDir, 'debug', 'cli', `terransoul${exe}`);
     const existsSyncFn = vi.fn((p) => p === debugPath);
 
     const bin = resolveTerranSoulCliBinary({ env: { CARGO_TARGET_DIR: targetDir }, existsSyncFn });
@@ -538,10 +549,28 @@ describe('resolveTerranSoulCliBinary', () => {
     expect(bin).toBe(debugPath);
   });
 
-  it('throws a clear, actionable error naming the exact build command when neither profile has been built', () => {
+  // Regression guard: `<target>/<profile>/terransoul` is the DESKTOP APP /
+  // MCP host (src/main.rs), a console-less GUI binary. Resolving it here
+  // would hang the actor on a window instead of answering, so it must never
+  // be probed — not even as a last resort.
+  it('never resolves the desktop/MCP binary sitting at the profile root', () => {
+    const targetDir = path.join(tmpdir(), 'fake-cargo-target');
+    const exe = process.platform === 'win32' ? '.exe' : '';
+    const appPath = path.join(targetDir, 'release', `terransoul${exe}`);
+    const probed = [];
+    const existsSyncFn = vi.fn((p) => {
+      probed.push(p);
+      return p === appPath;
+    });
+
+    expect(() => resolveTerranSoulCliBinary({ env: { CARGO_TARGET_DIR: targetDir }, existsSyncFn })).toThrow();
+    expect(probed).not.toContain(appPath);
+  });
+
+  it('throws a clear, actionable error naming the exact build command when nothing has been built', () => {
     const existsSyncFn = vi.fn(() => false);
     expect(() =>
       resolveTerranSoulCliBinary({ env: { CARGO_TARGET_DIR: path.join(tmpdir(), 'nowhere') }, existsSyncFn }),
-    ).toThrow(/cargo build --release --bin terransoul-cli/);
+    ).toThrow(/npm run build:cli/);
   });
 });

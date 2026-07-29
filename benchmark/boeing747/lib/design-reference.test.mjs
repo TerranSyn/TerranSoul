@@ -9,7 +9,7 @@ import {
 // These tests inject a fake `execImpl` (mirrors lib/self-learning.test.mjs's
 // injected `callTool` pattern) so the OWN logic of askDesignReference —
 // argv/env assembly, exit/timeout handling, fail-open behavior — is directly
-// covered without spawning a real `terransoul-cli` subprocess.
+// covered without spawning a real `terransoul` subprocess.
 
 describe('askDesignReference', () => {
   it('returns a usage error without spawning when query is empty', async () => {
@@ -39,9 +39,9 @@ describe('askDesignReference', () => {
 
   it('uses the caller-supplied cliBinary over the default resolver', async () => {
     const execImpl = vi.fn().mockResolvedValue({ stdout: 'answer', stderr: '' });
-    await askDesignReference({ query: 'q', cliBinary: '/custom/terransoul-cli', execImpl });
+    await askDesignReference({ query: 'q', cliBinary: '/custom/terransoul', execImpl });
     const [binary] = execImpl.mock.calls[0];
-    expect(binary).toBe('/custom/terransoul-cli');
+    expect(binary).toBe('/custom/terransoul');
   });
 
   it('fails open when the child returns empty stdout', async () => {
@@ -60,7 +60,7 @@ describe('askDesignReference', () => {
 describe('resolveTerranSoulCliBinary', () => {
   it('resolves to a path ending in the platform-appropriate binary name', () => {
     const bin = resolveTerranSoulCliBinary();
-    expect(bin).toContain('terransoul-cli');
+    expect(bin).toContain('terransoul');
     if (process.platform === 'win32') expect(bin.endsWith('.exe')).toBe(true);
   });
 });

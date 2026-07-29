@@ -1,0 +1,312 @@
+{
+  "protocol": "boeing747-primitives-vision-bench",
+  "judge_track": "claude-sonnet-5-vision",
+  "rubric_version": 5,
+  "rubric_sha256": "ed841ce1ec7b9b835b02532abe65be29b2c5ed90c8dfb990d84bbb5420c3013a",
+  "judge_model": "claude-sonnet-5",
+  "judge_samples": 2,
+  "supersample": 3,
+  "run_id": "s5-optimized-v4",
+  "plane_path": "benchmark/boeing747/candidates/terransoul-optimized/plane.js",
+  "plane_sha256": "9a834bb6f1d44f2a6dc982ca6f142cc2a5978e7f7c71bc2f275cbc6b5674b582",
+  "camera_spec_version": 2,
+  "three_revision": "175",
+  "reference_sha256": {
+    "threeview": "dfdcda796acee7a53b9dae988b240f6ef296bade8c7291db0810839d3dfc8573",
+    "side": "429c4e2619c46c3c44999636f2066c1fdc40932ae7af9d5ee6d1dfb6265bb6fc",
+    "front-quarter": "2fb96b22a599fdd2faab4181933a9bfd4c1e91208b5bba2db99bf62cbe5b7fc6",
+    "rear-quarter": "271eb369c819fe59733ba6e2e1324fdda6afd230c508f5892f4d2f48b9d4f236",
+    "planform": "882468d505c324d86598becccfd54198a4a739a5c67682b87dfa23ef5c882ea7",
+    "nose-hump": "18284393e0630dc9bcd3c4f77ac7304f27b9084ef878883bb45e07f92e66fb22"
+  },
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.51,
+      "score_unmasked": 4.51,
+      "masked_out": [],
+      "criteria_medians": {
+        "engines_four_underwing": 2.5,
+        "upper_deck_hump": 7.5,
+        "fuselage_proportions": 6.5,
+        "wing_geometry": 3.5,
+        "empennage": 3,
+        "landing_gear": 3.5,
+        "window_door_lines": 7.5,
+        "livery_coherence": 5,
+        "silhouette_747": 3,
+        "craftsmanship": 4
+      },
+      "notes": "Only one engine nacelle visible under fuselage, not four. Vertical tail is a stepped rectangular block with a small navy cap, not a swept tapered fin; no clear horizontal stabilizer. Wings not clearly discernible as swept planform. Slender tapered fuselage and partial upper-deck hump with windows read well.",
+      "judge_errors": 0,
+      "samples": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 6.02,
+      "score_unmasked": 6.02,
+      "masked_out": [],
+      "criteria_medians": {
+        "engines_four_underwing": 2.5,
+        "upper_deck_hump": 8,
+        "fuselage_proportions": 8.5,
+        "wing_geometry": 5,
+        "empennage": 5,
+        "landing_gear": 5,
+        "window_door_lines": 6.5,
+        "livery_coherence": 8,
+        "silhouette_747": 6,
+        "craftsmanship": 7
+      },
+      "notes": "Only one nacelle visible, not clearly aligned under a wing; wing shown as a crude stepped block set aft of the hump/engine, no visible sweep or taper; vertical tail is a blocky stepped tower rather than a swept fin; fuselage taper, nose, tail cone, and forward hump are clean and well-proportioned.",
+      "judge_errors": 0,
+      "samples": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 6.49,
+      "score_unmasked": 6.02,
+      "masked_out": [
+        "window_door_lines"
+      ],
+      "criteria_medians": {
+        "engines_four_underwing": 8,
+        "upper_deck_hump": null,
+        "fuselage_proportions": null,
+        "wing_geometry": 7,
+        "empennage": 6.5,
+        "landing_gear": 3,
+        "window_door_lines": 1,
+        "livery_coherence": 6,
+        "silhouette_747": 5.5,
+        "craftsmanship": 8
+      },
+      "notes": "Round nose sphere, four evenly-spaced underwing nacelles with visible dark inlets, slight wing dihedral/taper, thin vertical fin and horizontal stabilizer lines above fuselage. Only a single nose-gear strut visible, no main bogies. No window, door, or cockpit windshield detail on the smooth grey surfaces.",
+      "judge_errors": 0,
+      "samples": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 5.43,
+      "score_unmasked": 5.43,
+      "masked_out": [],
+      "criteria_medians": {
+        "engines_four_underwing": 7,
+        "upper_deck_hump": null,
+        "fuselage_proportions": null,
+        "wing_geometry": 6,
+        "empennage": 4.5,
+        "landing_gear": 3,
+        "window_door_lines": null,
+        "livery_coherence": 4,
+        "silhouette_747": 5.5,
+        "craftsmanship": 6
+      },
+      "notes": "Four pylon-mounted nacelles with dark inlets, plausible inboard/outboard spacing. Vertical fin is a thin uniform rod with small blue tip cap, no visible taper. Horizontal stabilizer is a flat straight bar. Wings mostly flat with a sharp upward bend near tips. Only two simple struts under the belly represent gear; no wing gear or wheels/bogies visible. Uniform grey livery.",
+      "judge_errors": 0,
+      "samples": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 7.42,
+      "score_unmasked": 6.94,
+      "masked_out": [
+        "upper_deck_hump",
+        "landing_gear"
+      ],
+      "criteria_medians": {
+        "engines_four_underwing": 8,
+        "upper_deck_hump": 6,
+        "fuselage_proportions": 8.5,
+        "wing_geometry": 8,
+        "empennage": 7,
+        "landing_gear": 3.5,
+        "window_door_lines": 4.5,
+        "livery_coherence": 8,
+        "silhouette_747": 7.5,
+        "craftsmanship": 6.5
+      },
+      "notes": "Slender tapered fuselage with nose cone and upswept tail; swept tapered wings with four nacelles at plausible inboard/outboard spacing ahead of leading edge. Upper-deck hump present but has jagged scalloped edges, reads as an overlaid blob rather than faired. Only two small gear marks visible near wing root, no nose gear or four-truck bogies.",
+      "judge_errors": 0,
+      "samples": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.95,
+      "score_unmasked": 4.95,
+      "masked_out": [],
+      "criteria_medians": {
+        "engines_four_underwing": 3,
+        "upper_deck_hump": 4.5,
+        "fuselage_proportions": 8,
+        "wing_geometry": 5.5,
+        "empennage": 6,
+        "landing_gear": 3.5,
+        "window_door_lines": 5,
+        "livery_coherence": 6,
+        "silhouette_747": 4,
+        "craftsmanship": 5
+      },
+      "notes": "Only two nacelles visible, clustered near fuselage centerline rather than spread under two wings; second wing not discernible from this angle. Checkerboard texture strip runs nearly full fuselage length instead of a partial-length hump. Only a nose-gear strut visible, no main bogies. Uniform light-grey livery, small blue fin accent.",
+      "judge_errors": 0,
+      "samples": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 2.59,
+      "score_unmasked": 2.59,
+      "masked_out": [],
+      "criteria_medians": {
+        "engines_four_underwing": 2,
+        "upper_deck_hump": 1,
+        "fuselage_proportions": 4.5,
+        "wing_geometry": 2,
+        "empennage": 2.5,
+        "landing_gear": 2.5,
+        "window_door_lines": 6,
+        "livery_coherence": 5,
+        "silhouette_747": 2,
+        "craftsmanship": 1.5
+      },
+      "notes": "Main fuselage tube is slender with rounded windowed nose, but wing/tail structure reads as a broken crossed X of gray slabs with a stray blue-tipped post; a large cone sits detached and misaligned below-left, disconnected from the fuselage axis; no clear four-engine layout or landing gear; does not read as a 747 silhouette.",
+      "judge_errors": 0,
+      "samples": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 5.13,
+      "score_unmasked": 5.13,
+      "masked_out": [],
+      "criteria_medians": {
+        "engines_four_underwing": 4.5,
+        "upper_deck_hump": 8,
+        "fuselage_proportions": 7,
+        "wing_geometry": 2.5,
+        "empennage": 4.5,
+        "landing_gear": 6.5,
+        "window_door_lines": 5.5,
+        "livery_coherence": 4,
+        "silhouette_747": 4,
+        "craftsmanship": 4.5
+      },
+      "notes": "Nose-to-mid fuselage is a clean tapered tube with a well-formed partial hump and window line. No swept wing surface is visible; only ~2 cylindrical nacelles hang under the body. Aft of the wing box the model thins into a stick-like boom to a separate tail cone with a thin vertical mast and odd horizontal fin, reading as disconnected rather than a faired empennage. Livery is uniform grey with one b",
+      "judge_errors": 0,
+      "samples": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 6.28,
+      "score_unmasked": 6.28,
+      "masked_out": [],
+      "criteria_medians": {
+        "engines_four_underwing": 4,
+        "upper_deck_hump": 7.5,
+        "fuselage_proportions": 8,
+        "wing_geometry": 7.5,
+        "empennage": 6.5,
+        "landing_gear": 4.5,
+        "window_door_lines": 6.5,
+        "livery_coherence": 7,
+        "silhouette_747": 6.5,
+        "craftsmanship": 4.5
+      },
+      "notes": "Two nacelles sit against the fuselage near the nose/hump rather than under the wing; one nacelle floats disconnected with a visible gap to the right. Landing gear reads as thin single struts with no visible multi-wheel bogies. Hump, fuselage taper, wing sweep/dihedral, and livery are otherwise clean.",
+      "judge_errors": 0,
+      "samples": [
+        {
+          "ok": true
+        },
+        {
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "total_0_100": 54.24,
+  "total_0_100_unmasked": 53.19,
+  "scored_views": 9,
+  "missing_views": 0,
+  "weakest_feature": {
+    "id": "landing_gear",
+    "mean": 3.94,
+    "perCriterion": {
+      "engines_four_underwing": 4.61,
+      "upper_deck_hump": 6.08,
+      "fuselage_proportions": 7.29,
+      "wing_geometry": 5.22,
+      "empennage": 5.06,
+      "landing_gear": 3.94,
+      "window_door_lines": 5.93,
+      "livery_coherence": 5.89,
+      "silhouette_747": 4.89,
+      "craftsmanship": 5.22
+    }
+  },
+  "total_cost_usd": 3.253777,
+  "created_at": "2026-07-24T06:11:42.831Z"
+}

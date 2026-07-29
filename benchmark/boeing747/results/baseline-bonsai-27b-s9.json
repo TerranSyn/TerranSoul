@@ -1,0 +1,18 @@
+{
+  "protocol": "boeing747-primitives-vision-bench (single-shot baseline)",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "builder_model": "bonsai-27b-s9",
+  "builder_seed": 7,
+  "builder_options": {
+    "temperature": 0,
+    "num_ctx": 8192,
+    "num_predict": 4096
+  },
+  "plane_sha256": "9e462e5e3c3634f85e1ae4294ea6af9ba941429c8d0432f625ec95fb8e8396ca",
+  "contract_ok": true,
+  "contract_violations": [],
+  "created_at": "2026-07-23T03:58:01.565Z",
+  "status": "rig_failed",
+  "rig_error": "page.evaluate: TypeError: shape.extractPoints is not a function\n    at addShape (http://127.0.0.1:54881/node_modules/three/build/three.core.js:34609:30)\n    at new ExtrudeGeometry (http://127.0.0.1:54881/node_modules/three/build/three.core.js:34537:4)\n    at createExtrude (blob:http://127.0.0.1:54881/cf676c16-d041-4300-bd26-0cd8cfe8580d:140:17)\n    at Module.buildPlane (blob:http://127.0.0.1:54881/cf676c16-d041-4300-bd26-0cd8cfe8580d:205:24)\n    at Object.loadPlane (http://127.0.0.1:54881/benchmark/boeing747/rig/rig.html:100:25)\n    at async <anonymous>:329:30",
+  "total_0_100": null
+}

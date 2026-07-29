@@ -1,0 +1,87 @@
+{
+  "protocol": "boeing747-primitives-vision-bench (single-shot baseline)",
+  "rubric_sha256": "6f4af95d01861498cae37cc6aaa8512c28bb62f18b765d69a098131fa34cb205",
+  "builder_model": "gemma4:12b-it-qat",
+  "builder_seed": 7,
+  "builder_options": {
+    "temperature": 0,
+    "num_ctx": 8192,
+    "num_predict": 4096
+  },
+  "plane_sha256": "d47a451555f6830f524e8d2e94dc8e57d1438b01301785c475f4fdf1c4349713",
+  "contract_ok": true,
+  "contract_violations": [],
+  "created_at": "2026-07-22T23:14:56.790Z",
+  "status": "scored",
+  "run_id": "baseline-gemma4_12b-it-qat",
+  "total_0_100": 45.84,
+  "per_view": [
+    {
+      "view": 1,
+      "key": "left-profile",
+      "score": 4.98
+    },
+    {
+      "view": 2,
+      "key": "right-profile",
+      "score": 5.97
+    },
+    {
+      "view": 3,
+      "key": "front",
+      "score": 4.68
+    },
+    {
+      "view": 4,
+      "key": "rear",
+      "score": 3.44
+    },
+    {
+      "view": 5,
+      "key": "top-down",
+      "score": 5.28
+    },
+    {
+      "view": 6,
+      "key": "front-34-left",
+      "score": 4.43
+    },
+    {
+      "view": 7,
+      "key": "rear-34-right",
+      "score": 4.15
+    },
+    {
+      "view": 8,
+      "key": "low-front-left",
+      "score": 4.41
+    },
+    {
+      "view": 9,
+      "key": "nose-hump-closeup",
+      "score": 3.92
+    }
+  ],
+  "weakest_feature": {
+    "id": "window_door_lines",
+    "mean": 0.8,
+    "perCriterion": {
+      "engines_four_underwing": 3.13,
+      "upper_deck_hump": 4.77,
+      "fuselage_proportions": 4.98,
+      "wing_geometry": 5.31,
+      "empennage": 5.91,
+      "landing_gear": 5.96,
+      "window_door_lines": 0.8,
+      "livery_coherence": 4.49,
+      "silhouette_747": 4.78,
+      "craftsmanship": 5.42
+    }
+  },
+  "judge_model": "gemma4:12b-it-qat",
+  "judge_seeds": [
+    7,
+    8,
+    9
+  ]
+}

@@ -3,7 +3,7 @@ import { parseActorStreamBuffer, parseActorStreamLine, summarizeActorStream } fr
 
 // REWIRE NOTE: these tests used to exercise a JSONL (`--output-format
 // stream-json`) classifier for the OLD bare-`claude` actor call. The actor
-// now spawns `terransoul-cli --agent-task`, whose stderr progress format is
+// now spawns `terransoul --agent-task`, whose stderr progress format is
 // plain lines (`cli.rs::print_agentic_event`), not JSONL — see
 // actor-stream.mjs's header for the full rationale. These tests cover the
 // NEW format.

@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { spawn } from 'node:child_process';
+import { buildJudgePrompt, chunkSessionToText } from './lib/longmem-judge-prompt.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -29,7 +30,9 @@ const ABSTENTION_TYPES = new Set([
   'knowledge-update_abs',
   'temporal-reasoning_abs',
 ]);
-const DEFAULT_SYSTEMS = ['search', 'rrf'];
+// Published bench surface = the four real thinking modes (rules/bench-thinking-modes.md);
+// each routes through the production pipeline in longmemeval_ipc::thinking_mode_search.
+const DEFAULT_SYSTEMS = ['chat', 'think', 'research', 'max'];
 
 function option(name, defaultValue) {
   const prefix = `--${name}=`;
@@ -192,10 +195,6 @@ function filteredEntries(raw, limit) {
   return limit > 0 ? entries.slice(0, limit) : entries;
 }
 
-function chunkSessionToText(turns) {
-  return turns.map(turn => `${turn.role}: ${turn.content}`).join('\n');
-}
-
 function sessionPayloads(entry) {
   return entry.haystack_session_ids.map((sessionId, index) => {
     const turns = entry.haystack_sessions[index];
@@ -340,23 +339,8 @@ class JsonlClient {
   }
 }
 
-function retrievedContexts(entry, sessionIds, topK, maxChars) {
-  const byId = new Map(entry.haystack_session_ids.map((id, index) => [id, entry.haystack_sessions[index]]));
-  return sessionIds.slice(0, topK).map((sessionId, index) => {
-    const text = chunkSessionToText(byId.get(sessionId) ?? []);
-    const capped = Array.from(text).slice(0, maxChars).join('');
-    return `#${index + 1} session ${sessionId}\n${capped}`;
-  }).join('\n\n');
-}
-
 async function judgeEvidence(entry, retrievedSessionIds, options) {
-  const context = retrievedContexts(
-    entry,
-    retrievedSessionIds,
-    options.judgeTopK,
-    options.judgeMaxSessionChars,
-  );
-  const prompt = `You are judging retrieval evidence for LongMemEval-S.\n\nQuestion:\n${entry.question}\n\nReference answer:\n${entry.answer}\n\nRetrieved sessions:\n${context}\n\nReturn JSON only with keys supported (boolean) and reason (short string). supported=true means the retrieved sessions contain enough evidence to answer the question consistently with the reference answer.`;
+  const prompt = buildJudgePrompt(entry, retrievedSessionIds, options);
   const response = await fetch(`${options.ollamaUrl.replace(/\/$/, '')}/api/chat`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -495,14 +479,37 @@ async function run(rawEntries, options) {
       const entry = entries[index];
       const sessions = sessionPayloads(entry);
 
-      await client.send({ op: 'reset' });
-      await client.send({
-        op: 'add_sessions',
-        question_id: entry.question_id,
-        sessions,
-      });
-
+      // MEASUREMENT BUG, fixed 2026-07-27 (forensics on the 95.1 floor).
+      //
+      // This used to `reset` + `add_sessions` ONCE and then loop the systems
+      // over that SHARED store, so every system after the first ran against a
+      // store the earlier ones had already touched. That is not a fair
+      // comparison — it is a sequence.
+      //
+      // MEASURED CONSEQUENCE: the two runs that produced the published 95.1
+      // floor used `systems=search,rrf,rrf_emb`, so `search` ran first and
+      // heated `access_count`, which feeds the activation multiplier and moved
+      // `rrf`'s post-fusion score. `rrf` and `rrf_emb` flipped in LOCKSTEP on
+      // the affected query while the sparse `search` row stayed byte-identical
+      // — a perturbed shared input, not a fusion change. HEAD, run as `rrf`
+      // ALONE, reads 95.0402; the multi-system runs read 95.1108 / 95.1296.
+      // The "floor" and the current value were never the same experiment.
+      //
+      // `3803f33c` epoch-pinned activation counts so identical queries are
+      // order-idempotent, which removes the known instance. This removes the
+      // CLASS: each system now gets a cold store, so no system can observe
+      // another's side effects through any shared state, present or future.
+      //
+      // Cost is one extra reset+ingest per system per question — real, but a
+      // benchmark that silently compares a sequence is worth nothing.
       for (const system of systems) {
+        await client.send({ op: 'reset' });
+        await client.send({
+          op: 'add_sessions',
+          question_id: entry.question_id,
+          sessions,
+        });
+
         const start = performance.now();
         const response = await client.send({
           op: 'search',
@@ -603,8 +610,34 @@ async function main() {
     .map(system => system.trim())
     .filter(Boolean);
   for (const system of systems) {
-    if (!['search', 'rrf', 'emb', 'rrf_emb'].includes(system)) {
-      throw new Error(`unsupported system ${system}; use search, rrf, emb, or rrf_emb`);
+    // Thinking modes are the published surface; legacy rrf_*/search/emb are kept
+    // during the transition for A/B and removed once the thinking-mode floors lock.
+    const published = ['chat', 'think', 'research', 'max', 'search', 'rrf', 'emb', 'rrf_emb'];
+    // A/B arms: every one of these is implemented in `longmemeval_ipc.rs`'s mode
+    // dispatch but was unreachable behind this allow-list, so no bench could ever
+    // measure the SOTA-adopt features (MMR, HippoRAG PPR, reason-rerank, HyDE…).
+    // A feature that cannot be benched cannot clear the never-regress floor, and
+    // therefore can never leave "built & available" for "benched, on" — this gate
+    // was the structural reason the ● column never emptied.
+    const abArms = [
+      'rrf_mmr',
+      'rrf_mmr_rerank',
+      'rrf_multihop',
+      'rrf_rerank',
+      'rrf_kg',
+      'rrf_temporal',
+      'rrf_hyde',
+      'rrf_hyde_rerank',
+      'rrf_iterative',
+      'rrf_ctx',
+      'ivfpq',
+    ];
+    const allowed = [...published, ...abArms];
+    if (!allowed.includes(system)) {
+      throw new Error(
+        `unsupported system ${system}; published surface = chat, think, research, max ` +
+          `(rules/bench-thinking-modes.md); A/B arms = ${abArms.join(', ')}`,
+      );
     }
   }
 

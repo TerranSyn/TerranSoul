@@ -30,9 +30,14 @@ const DEFAULT_TASKS = [
   'open_domain',
   'adversarial',
 ];
-const DEFAULT_SYSTEMS = ['search', 'rrf'];
-const ALL_SYSTEMS = new Set(['search', 'rrf', 'emb', 'rrf_emb', 'search_emb', 'best', 'rrf_rerank', 'rrf_hyde', 'rrf_hyde_rerank', 'rrf_ctx', 'rrf_ctx_rerank', 'rrf_kg', 'rrf_kg_rerank', 'rrf_temporal', 'rrf_temporal_rerank', 'rrf_iterative', 'rrf_multihop']);
-const EMB_SYSTEMS = new Set(['emb', 'rrf_emb', 'search_emb', 'best', 'rrf_rerank', 'rrf_hyde', 'rrf_hyde_rerank', 'rrf_ctx', 'rrf_ctx_rerank', 'rrf_kg', 'rrf_kg_rerank', 'rrf_temporal', 'rrf_temporal_rerank', 'rrf_iterative', 'rrf_multihop']);
+// Published bench surface = the four real thinking modes (rules/bench-thinking-modes.md);
+// each routes through the production pipeline in longmemeval_ipc::thinking_mode_search.
+// Legacy rrf_*/search/emb kept during the transition for A/B.
+const THINKING_MODES = ['chat', 'think', 'research', 'max'];
+const DEFAULT_SYSTEMS = ['chat', 'think', 'research', 'max'];
+const ALL_SYSTEMS = new Set([...THINKING_MODES, 'search', 'rrf', 'emb', 'rrf_emb', 'search_emb', 'best', 'rrf_rerank', 'rrf_hyde', 'rrf_hyde_rerank', 'rrf_ctx', 'rrf_ctx_rerank', 'rrf_kg', 'rrf_kg_rerank', 'rrf_temporal', 'rrf_temporal_rerank', 'rrf_iterative', 'rrf_multihop']);
+// All four thinking modes use the dense vector channel, so they need LONGMEM_EMBED=1.
+const EMB_SYSTEMS = new Set([...THINKING_MODES, 'emb', 'rrf_emb', 'search_emb', 'best', 'rrf_rerank', 'rrf_hyde', 'rrf_hyde_rerank', 'rrf_ctx', 'rrf_ctx_rerank', 'rrf_kg', 'rrf_kg_rerank', 'rrf_temporal', 'rrf_temporal_rerank', 'rrf_iterative', 'rrf_multihop']);
 const RERANK_SYSTEMS = new Set(['rrf_rerank', 'rrf_hyde_rerank', 'rrf_ctx_rerank', 'rrf_kg_rerank', 'rrf_temporal_rerank']);
 const HYDE_SYSTEMS = new Set(['rrf_hyde', 'rrf_hyde_rerank']);
 const CTX_SYSTEMS = new Set(['rrf_ctx', 'rrf_ctx_rerank']);
@@ -40,7 +45,9 @@ const CTX_SYSTEMS = new Set(['rrf_ctx', 'rrf_ctx_rerank']);
 // (LONGMEM_KG_EDGES=1). It does NOT take the `wants_kg` cascade-expand path in
 // the IPC binary (that stays scoped to rrf_kg / rrf_kg_rerank) — membership
 // here only gates edge construction.
-const KG_SYSTEMS = new Set(['rrf_kg', 'rrf_kg_rerank', 'rrf_multihop']);
+// research/max walk memory_edges (deep_research edge-expansion + multihop KG bridge),
+// so they need the KG built at ingest (LONGMEM_KG_EDGES=1).
+const KG_SYSTEMS = new Set(['rrf_kg', 'rrf_kg_rerank', 'rrf_multihop', 'research', 'max']);
 const DATA_KINDS = ['corpus', 'queries', 'qrels'];
 const METRIC_KS = [1, 5, 10, 20, 100];
 

@@ -141,7 +141,7 @@ export function computeAttemptTimeoutMs(
 /**
  * Whether the retry loop should attempt again after `attemptIndex` (0-based)
  * has failed. `denied` (WIRE-CLI-PARITY-GAP-3 rewire: the actor now spawns
- * `terransoul-cli --agent-task`, which gates every call through the
+ * `terransoul --agent-task`, which gates every call through the
  * `action_trust` earned-autonomy ledger before ever spawning `claude`) is a
  * hard short-circuit: a longer per-attempt timeout can never change a trust
  * decision, so retrying a denied call is guaranteed-futile work that only
