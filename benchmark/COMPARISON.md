@@ -50,6 +50,8 @@ Results were tracked through Phase BENCH-AM, long since closed and archived to [
 | LlamaIndex | RAG | 41.0 % | 58.0 % | 72.0 % | — | — | — | — | — | — | agentmemory |
 | GraphRAG (Microsoft) | RAG (graph) | 5.0 % | 5.0 % | 5.0 % | — | — | — | — | — | — | agentmemory |
 | obsidian-wiki | Markdown wiki (grep, no DB) | 37.3 % | 53.8 % | 72.6 % | 79.5 % | 82.8 % | — | — | **42.8 ms** | $0 | agentmemory vault; agentic ripgrep + local gemma4:12b-it-qat rerank (keyword-only; O(n), doesn't scale) |
+| *— Code-navigation (not a memory benchmark — see § below) —* | | | | | | | | | | | |
+| Graphify (Graphify-Labs) | Code-nav (deterministic AST graph) | — | — | — | — | — | — | — | — | $0 | not IR-benched on this table's corpora (different problem: exact code-structure lookup, no LLM) — see [§ Graphify](#graphify-graphify-labs-narrow-code-navigation-comparison-not-a-memory-benchmark) |
 | *— Self-improving LLM agents —* | | | | | | | | | | | |
 | OpenJarvis (Stanford SAIL) | Agent | 40.6 % | 60.9 % | 74.2 % | 88.2 % | 91.7 % | 9.6 | 100.0 % | 3.5 s | $0 | agentmemory (DenseMemory + nomic) + parity |
 | OpenClaw | Agent | — | — | — | — | — | 8.4 | 100.0 % | 38.1 s | $0 | parity; retrieval not IR-benched (config-first agent, no retrieval/RAG engine) |
@@ -231,6 +233,27 @@ This is the same retrieval-only shape used by agentmemory's LongMemEval-S script
 
 Per-type `search` R@5: single-session-user 98.6 %, multi-session 98.5 %, single-session-preference 96.7 %, temporal-reasoning 98.5 %, knowledge-update 98.7 %, single-session-assistant 100.0 %.
 
+### Thinking-mode mapping (2026-07-23)
+
+Per [`rules/bench-thinking-modes.md`](../rules/bench-thinking-modes.md), the harness now runs
+through TerranSoul's four production **thinking modes** (`chat` / `think` / `research` / `max`)
+instead of ad-hoc retrieval variants — measuring what a user actually selects. The mapping to
+the rows above is **verified**: on the diagnostic subset, `chat` retrieval is byte-identical to
+`rrf` (NDCG@10 93.2 for both), because `chat` *is* the one hybrid + graph-edge pass.
+
+- **`chat`** (fast grounded retrieval) = the `rrf` row: **R@5 99.4 % / R@10 99.8 % / R@20 100.0 % / NDCG@10 95.1 % / MRR 95.9 %**.
+- **`think`** (+ single-pass reasoning rerank) ≈ `rrf_rerank`.
+- **`research`** (deep search: multihop + completeness-critic + KG-edge expansion + cited
+  synthesis) and **`max`** (research's engine, then verify-every-claim + rank) run correctly
+  end-to-end (validated 2026-07-23, all four modes through `longmemeval_ipc::thinking_mode_search`).
+  They optimise for *verified-answer ranking*, not raw recall@k, so their full 500-question
+  numbers are reported separately after a staged run — on this host the 12B they load for
+  reasoning contends with the embed model for VRAM, so research/max full runs are overnight-scale.
+
+Run recipe (set the embed model explicitly — the harness default `mxbai-embed-large` may be
+absent): `LONGMEM_EMBED=1 LONGMEM_EMBED_MODEL=embeddinggemma LONGMEM_CHAT_MODEL=gemma4:12b-it-qat
+node benchmark/scripts/longmemeval-s.mjs run --systems=chat,think,research,max`.
+
 Adapter runbook: [docs/longmemeval-s-adapter.md](longmemeval-s-adapter.md).
 
 ## MTEB LoCoMo retrieval adapter (BENCH-LCM-1)
@@ -362,6 +385,90 @@ All four frameworks were run for real through their own retrievers on the same c
 
 Raw results are committed alongside our internal harness; each framework was measured through its own retriever on the same corpus and the same `nomic-embed-text` embedder (GraphRAG via its fast NLP-based indexing + local search).
 Sources: [microsoft/graphrag](https://github.com/microsoft/graphrag) · [langchain-ai/langchain](https://github.com/langchain-ai/langchain) · [run-llama/llama_index](https://github.com/run-llama/llama_index) · [deepset-ai/haystack](https://github.com/deepset-ai/haystack) · [infiniflow/ragflow](https://github.com/infiniflow/ragflow)
+
+### Graphify (Graphify-Labs): narrow code-navigation comparison, not a memory benchmark
+
+> **Scope, stated up front.** This is deliberately a *code-navigation* comparison, not
+> another row in the retrieval-quality tables above. Graphify is a deterministic,
+> tree-sitter/AST-based codebase-to-knowledge-graph CLI — it answers "what calls X" /
+> "what does file Y depend on" over a source tree, with zero LLM calls. TerranSoul's
+> brain answers a different question: "what have I learned/observed/been told" over
+> ingested conversational and procedural memory. They are not interchangeable, so this
+> section does not force Graphify into the LongMemEval-S / agentmemory / LoCoMo / JD-1000
+> tables above — none of those corpora are code, and Graphify publishes no retrieval-style
+> benchmark numbers on its own public repo that would be reproducible here anyway.
+
+> **Name collision, disambiguated:** this is [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify)
+> (Apache-2.0, YC S26), published on PyPI as `graphifyy` — two Y's, because the plain
+> `graphify` name was already taken by an *unrelated* project, [safishamsi/graphify](https://github.com/safishamsi/graphify)
+> (MIT), which TerranSoul separately studied via DeepWiki in May 2026 (see the CREDITS.md
+> row for `safishamsi/graphify`, informing knowledge-graph ideas like community detection
+> and surprise scoring). Verified as two distinct GitHub orgs/repos before writing this
+> section — do not conflate the two "Graphify"s.
+
+**What was measured (this repo, PyPI `graphifyy` v0.9.29, Apache-2.0).** Installed via
+`pip install -e .` (Windows note: the console-script `.exe` link can fail with
+`[WinError 2] ... graphify.exe -> graphify.exe.deleteme` even though the package installs
+fine — invoke as `python -m graphify` instead of the bare `graphify` command). Ran its
+deterministic, no-LLM extractor against this repo's own `src-tauri/` Rust source tree:
+
+```
+python -m graphify extract src-tauri --code-only
+→ 11,044 nodes / 30,170 edges / 321 files
+```
+
+A sample traversal query against that graph returns a real subgraph with exact file:line
+citations, e.g.:
+
+```
+python -m graphify query "what calls process_message"
+→ process_message() [src=src/commands/chat.rs loc=L1756]  (+ real caller/callee edges)
+```
+
+No LLM in the loop for either step — pure tree-sitter parsing + BFS graph traversal. This
+is fast (seconds, not the ~16.7 s/doc an LLM-extraction indexer like GraphRAG's default
+mode costs — see the RAG-frameworks section above) and exact for the class of question it
+answers: structural code-navigation, not semantic recall.
+
+**Live TerranSoul-side comparison.** An equivalent live `brain_search` query was run
+against this repo's own production brain (1,840 memories, 100 % embedded, verified via
+`brain_health` — provider `ollama` / `gemma4:12b-it-qat`) for the same topic:
+
+```
+brain_search("process_message chat command handler")
+→ top hit: LESSON (reasoning-effort-impl-shipped, 2026-07-23) — a semantically
+  related engineering lesson about the reasoning-effort ladder that touches
+  streaming.rs/chat.rs, NOT the literal process_message() call site or its
+  call graph.
+```
+
+This is the honest, expected outcome, not a defect in either tool: TerranSoul's brain
+has never indexed its own source tree as a corpus — it indexes *lessons the agent chose
+to write down* (bugs found, design decisions, shipped-feature summaries), tagged and
+embedded for associative recall. Asked "what calls X", it will surface a lesson that
+*talks about* X if one was ever ingested, ranked by semantic/keyword relevance — it
+cannot return an exact caller/callee edge, because it never parsed the AST. Graphify does
+the reverse: exact structural facts, zero semantic memory, zero notion of "what did we
+decide and why." Neither is a strict subset of the other.
+
+**Honest takeaways.**
+- **Different problem, different data shape.** Graphify = deterministic code-structure
+  index (AST → graph → BFS query, exact citations). TerranSoul's brain = semantic/lexical
+  memory index over agent-authored knowledge (embeddings + FTS5 + KG edges → ranked
+  recall, associative not exact). Putting them in the same recall@k table would compare
+  answers to two different questions.
+- **A real gap this surfaced, not previously tracked:** TerranSoul has no equivalent
+  "index my own codebase for exact call-graph lookup" capability — `brain_search` over
+  source would need an AST-derived corpus (Graphify's own graph, or a native tree-sitter
+  pass) feeding the memory pipeline as a distinct ingestion source, not a retrofit of the
+  lesson-memory index. Not attempted here — out of scope for this comparison, noted as a
+  possible follow-up.
+- **Live comparison completed this session** — blocked in the prior session by an
+  unauthenticated direct-HTTP call to the MCP tray (`{"error":{"code":-32000,"message":
+  "unauthorized"}}`); resolved by using the repo's bearer-token-aware one-shot caller
+  (`tmp/mcp-call.mjs`) instead of a raw POST.
+
+Sources: [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) · [PyPI: graphifyy](https://pypi.org/project/graphifyy/)
 
 ### Architectural comparison vs adopted reference architectures (Hermes-Agent · GENesis-AGI · OpenClaw)
 
