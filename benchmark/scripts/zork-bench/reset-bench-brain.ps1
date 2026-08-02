@@ -8,7 +8,8 @@
 # What it does:
 #   1. stop any process serving the bench port
 #   2. delete the bench data dir entirely
-#   3. start a fresh instance (seeds from mcp-data/shared/memory-seed.sql)
+#   3. start a fresh instance (seeds from BOTH mcp-data/shared/seed-config.sql
+#      and seed-lessons.sql — run_all applies the config half then the dev half)
 #   4. AGI-purity pass: remove the zorkgpt.com ep120 audit row (score
 #      milestones + a room name) the seed still carries, then restart so the
 #      in-memory indexes match the store

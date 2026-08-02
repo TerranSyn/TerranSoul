@@ -18,11 +18,12 @@
     "needle: the EXACT published substring, with {value} where the number appears."
   ],
   "artifacts": {
-    "$comment-arms": "head-full500-* is the canonical set: one embedder (embeddinggemma) AND one code version (HEAD, 2026-07-27), one arm per process. The max100-full500-* arms are 2026-07-25 code, and max100-full500/ additionally ran the harness-default embedder — both kept on disk as evidence, neither safe to compare across.",
-    "$comment-arms-2": "CORRECTED 2026-07-27: full500-think and full500-research still pointed at the max100-* (2026-07-25 code) arms while the comment above declared head-full500-* canonical — so the manifest contradicted itself, and any claim bound to `think` would have been checked against a different code version from every other arm. Both now point at head-full500-*, and all four are embeddinggemma. The repoint MOVES the think numbers a long way (NDCG@10 93.78 on 2026-07-25 code, 87.25 at HEAD) — that delta is a real regression under investigation, not a manifest artifact, which is precisely why it must be the checked value.",
+    "$comment-arms": "All four arms are one embedder (embeddinggemma:latest), one arm per process. The max100-full500-* arms are 2026-07-25 code, and max100-full500/ additionally ran the harness-default embedder — both kept on disk as evidence, neither safe to compare across.",
+    "$comment-arms-2": "CORRECTED 2026-07-27: full500-think and full500-research still pointed at the max100-* (2026-07-25 code) arms while the comment above declared head-full500-* canonical — so the manifest contradicted itself, and any claim bound to `think` would have been checked against a different code version from every other arm. Both were repointed at head-full500-*, and all four are embeddinggemma. HISTORICAL: the numbers quoted in this note (think NDCG@10 87.25 'at HEAD') were themselves superseded within hours — see $comment-arms-3. The note is kept because it records the reasoning that produced the next error.",
+    "$comment-arms-3": "CORRECTED 2026-07-28. The comment above declared `head-full500-*` canonical AS A DIRECTORY, and that was the bug: an arm is current because of its date relative to the commits that touch its path, not because of the prefix on its folder. `76f2276d` (MAX-100-11, 'prompt-context retrieval reorders, it never prunes') landed 2026-07-27T00:44Z. `head-full500-think` was generated 2026-07-26T18:44Z — six hours BEFORE it — so the manifest was binding `think` to PRE-fix code while every other arm was effectively post-fix. `full500-think` now points at `fix11b-full500-think` (2026-07-27T02:01Z, after the fix). This moves the checked value from NDCG@10 87.2475 to 93.2609 (+6.01) and R@20 from 99.00 to 99.80. VERIFIED, not assumed: `fix11b-full500-chat` and `fix11b-full500-rrf` are byte-identical to `head-full500-chat`/`head-full500-rrf` — 0 of 500 retrieval orderings differ in each — so those two bindings remain valid on current code and were left alone rather than churned. `full500-research` still points at `head-full500-research` (2026-07-26T19:43Z), which PREDATES the fix and has NOT been re-run; it is published as a pre-fix measurement and labelled as one on the page. The rule this cost us twice: sort candidate artifacts by generated_at and check them against the commits that touched the path — never trust a directory name to mean 'current'.",
     "full500-rrf": "benchmark/results/head-full500-rrf/longmemeval_s_terransoul.json",
     "full500-chat": "benchmark/results/head-full500-chat/longmemeval_s_terransoul.json",
-    "full500-think": "benchmark/results/head-full500-think/longmemeval_s_terransoul.json",
+    "full500-think": "benchmark/results/fix11b-full500-think/longmemeval_s_terransoul.json",
     "full500-research": "benchmark/results/head-full500-research/longmemeval_s_terransoul.json"
   },
   "hundredPercentGuard": {
@@ -132,7 +133,7 @@
       "metric": "ndcg_at_10",
       "scale": 100,
       "decimals": 2,
-      "note": "think is BELOW chat here. That is a real regression on current code - the same arm on 2026-07-25 code matched chat to four decimals - and it is published as such rather than omitted."
+      "note": "think is BELOW chat here: 93.26 against 93.78, a 0.52-point shortfall on current code, published as such rather than omitted. CORRECTED 2026-07-28: this note previously read 'a real regression ... the same arm on 2026-07-25 code matched chat to four decimals' and the bound value was 87.25, which came from the PRE-MAX-100-11 artifact (see $comment-arms-3). The genuine shortfall is 0.52, not 6.53. `76f2276d`'s own acceptance line reads 'Bench owed: think >= 93.782' - 93.2609 does not clear it, so the obligation stays open, it is just an order of magnitude smaller than the page claimed."
     },
     {
       "id": "index-rrf-r5",
@@ -231,12 +232,351 @@
     {
       "id": "me-locomo-rrf-rerank",
       "what": "'use in RAG ... recall-at-ten 68.3 percent' in memory-evolution.html (Fig 12, panel 8)",
-      "why": "CORRECTED 2026-07-27. This entry previously read 'External survey figure, not ours' and was therefore deliberately unbound - wrongly. 68.3 % IS ours: MTEB LoCoMo R@10 for `rrf_rerank`, BENCH-LCM-8, 2026-05-12 (benchmark/terransoul/locomo-mteb/README.md, benchmark/README.md). It stays untraceable here for a different and honest reason: the LoCoMo harness commits a Markdown report, not a systems[] JSON, so there is nothing for this checker to read. The page now names the bench inline ('LoCoMo R@10 68.3%') because printing a bare R@10 beside LongMemEval panels invited exactly the cross-bench misread that docs/published-claims-inventory.md forbids. Binding this properly needs a JSON emitter on the LoCoMo runner."
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:262 (Fig 12 aria-label, 'recall-at-ten 68.3 percent')",
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:356 (panel 8 visible label, 'Self-RAG &middot; LoCoMo R@10 68.3%')",
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:448 (Fig 12 figcaption provenance note)"
+      ],
+      "binds_to": {
+        "artifact_when_run": "benchmark/results/locomo_mteb_terransoul_rrf_rerank.json",
+        "metric": "recall_at_10",
+        "scale": 100,
+        "decimals": 1,
+        "expressible_in_this_schema": true
+      },
+      "blocked_on": "one `node benchmark/scripts/locomo-mteb.mjs run --systems=rrf_rerank --query-count=1976` (~30-40 min, cross-encoder in the loop)",
+      "why": "CORRECTED 2026-07-27. This entry previously read 'External survey figure, not ours' and was therefore deliberately unbound - wrongly. 68.3 % IS ours: MTEB LoCoMo R@10 for `rrf_rerank`, BENCH-LCM-8, 2026-05-12 (benchmark/terransoul/locomo-mteb/README.md, benchmark/README.md). It stays untraceable here for a different and honest reason: the LoCoMo harness commits a Markdown report, not a systems[] JSON, so there is nothing for this checker to read. The page now names the bench inline ('LoCoMo R@10 68.3%') because printing a bare R@10 beside LongMemEval panels invited exactly the cross-bench misread that docs/published-claims-inventory.md forbids. UPDATED 2026-07-28: the emitter now exists (benchmark/scripts/lib/locomo-systems-artifact.mjs; `run`/`sample` write benchmark/results/locomo_mteb_terransoul_<system>[_Nq].json in this checker's shape, one file per system, summary refused unless it recomputes from its own per_question rows). What is STILL missing is the artifact, not the plumbing: no LoCoMo run has been executed since the emitter landed, and the 2026-05-12 rrf_rerank run that produced 68.3 % predates it, so nothing on disk carries the rows. Binding this now costs one re-run of `--systems=rrf_rerank --query-count=1976` (~30-40 min, cross-encoder in the loop), after which the entry moves into `artifacts` + `claims` with metric `recall_at_10`. Until then it is unbound for a materially weaker reason than before, and that distinction is the whole point of this note."
     },
     {
       "id": "me-locomo-full-run",
-      "what": "LoCoMo rrf 69.3 / 91.7 / 54.9 / 53.6 and rrf_emb 66.6 / 87.1 / 53.5 / 52.5 in index.html 5.2 + Fig 2",
-      "why": "Same reason: benchmark/results/locomo_mteb_terransoul.md is Markdown-only, so the checker cannot read it. Both rows come from the SAME committed 2026-06-28 run, which is the whole point of the 5.2 correction - the numbers they replaced came from two runs three weeks apart. A JSON emitter on the LoCoMo runner would make this bindable and is the right fix."
+      "what": "The 2026-06-28 LoCoMo run as a whole - the shared forensic record for the thirteen per-figure `index-locomo-*` entries that follow",
+      "why": "Same reason: benchmark/results/locomo_mteb_terransoul.md is Markdown-only, so the checker cannot read it. Both rows come from the SAME committed 2026-06-28 run, which is the whole point of the 5.2 correction - the numbers they replaced came from two runs three weeks apart. UPDATED 2026-07-28: the emitter now exists (see me-locomo-rrf-rerank), so a future run is bindable; this run is not, and cannot be made so by conversion. The 2026-06-28 run's own JSON was NOT committed - `benchmark/results/locomo_mteb_terransoul.json` was deleted in a18b8d48 while the .md was refreshed, which is also why the README's link to it is dead - so the per-query rows the four figures average over no longer exist anywhere. Nothing can reconstruct them from a Markdown table, and back-filling a summary without its rows would be precisely the un-recomputable artifact this bar exists to reject. Binding 5.2 therefore costs a re-run of `--systems=rrf,rrf_emb` at the same revision, which is a MEASUREMENT and must be published as its own dated run rather than relabelled as the 2026-06-28 one. The four metrics map to keys recall_at_10 / recall_at_100 / ndcg_at_10 / mrr_at_100. REGISTERED PER FIGURE 2026-07-28: this entry used to stand in for eight numbers at once, which is how the other five of the thirteen (two dense-channel deltas, three per-task R@10s) went uncounted. Each of the thirteen now has its own entry below carrying the artifact filename and metric key it would bind to. Three findings came out of writing them, and they are the reason a re-run alone does NOT close this. (1) The eight overall figures are directly bindable once the run exists. (2) The three per-task figures (78.1 / 49.6 / 47.7) live at `per_type.<task>.recall_at_10`; `metricFrom()` reads a FLAT `systems[0][metric]` and cannot address a nested path, so they need a checker capability ON TOP of a run. (3) The two dense-channel deltas (2.7 and 4.6 points) are differences between two artifacts, and a claim binds to exactly one artifact plus one metric - they are not expressible in this schema at any point, by a run or otherwise, and saying so is more useful than leaving them looking pending. Every one of the thirteen was hand-checked against the committed Markdown on 2026-07-28 and every one reproduces exactly, so what is missing here is machine-readability, not agreement - a hand check is not a bound check and does not survive the next edit to either side."
+    },
+    {
+      "$comment-locomo-per-figure": [
+        "The thirteen figures of index.html section 5.2 + Fig 2, registered ONE PER FIGURE on 2026-07-28.",
+        "",
+        "EXPLICITLY UNBOUND, not pending-and-hoped-for. No artifact was created to bind them to: the only",
+        "file that could have been is a summary back-filled from a Markdown table with no per-query rows",
+        "under it, and that is the un-recomputable artifact `assertSummaryRecomputes` exists to refuse.",
+        "An unbound claim with the run named is worth more than a green check over a file made for the",
+        "purpose - the green check would be the stronger-looking of the two and the false one.",
+        "",
+        "`published` is the value the page prints TODAY. It is recorded so a future re-run is a comparison",
+        "rather than a fresh reading, and it is NOT a floor: 5.2's own correction note establishes that",
+        "the numbers it replaced were spliced across runs, so the never-regress floor for LoCoMo is the",
+        "2026-06-28 figures themselves and nothing earlier.",
+        "",
+        "`binds_to.expressible_in_this_schema: false` means a run does not fix it. See me-locomo-full-run."
+      ],
+      "id": "index-locomo-rrf-r10",
+      "what": "LoCoMo `rrf` R@10 69.3 %",
+      "published": 69.3,
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/index.html:340 (abstract, 'the lexical fusion reaches R@10 69.3%')",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:519 (Fig 2 aria-label)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:531 (Fig 2 bar label)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:979 (7.x discussion, 'reaches LoCoMo 69.3 R@10')"
+      ],
+      "binds_to": {
+        "artifact_when_run": "benchmark/results/locomo_mteb_terransoul_rrf.json",
+        "metric": "recall_at_10",
+        "scale": 100,
+        "decimals": 1,
+        "expressible_in_this_schema": true
+      },
+      "blocked_on": "re-run of `--systems=rrf,rrf_emb` (see me-locomo-full-run)",
+      "why": "UNBOUND - no artifact. Matches the committed 2026-06-28 Markdown (overall/rrf) by hand check on 2026-07-28; nothing on disk carries the per-query rows a checker could re-score. This is the most-repeated LoCoMo number on the page - five sites, including the abstract - so it is also the one a stale value would travel furthest on."
+    },
+    {
+      "id": "index-locomo-rrf-r100",
+      "what": "LoCoMo `rrf` R@100 91.7 %",
+      "published": 91.7,
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:519 (Fig 2 aria-label)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:537 (Fig 2 bar label)"
+      ],
+      "binds_to": {
+        "artifact_when_run": "benchmark/results/locomo_mteb_terransoul_rrf.json",
+        "metric": "recall_at_100",
+        "scale": 100,
+        "decimals": 1,
+        "expressible_in_this_schema": true
+      },
+      "blocked_on": "re-run of `--systems=rrf,rrf_emb` (see me-locomo-full-run)",
+      "why": "UNBOUND - no artifact. Matches the committed 2026-06-28 Markdown (overall/rrf) by hand check on 2026-07-28."
+    },
+    {
+      "id": "index-locomo-rrf-ndcg10",
+      "what": "LoCoMo `rrf` NDCG@10 54.9 %",
+      "published": 54.9,
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:519 (Fig 2 aria-label)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:543 (Fig 2 bar label)"
+      ],
+      "binds_to": {
+        "artifact_when_run": "benchmark/results/locomo_mteb_terransoul_rrf.json",
+        "metric": "ndcg_at_10",
+        "scale": 100,
+        "decimals": 1,
+        "expressible_in_this_schema": true
+      },
+      "blocked_on": "re-run of `--systems=rrf,rrf_emb` (see me-locomo-full-run)",
+      "why": "UNBOUND - no artifact. Matches the committed 2026-06-28 Markdown (overall/rrf) by hand check on 2026-07-28. Second exposure worth naming: docs/bench-100-percent-semantics.md line 28 carries `54.9 / 69.3 / 53.6 (n=1976)` as LoCoMo's current scores in an uncapped row, so THREE of the thirteen also sit inside the file the reachability guard parses. The guard enforces the VERDICT column, never these values, so nothing is silently checked - but a re-run moves the semantics row too, and forgetting it is how the table starts describing a run nobody has done since."
+    },
+    {
+      "id": "index-locomo-rrf-mrr100",
+      "what": "LoCoMo `rrf` MRR@100 53.6 %",
+      "published": 53.6,
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:519 (Fig 2 aria-label)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:549 (Fig 2 bar label)"
+      ],
+      "binds_to": {
+        "artifact_when_run": "benchmark/results/locomo_mteb_terransoul_rrf.json",
+        "metric": "mrr_at_100",
+        "scale": 100,
+        "decimals": 1,
+        "expressible_in_this_schema": true
+      },
+      "blocked_on": "re-run of `--systems=rrf,rrf_emb` (see me-locomo-full-run)",
+      "why": "UNBOUND - no artifact. Matches the committed 2026-06-28 Markdown (overall/rrf) by hand check on 2026-07-28. The metric key is `mrr_at_100`, NOT LongMemEval's `mrr` - a copy-paste of an existing LongMemEval claim would bind to a key LoCoMo does not emit."
+    },
+    {
+      "id": "index-locomo-rrfemb-r10",
+      "what": "LoCoMo `rrf_emb` R@10 66.6 %",
+      "published": 66.6,
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:519 (Fig 2 aria-label)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:533 (Fig 2 bar label)"
+      ],
+      "binds_to": {
+        "artifact_when_run": "benchmark/results/locomo_mteb_terransoul_rrf_emb.json",
+        "metric": "recall_at_10",
+        "scale": 100,
+        "decimals": 1,
+        "expressible_in_this_schema": true
+      },
+      "blocked_on": "re-run of `--systems=rrf,rrf_emb` (see me-locomo-full-run)",
+      "why": "UNBOUND - no artifact. Matches the committed 2026-06-28 Markdown (overall/rrf_emb) by hand check on 2026-07-28. The emitter writes one file per system, so the rrf and rrf_emb halves of 5.2 will bind to two different artifacts of the same process - `run_systems` and `same_process_systems` on each record that they were not isolated arms."
+    },
+    {
+      "id": "index-locomo-rrfemb-r100",
+      "what": "LoCoMo `rrf_emb` R@100 87.1 %",
+      "published": 87.1,
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:519 (Fig 2 aria-label)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:539 (Fig 2 bar label)"
+      ],
+      "binds_to": {
+        "artifact_when_run": "benchmark/results/locomo_mteb_terransoul_rrf_emb.json",
+        "metric": "recall_at_100",
+        "scale": 100,
+        "decimals": 1,
+        "expressible_in_this_schema": true
+      },
+      "blocked_on": "re-run of `--systems=rrf,rrf_emb` (see me-locomo-full-run)",
+      "why": "UNBOUND - no artifact. Matches the committed 2026-06-28 Markdown (overall/rrf_emb) by hand check on 2026-07-28."
+    },
+    {
+      "id": "index-locomo-rrfemb-ndcg10",
+      "what": "LoCoMo `rrf_emb` NDCG@10 53.5 %",
+      "published": 53.5,
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:519 (Fig 2 aria-label)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:545 (Fig 2 bar label)"
+      ],
+      "binds_to": {
+        "artifact_when_run": "benchmark/results/locomo_mteb_terransoul_rrf_emb.json",
+        "metric": "ndcg_at_10",
+        "scale": 100,
+        "decimals": 1,
+        "expressible_in_this_schema": true
+      },
+      "blocked_on": "re-run of `--systems=rrf,rrf_emb` (see me-locomo-full-run)",
+      "why": "UNBOUND - no artifact. Matches the committed 2026-06-28 Markdown (overall/rrf_emb) by hand check on 2026-07-28."
+    },
+    {
+      "id": "index-locomo-rrfemb-mrr100",
+      "what": "LoCoMo `rrf_emb` MRR@100 52.5 %",
+      "published": 52.5,
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:519 (Fig 2 aria-label)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:551 (Fig 2 bar label)"
+      ],
+      "binds_to": {
+        "artifact_when_run": "benchmark/results/locomo_mteb_terransoul_rrf_emb.json",
+        "metric": "mrr_at_100",
+        "scale": 100,
+        "decimals": 1,
+        "expressible_in_this_schema": true
+      },
+      "blocked_on": "re-run of `--systems=rrf,rrf_emb` (see me-locomo-full-run)",
+      "why": "UNBOUND - no artifact. Matches the committed 2026-06-28 Markdown (overall/rrf_emb) by hand check on 2026-07-28."
+    },
+    {
+      "id": "index-locomo-dense-delta-r10",
+      "what": "'adding the EmbeddingGemma dense arm costs 2.7 points of R@10'",
+      "published": 2.7,
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/index.html:340 (abstract, 'the dense channel costs 2.7 points')",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:562 (Fig 2 figcaption)"
+      ],
+      "binds_to": {
+        "artifact_when_run": "derived: locomo_mteb_terransoul_rrf.json MINUS locomo_mteb_terransoul_rrf_emb.json",
+        "metric": "recall_at_10 (difference of two artifacts)",
+        "expressible_in_this_schema": false
+      },
+      "blocked_on": "NOT a run. A claim binds to one artifact and one metric, so a two-artifact difference has no representation here.",
+      "why": "UNBOUND, AND A RE-RUN DOES NOT FIX IT. 69.3 - 66.6 = 2.7 recomputes from the two figures above, so it is exact today, but the manifest cannot express a derived claim: `metricFrom()` takes one report and one key. Recorded rather than dropped because this delta carries the SIGN of 5.2's central finding - the dense channel costs recall on this corpus - and a sign is the part of a result that a silent drift is most damaging to. Closing it properly needs either a `derived` claim kind in the checker or a page edit that prints both endpoints and drops the subtraction; neither is in this change's scope."
+    },
+    {
+      "id": "index-locomo-dense-delta-r100",
+      "what": "'and 4.6 of R@100'",
+      "published": 4.6,
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:562 (Fig 2 figcaption)"
+      ],
+      "binds_to": {
+        "artifact_when_run": "derived: locomo_mteb_terransoul_rrf.json MINUS locomo_mteb_terransoul_rrf_emb.json",
+        "metric": "recall_at_100 (difference of two artifacts)",
+        "expressible_in_this_schema": false
+      },
+      "blocked_on": "NOT a run - same schema limit as index-locomo-dense-delta-r10.",
+      "why": "UNBOUND, AND A RE-RUN DOES NOT FIX IT. 91.7 - 87.1 = 4.6 recomputes from the figures above. Same derived-claim limit as index-locomo-dense-delta-r10."
+    },
+    {
+      "id": "index-locomo-rrf-temporal-r10",
+      "what": "LoCoMo `rrf` temporal_reasoning R@10 78.1 % ('temporal reasoning is the strongest task')",
+      "published": 78.1,
+      "sites": ["docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)"],
+      "binds_to": {
+        "artifact_when_run": "benchmark/results/locomo_mteb_terransoul_rrf.json",
+        "metric": "per_type.temporal_reasoning.recall_at_10",
+        "scale": 100,
+        "decimals": 1,
+        "expressible_in_this_schema": false
+      },
+      "blocked_on": "a run AND a checker capability: `metricFrom()` reads a flat `systems[0][metric]` and cannot address a nested per_type path.",
+      "why": "UNBOUND ON TWO COUNTS. Matches the committed 2026-06-28 Markdown (by-task/temporal_reasoning/rrf) by hand check on 2026-07-28. The emitter DOES publish this figure - `per_type` is computed from the emitted rows and is itself recompute-checked - so the data would be present the moment a run lands; what is absent is a way to name it. Registering it as unbound-pending-a-run alone would have been the optimistic reading and it would be wrong."
+    },
+    {
+      "id": "index-locomo-rrf-multihop-r10",
+      "what": "LoCoMo `rrf` multi_hop R@10 49.6 % (a documented gap, cited in 5.2, 06, and the compositional-generalisation discussion)",
+      "published": 49.6,
+      "sites": ["docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)"],
+      "binds_to": {
+        "artifact_when_run": "benchmark/results/locomo_mteb_terransoul_rrf.json",
+        "metric": "per_type.multi_hop.recall_at_10",
+        "scale": 100,
+        "decimals": 1,
+        "expressible_in_this_schema": false
+      },
+      "blocked_on": "a run AND the nested-path capability - same as index-locomo-rrf-temporal-r10.",
+      "why": "UNBOUND ON TWO COUNTS. Matches the committed 2026-06-28 Markdown (by-task/multi_hop/rrf) by hand check on 2026-07-28. This is the figure the paper leans on hardest outside 5.2 - the multi-hop gap is cited as consistent with the depth-4 compositional wall and as the motivation for the RAPTOR/GraphRAG experiments the paper owes - so it is load-bearing for an argument, not just for a row."
+    },
+    {
+      "id": "index-locomo-rrf-opendomain-r10",
+      "what": "LoCoMo `rrf` open_domain R@10 47.7 % (the second documented gap)",
+      "published": 47.7,
+      "sites": ["docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body)"],
+      "binds_to": {
+        "artifact_when_run": "benchmark/results/locomo_mteb_terransoul_rrf.json",
+        "metric": "per_type.open_domain.recall_at_10",
+        "scale": 100,
+        "decimals": 1,
+        "expressible_in_this_schema": false
+      },
+      "blocked_on": "a run AND the nested-path capability - same as index-locomo-rrf-temporal-r10.",
+      "why": "UNBOUND ON TWO COUNTS. Matches the committed 2026-06-28 Markdown (by-task/open_domain/rrf) by hand check on 2026-07-28. n = 89 queries, the smallest task in the slice, which is worth carrying alongside the number."
+    },
+    {
+      "id": "index-locomo-5-2-other-runs",
+      "what": "The LoCoMo figures in 5.2 that are NOT from the 2026-06-28 run: temporal R@10 90.0 % (250-query per-task slice), the removed-decomposition negative result R@10 47.3 % -> 30.1 % (n = 40), and the correction paragraph's 64.5 / 85.8 / 49.9 / 48.3 (2026-06-27 rrf_emb) and 65.8 (its matched rrf)",
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/index.html:516 (5.2 body - 90.0 and the 47.3 -> 30.1 decomposition result)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:517 (5.2 correction paragraph)",
+        "docs/LLM-Brain-Design-Research-Paper/index.html:562 (Fig 2 figcaption, '57.2 -> 64.5')"
+      ],
+      "binds_to": { "expressible_in_this_schema": false },
+      "blocked_on": "nothing actionable - these are historical runs, and re-running them would produce different numbers rather than confirm these.",
+      "why": "REGISTERED 2026-07-28 SO THE COUNT IS HONEST. The thirteen entries above cover the 2026-06-28 run; 5.2 also prints figures from three OTHER runs, and leaving them out would have made 'the LoCoMo claims are now registered' true of a set chosen to make it true. They are unbindable for a different reason from the thirteen: they are deliberately historical. 90.0 % is an earlier 250-query per-task slice, quoted as a contrast to the full run's 78.1. The 47.3 -> 30.1 pair is a retained NEGATIVE result (LLM query decomposition was benched at n = 40 and removed) whose value is that it was not deleted. The 2026-06-27 figures appear only inside the correction that explains why they must not be spliced onto the 2026-06-28 ones - the sentence is the guard, so binding the numbers in it would be beside the point. The 2026-06-09 half of that same splice (57.2 / 76.9 / 45.0 / 43.7) is already recorded under `index-competitor-figures`, whose note explains how our own stale numbers came to be filed as somebody else's."
+    },
+    {
+      "$comment-deleted-artifacts": [
+        "REGISTERED 2026-07-28. Three numbers that Fig 12 / Fig 14 / the Stage-12 table published as",
+        "measurements and that no entry above or below covered. All three were hunted to their source",
+        "before being written down; none is a guess, and none is bindable.",
+        "",
+        "The distinction these three exist to draw: 'measured once, artifact deleted, re-run owed' is NOT",
+        "'never measured'. Two of them were really run and both recompute EXACTLY from the per-query rows",
+        "of artifacts that git still holds but the working tree does not. The fourth claim resolved in the",
+        "same pass - the write engine's ~1.15M CRUD/s - had no artifact at any commit and was WITHDRAWN",
+        "from both published artifacts rather than registered here, following the MINJA precedent: a",
+        "withdrawn number is off the page, so there is nothing left to bind."
+      ],
+      "id": "me-kg-cascade-0pp",
+      "what": "'the KG cascade measured 0pp retrieval gain at 2x latency' - Fig 12 panel 13, Fig 14 row 7, the Stage-12 graph row, and the open-problems list in memory-evolution.html",
+      "published": 0.0,
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:262 (Fig 12 aria-label)",
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:419 (Fig 12 panel 13 label)",
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:448 (Fig 12 figcaption)",
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:600 (Fig 14 aria-label)",
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:637 (Fig 14 card 7)",
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:835 (Stage-12 table)",
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:928 (open problems)",
+        "docs/LLM-Brain-Design-Research-Paper-memory-evolution.md:279, :377"
+      ],
+      "binds_to": {
+        "artifact_when_run": "target-copilot-bench/bench-results/locomo_mteb_terransoul_100q.json (DELETED)",
+        "metric": "recall_at_10, differenced across two systems in one file",
+        "expressible_in_this_schema": false
+      },
+      "blocked_on": "a re-run of BENCH-KG-2 (`--systems=rrf_rerank,rrf_kg_rerank`, 100-q adversarial). Even then it stays underivable here twice over: the producing run put BOTH arms in ONE file, which `metricFrom()` rejects outright, and the claim is a difference between arms, which one artifact plus one metric cannot express.",
+      "why": "UNBOUND - MEASURED ONCE, ARTIFACT DELETED, RE-RUN OWED. This is not 'never measured' and the difference is the point of the entry. The run is BENCH-KG-2, 2026-05-13, 100 LoCoMo-MTEB adversarial queries: `rrf_rerank` R@10 64.0000 against `rrf_kg_rerank` R@10 64.0000 - exactly 0.0000 pp - at mean latency 3440.27 ms against 7011.43 ms, i.e. 2.038x, so both published halves recompute to four decimals from the raw per-query rows. The producing file, `target-copilot-bench/bench-results/locomo_mteb_terransoul_100q.json` at commit `4a1066b0`, was deleted in `217ffdc1` (2026-05-18). TWO further findings a reader is owed. (1) The artifact the repository's own bench register cites for this row, `benchmark/results/bench-kg-2-smoke.log` (benchmark/terransoul/README.md), was NEVER committed - `git log --all` on that path is empty - so that link has always been dead; the page now cites the committed summary row in `benchmark/terransoul/locomo-mteb/README.md` instead, which reconciles digit-for-digit with the deleted JSON and is the one thing here a reader can open today. (2) '0pp' is R@10-SPECIFIC. On the same run the KG arm is marginally POSITIVE elsewhere - R@5 +1.0 pp, NDCG@10 +0.3155 pp, MAP@10 +0.3750 pp, MRR@100 +0.3686 pp - and tied at R@20 and R@100. The published phrasing read as 'no effect'; the measurement says 'no recall gain, a fraction of a point of ranking gain, for double the latency'. The verdict does not change, the sentence did. FILENAME TRAP recorded so it is not re-discovered: a LATER, different run reused the same basename (`benchmark/results/locomo_mteb_terransoul_100q.md`, 2026-05-27, multi_hop+open_domain, rrf/rrf_kg/rrf_hyde), so the surviving file with that name does NOT produce these numbers - it measures 45.2667 R@10 in both arms at 4.11x, and a 12.70 pp R@100 REGRESSION that the '0pp' phrasing would conceal."
+    },
+    {
+      "id": "me-shard-router-routed-r10",
+      "what": "'the shard router holds quality at 1M rows (routed 60.5% vs all-shards 59.5% R@10)' - Fig 14 row 3 and the Stage-12 ANN-scale row",
+      "published": 60.5,
+      "sites": [
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:600 (Fig 14 aria-label)",
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:633 (Fig 14 card 3)",
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:647 (Fig 14 figcaption)",
+        "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:830 (Stage-12 table)",
+        "docs/LLM-Brain-Design-Research-Paper-memory-evolution.md:276"
+      ],
+      "binds_to": {
+        "artifact_when_run": "target-copilot-bench/bench-results/locomo_scale_1000000_adversarial_100q_routed.json and _all.json (BOTH DELETED)",
+        "metric": "recall_at_10, one arm per file - the pair is bindable, the comparison between them is not",
+        "expressible_in_this_schema": false
+      },
+      "blocked_on": "a re-run of BENCH-SCALE-2's two arms at 1M. The register itself still calls that run 'harness-shipped, run-pending', so re-running it also closes a register row that has been wrong since 2026-05-14.",
+      "why": "UNBOUND - MEASURED ONCE, ARTIFACTS DELETED, RE-RUN OWED. BENCH-SCALE-1, 2026-05-14, `rrf_rerank`, 100 LoCoMo adversarial queries over a 1,000,000-chunk corpus, two arms 100 seconds apart: routed R@10 60.5000, all-shards R@10 59.5000. Both recompute EXACTLY from the raw per-query rows, and both files - `locomo_scale_1000000_adversarial_100q_routed.json` and `..._all.json` under `target-copilot-bench/bench-results/` - were deleted in `217ffdc1` (2026-05-18), the same commit that took the BENCH-KG-2 artifact. TWO CORRECTIONS this forced on the page. (1) '60.5 vs 59.5' is TRUE ONLY OF R@10. The routed arm loses on every other ranking metric of the same run: R@1 11.5 vs 14.5, R@5 44.0 vs 46.0, NDCG@10 33.2713 vs 34.8606, MAP@10 24.6365 vs 26.9524, MRR@100 25.8712 vs 28.3922; R@100 ties at 70.5. 'Holds quality' was defensible only on the one metric that was published. (2) The page said 'while cutting fan-out', which a reader takes as a speed result - and the run measures the routed arm SLOWER at every percentile: mean 6288.35 vs 5140.99 ms, p95 7957.76 vs 7401.79, p99 178116.78 vs 67075.15. Fan-out may well have fallen; this run does not show it, and no committed run does. Also worth carrying: both arms used `mxbai-embed-large`, not the production EmbeddingGemma, so the numbers do not describe the shipped embedder."
+    },
+    {
+      "id": "me-embed-prefix-delta",
+      "what": "Fig 12 panel 2, 'asymmetric query/doc prefixes - +4.2pp R@10'",
+      "published": 4.2,
+      "sites": ["docs/LLM-Brain-Design-Research-Paper/memory-evolution.html:286 (Fig 12 panel 2 label)"],
+      "binds_to": {
+        "artifact_when_run": "derived: benchmark/results/embedder-sweep/embeddinggemma.json MINUS embeddinggemma__noprefix.json",
+        "metric": "avg_recall_at_10 (difference of two artifacts)",
+        "expressible_in_this_schema": false
+      },
+      "blocked_on": "NOT a run - the artifacts already exist and are committed. Two schema limits stand in the way: the claim is a difference between two artifacts, and `metricFrom()` reads `systems[0][metric]` while these files are flat-keyed (`avg_recall_at_10`) with no `systems[]` at all.",
+      "why": "UNBOUND, AND A RUN DOES NOT FIX IT - but for the best available reason: the evidence is ON DISK AND COMMITTED TODAY. `benchmark/results/embedder-sweep/embeddinggemma.json` records avg_recall_at_10 0.63761905 and `embeddinggemma__noprefix.json` records 0.59547619; the difference is 0.04214286, i.e. +4.2 pp, exact. Registered rather than left silent because the panel prints a bare '+4.2pp R@10' with no bench named, and the figure is fixture-specific in two ways the label cannot carry: it is the 240-observation / 20-query embedder fixture scored PURE-VECTOR (no hybrid scorer), and it is a per-MODEL result, not a property of prefixes - the same sweep has documented prefixes COSTING nomic-v1.5 (0.609 to 0.558) and qwen3-0.6b (0.597 to 0.564) recall. The figcaption now names both files and both endpoints so the subtraction is checkable by hand."
     },
     {
       "id": "index-longmem-archaeology",

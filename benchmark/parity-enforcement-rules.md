@@ -49,7 +49,7 @@ node scripts/validate-parity.mjs --baseline=baseline.json --gateway=gateway.json
 | Scenario | Acceptance | Action if Exceeded |
 |---|---|---|
 | Quality drift ≤ ±1.0 pp on any metric | PASS | Proceed |
-| Quality drift > ±1.0 pp | FAIL | Diagnose the gateway regression, fix in code or config, rerun until parity restored, update `mcp-data/shared/memory-seed.sql` with the root cause |
+| Quality drift > ±1.0 pp | FAIL | Diagnose the gateway regression, fix in code or config, rerun until parity restored, update `mcp-data/shared/seed-lessons.sql` with the root cause |
 | Latency overhead > 10% | WARN | Document in benchmark README; investigate if time-sensitive application |
 | Latency overhead ≤ 5% | PASS | Expected (MCP JSON-RPC overhead) |
 
@@ -57,7 +57,7 @@ node scripts/validate-parity.mjs --baseline=baseline.json --gateway=gateway.json
 
 When adding a new benchmark to `benchmark/terransoul/*/`:
 
-Run the harness twice on the same query set — once without `LONGMEM_VIA_GATEWAY=1` (direct-store baseline) and once with it (gateway validation) — and save both result JSON files. Add a parity row to the benchmark's README with direct-store metrics (R@10, NDCG@10, MRR), the matching gateway metrics, and the drift (pp difference, pass/fail). The milestones.md chunk acceptance criteria must state the parity verdict (e.g. "0.0 pp drift on all 5 tasks → production-ready"), and the root-cause analysis gets appended to `mcp-data/shared/memory-seed.sql` (e.g. `source_hash='seed:bench-<name>-parity-validated-2026-05-27'`).
+Run the harness twice on the same query set — once without `LONGMEM_VIA_GATEWAY=1` (direct-store baseline) and once with it (gateway validation) — and save both result JSON files. Add a parity row to the benchmark's README with direct-store metrics (R@10, NDCG@10, MRR), the matching gateway metrics, and the drift (pp difference, pass/fail). The milestones.md chunk acceptance criteria must state the parity verdict (e.g. "0.0 pp drift on all 5 tasks → production-ready"), and the root-cause analysis gets appended to `mcp-data/shared/seed-lessons.sql` (e.g. `source_hash='seed:bench-<name>-parity-validated-2026-05-27'`).
 
 ## CI/CD Gate
 
@@ -71,7 +71,7 @@ npx node scripts/bench-parity-gate.mjs --check-all-modified
 
 If parity check fails on any benchmark, CI fails. Merging requires either:
 - Fixing the code to restore parity, OR
-- Updating `mcp-data/shared/memory-seed.sql` with documented acceptance of the known divergence (rare)
+- Updating `mcp-data/shared/seed-lessons.sql` with documented acceptance of the known divergence (rare)
 
 ## Root Cause Analysis — patterns to check first
 
@@ -83,7 +83,7 @@ These are the drift causes that have shown up across benches so far; check them 
 
 ## Monitoring & Alerts
 
-After merge, any benchmark with parity drift > ±1.0 pp on CI fails the build (PRs can't merge), needs a code reviewer who understands the root cause, and gets its lesson synced to `mcp-data/shared/memory-seed.sql` so future parity runs catch the same regression automatically.
+After merge, any benchmark with parity drift > ±1.0 pp on CI fails the build (PRs can't merge), needs a code reviewer who understands the root cause, and gets its lesson synced to `mcp-data/shared/seed-lessons.sql` so future parity runs catch the same regression automatically.
 
 ---
 

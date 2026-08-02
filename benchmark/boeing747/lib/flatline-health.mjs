@@ -14,7 +14,7 @@
 // This module is PURE (detectFlatline / flatlineItersFromRecords have no
 // I/O). The one I/O function, loadFlatlineHealthConfig(), reads the
 // documented policy out of the FLATLINE_HEALTH_CONFIG_JSON env var or the
-// mcp-data/shared/memory-seed.sql config row — the same mechanism
+// mcp-data/shared/seed-lessons.sql config row — the same mechanism
 // lib/rebuild-burst.mjs's loadRebuildBurstConfig() uses (rubric.json is
 // FROZEN and may not gain new keys). Fail-open to the DEFAULT_* constants
 // below; never throws.
@@ -31,7 +31,7 @@ const BENCH_DIR = path.resolve(LIB_DIR, '..');
 const REPO_ROOT = path.resolve(BENCH_DIR, '..', '..');
 
 /** Default location of the brain-seed file this config is read from. */
-export const SEED_PATH = path.join(REPO_ROOT, 'mcp-data', 'shared', 'memory-seed.sql');
+export const SEED_PATH = path.join(REPO_ROOT, 'mcp-data', 'shared', 'seed-lessons.sql');
 
 // Anchor text + JSON marker uniquely identifying the seeded config row.
 export const CONFIG_ANCHOR = 'CONFIG (BOEING-747-FLATLINE-HEALTH-1 config)';
@@ -64,7 +64,7 @@ export function normalizeFlatlineHealthConfig(obj) {
 }
 
 /**
- * Parse the FLATLINE_HEALTH_CONFIG_JSON payload out of a memory-seed.sql
+ * Parse the FLATLINE_HEALTH_CONFIG_JSON payload out of a seed-lessons.sql
  * source string. Pure — takes file content as a string, never touches disk.
  * @param {string} seedSource
  * @returns {{enabled:boolean, threshold:number, source:'seed'}|null}

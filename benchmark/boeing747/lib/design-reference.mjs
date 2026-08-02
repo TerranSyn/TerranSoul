@@ -92,7 +92,8 @@ export function formatDesignReferenceSection(answer, { header, maxChars = 1200 }
  * frozen-model-plus-generic-scaffolding thesis, ask TerranSoul's own memory
  * (pointed at THIS run's `--cli-data-dir`) for whatever reference material a
  * human operator ingested into it ahead of time (`terransoul
- * --ingest-resume <path>` against the same data dir), scoped to the current
+ * --ingest <path>` against the same data dir — the same router the desktop
+ * `/ingest` chat command uses), scoped to the current
  * weakest feature. Fails open (askDesignReference never throws) — an empty
  * store, an unbuilt binary, or any spawn error simply means no
  * design-reference section this iteration. `weakestId`/`subject` are plain

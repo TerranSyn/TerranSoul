@@ -14,7 +14,7 @@ episode-end reflection (terransoul_brain_bridge.reflect_on_episode):
      deposited episode (zork1 ep1=10 -> ep2=10) emitted no actionable lesson.
 
 AGI-purity is asserted: the prompt + facts contain NO game verbs, room names,
-or walkthrough tokens — only generic long-horizon vocabulary. memory-seed.sql
+or walkthrough tokens — only generic long-horizon vocabulary. seed-lessons.sql
 is untouched; the learning is distilled at runtime from the agent's own play.
 """
 import sys

@@ -14,7 +14,7 @@ import {
 // derived measurements ('6.5 -> 4.9', 'L/D 1.58', '0.767 x 8 = 6.14'), a
 // wingChordY helper, and a THREE.Vector3(x,y,z) call — none of which a lone
 // coordinate-array regex catches. This mirrors the boeing747-actor-attempt
-// lessons that leaked into mcp-data/shared/memory-seed.sql (spec fix #2).
+// lessons that leaked into mcp-data/shared/seed-lessons.sql (spec fix #2).
 const LEAKED_PROSE_LESSON = [
   'dropped the wing chord from 6.5 -> 4.9 to hit L/D 1.58;',
   'set the wingChordY helper via const wingChordY = 0.767 x 8 = 6.14;',

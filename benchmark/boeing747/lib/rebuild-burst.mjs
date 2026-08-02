@@ -25,7 +25,7 @@
 //
 // This module is PURE (decideBurstAction has no I/O). The one I/O function,
 // loadRebuildBurstConfig(), reads the documented policy value out of
-// mcp-data/shared/memory-seed.sql — the same mechanism actor-retry.mjs's
+// mcp-data/shared/seed-lessons.sql — the same mechanism actor-retry.mjs's
 // loadActorRetryConfig() uses (rubric.json is FROZEN and may not gain new
 // keys). Fail-open to the DEFAULT_* constants below; never throws.
 import { readFileSync } from 'node:fs';
@@ -37,7 +37,7 @@ const BENCH_DIR = path.resolve(LIB_DIR, '..');
 const REPO_ROOT = path.resolve(BENCH_DIR, '..', '..');
 
 /** Default location of the brain-seed file this config is read from. */
-export const SEED_PATH = path.join(REPO_ROOT, 'mcp-data', 'shared', 'memory-seed.sql');
+export const SEED_PATH = path.join(REPO_ROOT, 'mcp-data', 'shared', 'seed-lessons.sql');
 
 // Anchor text + JSON marker uniquely identifying the seeded config row.
 export const CONFIG_ANCHOR = 'CONFIG (BOEING-747-REBUILD-BURST-1 config)';
@@ -50,7 +50,7 @@ export const DEFAULT_ENABLED = true;
 export const DEFAULT_MAX_DEPTH = 3;
 
 /**
- * Parse the REBUILD_BURST_CONFIG_JSON payload out of a memory-seed.sql
+ * Parse the REBUILD_BURST_CONFIG_JSON payload out of a seed-lessons.sql
  * source string. Pure — takes file content as a string, never touches disk.
  * @param {string} seedSource
  * @returns {{enabled:boolean, maxDepth:number, source:'seed'}|null}

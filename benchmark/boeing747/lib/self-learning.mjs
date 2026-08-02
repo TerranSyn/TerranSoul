@@ -15,7 +15,7 @@ import { callMcpTool } from './mcp-client.mjs';
 /**
  * True when a memory row is a per-attempt self-improve BENCH lesson — the kind
  * that must live in the RUNTIME brain but must NEVER be baked into the committed
- * shared seed (mcp-data/shared/memory-seed.sql), because such lessons carry the
+ * shared seed (mcp-data/shared/seed-lessons.sql), because such lessons carry the
  * actor's own answer-derived, benchmark-specific geometry/detail (AGI-purity:
  * rules/bench-agi-purity.md). GENERIC by convention — it matches the
  * 'self-improve-attempt' category and the '<bench>-actor-attempt' tag/prefix

@@ -208,7 +208,7 @@ Three changes drove the r2 → r4 progression, each validated by a sub-second
 replica before any GPU rerun:
 
 1. **Seed-sync fix** — 3 generic universal planner-bonus rows (`frontier`,
-   `visited`, `meta`) added to `mcp-data/shared/memory-seed.sql`. They had
+   `visited`, `meta`) added to `mcp-data/shared/seed-lessons.sql`. They had
    existed in the live developer brain but were never included in the bench
    seed, so every isolated run booted with empty planner bonuses.
 
@@ -257,7 +257,7 @@ Generalising the 12B self-improvement beyond Zork I to `detective.z5` and `905.z
 surfaced three generic bookkeeping defects in `terransoul_brain_bridge.py` (TerranSoul's
 adapter — **not** zorkgpt's `zork_agent_patch.py`, which stays frozen). Each is fixed
 **brain-side**: the learning signal is written to and read from the MCP brain
-(`brain_ingest_lesson` → `brain_search`); `mcp-data/shared/memory-seed.sql` is unchanged
+(`brain_ingest_lesson` → `brain_search`); `mcp-data/shared/seed-lessons.sql` is unchanged
 (0 diff) and carries no game content. The fixes — (1) origin/id-keyed death-aversion,
 (2) gate-state invalidation after a successful open/unlock, (3) open-first lesson on a
 closed-blocker traversal — are generic plumbing (no room names / verb lists / walkthrough;
@@ -439,7 +439,7 @@ between runs — see
 ### Generalizable lessons (now seeded into the brain)
 
 The following lessons from this bench are also seeded into
-`mcp-data/shared/memory-seed.sql` so future sessions retrieve them via
+`mcp-data/shared/seed-lessons.sql` so future sessions retrieve them via
 `brain_search` rather than re-reading this README:
 
 | `source_hash` | Lesson |
@@ -787,7 +787,7 @@ If a canonical run fails one or more pass criteria:
 4. Re-run. Repeat until all 5 criteria clear.
 5. On pass: append the row to the headline table; sync durable
    lessons (e.g. "loop detection at 3 repeats is the right
-   threshold") into `mcp-data/shared/memory-seed.sql`.
+   threshold") into `mcp-data/shared/seed-lessons.sql`.
 
 iter1–iter11 outcomes are summarized in
 [`benchmark/progress.md`](../../progress.md); iter12 is the first

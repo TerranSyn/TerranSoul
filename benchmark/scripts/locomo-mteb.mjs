@@ -12,6 +12,7 @@ import {
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { asyncBufferFromFile, parquetReadObjects } from 'hyparquet';
+import { childEnvOverrides, locomoEnvStamp, writeSystemsArtifacts } from './lib/locomo-systems-artifact.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -368,6 +369,14 @@ QA Eval Options (TOP1-2):
 
 Without --qa-eval, this is a retrieval benchmark over MTEB qrels.
 With --qa-eval=mem0-paper, it adds LLM-as-Judge QA scoring (J-score) per the Mem0 paper methodology.
+
+Artifacts written by 'run'/'sample' into --out-dir:
+  locomo_mteb_terransoul[_Nq].md/.json      Human report + native overall[]/by_task[]/per_query[]
+  locomo_mteb_terransoul_<system>[_Nq].json systems[] artifact, ONE PER SYSTEM, in the shape
+                                            longmemeval-s.mjs emits so docs/published-numbers.json
+                                            can bind LoCoMo figures. Summary is COPIED from the
+                                            native aggregate, and refused unless it recomputes
+                                            from its own per_question rows.
 `);
 }
 
@@ -648,10 +657,17 @@ function writeReports(report, options) {
   const suffix = report.limit > 0 ? `_${report.total_queries}q` : '';
   const jsonPath = resolve(options.outDir, `locomo_mteb_terransoul${suffix}.json`);
   const mdPath = resolve(options.outDir, `locomo_mteb_terransoul${suffix}.md`);
+  // Native shape first, and unconditionally: a 40-minute run must never lose
+  // its measurements because a downstream emitter threw.
   writeFileSync(jsonPath, JSON.stringify(report, null, 2), 'utf8');
   writeFileSync(mdPath, markdownReport(report), 'utf8');
   console.log(`[locomo] wrote ${jsonPath}`);
   console.log(`[locomo] wrote ${mdPath}`);
+  // One machine-checkable artifact per system, in the shape
+  // scripts/docs/check-published-numbers.mjs and scripts/bench/*.mjs already
+  // read. See lib/locomo-systems-artifact.mjs for why it is one file per
+  // system and why the metric names stay LoCoMo's.
+  writeSystemsArtifacts(report, options.outDir);
 }
 
 class JsonlClient {
@@ -659,14 +675,9 @@ class JsonlClient {
     this.nextId = 1;
     this.pending = new Map();
     this.buffer = '';
-    this.embedEnv = {
-      ...(embed ? { LONGMEM_EMBED: '1' } : {}),
-      ...(rerank ? { LONGMEM_RERANK: '1' } : {}),
-      ...(hyde ? { LONGMEM_HYDE: '1' } : {}),
-      ...(contextualize ? { LONGMEM_CONTEXTUALIZE: '1' } : {}),
-      ...(kg ? { LONGMEM_KG_EDGES: '1' } : {}),
-      ...(convAware ? { LCM_CONV_AWARE: '1' } : {}),
-    };
+    // Same source of truth the report's `env` stamp is built from, so the
+    // stamp can never describe a configuration the child did not get.
+    this.embedEnv = childEnvOverrides({ embed, rerank, hyde, contextualize, kg, convAware });
     this.proc = spawn('cargo', [
       'run',
       '--quiet',
@@ -814,6 +825,10 @@ async function run(options) {
   const kg = needsKg(options.systems);
   const convAware = process.env.LCM_CONV_AWARE === '1';
   const client = new JsonlClient({ embed, rerank, hyde, contextualize, kg, convAware });
+  // The child's LONGMEM_* flags are DERIVED from --systems, not inherited from
+  // the shell, so the effective config is stamped from the same booleans
+  // JsonlClient spawns with — reading process.env alone would under-report it.
+  const env = locomoEnvStamp(childEnvOverrides({ embed, rerank, hyde, contextualize, kg, convAware }));
   try {
     const byTask = [];
     for (const task of options.tasks) {
@@ -826,6 +841,7 @@ async function run(options) {
     return {
       benchmark: 'MTEB LoCoMo retrieval-only',
       generated_at: new Date().toISOString(),
+      env,
       dataset: DATASET_REPO,
       revision: DATASET_REV,
       tasks: options.tasks,
@@ -1114,7 +1130,25 @@ async function main() {
   }
 }
 
-main().catch(err => {
-  console.error(`[locomo] failed: ${err.message}`);
-  process.exit(1);
-});
+// Run only when invoked as the CLI, so the pure scoring helpers below can be
+// imported by locomo-systems-artifact.test.mjs. Same guard as
+// scripts/bench/compare-arms.mjs. Under `node --test <file>` argv[1] is the
+// test file, so importing this module scores nothing and spawns nothing.
+// The `endsWith` arm is deliberate belt-and-braces: the failure mode of a
+// path-equality guard is a CLI that exits 0 having done nothing, which is far
+// worse than a test accidentally running main() — and no test file is named
+// locomo-mteb.mjs.
+if (process.argv[1]
+  && (resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url))
+    || process.argv[1].endsWith('locomo-mteb.mjs'))) {
+  main().catch(err => {
+    console.error(`[locomo] failed: ${err.message}`);
+    process.exit(1);
+  });
+}
+
+// Exported for tests ONLY. These are the production scoring functions; the
+// artifact test builds its input by running THEM over synthetic retrieval
+// orderings, so the emitter is proven against numbers the runner really
+// produces rather than against numbers a test author typed.
+export { aggregate, aggregateOverall, scoreQuery, writeReports };

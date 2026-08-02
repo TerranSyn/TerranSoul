@@ -30,7 +30,7 @@ const BENCH_DIR = path.resolve(LIB_DIR, '..');
 const REPO_ROOT = path.resolve(BENCH_DIR, '..', '..');
 
 /** Default location of the brain-seed file this config is read from. */
-export const SEED_PATH = path.join(REPO_ROOT, 'mcp-data', 'shared', 'memory-seed.sql');
+export const SEED_PATH = path.join(REPO_ROOT, 'mcp-data', 'shared', 'seed-lessons.sql');
 
 // Anchor text + JSON marker uniquely identifying the seeded config row.
 export const CONFIG_ANCHOR = 'CONFIG (BOEING-747-BEST-OF-N-JUDGE-ONCE-1 config)';
@@ -76,7 +76,7 @@ export function normalizeBestOfNJudgeOnceConfig(obj) {
 }
 
 /**
- * Parse the BEST_OF_N_CONFIG_JSON payload out of a memory-seed.sql source
+ * Parse the BEST_OF_N_CONFIG_JSON payload out of a seed-lessons.sql source
  * string. Pure — takes file content as a string, never touches disk.
  * @param {string} seedSource
  */

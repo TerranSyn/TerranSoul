@@ -4399,7 +4399,7 @@ class BrainKnowledgeManager:
         `universal-text-affordance`; parses `verb_<v>` and `priority_<n>`
         tags into the planner's verb-priority table. The verbs, the
         priorities, and the hint text all live in seed memories
-        (`mcp-data/shared/memory-seed.sql`) and may be updated at
+        (`mcp-data/shared/seed-lessons.sql`) and may be updated at
         runtime via `brain_ingest_lesson` — the planner re-reads them
         on each new session. Empty list is a valid result (planner
         falls through to direction + meta-action shortlist only).

@@ -84,7 +84,7 @@ describe('loadActorRetryConfig', () => {
   });
 
   it('reads a valid seed file from disk', () => {
-    const seedPath = path.join(dir, 'memory-seed.sql');
+    const seedPath = path.join(dir, 'seed-lessons.sql');
     writeFileSync(seedPath, seedFixture({ max_retries: 4, base_timeout_ms: 500000, timeout_cap_ms: 2000000, exhaustion_cap: 5 }));
     const cfg = loadActorRetryConfig({ seedPath });
     expect(cfg).toEqual({
@@ -108,7 +108,7 @@ describe('loadActorRetryConfig', () => {
   });
 
   it('fails open to the documented defaults when the seed content is unparsable', () => {
-    const seedPath = path.join(dir, 'memory-seed.sql');
+    const seedPath = path.join(dir, 'seed-lessons.sql');
     writeFileSync(seedPath, 'nothing relevant in this file');
     const cfg = loadActorRetryConfig({ seedPath });
     expect(cfg.source).toBe('fallback');
@@ -116,7 +116,7 @@ describe('loadActorRetryConfig', () => {
   });
 
   it('lets an explicit CLI override win over the seed value', () => {
-    const seedPath = path.join(dir, 'memory-seed.sql');
+    const seedPath = path.join(dir, 'seed-lessons.sql');
     writeFileSync(seedPath, seedFixture({ max_retries: 2, base_timeout_ms: 600000, timeout_cap_ms: 2400000 }));
     const cfg = loadActorRetryConfig({ seedPath, overrideMaxRetries: 7 });
     expect(cfg.maxRetries).toBe(7);

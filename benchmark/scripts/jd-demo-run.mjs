@@ -75,13 +75,41 @@ function intOption(name, def) {
 
 // ── Level parsing (mirrors run-demo.mjs / the /demo skill) ──────────────────
 // 1 = Chat (no thinking), 2 = Think (rerank), 3 = Max (agentic verify), all = all three.
+//
+// This harness only ever built THREE stages (Chat/Think/Max) — Stage A ingests
+// + runs Chat, Stage B adds Think's reader tournament, Stage C runs Max's
+// agentic verify. `ChatMode` elsewhere in the app now has FIVE rungs
+// (auto/chat/think/research/max); the numeric `--level` flag predates that
+// and never grew a `research` or `auto` stage. Accept the current mode NAMES
+// as aliases for the three that already exist here (`chat`/`think`/`max`,
+// case-insensitive) rather than forcing callers to remember 1=Chat/2=Think/
+// 3=Max — but `auto`/`research` get an honest, explicit error instead of
+// silently mapping to the wrong stage or a no-op: `auto` is a runtime ROUTER
+// (selects among the other four), not a distinct behavior to benchmark on
+// its own, and `research` has no dedicated stage script in this file at all
+// yet (would need a real jd-research-bench.mjs, not a rename).
 function parseLevel() {
   const raw = String(option('level', 'all')).toLowerCase();
   if (raw === 'all') return { chat: true, think: true, max: true, tag: 'all' };
-  if (raw === '1') return { chat: true, think: false, max: false, tag: '1' };
-  if (raw === '2') return { chat: true, think: true, max: false, tag: '2' };
-  if (raw === '3') return { chat: true, think: false, max: true, tag: '3' };
-  throw new Error(`--level must be 1 (Chat), 2 (Think), 3 (Max), or all — got "${raw}"`);
+  if (raw === '1' || raw === 'chat') return { chat: true, think: false, max: false, tag: '1' };
+  if (raw === '2' || raw === 'think') return { chat: true, think: true, max: false, tag: '2' };
+  if (raw === '3' || raw === 'max') return { chat: true, think: false, max: true, tag: '3' };
+  if (raw === 'auto') {
+    throw new Error(
+      `--level auto is not meaningful here: auto is a runtime ROUTER that selects among ` +
+        `chat/think/research/max, not a distinct mode to benchmark on its own. Pick the ` +
+        `concrete mode you want measured (chat, think, max, or research once it exists).`
+    );
+  }
+  if (raw === 'research') {
+    throw new Error(
+      `--level research is not implemented in this demo harness yet — Stage A/B/C only cover ` +
+        `chat/think/max. Adding it needs a real research-mode bench stage, not a rename.`
+    );
+  }
+  throw new Error(
+    `--level must be chat|think|max|all (or the legacy 1|2|3|all) — got "${raw}"`
+  );
 }
 
 function spawnStage(label, script, args, env) {
@@ -108,6 +136,7 @@ async function main() {
   const level = parseLevel();
   const seed = intOption('seed', DEFAULT_SEED);
   const reuseStore = hasFlag('reuse-store');
+  const realPdf = hasFlag('real-pdf');
   const label = option('label', `demo-${count}`);
 
   // Count-scoped dirs — NEVER the 1M jdbench store. Prefer the C:\ SSD.
@@ -141,13 +170,20 @@ async function main() {
     '--systems', 'rrf', '--corpus-dir', corpusDir, '--out-dir', outDir,
   ];
   if (reuseStore) millionArgs.push('--resume');
+  if (realPdf) millionArgs.push('--real-pdf');
   await spawnStage('Stage A ingest+Chat (jd-million-bench)', 'jd-million-bench.mjs', millionArgs, env);
   const ingestReport = readJson(resolve(outDir, 'report.json'));
 
   // ── Stage B — Chat + Think (reader tournament). Only when a thinking level
-  //    is requested (level 2 or all).
+  //    is requested (level 2 or all), AND only for the bench-IPC-shim path.
+  //    `--real-pdf` mode ingests through the real `--ingest` CLI path and
+  //    queries through the real `--ask --mode max` CLI path inside Stage A
+  //    itself (see jd-million-bench.mjs's `runQueriesViaAsk`) — the shim
+  //    Stage B/C readers connect to a DIFFERENT store shape (the bench-IPC
+  //    JSONL rows, not real-PDF DocParser rows) and crash on a row-count
+  //    mismatch if run afterward. Real-PDF mode only ever measures Max.
   let chatPipeline = null;
-  if (level.think) {
+  if (level.think && !realPdf) {
     await spawnStage('Stage B Chat+Think (jd-chat-pipeline)', 'jd-chat-pipeline.mjs', [
       'run', '--mode', 'million', '--corpus-dir', corpusDir,
       '--expected-count', String(count), '--out-dir', outDir, '--label', label,
@@ -155,9 +191,13 @@ async function main() {
     chatPipeline = readJson(resolve(outDir, `chat-pipeline-${label}-million.json`));
   }
 
-  // ── Stage C — Max (agentic wide-retrieve + verify). Only for level 3 or all.
+  // ── Stage C — Max (agentic wide-retrieve + verify). Only for level 3 or
+  //    all, and only for the bench-IPC-shim path — see Stage B comment above.
+  //    `--real-pdf` already has its Max numbers from Stage A's `max-ask`
+  //    results (real `--ask --mode max --json` calls), so there is nothing
+  //    left for Stage C to do in that mode.
   let maxReport = null;
-  if (level.max) {
+  if (level.max && !realPdf) {
     await spawnStage('Stage C Max (jd-max-bench)', 'jd-max-bench.mjs', [
       'run', '--mode', 'million', '--corpus-dir', corpusDir,
       '--expected-count', String(count), '--out-dir', outDir, '--label', label,
@@ -172,23 +212,32 @@ async function main() {
   const rrfById = new Map((ingestReport?.results ?? [])
     .filter(r => r.system === 'rrf').map(r => [r.jd_id, r]));
   const maxById = new Map((maxReport?.results ?? []).map(r => [r.jd_id, r]));
+  // Real-PDF mode's only query stage is `runQueriesViaAsk` (jd-million-bench
+  // .mjs), whose rows land in `ingestReport.results` tagged `system:
+  // 'max-ask'` — a flat shape (`ndcg_at_10`/`latency_ms.cold_ms`/
+  // `recall_at_10.capped` at the top level), not the nested shim shape below.
+  const maxAskById = new Map((ingestReport?.results ?? [])
+    .filter(r => r.system === 'max-ask').map(r => [r.jd_id, r]));
 
   const levels = ['jd-en-backend', 'jd-vi-data-engineering', 'jd-ja-mobile'].map(jdId => {
     const lang = LANG_OF_JD[jdId];
     const cp = chatById.get(jdId);
     const rrf = rrfById.get(jdId);
     const mx = maxById.get(jdId);
+    const mxAsk = maxAskById.get(jdId);
     return {
       jd_id: jdId,
       lang,
-      gold_size: cp?.gold_size ?? mx?.gold_size ?? rrf?.gold_size ?? null,
-      chat: level.chat
+      gold_size: cp?.gold_size ?? mx?.gold_size ?? rrf?.gold_size ?? mxAsk?.gold_size ?? null,
+      // Real-PDF mode never runs a separate Chat query — Stage A's ONLY
+      // query stage is `--ask --mode max`, so Chat/Think stay unmeasured.
+      chat: level.chat && !realPdf
         ? {
           ndcg_at_10: cp ? r1(cp.retrieval.ndcg_at_10) : (rrf ? r1(rrf.ndcg_at_10) : null),
           latency_ms: cp ? cp.retrieval.latency_ms : (rrf ? rrf.latency_ms : null),
         }
         : null,
-      think: level.think && cp
+      think: level.think && !realPdf && cp
         ? {
           ndcg_at_10: r1(cp.chat_pipeline.ndcg_at_10),
           retrieval_ms: cp.retrieval.latency_ms.cold,
@@ -197,16 +246,32 @@ async function main() {
           reader_calls: cp.chat_pipeline.reader_calls,
         }
         : null,
-      max: level.max && mx
+      max: level.max && realPdf && mxAsk
         ? {
-          ndcg_at_10: r1(mx.accuracy.ndcg_at_10),
-          retrieval_ms: mx.retrieval.latency_ms,
-          verify_ms: mx.verify.verify_ms,
-          judge_ms: mx.verify.judge_ms,
-          total_ms: mx.total_ms,
-          gold_in_pool: mx.retrieval.gold_in_pool,
+          ndcg_at_10: r1(mxAsk.ndcg_at_10),
+          latency_ms: mxAsk.latency_ms.cold_ms,
+          recall_at_10: r1(mxAsk.recall_at_10.capped),
+          precision_at_10: r1(mxAsk.precision_at_10),
+          answer: mxAsk.answer,
         }
-        : null,
+        // JD-DEMO-SCHEMA-1 (2026-07-29): this branch was written against an
+        // older jd-max-bench.mjs output shape (a `verify: {verify_ms,
+        // judge_ms}` breakdown + `retrieval.gold_in_pool`) that the `engine:
+        // "product"` path — MAX-100-27's "never been run" path, exercised for
+        // the first time by this exact demo — does not emit at all: it reports
+        // one aggregate `retrieval.latency_ms` + top-level `total_ms`, and
+        // `retrieval.gold_in_returned` instead of `gold_in_pool`. Read
+        // defensively (both shapes) rather than assume either.
+        : level.max && !realPdf && mx
+          ? {
+            ndcg_at_10: r1(mx.accuracy.ndcg_at_10),
+            retrieval_ms: mx.retrieval.latency_ms,
+            verify_ms: mx.verify?.verify_ms ?? null,
+            judge_ms: mx.verify?.judge_ms ?? null,
+            total_ms: mx.total_ms,
+            gold_in_pool: mx.retrieval.gold_in_pool ?? mx.retrieval.gold_in_returned,
+          }
+          : null,
     };
   });
 

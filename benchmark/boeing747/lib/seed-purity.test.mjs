@@ -4,7 +4,7 @@
 // benchmark-specific geometry/measurements (e.g. "shortened the barrel 6.5 -> 4.9,
 // L/D 1.58, the reference ratio", exact station coordinates, a wingChordY helper).
 // Those lessons belong in the RUNTIME brain only — never in the committed shared
-// seed (mcp-data/shared/memory-seed.sql). On 2026-07-13 a STALE MCP-brain binary
+// seed (mcp-data/shared/seed-lessons.sql). On 2026-07-13 a STALE MCP-brain binary
 // (predating the gateway seed-exclusion fix) appended exactly such a Boeing lesson
 // to the seed as a local change; it was caught + reverted. This test makes that
 // whole class of leak fail CI permanently: it (a) proves the generic isBenchLesson
@@ -15,7 +15,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { isBenchLesson } from './self-learning.mjs';
 
-const SEED_PATH = path.resolve('mcp-data/shared/memory-seed.sql');
+const SEED_PATH = path.resolve('mcp-data/shared/seed-lessons.sql');
 
 describe('isBenchLesson (generic bench self-improve-attempt detector)', () => {
   it('flags a per-attempt bench lesson by the self-improve-attempt category', () => {

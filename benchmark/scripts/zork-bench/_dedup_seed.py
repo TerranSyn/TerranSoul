@@ -1,5 +1,5 @@
 """One-shot: remove duplicate INSERT-into-memories blocks from
-mcp-data/shared/memory-seed.sql (audit 2026-06-02).
+mcp-data/shared/seed-lessons.sql (audit 2026-06-02).
 
 Guard-anchored: for each `WHERE source_hash = 'X'` guard, the block is the
 text from the preceding `INSERT INTO memories` to the guard's `;`. Group by
@@ -12,7 +12,7 @@ from __future__ import annotations
 import re, sys, shutil, datetime, collections
 from pathlib import Path
 
-SEED = Path("mcp-data/shared/memory-seed.sql")
+SEED = Path("mcp-data/shared/seed-lessons.sql")
 text = SEED.read_text(encoding="utf-8")
 
 # All memories-guard positions, in file order.

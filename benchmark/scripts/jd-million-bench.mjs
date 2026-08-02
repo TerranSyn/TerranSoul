@@ -34,6 +34,7 @@
 
 import { createReadStream, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createInterface } from 'node:readline';
+import { spawn } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { generateCorpus, writeGold, DEFAULT_SEED } from './jd-corpus.mjs';
@@ -66,6 +67,19 @@ const DEFAULT_COUNT = 1000000;
 const QUERY_RUNS = 5;
 const FALLBACK_BATCH = 2000; // piped add_sessions batch when the jsonl op is missing
 const JSONL_SLICE = 100000; // per-call slice for add_sessions_jsonl -> per-100K checkpoints
+
+// --real-pdf (2026-07-29): ingest the ALREADY-BUILT 1,000-file real
+// selectable-text PDF corpus through the production `terransoul --ingest`
+// CLI path (real DocParser text-layer extraction, not the JSONL shim) —
+// see rules/completion-log.md for the ingest.rs/cli.rs fixes this depends
+// on (bulk-ingest LLM suppression, embed-drain-loop). Schema compatibility
+// between `terransoul-console`'s `TERRANSOUL_HEADLESS_DATA_DIR` and this
+// script's `LONGMEM_DATA_DIR` (same MemoryStore, different env var names for
+// "here is the data dir") was verified 2026-07-29 via jd-search-probe.mjs
+// against a real `--ingest`-populated store.
+const REAL_PDF_CORPUS_DIR = process.env.JD_REAL_PDF_CORPUS || 'D:/TerranSoul/jd-1000-text';
+const REAL_PDF_CORPUS_SIZE = 1000; // the corpus on disk today — see JD_REAL_PDF_CORPUS to point elsewhere
+const TERRANSOUL_CONSOLE_EXE = resolve(REPO_ROOT, 'src-tauri', 'target', 'debug', 'terransoul-console.exe');
 const BENCH_CACHE_ROOT_NAME = 'ts-bench-cache'; // sibling of ts-build-cache, own namespace on the chosen drive
 
 // ---------------------------------------------------------------------------
@@ -188,6 +202,11 @@ Options for run:
                          Send set_hybrid_weights (vector, keyword, recency,
                          importance, decay, tier_priority) before the query
                          phase — affects the \`hybrid\` system (MEMORY-CFG-AUDIT-5)
+  --real-pdf             Ingest the real ${REAL_PDF_CORPUS_SIZE}-file selectable-text PDF corpus
+                         (${REAL_PDF_CORPUS_DIR}) through the production
+                         \`terransoul --ingest\` CLI (real DocParser text-layer
+                         extraction) instead of the JSONL shim. Requires
+                         --count ${REAL_PDF_CORPUS_SIZE} and no --resume.
 
 Store dir (LONGMEM_DATA_DIR):
   Unset -> probes fixed drives for the fastest one with an SSD (JD-MILLION-
@@ -356,6 +375,72 @@ async function ingest(client, { resumesPath, startIndex, count, questionId }) {
   };
 }
 
+/**
+ * --real-pdf ingest path: shell out to the PLAIN, DEFAULT `terransoul
+ * --ingest` CLI — the exact same command the desktop app's drag-and-drop
+ * and a normal CLI user run, no demo-only flags. Real DocParser text-layer
+ * extraction, against the on-disk real PDF corpus, pointed at the SAME
+ * store directory the query stages read via `LONGMEM_DATA_DIR`. Unlike
+ * `ingest()` this is not resumable/sliceable — it ingests the whole corpus
+ * folder in one CLI invocation — so callers must only reach this path when
+ * `count === REAL_PDF_CORPUS_SIZE` and `!resume` (validated by the caller).
+ * Returns the same shape as `ingest()` so `run()`'s report-building code
+ * does not need to know which path ran.
+ *
+ * Deliberately NOT passing `--no-embed`: the demo must measure what a real
+ * user actually gets, and speed is the production ingest path's own job to
+ * get right (see ingest.rs's batched-embed fix), not something a caller
+ * opts into per invocation.
+ */
+async function ingestRealPdf({ storeDir }) {
+  if (!existsSync(TERRANSOUL_CONSOLE_EXE)) {
+    throw new Error(
+      `--real-pdf needs ${TERRANSOUL_CONSOLE_EXE}, which does not exist. Build it first: ` +
+        'cd src-tauri && cargo build --bin terransoul-console',
+    );
+  }
+  if (!existsSync(REAL_PDF_CORPUS_DIR)) {
+    throw new Error(`--real-pdf needs the corpus at ${REAL_PDF_CORPUS_DIR}, which does not exist.`);
+  }
+  console.log(`[jd-bench] --real-pdf: ingesting ${REAL_PDF_CORPUS_DIR} via plain terransoul --ingest (same path Desktop/CLI use, no custom params)`);
+  const t0 = performance.now();
+  const output = await new Promise((resolvePromise, reject) => {
+    const child = spawn(TERRANSOUL_CONSOLE_EXE, ['--ingest', REAL_PDF_CORPUS_DIR], {
+      env: { ...process.env, TERRANSOUL_HEADLESS_DATA_DIR: storeDir },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    let stdout = '';
+    let stderr = '';
+    child.stdout.on('data', d => { stdout += d; process.stdout.write(`[terransoul-ingest] ${d}`); });
+    child.stderr.on('data', d => { stderr += d; process.stderr.write(`[terransoul-ingest] ${d}`); });
+    child.on('error', reject);
+    child.on('close', code => {
+      if (code !== 0) {
+        reject(new Error(`terransoul --ingest exited ${code}\n${stderr.slice(-2000)}`));
+        return;
+      }
+      resolvePromise(stdout + stderr);
+    });
+  });
+  const elapsedSeconds = (performance.now() - t0) / 1000;
+
+  // Parse "ingested: <path> (N/M files, P chunks persisted, S skipped)".
+  const match = output.match(/ingested:.*\((\d+)\/(\d+) files, (\d+) chunks persisted, (\d+) skipped\)/);
+  if (!match) {
+    throw new Error(`--real-pdf: could not parse terransoul --ingest's success line from its output:\n${output.slice(-2000)}`);
+  }
+  const [, filesQueued, fileCount, chunksPersisted] = match.map(Number);
+  console.log(`[jd-bench] --real-pdf ingested ${filesQueued}/${fileCount} files, ${chunksPersisted} chunks, ${elapsedSeconds.toFixed(1)}s`);
+
+  return {
+    rows: chunksPersisted,
+    elapsedSeconds: Number(elapsedSeconds.toFixed(3)),
+    rowsPerSecond: elapsedSeconds > 0 ? Math.round(chunksPersisted / elapsedSeconds) : 0,
+    checkpoints: [],
+    path: 'terransoul --ingest (real PDF, DocParser text-layer, default path)',
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Queries + metrics
 // ---------------------------------------------------------------------------
@@ -457,6 +542,83 @@ async function runQueries(client, { systems, topK, gold }) {
         + `cold=${r.latency_ms.cold_ms}ms`);
       console.log(`[jd-bench] ${system} ${jd.id}: ${typoCacheLine(metricsSnap)}`);
     }
+  }
+  return results;
+}
+
+/**
+ * --real-pdf query path: the SAME `terransoul --ask` command Desktop chat
+ * and the default CLI use — no custom IPC-shim `op: 'search'`/`op: 'rrf'`
+ * calls, matching JD-CLI-3's own mandate ("no custom JS parsing, no direct
+ * retrieval calls"). One call per JD, `--mode max --json`, since Max is what
+ * this demo asks for; unlike `runQueries()`'s 5-repeat p50/p95 methodology
+ * (built for the 1M-scale accuracy benchmark), a single call per JD matches
+ * what the live demo actually measures — Max's own latency is already the
+ * interesting number, not statistical noise around it.
+ *
+ * `--ask --json` returns `context_memory_ids` (memory row ids), not résumé
+ * ids — real ingest via `--ingest` has no `session_id`-tracking the way the
+ * JSONL-shim ingest path does. Recovers résumé identity from each memory's
+ * own `source_url` column (`.../resume-0000502.pdf` -> `res-502`), which
+ * `DocParser`-backed ingest always sets — reading the store directly rather
+ * than adding a new IPC op for something already on disk.
+ */
+async function runQueriesViaAsk({ storeDir, gold }) {
+  const { default: Database } = await import('better-sqlite3');
+  const db = new Database(resolve(storeDir, 'memory.db'), { readonly: true, fileMustExist: true });
+  const idToResume = new Map();
+  for (const row of db.prepare(
+    "SELECT id, source_url FROM memories WHERE source_url LIKE '%resume-%.pdf%'",
+  ).all()) {
+    const match = row.source_url.match(/resume-0*(\d+)\.pdf/);
+    if (match) idToResume.set(row.id, `res-${Number(match[1])}`);
+  }
+  db.close();
+  console.log(`[jd-bench] --real-pdf: resolved ${idToResume.size} memory ids -> resume ids from source_url`);
+
+  const results = [];
+  for (const jd of JD_QUERIES) {
+    const goldIds = new Set(gold.gold[jd.id] ?? []);
+    const t0 = performance.now();
+    const output = await new Promise((resolvePromise, reject) => {
+      const child = spawn(TERRANSOUL_CONSOLE_EXE, ['--ask', jd.queryText, '--mode', 'max', '--json'], {
+        env: { ...process.env, TERRANSOUL_HEADLESS_DATA_DIR: storeDir },
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+      let stdout = '';
+      let stderr = '';
+      child.stdout.on('data', d => { stdout += d; });
+      child.stderr.on('data', d => { stderr += d; });
+      child.on('error', reject);
+      child.on('close', code => (code === 0 ? resolvePromise(stdout) : reject(
+        new Error(`terransoul --ask exited ${code}\n${stderr.slice(-2000)}`),
+      )));
+    });
+    const latencyMs = performance.now() - t0;
+    const parsed = JSON.parse(output.trim().split('\n').pop()); // last line — stderr turn-trace can precede it
+    const retrieved = (parsed.context_memory_ids ?? [])
+      .map(id => idToResume.get(id))
+      .filter(Boolean);
+
+    const r10 = recallAtK(retrieved, goldIds, 10);
+    results.push({
+      system: 'max-ask',
+      jd_id: jd.id,
+      jd_lang: jd.lang,
+      jd_title: jd.title,
+      gold_size: goldIds.size,
+      runs: 1,
+      latency_ms: { p50: Number(latencyMs.toFixed(2)), p95: Number(latencyMs.toFixed(2)), all: [Number(latencyMs.toFixed(2))], cold_ms: Number(latencyMs.toFixed(2)) },
+      recall_at_10: { capped: r10.capped, raw: r10.raw, hits: r10.hits },
+      precision_at_10: precisionAtK(retrieved, goldIds, 10),
+      ndcg_at_10: ndcgAtK(retrieved, goldIds, 10),
+      retrieved_top_20: retrieved.slice(0, 20),
+      answer: parsed.content,
+      typo_dict_cache: null,
+    });
+    const r = results[results.length - 1];
+    console.log(`[jd-bench] --real-pdf max-ask ${jd.id}: R@10=${pct(r.recall_at_10.capped)} `
+      + `P@10=${pct(r.precision_at_10)} NDCG@10=${pct(r.ndcg_at_10)} latency=${latencyMs.toFixed(0)}ms`);
   }
   return results;
 }
@@ -614,7 +776,16 @@ function writeReports(report, outDir) {
 // ---------------------------------------------------------------------------
 
 async function run(options) {
-  const { count, seed, corpusDir, outDir, systems, topK, resume, hybridWeights } = options;
+  const { count, seed, corpusDir, outDir, systems, topK, resume, hybridWeights, realPdf } = options;
+  if (realPdf && (count !== REAL_PDF_CORPUS_SIZE || resume)) {
+    throw new Error(
+      `--real-pdf only supports --count ${REAL_PDF_CORPUS_SIZE} without --resume today ` +
+        `(the on-disk corpus at ${REAL_PDF_CORPUS_DIR} has exactly ${REAL_PDF_CORPUS_SIZE} files, ` +
+        'and the CLI --ingest path is not sliceable/resumable the way the JSONL shim is). ' +
+        'Drop --real-pdf to use the JSONL-shim path at any count, or set JD_REAL_PDF_CORPUS to a ' +
+        'differently-sized corpus and adjust --count to match.',
+    );
+  }
   await prepare({ count, seed, corpusDir });
   const resumesPath = resolve(corpusDir, 'resumes.jsonl');
   const gold = JSON.parse(readFileSync(resolve(corpusDir, 'gold.json'), 'utf8'));
@@ -634,6 +805,14 @@ async function run(options) {
   }
   warnIfSpinningDisk(storeDir);
 
+  // --real-pdf: ingest BEFORE the shim ever opens the store, via a
+  // completely separate process (`terransoul --ingest`) — not through the
+  // JsonlClient/longmemeval-ipc `add_sessions*` ops at all. The shim's own
+  // `reset` op below then just (re)opens the directory this already
+  // populated, exactly as it does for a normal `--resume` run picking up
+  // rows a previous process wrote.
+  const realPdfIngestStats = realPdf ? await ingestRealPdf({ storeDir }) : null;
+
   const client = new JsonlClient({ repoRoot: REPO_ROOT, targetDir: DEFAULT_TARGET_DIR });
   process.on('SIGINT', () => {
     console.error('[jd-bench] SIGINT — shutting down IPC');
@@ -651,12 +830,15 @@ async function run(options) {
       startIndex = Math.min(Number(data.count) || 0, count);
       console.log(`[jd-bench] resume: store already holds ${startIndex.toLocaleString('en-US')} rows`);
     } else {
+      // `reset` just (re)opens LONGMEM_DATA_DIR — for --real-pdf that
+      // directory already holds the rows `ingestRealPdf` just wrote, so
+      // this makes the shim recognize them rather than wiping them.
       await client.send({ op: 'reset' });
     }
 
-    const ingestStats = startIndex >= count
+    const ingestStats = realPdfIngestStats ?? (startIndex >= count
       ? { rows: 0, elapsedSeconds: 0, rowsPerSecond: 0, checkpoints: [], path: 'skipped (resume complete)' }
-      : await ingest(client, { resumesPath, startIndex, count, questionId: 'jd-million' });
+      : await ingest(client, { resumesPath, startIndex, count, questionId: 'jd-million' }));
 
     // INGEST-1M-PER-SEC (2026-07-09): when LONGMEM_WRITE_ENGINE=1 routed
     // ingest through the sharded write engine, rows are durable-but-not-yet-
@@ -686,7 +868,9 @@ async function run(options) {
       console.log(`[jd-bench] after-ingest ${typoCacheLine(metricsAfterIngest)}`);
     }
 
-    const results = await runQueries(client, { systems, topK, gold });
+    const results = realPdf
+      ? await runQueriesViaAsk({ storeDir, gold })
+      : await runQueries(client, { systems, topK, gold });
 
     const metricsFinal = await fetchMetricsSnapshot(client);
 
@@ -699,8 +883,9 @@ async function run(options) {
         systems,
         top_k: topK,
         resume,
+        real_pdf: realPdf,
         query_runs: QUERY_RUNS,
-        corpus_dir: corpusDir,
+        corpus_dir: realPdf ? REAL_PDF_CORPUS_DIR : corpusDir,
         hybrid_weights: hybridWeights,
       },
       env: {
@@ -764,6 +949,7 @@ async function main() {
     systems,
     topK: positiveNumberOption('top-k', DEFAULT_TOP_K),
     resume: hasFlag('resume'),
+    realPdf: hasFlag('real-pdf'),
     hybridWeights: (() => {
       const raw = option('hybrid-weights', null);
       if (!raw) return null;
@@ -774,7 +960,7 @@ async function main() {
       return weights;
     })(),
   };
-  console.log(`[jd-bench] run count=${count.toLocaleString('en-US')} systems=${systems.join(',')} top_k=${options.topK} resume=${options.resume}`);
+  console.log(`[jd-bench] run count=${count.toLocaleString('en-US')} systems=${systems.join(',')} top_k=${options.topK} resume=${options.resume} real_pdf=${options.realPdf}`);
   await run(options);
 }
 

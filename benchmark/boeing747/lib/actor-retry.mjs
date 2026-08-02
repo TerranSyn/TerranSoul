@@ -16,7 +16,7 @@
 // This module is PURE (no I/O in the decision functions) so it is fully
 // vitest-covered without spawning the real `claude` CLI. The one I/O
 // function, loadActorRetryConfig(), reads the documented policy value out of
-// mcp-data/shared/memory-seed.sql — the durable brain-seed file — mirroring
+// mcp-data/shared/seed-lessons.sql — the durable brain-seed file — mirroring
 // the mechanism judge.mjs's loadRubric() already uses for rubric.json (a
 // small documented config artifact loaded via readFileSync), just sourced
 // from the seed file instead since rubric.json itself is FROZEN and may not
@@ -33,7 +33,7 @@ const BENCH_DIR = path.resolve(LIB_DIR, '..');
 const REPO_ROOT = path.resolve(BENCH_DIR, '..', '..');
 
 /** Default location of the brain-seed file this config is read from. */
-export const SEED_PATH = path.join(REPO_ROOT, 'mcp-data', 'shared', 'memory-seed.sql');
+export const SEED_PATH = path.join(REPO_ROOT, 'mcp-data', 'shared', 'seed-lessons.sql');
 
 // Anchor text + JSON marker uniquely identifying the seeded config row (see
 // LESSON BOEING-747-ACTOR-RETRY-1's own content for the human-readable
@@ -50,7 +50,7 @@ export const DEFAULT_TIMEOUT_CAP_MS = 2400000; // 40 min ceiling
 export const DEFAULT_EXHAUSTION_CAP = 3; // consecutive fully-exhausted iterations before the loop truly gives up
 
 /**
- * Parse the ACTOR_RETRY_CONFIG_JSON payload out of a memory-seed.sql source
+ * Parse the ACTOR_RETRY_CONFIG_JSON payload out of a seed-lessons.sql source
  * string. Pure — takes the file content as a string and never touches disk
  * itself, so it is directly vitest-covered with fixture strings.
  * @param {string} seedSource

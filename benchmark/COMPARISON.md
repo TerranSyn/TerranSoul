@@ -50,11 +50,11 @@ Results were tracked through Phase BENCH-AM, long since closed and archived to [
 | LlamaIndex | RAG | 41.0 % | 58.0 % | 72.0 % | — | — | — | — | — | — | agentmemory |
 | GraphRAG (Microsoft) | RAG (graph) | 5.0 % | 5.0 % | 5.0 % | — | — | — | — | — | — | agentmemory |
 | obsidian-wiki | Markdown wiki (grep, no DB) | 37.3 % | 53.8 % | 72.6 % | 79.5 % | 82.8 % | — | — | **42.8 ms** | $0 | agentmemory vault; agentic ripgrep + local gemma4:12b-it-qat rerank (keyword-only; O(n), doesn't scale) |
-| *— Code-navigation (not a memory benchmark — see § below) —* | | | | | | | | | | | |
-| Graphify (Graphify-Labs) | Code-nav (deterministic AST graph) | — | — | — | — | — | — | — | — | $0 | not IR-benched on this table's corpora (different problem: exact code-structure lookup, no LLM) — see [§ Graphify](#graphify-graphify-labs-narrow-code-navigation-comparison-not-a-memory-benchmark) |
+| *— Code/doc/media-graph tool, also publishes its own memory benchmarks — see § below —* | | | | | | | | | | | |
+| Graphify (Graphify-Labs) | Code/doc/media-graph CLI + MCP server | 11.2 % | 11.2 % | 11.2 % | 26.5 % | 72.5 % | — | — | — | $0 | agentmemory, this repo's own harness via ollama/gemma4:12b-it-qat — see [§ Graphify](#graphify-graphify-labs-a-code-graph-and-doc-media-mapping-tool-with-its-own-published-memory-benchmarks) for its own published LOCOMO/LongMemEval-S numbers (different model, judge, and metric — not shown here to avoid conflating them with this row's own columns) |
 | *— Self-improving LLM agents —* | | | | | | | | | | | |
 | OpenJarvis (Stanford SAIL) | Agent | 40.6 % | 60.9 % | 74.2 % | 88.2 % | 91.7 % | 9.6 | 100.0 % | 3.5 s | $0 | agentmemory (DenseMemory + nomic) + parity |
-| OpenClaw | Agent | — | — | — | — | — | 8.4 | 100.0 % | 38.1 s | $0 | parity; retrieval not IR-benched (config-first agent, no retrieval/RAG engine) |
+| OpenClaw | Agent | not run | not run | not run | not run | not run | 8.4 | 100.0 % | 38.1 s | $0 | parity only. **Has a full hybrid RAG engine — we have not IR-benched it** (see correction below) |
 | Claude Code + GENesis-AGI | Agent (frontier) | 43.6 % | 57.2 % | 72.3 % | 83.9 % | 100.0 % | 8.2 | 95.5 % | 17.5 s | $6 | parity + agentic Claude-Code retrieval (grep/read→ranked top-20; cloud claude-haiku, ~53 s/query; Qdrant memory layer not runnable here) |
 | Hermes-Agent (Nous Research) | Agent | 14.2 % | 15.8 % | 15.8 % | 18.2 % | 20.0 % | 6.9 | 95.5 % | 10.9 s | $0 | agentmemory (holographic FTS5+Jaccard+HRR) + parity |
 
@@ -66,9 +66,24 @@ Results were tracked through Phase BENCH-AM, long since closed and archived to [
 - The agentmemory-corpus rows share one nomic-embed-text embedder, so the pure-vector memory systems and RAG frameworks cluster around 41 / 61 / 74 / 88 / 92 % — the embedder sets that recall, independent of framework.
 - The graph systems (GraphRAG, Memary, HippoRAG) return entity subgraphs rather than ranked passages, so their low recall is a metric-shape mismatch on this single-doc corpus, not a like-for-like loss.
 - MemPalace's LongMemEval-S figures are vendor self-reports (no primary paper); Zep / Graphiti publish only LoCoMo QA accuracy, so their retrieval cells are blank.
+- Graphify (Graphify-Labs) appears with THREE different recall-style figures across this document — this repo's own 11.2 % (a 240-observation doc-semantic stretch test, verified in `benchmark/results/rag_graphify_bench.json`) and Graphify's own self-published ~49.7 % (LOCOMO) / ~84.4 % (LongMemEval-S) — and none share a corpus, judge, model, or (for two of the three) a confirmed metric definition. See [§ Graphify](#graphify-graphify-labs-a-code-graph-and-doc-media-mapping-tool-with-its-own-published-memory-benchmarks) before quoting any one of them in isolation.
 - A-MEM and claude-mem were dropped from this numeric table — neither publishes (nor exposes) any IR-style retrieval numbers, so an all-blank numeric row was noise; they remain in the qualitative feature matrix and the mixed-benchmark prose below (claude-mem = "~10× token savings", A-Mem = no IR numbers).
 - OpenJarvis and Hermes-Agent are measured on separable retrieval over the same agentmemory corpus / nomic embedder / scorer as the RAG rows: OpenJarvis' DenseMemory vector path lands in the shared-embedder cluster (R@5 40.6 % / R@10 60.9 % / R@20 74.2 %). Hermes' holographic FTS5+Jaccard+HRR store scores far lower (R@5 14.2 %) because its SQLite implicit-AND requires every query token — only 4/20 raw-NL queries returned any candidate; root-caused to that AND behavior.
-- OpenClaw keeps a "—" retrieval cell (config-first agent, no retrieval/RAG engine).
+  - **Re-verified 2026-08-02 against Hermes HEAD `cb2311fe2` (a month newer than our pinned `9be292f1e`): the mechanism is unchanged and the number stands.** `HermesState._sanitize_fts5_query` (`hermes_state_search.py:782-858`) is **byte-identical** to the July tree — its six steps protect quoted phrases, strip `[+{}():"^]`, collapse `*`, drop dangling boolean operators and quote dotted terms, but it **never OR-joins and never drops stopwords**, so the whole natural-language sentence reaches `messages_fts MATCH ?` under FTS5's default implicit AND. There is no zero-result widening fallback on the English branch (the LIKE/trigram fallbacks fire only when `_contains_cjk()`). We re-ran a verbatim copy of the shipped sanitizer against a real FTS5 table: **4 of 5 natural-language queries returned zero candidates**, and *"when is my daughter's birthday"* raised `sqlite3.OperationalError` outright — the apostrophe survives step 2. Compounding it, `messages_fts` declares no tokenizer, so unicode61 with no stemmer means *"rollback"* cannot match *"roll back"*. Hermes' own source documents the failure against itself at `hermes_state_search.py:914-917`: *"With FTS5's implicit-AND between tokens, a single short token makes the whole MATCH return nothing."* Notably, Hermes **has** fixed this — but only inside the opt-in `holographic` plugin (`plugins/memory/holographic/retrieval.py:585-619` drops a 127-word stopword list and OR-joins the survivors, commented *"FTS5 defaults to AND-between-tokens, which kills recall on natural-language queries"*), which is **off by default** and therefore not on the path a default install uses.
+  - One refinement to our earlier characterisation: *"no vector surfaced"* is right **by default** but would be wrong as an absolute. The `holographic` plugin implements Holographic Reduced Representations — 1024-d phase vectors derived deterministically from SHA-256 with bind/unbind/bundle circular-convolution algebra, stored as a `facts.hrr_vector` BLOB. That is a **Vector Symbolic Architecture, not dense embeddings**; core Hermes contains no embedding model at all, and the plugin degrades to FTS+Jaccard without numpy.
+  - Hermes' external memory providers are now **nine**, not eight (Memori was added): Honcho, OpenViking, Mem0, Hindsight, Holographic, RetainDB, ByteRover, Supermemory, Memori. The load-bearing qualifiers are unchanged — the default is **none**, and only **one** external provider may be active at a time alongside the always-on built-in.
+  - Hermes' README claims *"FTS5 session search with LLM summarization for cross-session recall"*, which reads as a summarise/rerank stage on the retrieval path. There is none: `tools/session_search_tool.py` contains zero `call_llm`/auxiliary/summariser calls. The LLM summarisation is the **separate compaction pipeline** (`context_compressor.py`, `trajectory_compressor.py`) writing summary *rows* into the same FTS table. Their docs site is more precise than their README, describing plain *"SQLite with FTS5 full-text search"*.
+  - Hermes tier-1 memory has **no retrieval over it whatsoever**, and their own docs are the strongest source for this: `MEMORY.md` is capped at **2,200 characters (~800 tokens)** and `USER.md` at **1,375 (~500)**; both are *"injected into the system prompt as a frozen snapshot at session start"*; *"There is no `read` action"*; and *"Memory does **not** auto-compact"* — an over-budget write is refused and the model is handed its exact remaining budget to consolidate itself. So Hermes' long-term memory is a ~3.5 KB always-on prompt block that nothing ranks and nothing retrieves.
+- **⚠️ CORRECTION 2026-08-02 — OpenClaw's retrieval cell was WRONG, and it was wrong the day it was written.** This table previously read *"— (config-first agent, no retrieval/RAG engine)"*. That is false. OpenClaw ships a **full hybrid retrieval engine**: parallel BM25 (SQLite FTS5, `bm25RankToScore` normalisation, plus a separate path-only FTS index) and dense arms merged by chunk id as `vectorWeight·vectorScore + textWeight·keywordScore`, then **MMR** diversity (`mmr.ts` — Carbonell & Goldstein 1998, λ=0.7), **exponential temporal decay** (30-day half-life, evergreen for curated files), an importance multiplier, and **sqlite-vec** vec0 KNN with a batched brute-force cosine fallback — across **three** storage backends (built-in SQLite, LanceDB, QMD) and 11 embedding providers. We verified this **three** ways, and the third is the damning one:
+  1. Their public docs ([`memory-search`](https://docs.openclaw.ai/concepts/memory-search), [`memory-builtin`](https://docs.openclaw.ai/concepts/memory-builtin), [`memory-architecture`](https://docs.openclaw.ai/concepts/memory-architecture)) document it explicitly — falsifiable in one click.
+  2. `git ls-tree` on our own pinned baseline `ce4a2594` shows `hybrid.ts`, `mmr.ts`, `temporal-decay.ts`, `sqlite-vec.ts` and `embeddings.ts` were **already present** (added 2026-06-27), so this was not staleness from a fast-moving upstream.
+  3. **Our own audit already had it right.** [`docs/hermes-vs-openclaw-analysis.md`](../docs/hermes-vs-openclaw-analysis.md) row 14, written **2026-06-28 from a complete local source read**, describes OpenClaw's memory substrate as *"`packages/memory-host-sdk` + `extensions/memory-core` — sqlite-vec hybrid (vector+FTS), query-expansion, MMR (λ=0.7), temporal-decay, keyword concept tags"*.
+
+  So the failure was **not** "we never checked" — we checked, got it right, and then published the opposite in this table. That is a summarisation failure between an internal audit and a public artifact, which is a worse and more general problem than a stale competitor row: it means a correct in-repo finding can be silently inverted on the way to a published number. Treat it as precedent for **DOCS-AUDIT** generally — every competitor claim in this file should cite the audit line it came from, so the two cannot drift.
+
+  The cell now reads **"not run"**, which is the honest statement: we have never pointed our IR harness at OpenClaw. Doing so is filed as **BENCH-PARITY-OPENCLAW**.
+- **Correction 2026-08-02 — OpenClaw's memory model is not "config-first (`SOUL.md`)".** Memory is a **4-tier file hierarchy** (`USER.md` → `MEMORY.md` → `memory/YYYY-MM-DD.md` → `DREAMS.md`, per [`concepts/memory`](https://docs.openclaw.ai/concepts/memory); their [`memory-architecture`](https://docs.openclaw.ai/concepts/memory-architecture) page counts **5** by adding Instructions and Prospective — cite whichever page you quote) over a STRICT-mode SQLite index, with automated cross-tier promotion. `SOUL.md` **is** real and first-party — [`concepts/soul`](https://docs.openclaw.ai/concepts/soul) says *"OpenClaw injects it into normal sessions, so it carries real weight"* — but it is a **persona/instruction layer** loaded through the generic extra-bootstrap-file mechanism, orthogonal to the memory tiers, and their own `memory.md` never mentions it. Both errors are quotable against us, so both are corrected here: it was wrong to call OpenClaw's memory config-first, and it would be equally wrong to call `SOUL.md` test-only.
+- **Neither Hermes nor OpenClaw publishes ANY first-party retrieval metric** — no R@k, NDCG, MRR, Hit@k, precision or latency percentile, in either repo or docs site, verified 2026-08-02. **Every retrieval number in this document for those two rows is OUR measurement of THEIR code at a pinned commit, not a figure they reported or endorsed.** Third parties do publish adjacent numbers that press coverage conflates with first-party results — the "40 % faster with 20+ skills" figure appears only in blogs citing unpublished Nous internal benchmarks; Memori's "81.95 % accuracy at 4.97 % token cost" and Mnemosyne's LoCoMo figures are *memory-provider* numbers, not core-Hermes numbers. Watch list: [`phenomenoner/openclaw-memory-bench`](https://github.com/phenomenoner/openclaw-memory-bench) (third-party, **not** the openclaw org) already publishes Hit@K / Recall@K / MRR / nDCG against OpenClaw's memory backends, and OpenClaw's own `memory-architecture.md` **cites LongMemEval — the dataset we bench — while publishing no score against it.** An OpenClaw LongMemEval number is the single most likely event that would force a reconciliation here.
 - Claude Code + GENesis-AGI is measured as an agentic retriever: its Qdrant RRF memory layer isn't runnable in this single-session env, but since Claude Code is its reasoning engine we ran it grep/read over the 240-doc corpus → ranked top-20 — R@5 43.6 % / R@10 57.2 % / R@20 72.3 % / NDCG@10 83.9 % / MRR 100.0 % (recall in the vector-cluster range with perfect first-hit ranking, but ~53 s/query — a different, cloud, agentic modality; its Qdrant memory layer would only add). It also runs a different cloud model (claude-haiku-4-5) and is a frontier reference, not like-for-like with the local rows.
 
 
@@ -228,6 +243,7 @@ This is the same retrieval-only shape used by agentmemory's LongMemEval-S script
 | TerranSoul `rrf` | 99.4 % | 99.8 % | 100.0 % | 95.1 % | 95.9 % | 2026-07-03 resolved re-run (`results/longmemeval_s_terransoul.md`) |
 | agentmemory LongMemEval-S | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | upstream published row |
 | MemPalace LongMemEval-S | ~96.6 % | ~97.6 % | — | — | — | self-reported; via agentmemory LONGMEMEVAL.md; no primary paper |
+| Graphify LongMemEval-S (self-reported, n=50 English subset) | — | ~84.4 % | — | — | — | self-reported, `BENCHMARKS.md` (2026-07-05); recall@10 shown, QA-accuracy 76% not shown (different metric); Kimi K2.6 judge, not reproduced here — see [§ Graphify](#graphify-graphify-labs-a-code-graph-and-doc-media-mapping-tool-with-its-own-published-memory-benchmarks) |
 
 *Plain English: a 500-question search test. TerranSoul finds the right saved info in its top 5 results 98.6 % of the time — ahead of agentmemory (95.2 %) and MemPalace (~96.6 %).*
 
@@ -241,18 +257,81 @@ instead of ad-hoc retrieval variants — measuring what a user actually selects.
 the rows above is **verified**: on the diagnostic subset, `chat` retrieval is byte-identical to
 `rrf` (NDCG@10 93.2 for both), because `chat` *is* the one hybrid + graph-edge pass.
 
-- **`chat`** (fast grounded retrieval) = the `rrf` row: **R@5 99.4 % / R@10 99.8 % / R@20 100.0 % / NDCG@10 95.1 % / MRR 95.9 %**.
-- **`think`** (+ single-pass reasoning rerank) ≈ `rrf_rerank`.
-- **`research`** (deep search: multihop + completeness-critic + KG-edge expansion + cited
-  synthesis) and **`max`** (research's engine, then verify-every-claim + rank) run correctly
-  end-to-end (validated 2026-07-23, all four modes through `longmemeval_ipc::thinking_mode_search`).
-  They optimise for *verified-answer ranking*, not raw recall@k, so their full 500-question
-  numbers are reported separately after a staged run — on this host the 12B they load for
-  reasoning contends with the embed model for VRAM, so research/max full runs are overnight-scale.
+#### MEASURED full-500, all rungs, one embedder + one code version (2026-08-01)
+
+First time every rung has been measured at full-500 on a single configuration. One arm per
+process (cross-system contamination is proven), `OLLAMA_EMBED_NUM_GPU=99`, embedder verified
+GPU-resident *during* each run, `gemma4:12b-it-qat` + `embeddinggemma`.
+
+| Rung | R@5 | R@10 | R@20 | NDCG@10 | MRR@20 | Avg latency |
+|---|--:|--:|--:|--:|--:|--:|
+| `chat` | 99.2 % | 99.8 % | 100.0 % | 94.1 % | 94.6 % | **627 ms** |
+| `think` | 99.4 % | 99.8 % | 100.0 % | **92.6 %** | **91.7 %** | 18,894 ms |
+| **`research`** | **99.4 %** | 99.8 % | 100.0 % | **95.0 %** | **95.8 %** | 4,985 ms |
+| `max` | *in flight — ~20 h arm at 144 s/q* | | | | | |
+
+**Both completed rungs are ABOVE their published floors** — `chat` 93.78 → **94.1**, `think`
+87.25 → **92.6** (+5.35). No never-regress obligation triggered.
+
+**`think` is the one broken rung, and the ladder is non-monotonic because of it.** It is the
+only rung that scores *below* `chat`, and it costs **30× the latency** to do so. Root-caused
+this session against the per-question data: comparing first-gold rank `chat` → `think`, **33
+questions worsened against 6 improved** (5.5:1), the dominant transition being **rank 1 → rank
+2** where the gold is a short LongMemEval `answer_*` session. Worst-hit type is
+`single-session-user` (MRR 89.0 → **80.6**); *every* type is worse or equal. Note the split:
+the judge *raises recall* (overall R@5 99.2 → 99.4; `single-session-preference` R@5 96.7 →
+100.0) while *degrading ordering* — it finds more golds and ranks them worse. Mechanism: the
+pointwise 0–10 rubric in `reranker::build_rerank_prompt` scores **topical relatedness, not
+answer-bearingness**, so a long conversation *about* dogs outranks the short session that
+states the breed. This reframes MAX-100-11's "pointwise judge scatters multi-gold" as a
+*symptom* of the same bias (secondary golds are also short and specific), and explains why
+every retrieval-side fix left it intact — it was never a retrieval problem.
+
+**On the published "`research` is a measured no-op" disclosure:** research measures **95.0**,
+which matches the published `rrf` floor of **95.04** — so the no-op-*vs-rrf* claim **holds**.
+What research does beat is `chat` (95.0 vs 94.1), because `chat` sits below `rrf`. An `rrf` arm
+run on this same configuration is still owed before that disclosure is edited either way; the
+95.04 compared against here is a published number, not one measured in this sweep.
+
+- **`chat`** (fast grounded retrieval), **`think`** (+ single-pass reasoning rerank),
+  **`research`** (multihop + completeness-critic + KG-edge expansion) and **`max`** (research's
+  engine, then verify-every-claim + rank) all run end-to-end through
+  `longmemeval_ipc::thinking_mode_search`.
 
 Run recipe (set the embed model explicitly — the harness default `mxbai-embed-large` may be
-absent): `LONGMEM_EMBED=1 LONGMEM_EMBED_MODEL=embeddinggemma LONGMEM_CHAT_MODEL=gemma4:12b-it-qat
-node benchmark/scripts/longmemeval-s.mjs run --systems=chat,think,research,max`.
+absent): `OLLAMA_EMBED_NUM_GPU=99 LONGMEM_EMBED=1 LONGMEM_EMBED_MODEL=embeddinggemma
+LONGMEM_CHAT_MODEL=gemma4:12b-it-qat node benchmark/scripts/longmemeval-s.mjs
+run --systems=chat,think,research,max`.
+
+> **`OLLAMA_EMBED_NUM_GPU=-1` is not optional for a bench, and omitting it is silent.**
+> `embed_num_gpu()` defaults to **0**, and `/api/embed` honours that verbatim — i.e. the
+> embedder is *deliberately* CPU-pinned in normal operation, so the whole GPU stays free for
+> the 12B chat model (which alone takes 7.6 GB of a 12 GB card). That default is right for the
+> product and wrong for a bench, where embed throughput dominates: `ollama_agent.rs` records
+> the measured gap as **0.15 s warm GPU vs 21.6 s CPU (144×)**, and a `think` full-500 arm at
+> ~1 embed/minute (~7 h) instead of ~48 min. Measured again 2026-08-01 on a 50q `chat` arm: the
+> first questions ran 47.1 s/q while the embedder happened to be GPU-resident, then degraded to
+> **666–688 s/q** once an app-issued `num_gpu: 0` reloaded it to CPU — a ~14× slowdown with no
+> error, no warning, and no change in the reported metrics. The value must be **negative**:
+> `embed_options_json` maps a negative count to an OMITTED key (which is what lets Ollama
+> auto-fit onto the GPU), whereas literally sending `"num_gpu": -1` is ignored by Ollama and
+> keeps the model on CPU while still paying a ~40 s reload. Verify with
+> `/api/ps` → `size_vram` must be non-zero for the embed model; **an external warm-up pin does
+> not survive**, because the app's own explicit `num_gpu: 0` reloads the model out of VRAM.
+>
+> **Use `99`, NOT `-1` — corrected 2026-08-01 after measuring both.** `ollama_agent.rs`'s own
+> comment claims omitting the key (which is what a negative value does) makes Ollama auto-fit
+> the 0.68 GB model onto the GPU. That did **not** reproduce here: with `-1`, a full-500 `chat`
+> arm started at 2.7 s/q and then degraded through 4.6 → 8.2 → 10.4 s/q as `/api/ps` went back
+> to `size_vram: 0` — auto-fit declined the GPU **with ~10.9 GB free**, most likely on a
+> keep-alive expiry + reload. An explicit positive layer count is honoured verbatim by
+> `embed_options_json` and measured GPU-resident (`size_vram: 681417113`), so `99` is the
+> setting that actually holds for a long arm. Re-verify `size_vram` *periodically during* a
+> long run, not just at the start — this failure mode appears mid-run and silently.
+>
+> Note the reported metric columns (R@k, NDCG@10, MRR, the `latency` column) are **retrieval**
+> measurements and are unaffected by embed placement; only wall-clock `s/q` changes. A run that
+> degraded this way still yields valid quality numbers.
 
 Adapter runbook: [docs/longmemeval-s-adapter.md](longmemeval-s-adapter.md).
 
@@ -273,6 +352,8 @@ The full verified run covers all 1976 queries across the five tasks (re-measured
 *Plain English: a harder, multi-document search test (the full 1976 questions) — numbers are lower for everyone here. Adding the EmbeddingGemma vector arm (`rrf_emb`) lifts recall ~+7 pp at R@10 over the lexical-only run. TerranSoul is strong on time-based questions but weaker on ones that need chaining several documents together (multi-hop), a documented gap.*
 
 Per-task signal (from the earlier 250-query slice): temporal reasoning is already strong (R@10 90.0 %, NDCG@10 78.4 % for both modes), while `multi_hop` and `open_domain` are the clear gaps. Those tasks likely need query decomposition and/or a stronger semantic retrieval pass before TerranSoul can claim a leading LoCoMo retrieval score. This MTEB table is **not** comparable to Mem0/Letta/MemPalace LoCoMo QA accuracy; those remain separate published-context rows below.
+
+Graphify (Graphify-Labs) also publishes its own LOCOMO numbers — recall@10 ~49.7 % / QA accuracy ~45.3 % on a **300-conversation subset**, self-reported in its own `BENCHMARKS.md`, not reproduced here. Not comparable to the `rrf`/`rrf_emb` rows above: different sample (n=300 vs. this table's full n=1976 across five tasks) and a different embedder/model regardless of metric. The QA-accuracy figure is additionally Kimi K2.6-judged QA-coverage, with no TerranSoul counterpart on this page; the recall@10 figure is plausibly (but not confirmed — Graphify's harness code isn't in the vendored clone) the same *shape* of metric as this table's own R@10. See [§ Graphify](#graphify-graphify-labs-a-code-graph-and-doc-media-mapping-tool-with-its-own-published-memory-benchmarks) for the full published-numbers table and every caveat.
 
 ## Comparison with all top-tier agent-memory systems
 
@@ -299,6 +380,8 @@ Per-task signal (from the earlier 250-query slice): temporal reasoning is alread
 | Letta / MemGPT | LoCoMo (QA, J score) | 83.2 % | — | — | <https://arxiv.org/abs/2310.08560> + Letta blog | different bench (QA, not retrieval-only) |
 | Zep | LoCoMo (QA, J score) | 34.53 % | — | — | <https://arxiv.org/abs/2504.19413> Table 2 | different bench |
 | Cognee | LoCoMo (QA, J score) | (varies) | — | — | <https://arxiv.org/abs/2504.19413> Table 2 | different bench |
+| Graphify (Graphify-Labs, self-reported) | LOCOMO (QA, own harness, n=300) | ~45.3 % | — | — | Graphify's own `BENCHMARKS.md` (2026-07-05) | published upstream, Kimi K2.6 judge, not reproduced here |
+| Graphify (Graphify-Labs, self-reported) | LongMemEval-S (QA, own harness, n=50 English subset) | ~76 % | — | — | Graphify's own `BENCHMARKS.md` (2026-07-05) | published upstream, Kimi K2.6 judge, not reproduced here |
 | A-Mem | n/a published IR numbers | — | — | — | <https://github.com/jamez-bondos/A-Mem> | no IR numbers published |
 | claude-mem | qualitative | "~10× token savings" | — | — | <https://github.com/thomasvuylsteke/claude-mem> | no IR numbers published |
 | Hippo (HippoRAG) | MuSiQue / HotpotQA | F1 ≈ 65–70 % on multi-hop QA | — | — | <https://arxiv.org/abs/2405.14831> | different bench |
@@ -312,6 +395,7 @@ Caveats:
 - TerranSoul cannot self-run Mem0 / Letta / MemPalace / HippoRAG / Zep without their codebases. BENCH-AM-6/6.1 provides a verified TerranSoul number on the same LongMemEval-S retrieval-only table used by agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5).
 - claude-mem, Khoj, and A-Mem publish capability descriptions but not IR-style retrieval numbers. They appear in the feature matrix below; they cannot appear in the numeric table.
 - **Mem0 / Letta / Zep / Cognee "LoCoMo" numbers are end-to-end QA accuracy (J score)** — not retrieval recall. Treating them as comparable to TerranSoul's retrieval rows would either falsely flatter TerranSoul (retrieval ≫ end-to-end on Mem0 paper numbers) or falsely punish it. The honest comparison shape is LongMemEval-S retrieval (where TerranSoul, agentmemory, and MemPalace all overlap).
+- **Graphify's LOCOMO/LongMemEval-S rows are QA-coverage accuracy graded by Kimi K2.6 (Moonshot)** against its own gold key-fact set — not TerranSoul's IR recall@k — and the source is Graphify's own harness (not vendored in this repo), so these are cited the same way as the Mem0/Letta/Zep/Cognee LoCoMo QA rows: useful context, not a head-to-head with TerranSoul's retrieval numbers on this page. Full published-numbers table and every caveat: [§ Graphify](#graphify-graphify-labs-a-code-graph-and-doc-media-mapping-tool-with-its-own-published-memory-benchmarks).
 
 ### Feature matrix vs top-tier systems
 
@@ -356,6 +440,7 @@ These are **toolkits to *build* RAG**, not integrated memory systems you drop in
 | **GraphRAG** (Microsoft) | graph-RAG **indexing pipeline** | entity/community extraction → KG + community summaries → global/local search (LazyGraphRAG ≈ vector+graph at vector cost) | ◐ batch index | MIT |
 | **Haystack** (deepset) | pipeline (DAG) **framework** | modular hybrid retrieval + self-correction loops | ✅ Ollama/vLLM | Apache-2.0 |
 | **RAGFlow** (InfiniFlow) | self-hosted RAG **engine** | deep document parsing (PDF/tables) + chunking + KB + built-in agents | ✅ Ollama | Apache-2.0 |
+| **Graphify** (Graphify-Labs) | code/doc/media-to-**knowledge-graph** CLI + MCP server | tree-sitter AST (code, zero LLM) + Leiden community detection + LLM subagent extraction (docs/PDFs/images) + faster-whisper (video/audio) → BFS/path/explain query; no vector index | ✅ Ollama backend option | Apache-2.0 |
 
 **The distinction:** with the frameworks you *build and tune* the pipeline (chunking, embeddings, store, rerank, memory) yourself; TerranSoul is the assembled, self-improving system — the typed KG + hybrid retrieval with reranking + write→manage→read loop come integrated and run locally over MCP, so any agent or app gets the same memory without wiring a pipeline. (GraphRAG's graph+community idea parallels TerranSoul's typed `memory_edges` KG; LangChain/LlamaIndex parallel the retrieval layer.)
 
@@ -371,6 +456,7 @@ These are **toolkits to *build* RAG**, not integrated memory systems you drop in
 | LlamaIndex — default vector RAG (`nomic-embed-text`) | 0.41 | 0.58 | 0.72 |
 | **Mem0** — vector memory (`nomic-embed-text`, `infer=False` verbatim ingest, Chroma) | 0.41 | 0.61 | 0.74 |
 | GraphRAG (Microsoft) — local search ⁺ | 0.05 | 0.05 | 0.05 |
+| Graphify (Graphify-Labs) — doc-semantic BFS ⁺⁺ | 0.11 | 0.11 | 0.11 |
 | Built-in (CLAUDE.md / grep) | 0.37 | 0.56 | 0.71 |
 
 *Plain English: this measures **search quality** — when you ask a question, how much of the genuinely-relevant saved info the system pulls back (R@5/10/20 = found in the top 5/10/20; higher is better). "Vector RAG" finds text by meaning only (the default these frameworks ship); TerranSoul's "hybrid" blends keyword + meaning + smart ranking, and "keyword" is exact-word search. TerranSoul's blended search scores higher than plain vector RAG at every cutoff.*
@@ -382,21 +468,41 @@ All four frameworks were run for real through their own retrievers on the same c
 - All four land below TerranSoul's hybrid/keyword at every cutoff (gap widening at R@20) because TerranSoul blends lexical + vector + graph signals with reranking rather than vectors alone. TerranSoul's vectors here are the bench's deterministic stand-in vs the frameworks' real `nomic-embed-text`, so this compares retrieval strategy (plain vector vs hybrid), not embedders.
 - GraphRAG (Microsoft) is measured too. Its LLM-extraction indexing (~16.7 s/doc → ~67 min projected) was replaced with GraphRAG's fast indexing (`--method fast` — NLP entity extraction, no per-doc LLM), which finished the whole pipeline in ~2m15s (240 docs → 428 entities, 1,977 relationships, 10 communities). Local search scored R@5 = R@10 = R@20 = 0.05.
 - That flat 0.05 is a metric-shape mismatch, not a retrieval failure. GraphRAG local search returns a small, entity-focused context (≤5 source text-units per query here) for answer synthesis, not a broad top-20 ranking, so it never surfaces 20 documents and recall@k-over-documents doesn't fit its paradigm. Confirmed by raising `top_k_mapped_entities` 10→60, which grew the source set only to ~9 (the 12k-token budget wasn't the limiter). Read its row as a different tool built for graph/thematic synthesis, not a lower score on the same task.
+- ⁺⁺ **Graphify (Graphify-Labs) was measured on this corpus too, at the user's request** — and its own docs describe doc/PDF/image/video mapping as a first-class capability, not a stretch of a code-only tool (see [§ Graphify](#graphify-graphify-labs-a-code-graph-and-doc-media-mapping-tool-with-its-own-published-memory-benchmarks) for what it actually claims, including its own published LOCOMO/LongMemEval-S memory-benchmark numbers). Ran its *doc*-semantic path (`extract --backend ollama --model gemma4:12b-it-qat`, NOT `--code-only`, since these are prose observations) over the same 240 obs as one `.md` file each, then `graphify query "<question>"`'s default BFS traversal, ranked-by-first-seen `src=` citations as the candidate list — the closest analogue to GraphRAG's "ranked sources" this session could construct from Graphify's CLI. Scored **R@5 = R@10 = R@20 = 11.2 %, NDCG@10 26.5 %, MRR 72.5 %** — genuinely better than GraphRAG's 5 % here, but still far below the vector/hybrid rows, and the number is honestly bottlenecked by more than retrieval quality: at 12B-model JSON-structured extraction under concurrent GPU load, **175 of 240 files produced zero graph nodes** (adaptive chunk-bisection gave up at its max recursion depth rather than keep retrying), so the graph Graphify queried against covered barely a quarter of the corpus (116 nodes / 64 edges) — this is a local-model JSON-reliability ceiling on this run, not evidence about Graphify's retrieval design. Full per-query numbers and the harness: `benchmark/results/rag_graphify_bench.json`, `benchmark/results/external-systems/bench_graphify.py`.
 
-Raw results are committed alongside our internal harness; each framework was measured through its own retriever on the same corpus and the same `nomic-embed-text` embedder (GraphRAG via its fast NLP-based indexing + local search).
-Sources: [microsoft/graphrag](https://github.com/microsoft/graphrag) · [langchain-ai/langchain](https://github.com/langchain-ai/langchain) · [run-llama/llama_index](https://github.com/run-llama/llama_index) · [deepset-ai/haystack](https://github.com/deepset-ai/haystack) · [infiniflow/ragflow](https://github.com/infiniflow/ragflow)
+Raw results are committed alongside our internal harness; each framework was measured through its own retriever on the same corpus and the same `nomic-embed-text` embedder (GraphRAG via its fast NLP-based indexing + local search; Graphify via its own doc-semantic extraction + BFS query, ollama-backed).
+Sources: [microsoft/graphrag](https://github.com/microsoft/graphrag) · [langchain-ai/langchain](https://github.com/langchain-ai/langchain) · [run-llama/llama_index](https://github.com/run-llama/llama_index) · [deepset-ai/haystack](https://github.com/deepset-ai/haystack) · [infiniflow/ragflow](https://github.com/infiniflow/ragflow) · [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify)
 
-### Graphify (Graphify-Labs): narrow code-navigation comparison, not a memory benchmark
+### Graphify (Graphify-Labs): a code-graph and doc-media mapping tool with its own published memory benchmarks
 
-> **Scope, stated up front.** This is deliberately a *code-navigation* comparison, not
-> another row in the retrieval-quality tables above. Graphify is a deterministic,
-> tree-sitter/AST-based codebase-to-knowledge-graph CLI — it answers "what calls X" /
-> "what does file Y depend on" over a source tree, with zero LLM calls. TerranSoul's
-> brain answers a different question: "what have I learned/observed/been told" over
-> ingested conversational and procedural memory. They are not interchangeable, so this
-> section does not force Graphify into the LongMemEval-S / agentmemory / LoCoMo / JD-1000
-> tables above — none of those corpora are code, and Graphify publishes no retrieval-style
-> benchmark numbers on its own public repo that would be reproducible here anyway.
+> **Scope, corrected 2026-08-01.** An earlier version of this section described Graphify as
+> "a deterministic, tree-sitter/AST-based codebase-to-knowledge-graph CLI" and framed testing
+> its doc-semantic path as stretching a code-navigation tool onto a memory benchmark. That
+> undersold what Graphify's own docs (`README.md`, `BENCHMARKS.md`, Graphify-Labs — read
+> directly from the vendored clone before writing this correction) actually claim. Verbatim
+> from its README: *"Type `/graphify` in your AI coding assistant and it maps your entire
+> project (code, docs, PDFs, images, videos) into a knowledge graph you can query instead
+> of grepping through files."* Mapping non-code
+> content is a first-class, advertised capability (three passes: tree-sitter for code — zero
+> LLM calls; `faster-whisper` for video/audio, locally; an LLM subagent pass for docs/PDFs/
+> images), not a use this session invented. Graphify also ships an MCP server
+> (`query_graph` / `get_node` / `get_neighbors` / `shortest_path` / `list_prs` /
+> `get_pr_impact` / `triage_prs`), Leiden community detection over the graph's own edge
+> structure (no embeddings or vector DB — semantic-similarity edges an LLM subagent extracts
+> ARE the community signal), and `EXTRACTED` / `INFERRED` / `AMBIGUOUS` confidence-tagged
+> edges (INFERRED edges carry a numeric 0.55–0.95 confidence score). And — separately from
+> the code-navigation angle this section originally focused on — Graphify **also publishes
+> its own memory-benchmark suite** (LOCOMO + LongMemEval-S, against mem0/supermemory/BM25/
+> dense-RAG/hybrid-RRF, its own numbers, its own harness, not reproduced here); see the
+> table below.
+>
+> To be clear about what changed and what didn't: this repo's OWN measured number for
+> Graphify — the 11.2 % family below and in the RAG-frameworks table above — is unchanged
+> and re-verified against `benchmark/results/rag_graphify_bench.json`. What changes here is
+> only the framing around it: this session's doc-semantic bench of Graphify was testing it
+> exactly where its own docs say it operates, not pushing it past its stated scope. Graphify's
+> separate self-published LOCOMO/LongMemEval-S numbers are cited, not verified — see the
+> caveats on the published-benchmarks table below.
 
 > **Name collision, disambiguated:** this is [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify)
 > (Apache-2.0, YC S26), published on PyPI as `graphifyy` — two Y's, because the plain
@@ -405,6 +511,92 @@ Sources: [microsoft/graphrag](https://github.com/microsoft/graphrag) · [langcha
 > row for `safishamsi/graphify`, informing knowledge-graph ideas like community detection
 > and surprise scoring). Verified as two distinct GitHub orgs/repos before writing this
 > section — do not conflate the two "Graphify"s.
+
+#### Graphify's own published memory benchmarks (self-reported — not independently reproduced here)
+
+Graphify separately publishes a memory-benchmark suite in its own repo (`BENCHMARKS.md`,
+last updated 2026-07-05) putting its graph retrieval up against mem0, supermemory, BM25,
+dense RAG, and hybrid RRF on the same two academic datasets TerranSoul reports on elsewhere
+in this doc — **LOCOMO** and **LongMemEval-S**. The table below transcribes Graphify's own
+numbers verbatim. **This repo did not re-run Graphify's memory harness** — its
+`memory/runner.py` harness is not included in the public clone vendored here, only the CLI
+and docs — so treat this exactly the way this doc already treats MemPalace's self-reported
+LongMemEval-S row: cited, not verified.
+
+| Benchmark | Metric | Graphify (self-reported, "graph-expand") | Field, per Graphify's own citation¹ |
+|---|---|---:|---|
+| LOCOMO (n=300) | QA accuracy | ~45.3 % | supermemory 49.7 %, hybrid-RRF¹ 43.3 %, dense RAG 41.3 %, BM25 31.3 %, mem0 27.3 % |
+| LOCOMO (n=300) | recall@10 | ~49.7 % | hybrid-RRF¹ 49.3 %, BM25 36.2 %, supermemory 14.9 %*, mem0 4.8 % |
+| LongMemEval-S (n=50, English subset) | QA accuracy | ~76 % | dense RAG 76 % (tie), hybrid-RRF¹ 74 %, BM25 70 %, mem0 70 % |
+| LongMemEval-S (n=50, English subset) | recall@10 | ~84.4 % | dense RAG 84.8 %, hybrid-RRF¹ 82.2 %, BM25 71.0 %, mem0 34.4 % |
+| Graph build | LLM credits | $0 (tree-sitter only) | n/a — most systems pay a per-document LLM ingest cost |
+| LOCOMO ingest | USD cost | ~$1.40 | supermemory $15.67, mem0 $3.48 |
+| Code intelligence — ERPNext (~1M LOC, n=6 graded questions) | key-fact coverage | ~82.0 % | ~70.8 % for a grep+read baseline; ~140K tokens/query |
+| Temporal — 689 weekly AST checkpoints, 2011→2026 | graph growth | ~3,069→22,620 nodes · 2,900→48,710 edges · 1,032→3,758 files | n/a — single-system scaling series, no comparator |
+
+All figures in this table are self-reported by Graphify (`~`, matching this doc's own
+MemPalace convention) — none are independently reproduced here.
+
+`*` Graphify's own doc flags supermemory's retrieval-recall number as embedder-confounded
+(its self-hosted 768-d English-only embedder vs. the shared BGE-m3 every other system in
+Graphify's suite uses) — it calls the QA-accuracy column the clean comparison for that row.
+
+¹ **"Hybrid-RRF" here is a generic reciprocal-rank-fusion baseline in Graphify's own peer
+set — it has no relationship to TerranSoul's identically-named `hybrid_search_rrf`/`rrf`
+production feature used throughout the rest of this document.** Same acronym, unrelated
+implementations; do not conflate the two when reading this table.
+
+**Why these are not directly comparable to TerranSoul's own numbers elsewhere in this doc,
+even though the dataset names match:**
+- **QA accuracy is graded by a different judge and a different metric shape than any
+  TerranSoul row.** Graphify's suite runs every system through Kimi K2.6 (Moonshot) as both
+  reader and grader — QA-coverage graded against a gold key-fact set, blind-validated
+  against a second independent judge at 90.6 % agreement (Cohen's kappa 0.81). TerranSoul
+  publishes no comparable LLM-judged QA-coverage number on either dataset, so Graphify's
+  ~76 %/~45.3 % QA-accuracy figures have no TerranSoul counterpart to compare against at all.
+- **recall@10 is more plausibly IR-shaped, but this repo cannot confirm how Graphify defines
+  it.** Graphify's own harness pipeline (`ingest → index → search → answer → grade`)
+  computes "search" (retrieval) and "grade" (Kimi-judged answer coverage) as separate
+  stages, which suggests recall@10 is a retrieval-only metric similar in *shape* to
+  TerranSoul's own R@10 — but Graphify's `memory/runner.py` harness is not in the vendored
+  clone, so this repo cannot verify what counts as "relevant" in its ground truth, whether
+  ties/multi-gold questions are scored the same way, or any other definitional detail. Treat
+  the ~49.7 %/~84.4 % recall@10 figures as *possibly* the same metric shape as TerranSoul's
+  own R@10, on a different (and much smaller) sample, using a different embedder and model,
+  and unverified — not as a confirmed apples-to-apples number.
+- **Different sample sizes.** Graphify's LOCOMO row is n=300; TerranSoul's own MTEB LoCoMo
+  table above covers the full n=1976 across five tasks. Graphify's LongMemEval-S row is
+  n=50 (the English subset); TerranSoul's own LongMemEval-S numbers cover the full
+  500-question set.
+- **Different embedder/stack.** Graphify's suite standardises every system in it on a shared
+  BGE-m3 embedder; TerranSoul uses EmbeddingGemma in its own pipeline (see the Embedder
+  audit section above).
+- Read this table as *what Graphify says about itself, on its own chosen slice, against a
+  peer set it selected* — useful context for a reader who knows these dataset names, not a
+  head-to-head with any TerranSoul row in this document. Source:
+  [Graphify-Labs/graphify BENCHMARKS.md](https://github.com/Graphify-Labs/graphify/blob/main/BENCHMARKS.md).
+
+#### Suite-by-suite parity: what Graphify measures that TerranSoul does not (audit 2026-08-01)
+
+Covering a competitor's *numbers* is not the same as running their *suites*. Graphify
+publishes four; this is where TerranSoul stands against each, and the gaps are real.
+
+| Graphify suite | What they report | TerranSoul today | Gap |
+|---|---|---|---|
+| **LOCOMO** (n=300) | QA accuracy **and** recall@10 | MTEB LoCoMo retrieval-only, full n=1976 (R@10 64.5 %, NDCG@10 49.9 %) — larger sample, but **retrieval only** | **No end-to-end QA-accuracy number on LoCoMo.** Already acknowledged in this doc's caveats; Graphify (and Mem0/Letta/Zep) all report that axis and TerranSoul does not |
+| **LongMemEval-S** (n=50 English) | QA accuracy **and** recall@10 | Full 500-question retrieval (R@5 99.2 / NDCG@10 94.1 / MRR@20 94.6, 2026-08-01) — 10× the sample | **No QA-accuracy number.** Retrieval is measured far more thoroughly; answer quality is not measured at all on this set |
+| **Code intelligence** (ERPNext ~1M LOC, n=6) | key-fact coverage 70.8 % → 82.0 % with one graph tool | `crates/coding/src/symbol_index.rs` ships tree-sitter AST indexing + a PageRank repo-map MCP tool, and `resolve_repo_edges()` landed 2026-07-30 | **No published code-intelligence benchmark at all.** The capability exists and is untested against a graded question set |
+| **Temporal / scale-over-time** (689 weekly AST checkpoints, 15 years) | graph growth series | JD-million (1M rows) measures scale at a point in time | **No time-series scaling bench.** Different question: "does the index hold up as a repo evolves" vs "does it hold at 1M rows" |
+| **Judge validation** | inter-judge agreement **90.6 %**, Cohen's κ **0.81**, blind-validated against a second judge | TerranSoul uses an LLM judge in several places (rerank, domain judge, parity head-to-head) | **No published judge-validation statistic.** Graphify's own doc notes "most published memory benchmarks disclose no judge validation at all" — that criticism currently lands on this document too |
+| **Cost in USD** | ~$1.40 LOCOMO ingest; $0 graph build | Every TerranSoul row is $0 (local Ollama) | **No gap** — and the comparison favours TerranSoul, which is why the $ column is already carried in the tables above |
+
+**The honest summary:** on *retrieval* TerranSoul measures more thoroughly than Graphify does
+(500 questions vs 50 on LongMemEval-S; 1976 vs 300 on LoCoMo), and at $0. On *answer quality*,
+*code intelligence*, *temporal scaling*, and *judge validation* Graphify publishes and
+TerranSoul does not. Two of those (QA accuracy, judge validation) are the axes on which a
+reader would most reasonably ask "but is the retrieval actually producing better answers, and
+do you trust your own grader?" — so they are tracked as real work, not dismissed. See
+`BENCH-PARITY-GRAPHIFY` in [rules/milestones.md](../rules/milestones.md).
 
 **What was measured (this repo, PyPI `graphifyy` v0.9.29, Apache-2.0).** Installed via
 `pip install -e .` (Windows note: the console-script `.exe` link can fail with
@@ -467,6 +659,20 @@ decide and why." Neither is a strict subset of the other.
   unauthenticated direct-HTTP call to the MCP tray (`{"error":{"code":-32000,"message":
   "unauthorized"}}`); resolved by using the repo's bearer-token-aware one-shot caller
   (`tmp/mcp-call.mjs`) instead of a raw POST.
+- **A genuinely comparable capability set this section previously omitted.** Graphify ships
+  an MCP server (`query_graph` / `get_node` / `get_neighbors` / `shortest_path` /
+  `list_prs` / `get_pr_impact` / `triage_prs`), Leiden community detection over the graph's
+  own edge structure (no embeddings/vector DB — the semantic-similarity edges an LLM
+  subagent extracts ARE the community signal), and `EXTRACTED` / `INFERRED` / `AMBIGUOUS`
+  confidence-tagged edges (INFERRED edges carry a 0.55–0.95 confidence score). These are
+  directly analogous to TerranSoul's own MCP server, `memory_edges` KG, and confidence/decay
+  machinery — a fairer comparison than the "narrow code-nav tool" framing this section
+  carried before this correction. Graphify's own claimed token-reduction number (71.5x fewer
+  tokens per query vs. reading raw files, on a 52-file mixed corpus, per its
+  `docs/how-it-works.md`) is a differently-shaped claim than this doc's own Token efficiency
+  section above (that section compares retrieved-context tokens across retrieval STRATEGIES
+  on one shared corpus; Graphify's number compares graph-query tokens vs. raw-file-read
+  tokens on its own corpus) — cited here for context, not merged into that table.
 
 Sources: [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) · [PyPI: graphifyy](https://pypi.org/project/graphifyy/)
 
@@ -479,29 +685,29 @@ Legend: ✅ ships · ◐ partial / planned · ❌ missing or not-a-goal · — u
 | Capability | TerranSoul (brain) | Hermes-Agent (Nous Research) | GENesis-AGI (WingedGuardian) | OpenClaw |
 |---|---|---|---|---|
 | License | proprietary (this repo) | MIT | open source (verify upstream) | MIT |
-| Primary purpose | local-first self-improving **memory brain** for any agent (over MCP) | self-hosted self-improving **personal agent** | autonomous **cognitive agent** ("personal proto-AGI") | config-first self-hosted **personal assistant** (omni-channel) |
+| Primary purpose | local-first self-improving **memory brain** for any agent (over MCP) | self-hosted self-improving **personal agent** | autonomous **cognitive agent** ("personal proto-AGI") | self-hosted **personal assistant** (omni-channel) with a first-class memory/RAG subsystem *(was "config-first" — corrected 2026-08-02)* |
 | Reasoning engine | local Ollama (`gemma4:12b-it-qat`) + cloud fallback | any LLM (local/cloud) | Claude Code (cloud) | any LLM (Claude / GPT / Gemini / DeepSeek) |
-| Memory store | SQLite (+PG/MSSQL/Cassandra), single source of truth | Markdown state files (USER/MEMORY.md) + SQLite FTS5 | SQLite + Markdown | per-agent config + memory (`SOUL.md`) |
-| Tiered memory | ✅ 3-tier (short / working / long) | ✅ 3-tier (state files → FTS5 + summaries → external providers) | ✅ compounding long-term | ◐ |
-| Hybrid lexical+vector retrieval (RRF) | ✅ FTS5 + embeddings + hybrid fusion with reranking (HyDE + cross-encoder) | ◐ FTS5 keyword + LLM summarization (no vector/RRF surfaced) | ✅ RRF (k=60) + activation scoring | ❌ (not a retrieval/RAG engine) |
+| Memory store | SQLite (+PG/MSSQL/Cassandra), single source of truth | Markdown state files (`USER.md` 1,375 chars / `MEMORY.md` 2,200 chars, **char caps not token caps, by design**) + SQLite FTS5 (now **3** indexes: unicode61, trigram, and a CJK bigram added since our pinned commit). ⚠️ **Nothing retrieves over the Markdown tier** — both files are injected wholesale into the system prompt as a frozen snapshot at session start | SQLite + Markdown | **4-tier file hierarchy** (`USER.md` → `MEMORY.md` → `memory/YYYY-MM-DD.md` → `DREAMS.md`) over a STRICT-mode **SQLite index** (`memory_index_chunks` + `_vec` + 2 FTS5 tables), with automated cross-tier promotion. `SOUL.md` is a first-party **persona** layer, not the memory model *(corrected 2026-08-02)* |
+| Tiered memory | ✅ 3-tier (short / working / long) | ✅ 3-tier (state files → FTS5 + summaries → **9** optional external providers, default none, only one active at a time) | ✅ compounding long-term | ✅ 4 tiers with distinct prompt budgets, distinct injection policy, and signal-scored automated promotion *(was ◐ — corrected 2026-08-02)* |
+| Hybrid lexical+vector retrieval | ✅ FTS5 + embeddings + **RRF** fusion with reranking (HyDE + cross-encoder) | ◐ FTS5 keyword only. **No RRF and no dense embeddings in core** — the README's "LLM summarization" is the separate compaction pipeline writing summary *rows* into the same FTS table, not a rerank stage. Its opt-in `holographic` plugin adds SHA-256-derived HRR phase vectors — a Vector Symbolic Architecture, **not** dense embeddings | ✅ RRF (k=60) + activation scoring | ✅ **parallel BM25 + dense arms merged by chunk id** (`vectorWeight·vectorScore + textWeight·keywordScore` — a weighted blend, **not** RRF), then MMR (λ=0.7) + 30-day-half-life temporal decay + importance multiplier; sqlite-vec KNN with cosine fallback; 3 backends *(was "❌ not a retrieval/RAG engine" — that was FALSE, see correction above)* |
 | Typed knowledge graph | ✅ `memory_edges` + `brain_add_edge` write tool | ❌ | ✅ typed KG + decay | ❌ |
-| Self-improvement loop | ✅ outcome-classified write-back + procedural reinforcement + confidence ladder + Hermes skill synthesis (GENESIS/HERMES-ADOPT, shipped 2026-06-09) | ✅ autonomous skill synthesis (DSPy + GEPA self-evolution) | ✅ post-session outcome classification + causal attribution + procedure extraction | ◐ community skills; no self-evolution surfaced |
+| Self-improvement loop | ✅ outcome-classified write-back + procedural reinforcement + confidence ladder + Hermes skill synthesis (GENESIS/HERMES-ADOPT, shipped 2026-06-09) | ✅ autonomous skill synthesis (DSPy + GEPA self-evolution) | ✅ post-session outcome classification + causal attribution + procedure extraction | ✅ **corrected 2026-08-02** — first-party **Skill Workshop** (`src/skills/workshop/`, ~65 files): experience-review hooks agent-end → drafts a proposal (versioned SQLite + event log) → security scan → evaluation → **auto-apply with no human approval** → usage-telemetry curator retires at 30 d/90 d. Plus "dreaming" (on by DEFAULT) as memory self-evolution. Previously listed here as "no self-evolution surfaced" — that was wrong |
 | Procedural memory / confidence tiers | ✅ Laplace-smoothed L4→L1 confidence ladder + 3-fail quarantine (GENESIS-ADOPT P2) | ◐ skills self-improve in use | ✅ confidence-tiered (Laplace) | ❌ |
-| Autonomous skill creation (Markdown) | ✅ synthesize→validate→register pipeline + optimize/import (HERMES-ADOPT, shipped 2026-06-09) | ✅ Markdown skills (agentskills.io standard) | ◐ procedure extraction | ✅ community skill catalog (~13.7k) |
+| Autonomous skill creation (Markdown) | ✅ synthesize→validate→register pipeline + optimize/import (HERMES-ADOPT, shipped 2026-06-09) | ✅ Markdown skills (agentskills.io standard) | ◐ procedure extraction | ✅ 52 skills bundled in-repo; the **~13.7k catalog is a remote ClawHub registry count**, not a repo fact — unverifiable from source |
 | Earned / graduated autonomy | ✅ RBAC role-gating + per-action-category earned-trust gate (Laplace confidence, deny-by-default for risky categories) | ◐ | ✅ trust per action category | ◐ |
 | Local-first / offline-capable | ✅ Ollama, fully offline | ✅ | ◐ depends on Claude Code (cloud engine) | ◐ depends on chosen LLM |
 | MCP server | ✅ 3 ports | ✅ (`mcp_servers:` YAML) | ◐ | ✅ |
 | Omni-channel chat (WhatsApp / Telegram / …) | ✅ outbound channel framework + Telegram (WhatsApp/Slack/Discord via the same adapter) | ◐ | ❌ | ✅ 20+ channels |
 | 3D VRM character + voice | ✅ Tauri / Vue / VRM + TTS / ASR | ❌ | ❌ | ❌ |
 | CRDT cross-device sync | ✅ QUIC / WS | ❌ | ❌ | ◐ |
-| Config model | JSON-first (also *writes* Hermes YAML) | YAML (`cli-config.yaml`) | scripted install | **config-first** (`SOUL.md`) |
+| Config model | JSON-first (also *writes* Hermes YAML) | YAML (`cli-config.yaml`) | scripted install | JSON/TS config + a **4-tier memory file hierarchy** over a SQLite index. `SOUL.md` is a first-party **persona** layer, not the memory model — see the correction above |
 | Verified retrieval bench (LongMemEval-S) | ✅ R@5 98.6 % (this repo) | — not published on this bench | — | — |
 | Verified long-horizon bench (ZorkGPT) | ✅ SC4 PASS | — | — | — |
 
 **What TerranSoul adopted from each** (generic Rust reimplementations — no source, prompts, schema, or branded identity copied):
 - **Hermes-Agent** → autonomous skill synthesis from observed successful trajectories (the closed `TRIGGER → AUTHOR → VALIDATE → REGISTER → REUSE → REFINE` loop; milestones HERMES-ADOPT-1..6) + first-class MCP YAML auto-setup. Spec: [`docs/hermes-agent-adoption.md`](../docs/hermes-agent-adoption.md).
 - **GENesis-AGI** → outcome-classified self-learning loop + confidence-tiered procedural memory (Laplace, L4→L1 promotion/demotion/quarantine) + unified activation ranking + consolidation safety gates. Spec: [`docs/genesis-agi-brain-adoption.md`](../docs/genesis-agi-brain-adoption.md).
-- **OpenClaw** → config-first agent UX + slash-command / session-design inspiration (studied alongside Claude Code). Analysis: [`docs/hermes-vs-openclaw-analysis.md`](../docs/hermes-vs-openclaw-analysis.md).
+- **OpenClaw** → agent UX + slash-command / session-design inspiration (studied alongside Claude Code). **Re-audited 2026-08-02 and the earlier characterisation was wrong** — OpenClaw is not "config-first"; it ships a hybrid RAG engine, a 4-tier memory hierarchy, and a closed skill self-evolution loop. Three concrete adoption targets are now filed as **RIVALS-ADOPT-1/2/3** in `rules/milestones.md` (usage-telemetry memory promotion, the skill workshop loop, retrieval-time provenance taint). Analysis: [`docs/hermes-vs-openclaw-analysis.md`](../docs/hermes-vs-openclaw-analysis.md) *(⚠️ that doc predates the re-audit)*.
 
 #### Measured head-to-head (parity-personal-ai)
 

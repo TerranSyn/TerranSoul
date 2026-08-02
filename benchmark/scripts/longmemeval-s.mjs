@@ -6,12 +6,12 @@
 // into a small Rust JSONL IPC shim, and writes retrieval-only benchmark reports
 // that match agentmemory's LongMemEval-S methodology.
 
-import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { appendFileSync, createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { buildJudgePrompt, chunkSessionToText } from './lib/longmem-judge-prompt.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -68,6 +68,39 @@ function command() {
   return raw;
 }
 
+/**
+ * BENCH-OPS-1(a), 2026-07-30: `npm run brain:longmem:run` never called
+ * `bench-guard.mjs --preflight`, so a 4-arm run once spent 32 minutes at
+ * 17.9s/embed round-trip (against 0.13s GPU-resident, 135x) before anyone
+ * thought to check `/api/ps` — the guard existed and would have caught it
+ * instantly, it just was not wired into this entrypoint (only the separate
+ * `max100-full500.mjs` launcher called it). Runs the SAME base preflight
+ * `npm run bench:preflight` does (disk/out-dir/GPU/model-installed/embedder-
+ * GPU-placement) before any dataset download or arm starts. Deliberately
+ * does NOT pass `--require-ipc-binary`/`--require-cargo-quiet` here: this
+ * entrypoint supports both `cargo run` (builds on demand) and a prebuilt
+ * `LONGMEM_IPC_CMD` binary, so a stale-binary/cargo-quiet gate belongs to a
+ * launcher that knows which mode it's using (as `max100-full500.mjs`
+ * already does), not to this base check. `--skip-preflight` opts out
+ * entirely, for a quick local iteration where the extra ~20-30s round-trip
+ * isn't worth it.
+ */
+function runPreflight(outDir) {
+  if (hasFlag('skip-preflight')) {
+    console.error('[longmem] --skip-preflight: bypassing bench-guard preflight.');
+    return;
+  }
+  const args = [resolve(REPO_ROOT, 'scripts', 'bench-guard.mjs'), '--preflight', '--out-dir', outDir];
+  const chatModel = option('chat-model', process.env.LONGMEM_CHAT_MODEL);
+  if (chatModel) args.push('--chat-model', chatModel);
+  console.error('[longmem] running bench-guard preflight (pass --skip-preflight to bypass)…');
+  const result = spawnSync(process.execPath, args, { cwd: REPO_ROOT, stdio: 'inherit' });
+  if (result.status !== 0) {
+    console.error(`[longmem] PREFLIGHT FAILED (exit ${result.status}) — not running. Pass --skip-preflight to bypass.`);
+    process.exit(result.status ?? 1);
+  }
+}
+
 function printHelp() {
   console.log(`TerranSoul LongMemEval-S adapter
 
@@ -86,6 +119,10 @@ Options for run:
   --dataset=<path>                 Dataset path (default: target-copilot-bench/longmemeval/longmemeval_s_cleaned.json)
   --out-dir=<path>                 Report directory (default: benchmark/results)
   --limit=<n>                      First n non-abstention questions; 0 means all (default: 0)
+  --resume                         Continue an interrupted run from <out-dir>/checkpoint.jsonl.
+                                   Refuses if the env/flags differ from the checkpointed run.
+  --report-only                    Rebuild reports from the checkpoint without running anything
+                                   (refuses to write if the checkpoint is incomplete)
   --systems=search,rrf             Systems to evaluate (default: search,rrf)
   --top-k=<n>                      Retrieval depth sent to MemoryStore (default: 20)
   --no-download                    Fail if dataset is missing instead of downloading
@@ -222,15 +259,24 @@ function dcg(relevances, k) {
 
 function ndcg(retrievedSessionIds, goldSessionIds, k) {
   const gold = new Set(goldSessionIds);
-  const actual = retrievedSessionIds.slice(0, k).map(id => gold.has(id));
+  const seen = new Set();
+  const deduped = retrievedSessionIds.filter(id => (seen.has(id) ? false : (seen.add(id), true)));
+  const actual = deduped.slice(0, k).map(id => gold.has(id));
   const ideal = Array.from({ length: Math.min(k, gold.size) }, () => true);
   const idealDcg = dcg(ideal, k);
   return idealDcg === 0 ? 0 : dcg(actual, k) / idealDcg;
 }
 
-function mrr(retrievedSessionIds, goldSessionIds) {
+// MAX-100-17: `mrr` scans the WHOLE retrieved array, so it is really
+// MRR@top_k — comparing it across two arms with different `--top-k` values
+// changes the metric's own definition, not just the retrieval quality it is
+// meant to measure (a gold sitting at rank 21-50 only counts once top_k
+// reaches 50, with zero actual retrieval improvement). `mrr(list, gold, k)`
+// takes an explicit k so callers can report a FIXED-k MRR (comparable across
+// any top_k) alongside the natural MRR@top_k (labelled with the real k used).
+export function mrr(retrievedSessionIds, goldSessionIds, k = retrievedSessionIds.length) {
   const gold = new Set(goldSessionIds);
-  const index = retrievedSessionIds.findIndex(id => gold.has(id));
+  const index = retrievedSessionIds.slice(0, k).findIndex(id => gold.has(id));
   return index < 0 ? 0 : 1 / (index + 1);
 }
 
@@ -257,12 +303,38 @@ function printTable(headers, rows) {
   rows.forEach(printRow);
 }
 
-class JsonlClient {
-  constructor() {
-    this.nextId = 1;
-    this.pending = new Map();
-    this.buffer = '';
-    this.proc = spawn('cargo', [
+/**
+ * How to start the Rust IPC child.
+ *
+ * DEFAULT (unchanged): `cargo run`, which builds if needed. That is convenient
+ * interactively and a hazard for a long unattended arm — if any other cargo
+ * holds the shared target-dir lock, `cargo run` BLOCKS with no output
+ * ("Blocking waiting for file lock on build directory"), so a launch that
+ * appears to be running is really waiting, indistinguishable from a slow first
+ * question. It also means the run compiles whatever is on disk at launch
+ * instead of a binary someone verified.
+ *
+ * `LONGMEM_IPC_CMD` (JSON array, e.g. `["D:/…/longmemeval-ipc.exe"]`) spawns a
+ * PREBUILT binary directly: no build step, no lock to wait on, and the exact
+ * artifact the preflight checked. This is what the full-500 launcher uses.
+ */
+function ipcCommand() {
+  const raw = process.env.LONGMEM_IPC_CMD;
+  if (raw && raw.trim()) {
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (err) {
+      throw new Error(`LONGMEM_IPC_CMD must be a JSON array of [command, ...args]: ${err.message}`, { cause: err });
+    }
+    if (!Array.isArray(parsed) || parsed.length === 0 || parsed.some(part => typeof part !== 'string')) {
+      throw new Error(`LONGMEM_IPC_CMD must be a non-empty JSON array of strings, got: ${raw}`);
+    }
+    return { command: parsed[0], args: parsed.slice(1) };
+  }
+  return {
+    command: 'cargo',
+    args: [
       'run',
       '--quiet',
       '--manifest-path',
@@ -271,7 +343,17 @@ class JsonlClient {
       'longmemeval-ipc',
       '--target-dir',
       DEFAULT_TARGET_DIR,
-    ], {
+    ],
+  };
+}
+
+class JsonlClient {
+  constructor() {
+    this.nextId = 1;
+    this.pending = new Map();
+    this.buffer = '';
+    const { command, args } = ipcCommand();
+    this.proc = spawn(command, args, {
       cwd: REPO_ROOT,
       stdio: ['pipe', 'pipe', 'pipe'],
     });
@@ -370,7 +452,7 @@ async function judgeEvidence(entry, retrievedSessionIds, options) {
   }
 }
 
-function aggregateSystem(system, perQuestion) {
+export function aggregateSystem(system, perQuestion) {
   return {
     system,
     questions: perQuestion.length,
@@ -378,6 +460,7 @@ function aggregateSystem(system, perQuestion) {
     recall_any_at_10: avg(perQuestion.map(result => result.recall_any_at_10)),
     recall_any_at_20: avg(perQuestion.map(result => result.recall_any_at_20)),
     ndcg_at_10: avg(perQuestion.map(result => result.ndcg_at_10)),
+    mrr_at_20: avg(perQuestion.map(result => result.mrr_at_20)),
     mrr: avg(perQuestion.map(result => result.mrr)),
     avg_latency_ms: avg(perQuestion.map(result => result.latency_ms)),
     avg_retrieved_tokens: avg(perQuestion.map(result => result.retrieved_tokens)),
@@ -388,7 +471,7 @@ function aggregateSystem(system, perQuestion) {
   };
 }
 
-function perType(systemResult) {
+export function perType(systemResult) {
   const groups = new Map();
   for (const result of systemResult.per_question) {
     if (!groups.has(result.question_type)) groups.set(result.question_type, []);
@@ -399,6 +482,7 @@ function perType(systemResult) {
     recall_any_at_5: avg(results.map(result => result.recall_any_at_5)),
     recall_any_at_10: avg(results.map(result => result.recall_any_at_10)),
     ndcg_at_10: avg(results.map(result => result.ndcg_at_10)),
+    mrr_at_20: avg(results.map(result => result.mrr_at_20)),
     mrr: avg(results.map(result => result.mrr)),
   }]));
 }
@@ -407,9 +491,15 @@ function perType(systemResult) {
 // regression" episode came from unrecorded embedder configuration
 // differences between runs — every report must carry the exact LONGMEM_*
 // env so a future metric delta can never be misattributed to code again.
+//
+// `OLLAMA_*` is stamped too (added 2026-07-27): `OLLAMA_EMBED_NUM_GPU` decides
+// whether the embedder runs on GPU or CPU, which is a 135x latency difference
+// and the single most damaging variable to leave unrecorded — yet it does not
+// start with `LONGMEM_`, so the guardrail above was blind to exactly the knob
+// most likely to be forgotten.
 function longmemEnvStamp() {
   const keys = Object.keys(process.env)
-    .filter(k => k.startsWith('LONGMEM_'))
+    .filter(k => k.startsWith('LONGMEM_') || k.startsWith('OLLAMA_'))
     .sort();
   const pairs = keys.map(k => `${k}=${process.env[k]}`);
   const embedModel = process.env.LONGMEM_EMBED === '1'
@@ -418,7 +508,7 @@ function longmemEnvStamp() {
   return `${pairs.length ? pairs.join(' ') : '(no LONGMEM_* vars set)'} | effective embed model: ${embedModel}`;
 }
 
-function markdownReport(report) {
+export function markdownReport(report) {
   const lines = [];
   const w = line => lines.push(line);
   w('# TerranSoul LongMemEval-S Retrieval Report');
@@ -429,10 +519,14 @@ function markdownReport(report) {
   w(`Methodology: retrieval-only recall_any@K, matching agentmemory benchmark/longmemeval-bench.ts`);
   w(`Env: ${longmemEnvStamp()}`);
   w('');
-  w('| System | R@5 | R@10 | R@20 | NDCG@10 | MRR | Avg latency | Avg retrieved tokens |');
-  w('|---|---:|---:|---:|---:|---:|---:|---:|');
+  // MAX-100-17: MRR@20 is a FIXED window, comparable to any other arm's
+  // MRR@20 regardless of --top-k; the MRR column is the NATURAL MRR@top_k
+  // (labelled with the real k used, since it is only comparable to another
+  // arm run at that same --top-k — see the mrr() doc comment above).
+  w(`| System | R@5 | R@10 | R@20 | NDCG@10 | MRR@20 | MRR@${report.top_k} | Avg latency | Avg retrieved tokens |`);
+  w('|---|---:|---:|---:|---:|---:|---:|---:|---:|');
   for (const system of report.systems) {
-    w(`| ${system.system} | ${pct(system.recall_any_at_5)} | ${pct(system.recall_any_at_10)} | ${pct(system.recall_any_at_20)} | ${pct(system.ndcg_at_10)} | ${pct(system.mrr)} | ${formatMs(system.avg_latency_ms)} | ${Math.round(system.avg_retrieved_tokens).toLocaleString('en-US')} |`);
+    w(`| ${system.system} | ${pct(system.recall_any_at_5)} | ${pct(system.recall_any_at_10)} | ${pct(system.recall_any_at_20)} | ${pct(system.ndcg_at_10)} | ${pct(system.mrr_at_20)} | ${pct(system.mrr)} | ${formatMs(system.avg_latency_ms)} | ${Math.round(system.avg_retrieved_tokens).toLocaleString('en-US')} |`);
   }
   w('');
   if (report.judge) {
@@ -453,10 +547,10 @@ function markdownReport(report) {
     w('');
     w(`### ${system.system}`);
     w('');
-    w('| Type | Count | R@5 | R@10 | NDCG@10 | MRR |');
-    w('|---|---:|---:|---:|---:|---:|');
+    w(`| Type | Count | R@5 | R@10 | NDCG@10 | MRR@20 | MRR@${report.top_k} |`);
+    w('|---|---:|---:|---:|---:|---:|---:|');
     for (const [type, stats] of Object.entries(system.per_type)) {
-      w(`| ${type} | ${stats.count} | ${pct(stats.recall_any_at_5)} | ${pct(stats.recall_any_at_10)} | ${pct(stats.ndcg_at_10)} | ${pct(stats.mrr)} |`);
+      w(`| ${type} | ${stats.count} | ${pct(stats.recall_any_at_5)} | ${pct(stats.recall_any_at_10)} | ${pct(stats.ndcg_at_10)} | ${pct(stats.mrr_at_20)} | ${pct(stats.mrr)} |`);
     }
   }
   w('');
@@ -468,15 +562,198 @@ function markdownReport(report) {
   return `${lines.join('\n')}\n`;
 }
 
+// ─── Crash-resume checkpoint ───────────────────────────────────────────────
+//
+// WHY (2026-07-27). A full-500 `max` arm is a ~12h unattended run, and until
+// now EVERY per-question result lived only in the in-process `perSystem` map:
+// `writeReports` ran once, after the last question. A crash, an OOM, a wedged
+// Ollama, or a power cut at question 480 destroyed all 480 results and the
+// arm restarted from zero. That is not an acceptable failure mode for an
+// overnight window — and it already happened once (the 11h arm lost to a dead
+// backend, commit a69f82d9).
+//
+// Each (system, question) result is appended to `checkpoint.jsonl` the instant
+// it is produced, so the worst a crash can cost is the question in flight.
+//
+// RESUMING A DIFFERENT CONFIGURATION IS THE REAL HAZARD, not the crash. Two
+// halves of one report silently measured under different flags/env is exactly
+// the defect class this campaign exists to remove (the 95.1-vs-95.0 "floor"
+// that turned out to be two different experiments). So the checkpoint carries
+// a fingerprint of everything that can move a number, and a resume whose
+// fingerprint differs REFUSES to run rather than splicing.
+function checkpointPaths(outDir) {
+  return {
+    jsonl: resolve(outDir, 'checkpoint.jsonl'),
+    meta: resolve(outDir, 'checkpoint.meta.json'),
+  };
+}
+
+/** Everything that can move a metric. Any difference blocks a resume. */
+function runFingerprint(options, questionCount) {
+  return {
+    systems: [...options.systems].sort(),
+    top_k: options.topK,
+    limit: options.limit,
+    questions: questionCount,
+    dataset_source: options.datasetSource,
+    with_judge: options.withJudge,
+    judge_model: options.withJudge ? options.judgeModel : null,
+    judge_top_k: options.withJudge ? options.judgeTopK : null,
+    env: longmemEnvStamp(),
+  };
+}
+
+// Params are named for their ROLE, not `expected`/`actual`: the call site
+// passes (this run, checkpoint) and the previous labels were inverted, so a
+// mismatch reported the checkpoint's value as "this run" and vice versa —
+// sending anyone debugging a fingerprint mismatch to fix the wrong side.
+function fingerprintDiff(thisRun, checkpoint) {
+  const diffs = [];
+  for (const key of Object.keys(thisRun)) {
+    const mine = JSON.stringify(thisRun[key]);
+    const theirs = JSON.stringify(checkpoint?.[key]);
+    if (mine !== theirs) {
+      diffs.push(`  ${key}:\n    checkpoint: ${theirs}\n    this run:   ${mine}`);
+    }
+  }
+  return diffs;
+}
+
+/**
+ * Read a checkpoint into `system -> Map(question_id -> record)`.
+ *
+ * A crash can tear the FINAL line mid-write, so an unparseable last line is
+ * dropped (that question simply gets redone). An unparseable line anywhere
+ * earlier means the file is corrupt, which is reported rather than guessed at.
+ */
+function loadCheckpoint(jsonlPath) {
+  const done = new Map();
+  if (!existsSync(jsonlPath)) return { done, records: 0, torn: false };
+  const lines = readFileSync(jsonlPath, 'utf8').split('\n').filter(line => line.trim());
+  let records = 0;
+  let torn = false;
+  for (let i = 0; i < lines.length; i += 1) {
+    let parsed;
+    try {
+      parsed = JSON.parse(lines[i]);
+    } catch (err) {
+      if (i === lines.length - 1) {
+        torn = true;
+        break;
+      }
+      throw new Error(
+        `corrupt checkpoint at ${jsonlPath} line ${i + 1}: ${err.message}. ` +
+          'Delete the file to restart this arm from zero, or use a fresh --out-dir.',
+        { cause: err },
+      );
+    }
+    const { system, ...record } = parsed;
+    if (!system || !record.question_id) {
+      throw new Error(`checkpoint line ${i + 1} is missing system/question_id: ${jsonlPath}`);
+    }
+    if (!done.has(system)) done.set(system, new Map());
+    // First writer wins: a duplicate can only come from a torn+retried write,
+    // and the earlier record is the one already counted in any prior report.
+    if (!done.get(system).has(record.question_id)) {
+      done.get(system).set(record.question_id, record);
+      records += 1;
+    }
+  }
+  return { done, records, torn };
+}
+
+/**
+ * Prepare the checkpoint for this run and return the already-completed work.
+ *
+ * Without `--resume`, a pre-existing non-empty checkpoint is a BLOCKER: silently
+ * appending to it would interleave two runs in one file.
+ */
+function openCheckpoint(outDir, options, questionCount) {
+  const { jsonl, meta } = checkpointPaths(outDir);
+  mkdirSync(outDir, { recursive: true });
+  const fingerprint = runFingerprint(options, questionCount);
+  const existing = existsSync(jsonl) && readFileSync(jsonl, 'utf8').trim().length > 0;
+
+  if (existing && !options.resume) {
+    throw new Error(
+      `checkpoint already exists at ${jsonl}. Pass --resume to continue that run, ` +
+        'or point --out-dir at a fresh directory to start over. Refusing to append ' +
+        'to another run\'s checkpoint.',
+    );
+  }
+
+  if (existing && options.resume) {
+    if (!existsSync(meta)) {
+      throw new Error(`checkpoint ${jsonl} has no ${meta}; cannot verify it matches this run.`);
+    }
+    const previous = JSON.parse(readFileSync(meta, 'utf8'));
+    const diffs = fingerprintDiff(fingerprint, previous.fingerprint);
+    if (diffs.length) {
+      throw new Error(
+        'REFUSING TO RESUME: this run is not the same experiment as the checkpoint.\n' +
+          `${diffs.join('\n')}\n` +
+          'Splicing two configurations into one report is a measurement error. ' +
+          'Fix the env/flags to match, or use a fresh --out-dir.',
+      );
+    }
+    const loaded = loadCheckpoint(jsonl);
+    if (loaded.torn) {
+      console.log('[longmem] checkpoint had a torn final line (crash mid-write); that question will be redone.');
+    }
+    console.log(`[longmem] resuming from ${jsonl}: ${loaded.records} completed (system, question) pair(s)`);
+    return { path: jsonl, done: loaded.done };
+  }
+
+  writeFileSync(meta, JSON.stringify({ started_at: new Date().toISOString(), fingerprint }, null, 2), 'utf8');
+  if (!existsSync(jsonl)) writeFileSync(jsonl, '', 'utf8');
+  return { path: jsonl, done: new Map() };
+}
+
+function appendCheckpoint(path, system, record) {
+  appendFileSync(path, `${JSON.stringify({ system, ...record })}\n`, 'utf8');
+}
+
 async function run(rawEntries, options) {
   const entries = filteredEntries(rawEntries, options.limit);
   const systems = options.systems;
-  const perSystem = new Map(systems.map(system => [system, []]));
-  const client = new JsonlClient();
+  const checkpoint = openCheckpoint(options.outDir, options, entries.length);
+
+  // Results are collected keyed by question_id so a resumed run can merge
+  // checkpointed records with fresh ones and still emit `per_question` in
+  // dataset order — order does not move an average, but a report whose rows
+  // jump around when it is resumed is needlessly hard to diff.
+  const perSystem = new Map(systems.map(system => [system, new Map()]));
+  for (const system of systems) {
+    for (const [questionId, record] of checkpoint.done.get(system) ?? []) {
+      perSystem.get(system).set(questionId, record);
+    }
+  }
+
+  // Spawn the Rust IPC child LAZILY: a checkpoint that already covers every
+  // (system, question) pair can regenerate its reports with no backend at all,
+  // which is also what makes resume testable without running a bench.
+  let client = null;
+  const ipc = () => (client ??= new JsonlClient());
+
+  // Rate baseline for the ETA: questions already in the checkpoint cost this
+  // process nothing, so counting them would report a wildly optimistic pace on
+  // a resumed run.
+  const runStart = performance.now();
+  const startedComplete = entries.filter(
+    entry => systems.every(system => perSystem.get(system).has(entry.question_id)),
+  ).length;
 
   try {
     for (let index = 0; index < entries.length; index += 1) {
+      // `--report-only` regenerates the reports from the checkpoint and does no
+      // work at all. Useful when a finished run died in `writeReports`, and the
+      // only way to ask "how far did it actually get?" without a backend — the
+      // completeness assertion below still applies, so it can answer that
+      // question without ever publishing a partial number.
+      if (options.reportOnly) break;
       const entry = entries[index];
+      const pending = systems.filter(system => !perSystem.get(system).has(entry.question_id));
+      if (pending.length === 0) continue;
       const sessions = sessionPayloads(entry);
 
       // MEASUREMENT BUG, fixed 2026-07-27 (forensics on the 95.1 floor).
@@ -502,16 +779,16 @@ async function run(rawEntries, options) {
       //
       // Cost is one extra reset+ingest per system per question — real, but a
       // benchmark that silently compares a sequence is worth nothing.
-      for (const system of systems) {
-        await client.send({ op: 'reset' });
-        await client.send({
+      for (const system of pending) {
+        await ipc().send({ op: 'reset' });
+        await ipc().send({
           op: 'add_sessions',
           question_id: entry.question_id,
           sessions,
         });
 
         const start = performance.now();
-        const response = await client.send({
+        const response = await ipc().send({
           op: 'search',
           query: entry.question,
           mode: system,
@@ -524,7 +801,7 @@ async function run(rawEntries, options) {
         if (options.withJudge) {
           judge = await judgeEvidence(entry, retrievedSessionIds, options);
         }
-        perSystem.get(system).push({
+        const record = {
           question_id: entry.question_id,
           question_type: entry.question_type,
           question: entry.question,
@@ -532,6 +809,10 @@ async function run(rawEntries, options) {
           recall_any_at_10: recallAny(retrievedSessionIds, entry.answer_session_ids, 10),
           recall_any_at_20: recallAny(retrievedSessionIds, entry.answer_session_ids, 20),
           ndcg_at_10: ndcg(retrievedSessionIds, entry.answer_session_ids, 10),
+          // mrr_at_20: FIXED window, comparable across arms regardless of
+          // --top-k. mrr: natural MRR@top_k (see the mrr() doc comment) —
+          // only comparable to another arm run at the SAME --top-k.
+          mrr_at_20: mrr(retrievedSessionIds, entry.answer_session_ids, 20),
           mrr: mrr(retrievedSessionIds, entry.answer_session_ids),
           latency_ms: latencyMs,
           retrieved_tokens: results.reduce((sum, result) => sum + (result.token_count ?? 0), 0),
@@ -539,25 +820,51 @@ async function run(rawEntries, options) {
           gold_session_ids: entry.answer_session_ids,
           judge_supported: judge ? judge.supported : null,
           judge_reason: judge ? judge.reason : null,
-        });
+        };
+        perSystem.get(system).set(entry.question_id, record);
+        // Durable BEFORE the next question starts: the crash we are guarding
+        // against takes the whole process with it, so anything still only in
+        // RAM is lost.
+        appendCheckpoint(checkpoint.path, system, record);
       }
+
+      // HEARTBEAT, one line per question (2026-07-27). The 50-question progress
+      // table below is ~75 minutes apart on a `max` arm, so a stall watchdog
+      // keyed on log mtime could not tell "working" from "wedged" without
+      // false-firing constantly. A per-question line makes liveness observable
+      // and gives an honest ETA for an unattended overnight run.
+      const doneCount = index + 1;
+      const remaining = entries.length - doneCount;
+      const elapsedMs = performance.now() - runStart;
+      const perQuestionMs = elapsedMs / Math.max(1, doneCount - startedComplete);
+      const etaMin = (perQuestionMs * remaining) / 60000;
+      console.log(
+        `[longmem] q ${doneCount}/${entries.length} ${entry.question_id} ` +
+          `(${(perQuestionMs / 1000).toFixed(1)}s/q, eta ${etaMin.toFixed(0)}m)`,
+      );
 
       const processed = index + 1;
       if (processed % 50 === 0 || processed === entries.length) {
         const rows = systems.map(system => {
-          const soFar = aggregateSystem(system, perSystem.get(system));
-          return [system, pct(soFar.recall_any_at_5), pct(soFar.recall_any_at_10), processed];
+          const soFar = aggregateSystem(system, [...perSystem.get(system).values()]);
+          return [system, pct(soFar.recall_any_at_5), pct(soFar.recall_any_at_10), soFar.questions];
         });
         console.log(`[longmem] processed ${processed}/${entries.length}`);
         printTable(['System', 'R@5', 'R@10', 'Questions'], rows);
       }
     }
   } finally {
-    await client.close();
+    if (client) await client.close();
   }
 
+  // Emit per_question in dataset order regardless of how the run was split
+  // across resumes.
+  const order = new Map(entries.map((entry, index) => [entry.question_id, index]));
   const systemResults = systems.map(system => {
-    const aggregated = aggregateSystem(system, perSystem.get(system));
+    const ordered = [...perSystem.get(system).values()].sort(
+      (a, b) => (order.get(a.question_id) ?? 0) - (order.get(b.question_id) ?? 0),
+    );
+    const aggregated = aggregateSystem(system, ordered);
     return { ...aggregated, per_type: perType(aggregated) };
   });
 
@@ -568,6 +875,13 @@ async function run(rawEntries, options) {
     dataset_source: options.datasetSource,
     dataset_url: DATASET_URL,
     methodology_source: 'https://github.com/rohitg00/agentmemory/blob/main/benchmark/longmemeval-bench.ts',
+    // The retrieval depth this arm ran at. Required by the markdown renderer,
+    // which labels the natural-MRR column `MRR@${report.top_k}` — without it
+    // every published report carried a literal `MRR@undefined` header (and
+    // the JSON omitted the field entirely, so downstream consumers could not
+    // tell what depth a result was measured at). MAX-100-17 added the column
+    // and its label but not the field that names it.
+    top_k: options.topK,
     questions: entries.length,
     excluded_abstention: rawEntries.length - rawEntries.filter(entry => !ABSTENTION_TYPES.has(entry.question_type)).length,
     systems: systemResults,
@@ -582,6 +896,19 @@ async function run(rawEntries, options) {
 
 function writeReports(report, outDir) {
   mkdirSync(outDir, { recursive: true });
+  // A report is named by `report.questions`, and at >=500 it drops the `_Nq`
+  // suffix and takes the canonical filename. So a partially-populated system
+  // must never reach this function: it would publish an N-question average
+  // under a 500-question name. Cheap to assert, impossible to spot later.
+  for (const system of report.systems) {
+    if (system.questions !== report.questions) {
+      throw new Error(
+        `refusing to write an incomplete report: system '${system.system}' has ` +
+          `${system.questions} of ${report.questions} questions. The run did not finish; ` +
+          're-run with --resume to complete it.',
+      );
+    }
+  }
   const suffix = report.questions < 500 ? `_${report.questions}q` : '';
   const jsonPath = resolve(outDir, `longmemeval_s_terransoul${suffix}.json`);
   const mdPath = resolve(outDir, `longmemeval_s_terransoul${suffix}.md`);
@@ -645,6 +972,9 @@ async function main() {
     datasetSource: cmd === 'sample' ? 'built-in sample' : datasetPath,
     limit: cmd === 'sample' ? 0 : numberOption('limit', 0),
     systems,
+    outDir,
+    resume: hasFlag('resume') || hasFlag('report-only'),
+    reportOnly: hasFlag('report-only'),
     topK: positiveNumberOption('top-k', 20),
     withJudge: hasFlag('with-judge'),
     judgeModel: option('judge-model', 'qwen2.5:14b'),
@@ -657,6 +987,10 @@ async function main() {
   if (cmd === 'sample') {
     rawEntries = sampleDataset();
   } else if (cmd === 'run') {
+    // BENCH-OPS-1(a): a bad embedder placement or missing chat model has
+    // burned 32 minutes of a run before anyone thought to check /api/ps —
+    // gate BEFORE the (possibly slow, disk-consuming) dataset download too.
+    runPreflight(outDir);
     if (!existsSync(datasetPath)) {
       if (hasFlag('no-download')) {
         throw new Error(`missing dataset: ${datasetPath}`);
@@ -673,7 +1007,13 @@ async function main() {
   writeReports(report, outDir);
 }
 
-main().catch(err => {
-  console.error(`[longmem] failed: ${err.message}`);
-  process.exit(1);
-});
+// MAX-100-17: guarded so importing this file's pure functions for a unit
+// test (mrr/aggregateSystem/perType) does not ALSO run the CLI as a side
+// effect — same pattern already used by sibling bench scripts (see
+// scripts/bench/compare-arms.mjs, scripts/bench/replay-verdicts.mjs).
+if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url))) {
+  main().catch(err => {
+    console.error(`[longmem] failed: ${err.message}`);
+    process.exit(1);
+  });
+}

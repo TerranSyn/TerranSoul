@@ -333,7 +333,7 @@ non-improving iterations) was therefore **a measurement artifact of counting
 infra timeouts as attempts** — not evidence the actor exhausted its ideas at
 59.62 / 49.48. This is the general failure mode a fixed timeout + naive
 iteration counting can introduce into *any* self-improve loop (see the
-generalized lesson synced to `mcp-data/shared/memory-seed.sql` below).
+generalized lesson synced to `mcp-data/shared/seed-lessons.sql` below).
 
 **Four fixes shipped**, all pure Node/JS under `benchmark/boeing747/`, no
 cargo touched, all 8 frozen artifacts (`rubric.json`, `lib/cameras.mjs`,
@@ -347,7 +347,7 @@ cargo touched, all 8 frozen artifacts (`rubric.json`, `lib/cameras.mjs`,
    `attempt_timeout_ms = base_timeout_ms × (attempt+1)` capped at
    `timeout_cap_ms`; attempt 0 keeps the unchanged 600,000 ms budget. Retry
    count/timeouts are read from a documented `ACTOR_RETRY_CONFIG_JSON` row in
-   `mcp-data/shared/memory-seed.sql` (mirroring how `judge.mjs::loadRubric()`
+   `mcp-data/shared/seed-lessons.sql` (mirroring how `judge.mjs::loadRubric()`
    reads `rubric.json`), fail-open to named defaults, overridable via
    `--max-actor-retries`.
 2. **Corrected stop-condition signal** — `lib/stop-conditions.mjs` stays
@@ -381,7 +381,7 @@ iterations + 4 straight `actor_exhausted_retries` iterations) and proves the
 stall streak advances only on the genuine ones. Durable lessons recorded:
 `LESSON (BOEING-747-FAITHFUL-ACTOR-1, 2026-07-10)` and
 `LESSON (BOEING-747-ACTOR-RETRY-1, 2026-07-10)` in
-`mcp-data/shared/memory-seed.sql`.
+`mcp-data/shared/seed-lessons.sql`.
 
 **Corrected re-run status: STARTED, NOT COMPLETE.** A `terransoul-fable5-v2`
 run was launched on the fixed harness, seeded from the v1 `terransoul-fable5`
@@ -436,7 +436,7 @@ Fable-5 isolated-config bootstrap so the actor's model choice is resolved
 the same way `--self-improve` resolves its own. Full technical detail and
 verify results: `rules/completion-log.md` →
 `BOEING-TERRANSOUL-CLI-ACTOR-1`. Durable pattern lesson:
-`mcp-data/shared/memory-seed.sql` → `LESSON (BOEING-TERRANSOUL-CLI-ACTOR-1,
+`mcp-data/shared/seed-lessons.sql` → `LESSON (BOEING-TERRANSOUL-CLI-ACTOR-1,
 2026-07-10)`.
 
 **Verify status, honestly:**
@@ -552,7 +552,7 @@ gemma4 / 57.86 Opus-vision** (its first completed run). Results:
 open-track results above (and a 2026-07-12 first re-run that reached 74.61 gemma4)
 were **seed-contaminated**: a prior session had committed 8 raw
 `LESSON (boeing747-actor-attempt)` 747-geometry lessons (nose ogive, engine
-span stations, pylon dimensions) into `mcp-data/shared/memory-seed.sql`, and the
+span stations, pylon dimensions) into `mcp-data/shared/seed-lessons.sql`, and the
 seed is applied to bench stores — so the actor started with geometry hints,
 violating the no-game-tuned-seeds rule. Those 8 blocks were removed (commit
 `7e11cf43`; the two *generic* harness lessons — autonomous-actor wiring,

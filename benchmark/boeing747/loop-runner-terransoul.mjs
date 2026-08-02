@@ -26,7 +26,7 @@
 //        thresholds/patience/budget loop-runner-claude.mjs already uses) —
 //        fed ONLY genuine iterations (see LESSON BOEING-747-ACTOR-RETRY-1)
 //
-// LESSON BOEING-747-ACTOR-RETRY-1 (mcp-data/shared/memory-seed.sql): the
+// LESSON BOEING-747-ACTOR-RETRY-1 (mcp-data/shared/seed-lessons.sql): the
 // committed terransoul-fable5 run stalled on 4 straight actor-timeout
 // iterations that never produced a genuine attempt, yet were fed into
 // evaluateStopConditions as ordinary non-improving scores — a measurement
@@ -1323,7 +1323,7 @@ if (isMain) {
     bestOfN: args['best-of-n'] ? Number(args['best-of-n']) : 0,
     // --design-reference: ask TerranSoul's own memory (pointed at THIS run's
     // --cli-data-dir) for reference material an operator ingested ahead of
-    // time via `terransoul --ingest-resume <path>`, scoped to the current
+    // time via `terransoul --ingest <path>`, scoped to the current
     // weakest feature, and inject the answer into the actor prompt. Default
     // OFF — a bare run stays byte-identical to every prior track. See
     // buildDesignReferenceSection / lib/design-reference.mjs.

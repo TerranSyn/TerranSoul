@@ -373,7 +373,7 @@ export function rankStrategies(items, opts = {}) {
 // next prompt, so it is a direct smuggling vector for answer-derived numeric
 // geometry — the exact AGI-purity violation this repo forbids
 // (rules/bench-agi-purity.md). The DEMONSTRATED contamination
-// (mcp-data/shared/memory-seed.sql boeing747-actor-attempt lessons) was PROSE
+// (mcp-data/shared/seed-lessons.sql boeing747-actor-attempt lessons) was PROSE
 // with derived measurements ('6.5 -> 4.9', 'L/D 1.58', '0.767 x 8 = 6.14', a
 // wingChordY helper) plus scalar assignments and THREE.Vector3(x,y,z) calls —
 // NONE of which a lone coordinate-array regex catches. So the guard below is
