@@ -59,26 +59,36 @@
   <h2>Status &amp; capabilities</h2>
   <p>Bidirectional. A supervisor connects to the Gateway at host boot, identifies once, heartbeats on the interval Discord dictates, and receives message events the instant they happen — no polling delay. If the connection drops, the supervisor reconnects with backoff, resuming the session where possible instead of re-identifying from scratch. Outbound sends are a normal REST POST to <code>{base}/channels/{id}/messages</code> with <code>Authorization: Bot &lt;token&gt;</code>.</p>
 
-  <h2>Auth setup</h2>
+  <h2>Quickstart</h2>
+  <div class="note"><b>Everything below happens in two places:</b> the <a href="https://discord.com/developers/applications">Discord Developer Portal</a> (steps 1–4, once) and TerranSoul's <b>Brain → Channels</b> tab (step 5).</div>
   <ol>
-    <li>Create an application at the <a href="https://discord.com/developers/applications">Discord Developer Portal</a>, add a Bot user, and copy its token.</li>
-    <li>Under the bot's settings, enable the <b>Message Content Intent</b> (Discord requires this explicitly for a bot to read message text).</li>
-    <li>Generate an OAuth2 invite URL with the <code>bot</code> scope and <code>Send Messages</code>/<code>Read Message History</code> permissions, and use it to add the bot to your server.</li>
-    <li>Get the numeric id of the channel you want it to post in (right-click the channel → Copy Channel ID; Developer Mode must be on in Discord's settings).</li>
-    <li>Save the credential:</li>
+    <li>Create an application at the <a href="https://discord.com/developers/applications">Discord Developer Portal</a> → <b>Bot</b> tab → <b>Reset Token</b> and copy the token (it is shown once).</li>
+    <li>On the same Bot tab, enable the <b>MESSAGE CONTENT INTENT</b> toggle. Without it the bot connects but Discord withholds message text, so nothing ever reaches the brain.</li>
+    <li>Generate an OAuth2 invite URL (<b>OAuth2 → URL Generator</b>) with the <code>bot</code> scope and <code>View Channels</code>/<code>Send Messages</code>/<code>Read Message History</code> permissions, open it, and add the bot to your server.</li>
+    <li>Get the numeric id of the channel you want it to post in (right-click the channel → Copy Channel ID; Developer Mode must be on under Discord Settings → Advanced).</li>
+    <li>In TerranSoul: <b>Brain → Channels → Discord card</b> — paste the token and channel id, <b>Save</b>, then flip the <b>Enabled</b> toggle. The gateway connects within ~5 seconds (watch the status dot). Optionally set <b>Allowed senders</b> to your own user/channel ids so strangers get a polite refusal, and fire a <b>Test send</b>.</li>
   </ol>
+  <p>Message the channel from Discord — the bot replies through the same brain pipeline as the desktop chat, with one isolated conversation per Discord channel (session tag <code>channel:discord:&lt;channel id&gt;</code>).</p>
+  <p><b>Constraints:</b> local-only mode blocks all channel egress; run only one TerranSoul instance per bot token.</p>
+
+  <h2>Auth setup (headless / programmatic)</h2>
+  <p>The Channels tab drives these same commands; a headless install can call them directly:</p>
   <pre><code>channel_save_credential(
   channel: "discord",
   json_str: '{"token": "&lt;bot token&gt;", "chat_id": "&lt;default channel id&gt;"}'
-)</code></pre>
-  <p>Then flip <code>channels.discord.enabled</code> to <code>true</code>.</p>
+)
+channel_config_set(channel: "discord", key: "enabled", value: "true")</code></pre>
 
   <h2>Config</h2>
   <div class="tablewrap"><table>
     <tr><th>Key</th><th>Meaning</th></tr>
-    <tr><td><code>channels.discord.enabled</code></td><td>Must be <code>true</code> for the gateway supervisor to run.</td></tr>
-    <tr><td><code>channels.discord.gateway_url</code></td><td>Optional override of the live <code>wss://gateway.discord.gg</code> endpoint — mainly a test seam, not something you'll normally set.</td></tr>
-    <tr><td><code>channels.discord.base_url</code></td><td>Optional REST API base override.</td></tr>
+    <tr><td><code>channels.discord.enabled</code></td><td>Must be <code>true</code> for the gateway supervisor to run. UI: the Enabled toggle.</td></tr>
+    <tr><td><code>channels.discord.allowed_senders</code></td><td>Comma-separated allow-list of channel/user ids permitted to reach the brain; everyone else gets a polite refusal. Empty/absent = allow all (an empty list can never lock you out). UI: Allowed senders.</td></tr>
+    <tr><td><code>channels.discord.max_message_len</code></td><td>Outbound cap in Unicode code points (default 2000 — Discord's limit). Longer replies are split into sequential messages at paragraph/line/word boundaries instead of being rejected whole. <code>0</code> disables splitting.</td></tr>
+    <tr><td><code>channels.discord.dedup_cache_size</code></td><td>How many recent message ids are remembered to drop gateway-redelivered duplicates after a reconnect (default 512; <code>0</code> disables).</td></tr>
+    <tr><td><code>channels.discord.intents</code></td><td>Gateway Intents bitmask requested at identify (default 37376 = guild + direct messages + message content). The portal's MESSAGE CONTENT toggle must ALSO be on.</td></tr>
+    <tr><td><code>channels.discord.gateway_url</code></td><td>Optional override of the live <code>wss://gateway.discord.gg</code> endpoint — mainly a test seam, not something you'll normally set. Not editable from the UI.</td></tr>
+    <tr><td><code>channels.discord.base_url</code></td><td>Optional REST API base override. Not editable from the UI.</td></tr>
   </table></div>
 
   <h2>Troubleshooting</h2>
@@ -86,6 +96,8 @@
     <li><b>Bot connects but never sees messages</b> — check the Message Content Intent is enabled in the Developer Portal; without it, Discord silently strips message text from the events the Gateway sends.</li>
     <li><b>Repeated reconnects</b> — normal in small numbers (Discord Gateway connections do drop); persistent reconnect loops usually mean an invalid/revoked token.</li>
     <li><b>"chat_id has no destination"</b> — no default channel id saved and no <code>recipient</code> passed to <code>channel_send</code>.</li>
+    <li><b>Send failures</b> — the Channels tab's test-send surfaces a structured detail line (<code>attempted= / observed= / likely_cause= / try=</code>): 401 = token invalid/revoked, 403 = bot not in that channel or missing Send Messages, 404 = wrong channel id.</li>
+    <li><b>Replies stop mid-conversation with local-only mode on</b> — local-only mode blocks all channel egress by design.</li>
   </ul>
 </main>
 

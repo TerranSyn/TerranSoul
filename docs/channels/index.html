@@ -74,13 +74,19 @@
   </table></div>
   <p>Whatever comes in over any channel gets routed through the same session-routing pipeline the app's own chat UI uses, so a conversation started in Telegram sees the same memory and brain behind it as a conversation started in the app.</p>
 
-  <h2>Commands you'll use</h2>
+  <h2>Setting up</h2>
+  <p>Open <b>Brain → Channels</b> in the app: each channel gets a card with an enable toggle, a write-once credential form (masked after save), a sender allow-list, live connection status, and a test-send. The per-channel pages below walk through the platform-side setup (creating the bot, tokens, intents).</p>
+
+  <h2>Commands underneath (headless / agent use)</h2>
   <ul>
     <li><code>channel_save_credential(channel, json_str)</code> — encrypt and store a channel's secret blob (bot token, app token, device label — whatever that platform needs).</li>
+    <li><code>channel_delete_credential(channel)</code> — remove it again.</li>
+    <li><code>channel_credential_status(channel)</code> — masked status; the secret itself never comes back.</li>
+    <li><code>channel_config_get(channel)</code> / <code>channel_config_set(channel, key, value)</code> — read/write the editable config rows (<code>enabled</code>, <code>allowed_senders</code>, <code>poll_interval_ms</code>, <code>max_message_len</code>, <code>intents</code>, <code>dedup_cache_size</code>).</li>
     <li><code>channel_list()</code> — see which channels are configured and enabled.</li>
-    <li><code>channel_send(channel, text, recipient?, parse_mode?)</code> — send a message; omit <code>channel</code> to broadcast to every enabled+configured one.</li>
+    <li><code>channel_connection_status()</code> — live gateway/queue/circuit-breaker state per channel.</li>
+    <li><code>channel_send(channel, text, recipient?, parse_mode?)</code> — send a message; omit <code>channel</code> to broadcast to every enabled+configured one. Replies longer than the platform's per-message cap are split automatically at natural boundaries.</li>
   </ul>
-  <div class="note">There's no dedicated settings-tab UI for channels yet — you configure them by calling these commands directly (e.g. from the app's dev console, or by pointing an MCP-connected agent at them). If you're comfortable with that, the per-channel pages below have the exact JSON shape each one expects.</div>
 
   <h2>Pick a channel</h2>
   <div class="cards">
