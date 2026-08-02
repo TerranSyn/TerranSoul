@@ -31,6 +31,7 @@
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { JsonlClient } from './lib/jd-ipc.mjs';
+import { runBenchPreflight } from './lib/bench-preflight.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -72,6 +73,14 @@ async function warmEmbedModel() {
 }
 
 async function main() {
+  // BENCH-GUARD-SWEEP-1: shared embedder preflight (lib/bench-preflight.mjs).
+  runBenchPreflight({
+    repoRoot: REPO_ROOT,
+    outDir: process.cwd(),
+    label: 'jd-backfill',
+    skip: process.argv.includes('--skip-preflight'),
+    allowCpuEmbedder: process.argv.includes('--allow-cpu-embedder'),
+  });
   if (process.env.LONGMEM_EMBED !== '1') {
     console.error('[jd-backfill] LONGMEM_EMBED=1 is required (the shim builds its embedder from env)');
     process.exit(2);

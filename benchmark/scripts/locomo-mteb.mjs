@@ -13,6 +13,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { asyncBufferFromFile, parquetReadObjects } from 'hyparquet';
 import { childEnvOverrides, locomoEnvStamp, writeSystemsArtifacts } from './lib/locomo-systems-artifact.mjs';
+import { runBenchPreflight } from './lib/bench-preflight.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -1107,6 +1108,24 @@ async function main() {
 
   if (options.qaEval && !QA_EVAL_MODES.has(options.qaEval)) {
     throw new Error(`unknown --qa-eval mode: ${options.qaEval}; use one of: ${[...QA_EVAL_MODES].join(', ')}`);
+  }
+
+  // BENCH-GUARD-SWEEP-1: this harness ran UNGUARDED until 2026-08-02, and it
+  // cost a real run — a LoCoMo QA attempt sat 74 minutes at the first task's
+  // ingest and produced no artifact, with `/api/ps` showing no resident
+  // `embeddinggemma`. The guard that would have caught it in seconds already
+  // existed; it was wired into longmemeval-s.mjs only. Gate BEFORE the dataset
+  // download and before any model is touched, so a misconfigured run costs
+  // seconds instead of hours.
+  if (cmd !== 'prepare') {
+    runBenchPreflight({
+      repoRoot: REPO_ROOT,
+      outDir: options.outDir,
+      chatModel: options.qaGenerator || process.env.LONGMEM_CHAT_MODEL,
+      label: 'locomo',
+      skip: hasFlag('skip-preflight'),
+      allowCpuEmbedder: hasFlag('allow-cpu-embedder'),
+    });
   }
 
   if (cmd === 'prepare') {

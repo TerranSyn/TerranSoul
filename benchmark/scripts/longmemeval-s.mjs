@@ -11,10 +11,12 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { spawn, spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { buildJudgePrompt, chunkSessionToText } from './lib/longmem-judge-prompt.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+import { runBenchPreflight } from './lib/bench-preflight.mjs';
+
 const REPO_ROOT = resolve(__dirname, '..', '..');
 const DEFAULT_DATA_DIR = resolve(REPO_ROOT, 'target-copilot-bench', 'longmemeval');
 const DEFAULT_DATASET_PATH = resolve(DEFAULT_DATA_DIR, 'longmemeval_s_cleaned.json');
@@ -85,20 +87,18 @@ function command() {
  * entirely, for a quick local iteration where the extra ~20-30s round-trip
  * isn't worth it.
  */
+// Delegates to the SHARED guard (benchmark/scripts/lib/bench-preflight.mjs).
+// This used to be the only copy in the repo, wired into this one harness while
+// 13 others ran unguarded — see that file's header for the sweep.
 function runPreflight(outDir) {
-  if (hasFlag('skip-preflight')) {
-    console.error('[longmem] --skip-preflight: bypassing bench-guard preflight.');
-    return;
-  }
-  const args = [resolve(REPO_ROOT, 'scripts', 'bench-guard.mjs'), '--preflight', '--out-dir', outDir];
-  const chatModel = option('chat-model', process.env.LONGMEM_CHAT_MODEL);
-  if (chatModel) args.push('--chat-model', chatModel);
-  console.error('[longmem] running bench-guard preflight (pass --skip-preflight to bypass)…');
-  const result = spawnSync(process.execPath, args, { cwd: REPO_ROOT, stdio: 'inherit' });
-  if (result.status !== 0) {
-    console.error(`[longmem] PREFLIGHT FAILED (exit ${result.status}) — not running. Pass --skip-preflight to bypass.`);
-    process.exit(result.status ?? 1);
-  }
+  runBenchPreflight({
+    repoRoot: REPO_ROOT,
+    outDir,
+    chatModel: option('chat-model', process.env.LONGMEM_CHAT_MODEL),
+    label: 'longmem',
+    skip: hasFlag('skip-preflight'),
+    allowCpuEmbedder: hasFlag('allow-cpu-embedder'),
+  });
 }
 
 function printHelp() {

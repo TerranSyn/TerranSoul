@@ -32,6 +32,7 @@ import { fileURLToPath } from 'node:url';
 import { asyncBufferFromFile, parquetReadObjects } from 'hyparquet';
 import { buildScaleCorpus } from './locomo-ivfpq-corpus.mjs';
 import { metricForQuery } from './locomo-ivfpq-metrics.mjs';
+import { runBenchPreflight } from './lib/bench-preflight.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -1082,6 +1083,14 @@ function markdownReport(report) {
 }
 
 async function main() {
+  // BENCH-GUARD-SWEEP-1: shared embedder preflight (lib/bench-preflight.mjs).
+  runBenchPreflight({
+    repoRoot: REPO_ROOT,
+    outDir: process.cwd(),
+    label: 'locomo-ivfpq',
+    skip: process.argv.includes('--skip-preflight'),
+    allowCpuEmbedder: process.argv.includes('--allow-cpu-embedder'),
+  });
   const cmd = command();
   if (cmd === 'help' || cmd === '--help') { printHelp(); return; }
   if (cmd !== 'run') { console.error(`unknown command ${cmd}`); printHelp(); process.exit(1); }

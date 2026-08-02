@@ -726,6 +726,55 @@
     as well as on the figure: supermemory&rsquo;s LongMemEval headline is a recall at
     <em>k</em>&nbsp;=&nbsp;15 and this page&rsquo;s is a recall at <em>k</em>&nbsp;=&nbsp;5, so the
     two never share a series.</p>
+
+    <p><strong>The three TerranSoul blanks, revisited 2026-08-02.</strong> Three of these figures
+    carried a TerranSoul blank while every peer on them carried a value, which is a bad look that
+    is worth being precise about rather than filling in. One is now filled, one is filled in its
+    own frame, and one stays blank &mdash; and the reason it stays blank turned out to be different
+    from the reason this page had been giving.</p>
+
+    <p><strong>Context reduction is now measured, and it is a per-cent.</strong> On the production
+    default fused path, retrieval carries 2,748 tokens of context where pasting the whole corpus
+    carries 32,660 &mdash; a reduction of <strong>91.6&nbsp;%</strong>, at <em>n</em>&nbsp;=&nbsp;20
+    queries over 240 observations, no judge in the loop. It is drawn as a third panel rather than
+    beside supermemory&rsquo;s 99.4&nbsp;% because the corpus differs: supermemory measures on
+    LongMemEval and this is TerranSoul&rsquo;s own 240-observation fixture, vendored from
+    agentmemory, scored with the bench&rsquo;s deterministic embedder rather than the shipped Ollama
+    one. The same run re-based against a 200-line summary instead of the full paste gives
+    65.5&nbsp;%, and both are printed, because a reduction is only ever a reduction against a stated
+    baseline. Two things this figure deliberately does not do: it is not converted into a
+    multiplier so that it can sit beside code-review-graph&rsquo;s 82&times;, and it is not restated
+    at <em>n</em>&nbsp;=&nbsp;50 &mdash; the fixture is fixed-size, so the honest label is
+    <em>n</em>&nbsp;=&nbsp;20.</p>
+
+    <p><strong>LongMemEval answer accuracy cannot be produced at all, and that is structural.</strong>
+    The retrieval harness has no answer-generation stage anywhere in it &mdash; no generator prompt,
+    no completion call. Its single LLM call is an evidence-support diagnostic that asks whether the
+    retrieved sessions contain enough to answer, and it is deliberately never shown the reference
+    answer, with a regression test that enforces the omission. So the QA blank is not a run nobody
+    got round to; producing that number would mean building a generator-and-judge stage, which is a
+    feature and not a benchmark. What the figure gains instead is a third panel carrying the metric
+    we do have, at <em>n</em>&nbsp;=&nbsp;50: recall@5 98.0, recall@10 100.0, NDCG@10 93.5 and
+    MRR@20 91.4, chat mode against a frozen <code>gemma4:12b-it-qat</code> with the
+    <code>embeddinggemma</code> embedder. It joins none of the four series above it, for the reason
+    this page has always given: a recall is not an answer accuracy, and a recall at
+    <em>k</em>&nbsp;=&nbsp;5 is not supermemory&rsquo;s recall at <em>k</em>&nbsp;=&nbsp;15. Two
+    caveats travel with it and are printed on the figure. Every question in that 50-question slice
+    is single-session-user, so LongMemEval&rsquo;s harder categories &mdash; multi-session, temporal,
+    knowledge-update &mdash; are absent from it and it is favourable ground; and a 50-question slice
+    never shares a series with a full-500 number.</p>
+
+    <p><strong>The LoCoMo blank stays, but its stated reason was wrong.</strong> This page said we
+    had &ldquo;retrieval only, a documented gap&rdquo;. That is not true: an end-to-end
+    answer-and-judge pass over LoCoMo exists, runs, and has since before this page was written. What
+    is missing is not the harness but a comparable target. The MTEB distribution of LoCoMo ships
+    gold <em>passages</em> and no gold <em>answers</em>, so that pass necessarily grades a generated
+    answer against retrieved passages, on a graded 0&ndash;10 rubric rather than as a proportion
+    correct, judged by our own local 12B rather than by a third party. Three separate mismatches
+    against what Letta, Mem0, Zep and MemOS report, any one of which would disqualify it from their
+    series. It would be a fifth incomparable metric on a figure that already carries four, so it is
+    not drawn at all, and the blank is left to say the thing that is actually true: we can run it,
+    and we cannot yet make it mean what that axis says.</p>
 <div class="chart-block">
 <style>
 .c1{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6;--s2:#eb6834}
@@ -923,9 +972,9 @@
 .c5 .b1{fill:var(--s1)}
 .c5 .b2{fill:var(--s2)}
 </style>
-<svg class="c5" viewBox="0 0 680 580" role="img" aria-labelledby="cap-lmeacc">
-  <title id="cap-lmeacc">LongMemEval headline figures as four different publishers report them: supermemory recall-at-15, hindsight with an undisclosed metric, MemOS unnamed, and m_flow question-answering accuracy. TerranSoul is a blank because none of these is our metric.</title>
-  <rect class="sf" x="0" y="0" width="680" height="580" rx="10"/>
+<svg class="c5" viewBox="0 0 680 870" role="img" aria-labelledby="cap-lmeacc">
+  <title id="cap-lmeacc">LongMemEval headline figures as four different publishers report them: supermemory recall-at-15, hindsight with an undisclosed metric, MemOS unnamed, and m_flow question-answering accuracy. TerranSoul is a blank on that panel because our harness has no answer-generation stage at all; a third panel carries our own retrieval metric at n equals 50, which joins none of their series.</title>
+  <rect class="sf" x="0" y="0" width="680" height="870" rx="10"/>
 
   <rect class="b1" x="8" y="10" width="12" height="12" rx="3"/><text x="26" y="20">metric definition public</text>
   <rect class="b2" x="216" y="10" width="12" height="12" rx="3"/><text x="234" y="20">metric definition NOT public</text>
@@ -962,8 +1011,8 @@
 
   <line class="blank" x1="244" y1="174" x2="616" y2="174"/>
   <text class="lab" x="232" y="178" text-anchor="end">TerranSoul</text>
-  <rect class="sf" x="248" y="166" width="298" height="16"/>
-  <text class="note" x="252" y="178">no LongMemEval QA-accuracy number &#8212; retrieval only</text>
+  <rect class="sf" x="248" y="166" width="342" height="16"/>
+  <text class="note" x="252" y="178">no QA-accuracy number &#8212; no answer stage; retrieval in Panel C</text>
 
   <line class="rule" x1="0" y1="226" x2="680" y2="226"/>
 
@@ -993,9 +1042,9 @@
   <text class="lab" x="232" y="326" text-anchor="end">User-recall</text>
   <text class="val" x="614.8" y="326">97</text>
 
-  <path class="b1" d="M244 339 H585.9 A4 4 0 0 1 589.9 343 V349 A4 4 0 0 1 585.9 353 H244 Z"/>
+  <path class="b1" d="M244 339 H586.0 A4 4 0 0 1 590.0 343 V349 A4 4 0 0 1 586.0 353 H244 Z"/>
   <text class="lab" x="232" y="350" text-anchor="end">Multi-session</text>
-  <text class="val" x="599.9" y="350">93</text>
+  <text class="val" x="600.0" y="350">93</text>
 
   <path class="b1" d="M244 363 H578.5 A4 4 0 0 1 582.5 367 V373 A4 4 0 0 1 578.5 377 H244 Z"/>
   <text class="lab" x="232" y="374" text-anchor="end">Temporal</text>
@@ -1005,15 +1054,55 @@
   <text class="lab" x="232" y="398" text-anchor="end">Preference</text>
   <text class="val" x="588.8" y="398">90</text>
 
-  <text class="note" x="0" y="452">Panel A stacks FOUR different metrics in one frame, because that is how the field publishes them:</text>
-  <text class="note" x="0" y="466">supermemory reports recall at k = 15 and needs no judge; m_flow reports judged answer accuracy with</text>
-  <text class="note" x="0" y="480">gpt-5-mini answering and gpt-4o-mini judging; MemOS reports an unnamed score attributed only to</text>
-  <text class="note" x="0" y="494">&#8220;OmniMemEval&#8221;; hindsight&#8217;s definition is not public. The order is by published value, but these are four different metrics and the values are not comparable.</text>
-  <text class="note" x="0" y="508">m_flow also reports 93 on temporal (n = 60) and 82 on multi-session (n = 40) under that same judge.</text>
-  <text class="note" x="0" y="522">Question count: not disclosed by supermemory, hindsight or MemOS. Answering model: not disclosed by</text>
-  <text class="note" x="0" y="536">any of those three. Corpus is LongMemEval on every row, LongMemEval-S where the publisher says so.</text>
-  <text class="note" x="0" y="550">None of these is this page&#8217;s metric. TerranSoul&#8217;s LongMemEval figures are retrieval NDCG@10 and</text>
-  <text class="note" x="0" y="564">recall at k = 5, and a recall at k = 15 never shares a series with a recall at k = 5 on this page.</text>
+  <line class="rule" x1="0" y1="452" x2="680" y2="452"/>
+
+  <text class="key" x="0" y="474">PANEL C &#183; TERRANSOUL, ITS OWN METRIC &#183; LongMemEval-S RETRIEVAL &#183; n = 50 &#183; NOT QA ACCURACY</text>
+
+  <line class="grid" x1="244" y1="484" x2="244" y2="592"/>
+  <line class="grid" x1="337" y1="484" x2="337" y2="592"/>
+  <line class="grid" x1="430" y1="484" x2="430" y2="592"/>
+  <line class="grid" x1="523" y1="484" x2="523" y2="592"/>
+  <line class="grid" x1="616" y1="484" x2="616" y2="592"/>
+  <line class="axis" x1="244" y1="592" x2="616" y2="592"/>
+  <text class="val" x="244" y="608" text-anchor="middle">0</text>
+  <text class="val" x="337" y="608" text-anchor="middle">25</text>
+  <text class="val" x="430" y="608" text-anchor="middle">50</text>
+  <text class="val" x="523" y="608" text-anchor="middle">75</text>
+  <text class="val" x="616" y="608" text-anchor="middle">100 %</text>
+
+  <path class="b1" d="M244 493 H612.0 A4 4 0 0 1 616.0 497 V503 A4 4 0 0 1 612.0 507 H244 Z"/>
+  <text class="lab" x="232" y="504" text-anchor="end">recall@10</text>
+  <text class="val" x="626.0" y="504">100.0</text>
+
+  <path class="b1" d="M244 517 H604.6 A4 4 0 0 1 608.6 521 V527 A4 4 0 0 1 604.6 531 H244 Z"/>
+  <text class="lab" x="232" y="528" text-anchor="end">recall@5</text>
+  <text class="val" x="618.6" y="528">98.0</text>
+
+  <path class="b1" d="M244 541 H587.8 A4 4 0 0 1 591.8 545 V551 A4 4 0 0 1 587.8 555 H244 Z"/>
+  <text class="lab" x="232" y="552" text-anchor="end">NDCG@10</text>
+  <text class="val" x="601.8" y="552">93.5</text>
+
+  <path class="b1" d="M244 565 H580.0 A4 4 0 0 1 584.0 569 V575 A4 4 0 0 1 580.0 579 H244 Z"/>
+  <text class="lab" x="232" y="576" text-anchor="end">MRR@20</text>
+  <text class="val" x="594.0" y="576">91.4</text>
+
+  <text class="note" x="0" y="630">Panel A stacks FOUR different metrics in one frame, because that is how the field publishes them:</text>
+  <text class="note" x="0" y="644">supermemory reports recall at k = 15 and needs no judge; m_flow reports judged answer accuracy with</text>
+  <text class="note" x="0" y="658">gpt-5-mini answering and gpt-4o-mini judging; MemOS reports an unnamed score attributed only to</text>
+  <text class="note" x="0" y="672">&#8220;OmniMemEval&#8221;; hindsight&#8217;s definition is not public. The order is by published value, but these</text>
+  <text class="note" x="0" y="686">are four different metrics and the values are not comparable.</text>
+  <text class="note" x="0" y="700">m_flow also reports 93 on temporal (n = 60) and 82 on multi-session (n = 40) under that same judge.</text>
+  <text class="note" x="0" y="714">Question count: not disclosed by supermemory, hindsight or MemOS. Answering model: not disclosed by</text>
+  <text class="note" x="0" y="728">any of those three. Corpus is LongMemEval on every row, LongMemEval-S where the publisher says so.</text>
+  <text class="note" x="0" y="742">Panel C is TerranSoul&#8217;s own metric and joins NO series above. It asks whether a gold session reaches</text>
+  <text class="note" x="0" y="756">the top k, not whether an answer was right, and a recall at k = 5 never shares a series with a recall</text>
+  <text class="note" x="0" y="770">at k = 15. Chat mode, frozen gemma4:12b-it-qat, embeddinggemma, self-measured, no judge in the loop.</text>
+  <text class="note" x="0" y="784">Two material caveats on Panel C. All 50 questions in this slice are single-session-user, so</text>
+  <text class="note" x="0" y="798">LongMemEval&#8217;s harder categories are absent from it and it is favourable ground. And it is a</text>
+  <text class="note" x="0" y="812">50-question slice, which never shares a series with a full-500 number on this page.</text>
+  <text class="note" x="0" y="826">The QA blank in Panel A is structural, not a scheduling gap. The harness has no answer-generation</text>
+  <text class="note" x="0" y="840">stage at all: its one LLM call is an evidence-support diagnostic that is deliberately never shown the</text>
+  <text class="note" x="0" y="854">reference answer, and a regression test enforces that. A QA accuracy would be a feature, not a run.</text>
 </svg>
 </div>
 <div class="chart-block">
@@ -1139,9 +1228,9 @@
 .c3 .blank{stroke:var(--grid);stroke-width:1;stroke-linecap:round}
 .c3 .b1{fill:var(--s1)}
 </style>
-<svg class="c3" viewBox="0 0 680 754" role="img" aria-labelledby="cap-locomo">
-  <title id="cap-locomo">LoCoMo question-answering accuracy as each system publishes it, in three panels, with TerranSoul an honest blank because we have no LoCoMo number.</title>
-  <rect class="sf" x="0" y="0" width="680" height="754" rx="10"/>
+<svg class="c3" viewBox="0 0 680 860" role="img" aria-labelledby="cap-locomo">
+  <title id="cap-locomo">LoCoMo question-answering accuracy as each system publishes it, in three panels, with TerranSoul an honest blank: an end-to-end answer-and-judge pass over LoCoMo exists and runs, but the MTEB distribution of the dataset ships no gold answers, so it grades against retrieved passages on a graded rubric with a local self-judge and cannot join a proportion-correct series.</title>
+  <rect class="sf" x="0" y="0" width="680" height="860" rx="10"/>
 
   <text class="key" x="0" y="22">PANEL A &#183; AS EACH SYSTEM PUBLISHES IT &#183; END-TO-END ANSWER ACCURACY</text>
 
@@ -1180,8 +1269,8 @@
 
   <line class="blank" x1="244" y1="176" x2="616" y2="176"/>
   <text class="lab" x="232" y="180" text-anchor="end">TerranSoul</text>
-  <rect class="sf" x="248" y="168" width="404" height="16"/>
-  <text class="note" x="252" y="180">no end-to-end QA number on LoCoMo &#8212; retrieval only, a documented gap</text>
+  <rect class="sf" x="248" y="168" width="332" height="16"/>
+  <text class="note" x="252" y="180">no comparable LoCoMo QA number &#8212; see the notes below</text>
 
   <line class="rule" x1="0" y1="228" x2="680" y2="228"/>
 
@@ -1257,8 +1346,8 @@
 
   <line class="blank" x1="244" y1="602" x2="616" y2="602"/>
   <text class="lab" x="232" y="606" text-anchor="end">TerranSoul</text>
-  <rect class="sf" x="248" y="594" width="352" height="16"/>
-  <text class="note" x="252" y="606">not run in m_flow&#8217;s harness, and no LoCoMo number of our own</text>
+  <rect class="sf" x="248" y="594" width="332" height="16"/>
+  <text class="note" x="252" y="606">not run in m_flow&#8217;s harness &#8212; and see the notes below</text>
 
   <text class="note" x="0" y="654">Mem0 appears in two panels: 68.5 in A (its own paper) and 27.3 in B (Graphify&#8217;s harness, Kimi K2.6).</text>
   <text class="note" x="0" y="668">Zep and Cognee appear in A and C with different figures &#8212; the harness, judge and top-k all differ.</text>
@@ -1267,6 +1356,13 @@
   <text class="note" x="0" y="710">&#185; a generic RRF baseline in Graphify&#8217;s own peer set &#8212; unrelated to TerranSoul&#8217;s identically-named rrf.</text>
   <text class="note" x="0" y="724">&#178; MemOS attributes both its figures to one line, &#8220;evaluated via OmniMemEval&#8221; &#8212; no n, no judge, no baselines.</text>
   <text class="note" x="0" y="738">Panel C excludes LoCoMo Category 5 (adversarial), as m_flow&#8217;s own report states.</text>
+  <text class="note" x="0" y="760">The TerranSoul blanks are NOT a missing harness, and this page said they were until 2026-08-02.</text>
+  <text class="note" x="0" y="774">An end-to-end answer-and-judge pass over LoCoMo exists and runs. What is missing is a comparable</text>
+  <text class="note" x="0" y="788">TARGET: the MTEB LoCoMo distribution ships gold PASSAGES and no gold ANSWERS, so that pass grades</text>
+  <text class="note" x="0" y="802">a generated answer against retrieved passages on a 0&#8211;10 rubric, self-judged by our own local 12B.</text>
+  <text class="note" x="0" y="816">A graded mean scored against a different target, by a self-judge, is not the proportion-correct that</text>
+  <text class="note" x="0" y="830">every bar above reports. It would be a fifth incomparable metric, so it is not drawn at all.</text>
+  <text class="note" x="0" y="844">Leaving the blank is the claim: we can run it, and we cannot yet make it mean what this axis says.</text>
 </svg>
 </div>
 <div class="chart-block">
@@ -1347,9 +1443,9 @@
 .c7 .d1{fill:var(--s1);stroke:var(--sf);stroke-width:2}
 .c7 .b2{fill:var(--s2)}
 </style>
-<svg class="c7" viewBox="0 0 680 374" role="img" aria-labelledby="cap-ctxreduce">
-  <title id="cap-ctxreduce">Context reduction, two unscaled panels: code-review-graph reports a token-reduction multiplier, supermemory reports a per-cent reduction, and converting between them would invent a number neither published.</title>
-  <rect class="sf" x="0" y="0" width="680" height="374" rx="10"/>
+<svg class="c7" viewBox="0 0 680 600" role="img" aria-labelledby="cap-ctxreduce">
+  <title id="cap-ctxreduce">Context reduction, three unscaled panels: code-review-graph reports a token-reduction multiplier, supermemory reports a per-cent reduction, and TerranSoul reports a per-cent reduction on its own 240-observation fixture rather than on LongMemEval.</title>
+  <rect class="sf" x="0" y="0" width="680" height="600" rx="10"/>
 
   <text class="key" x="0" y="22">PANEL A &#183; CODE-REVIEW-GRAPH &#183; TOKEN REDUCTION &#183; 6 OSS REPOS, 5 QUESTIONS EACH &#183; NO JUDGE</text>
 
@@ -1392,13 +1488,44 @@
   <text class="lab" x="232" y="198" text-anchor="end">supermemory</text>
   <text class="val" x="623.8" y="198">99.4 %</text>
 
-  <text class="note" x="0" y="274">The two panels are NOT scaled to each other. One publisher prints a multiplier, the other a per-cent</text>
-  <text class="note" x="0" y="288">reduction, and converting between them would invent a number neither of them published.</text>
-  <text class="note" x="0" y="302">code-review-graph&#8217;s spread over the six repositories is 38&#215; to 528&#215;; the dot is its median, 82&#215;.</text>
-  <text class="note" x="0" y="316">Both are context-cost results, not accuracy results. Neither says the system answers better.</text>
-  <text class="note" x="0" y="330">code-review-graph also publishes an 0.71 impact-F1. It is NOT drawn: its author states the ground</text>
-  <text class="note" x="0" y="344">truth comes from the same graph edges the predictor walks, so the number is circular by construction.</text>
-  <text class="note" x="0" y="358">Corpus: six open-source repositories in Panel A, LongMemEval in Panel B. Answering model: not disclosed.</text>
+  <line class="rule" x1="0" y1="274" x2="680" y2="274"/>
+
+  <text class="key" x="0" y="296">PANEL C &#183; TERRANSOUL &#183; PER CENT OF TOKENS REMOVED &#183; n = 20 &#183; NO JUDGE</text>
+
+  <line class="grid" x1="244" y1="306" x2="244" y2="364"/>
+  <line class="grid" x1="337" y1="306" x2="337" y2="364"/>
+  <line class="grid" x1="430" y1="306" x2="430" y2="364"/>
+  <line class="grid" x1="523" y1="306" x2="523" y2="364"/>
+  <line class="grid" x1="616" y1="306" x2="616" y2="364"/>
+  <line class="axis" x1="244" y1="364" x2="616" y2="364"/>
+  <text class="val" x="244" y="380" text-anchor="middle">0</text>
+  <text class="val" x="337" y="380" text-anchor="middle">25</text>
+  <text class="val" x="430" y="380" text-anchor="middle">50</text>
+  <text class="val" x="523" y="380" text-anchor="middle">75</text>
+  <text class="val" x="616" y="380" text-anchor="middle">100 %</text>
+
+  <path class="b1" d="M244 315 H580.8 A4 4 0 0 1 584.8 319 V325 A4 4 0 0 1 580.8 329 H244 Z"/>
+  <text class="lab" x="232" y="326" text-anchor="end">vs full-context paste</text>
+  <text class="val" x="594.8" y="326">91.6 %</text>
+
+  <path class="b1" d="M244 339 H483.7 A4 4 0 0 1 487.7 343 V349 A4 4 0 0 1 483.7 353 H244 Z"/>
+  <text class="lab" x="232" y="350" text-anchor="end">vs 200-line summary</text>
+  <text class="val" x="497.7" y="350">65.5 %</text>
+
+  <text class="note" x="0" y="402">The three panels are NOT scaled to each other. Panel A prints a multiplier; Panels B and C print a</text>
+  <text class="note" x="0" y="416">per-cent reduction, and converting between them would invent a number nobody published.</text>
+  <text class="note" x="0" y="430">code-review-graph&#8217;s spread over the six repositories is 38&#215; to 528&#215;; the dot is its median, 82&#215;.</text>
+  <text class="note" x="0" y="444">All three are context-cost results, not accuracy results. None says the system answers better.</text>
+  <text class="note" x="0" y="458">code-review-graph also publishes an 0.71 impact-F1. It is NOT drawn: its author states the ground</text>
+  <text class="note" x="0" y="472">truth comes from the same graph edges the predictor walks, so the number is circular by construction.</text>
+  <text class="note" x="0" y="486">Corpus: six open-source repositories in Panel A, LongMemEval in Panel B. Answering model: not disclosed.</text>
+  <text class="note" x="0" y="500">Panel C is a DIFFERENT corpus from Panel B and shares no series with it: 240 observations and 20</text>
+  <text class="note" x="0" y="514">queries vendored from agentmemory, NOT LongMemEval. It is the production default hybrid_search_rrf,</text>
+  <text class="note" x="0" y="528">scored with the bench&#8217;s deterministic embedder rather than the shipped Ollama one. Retrieved context</text>
+  <text class="note" x="0" y="542">is 2,748 tokens against a 32,660-token full-context paste of all 240 observations.</text>
+  <text class="note" x="0" y="556">The second bar is the SAME run re-based against a 200-line summary instead. One measurement yields</text>
+  <text class="note" x="0" y="570">two figures because a reduction is only ever a reduction against a stated baseline.</text>
+  <text class="note" x="0" y="584">The fixture is fixed-size, so this row is n = 20 and cannot be restated at n = 50.</text>
 </svg>
 </div>
 <div class="chart-block">
@@ -1547,6 +1674,7 @@
       <li><strong>2026-07-03 floor provenance.</strong> The 95.1 / 95.9 floor run used a store shared across three systems in one process. Cross-arm contamination in a shared process has since been demonstrated, which is why every arm quoted above is its own process. That does not retire the floor &mdash; retiring a floor needs forensic proof it was a measurement error and an explicit sign-off &mdash; but a reader comparing the two should know the methodologies differ.</li>
       <li><strong>2026-07-28 &mdash; a Japanese NDCG@10 range was withdrawn rather than re-published.</strong> The withdrawn text read: <em>&ldquo;a CJK trigram mirror lifts Japanese NDCG@10 9.5 &rarr; 42.3&ndash;65.0 at 1M rows&rdquo;</em>. Every digit of it predates the cross-lingual tokenizer fix, no full-500 artifact exists for it, and the re-measurement it was owed has never been run &mdash; so it described code that no longer exists, at a scale nothing on disk covers. It is withdrawn rather than re-stated with a caveat, because a range with no reproducible artifact behind it is not a measurement. Multilingual retrieval numbers live in the main paper, against their own artifacts.</li>
       <li><strong>2026-07-28 &mdash; the two twins of this article published different structures.</strong> The HTML was rewritten around a twelve-stage what-it-is / pros / cons / why-next argument with a coverage table; the Markdown twin was left at the older eleven-stage narrative for a day, so the two artifacts of the same article disagreed on the number of stages, on which stage described TerranSoul, and on 44 quantitative claims &mdash; and the parity gate could not see it, because it compared number <em>sets</em> and never structure. The Markdown is now a full mirror of the argument and every number; figures remain HTML-only, by declared design, and the gate now enforces both halves of that split.</li>
+      <li><strong>2026-08-02 &mdash; the LoCoMo blank was labelled &ldquo;retrieval only, a documented gap&rdquo;, and it is not that.</strong> The wording said we had never built an end-to-end question-answering pass over LoCoMo. We had: <code>benchmark/scripts/locomo-mteb.mjs --qa-eval=mem0-paper</code> generates an answer and judges it, and predates this page. The real obstacle is one level down and was never checked before the caption was written &mdash; the MTEB distribution of LoCoMo ships gold <em>passages</em> and no gold <em>answers</em>, so that pass grades against retrieved passages on a graded 0&ndash;10 rubric with a local self-judge, and none of those three properties matches the proportion-correct that Letta, Mem0, Zep and MemOS report. The blank does not move, because a number that cannot join the series is not a fill. The caption does: &ldquo;we have not built it&rdquo; and &ldquo;we have built it and it does not yet mean what this axis says&rdquo; are different admissions, and only the second one is ours. A related over-claim in the harness&rsquo;s own console output &mdash; that its scores are &ldquo;directly comparable to the Mem0-paper baselines&rdquo; when the judge is <code>gpt-4o-mini</code> &mdash; is wrong for the same reason and independently of the judge, and is recorded here rather than quietly fixed.</li>
     </ol>
 
     <h2><span class="scene-num">References</span>Every citation, grouped by stage</h2>

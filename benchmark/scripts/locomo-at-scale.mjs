@@ -23,6 +23,7 @@ import { dirname, resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
 import { asyncBufferFromFile, parquetReadObjects } from 'hyparquet';
+import { runBenchPreflight } from './lib/bench-preflight.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -679,6 +680,16 @@ function markdownReport(report) {
 }
 
 async function main() {
+  // BENCH-GUARD-SWEEP-1: this harness gates its dense channel on
+  // LONGMEM_EMBED, so a CPU-pinned embedder silently costs it hours.
+  // The guard is shared, not copied -- see lib/bench-preflight.mjs.
+  runBenchPreflight({
+    repoRoot: REPO_ROOT,
+    outDir: process.cwd(),
+    label: 'locomo-scale',
+    skip: process.argv.includes('--skip-preflight'),
+    allowCpuEmbedder: process.argv.includes('--allow-cpu-embedder'),
+  });
   const cmd = command();
   if (cmd === 'help' || cmd === '--help') { printHelp(); return; }
   if (cmd !== 'run') { console.error(`unknown command ${cmd}`); printHelp(); process.exit(1); }

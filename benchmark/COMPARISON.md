@@ -310,7 +310,14 @@ absent): `OLLAMA_EMBED_NUM_GPU=99 LONGMEM_EMBED=1 LONGMEM_EMBED_MODEL=embeddingg
 LONGMEM_CHAT_MODEL=gemma4:12b-it-qat node benchmark/scripts/longmemeval-s.mjs
 run --systems=chat,think,research,max`.
 
-> **`OLLAMA_EMBED_NUM_GPU=-1` is not optional for a bench, and omitting it is silent.**
+> **`OLLAMA_EMBED_NUM_GPU` is not optional for a bench, and omitting it WAS silent.**
+> ⚠️ This callout said `-1` while the two run recipes above say `99`. Both end with the
+> embedder GPU-resident, but they are NOT the same instruction in the code: a non-negative
+> count is sent verbatim (`99` forces all layers to GPU), while a NEGATIVE count makes the
+> harness OMIT the key entirely so Ollama auto-fits — because Ollama discards a negative
+> `num_gpu`, so sending `-1` looked like requesting full-GPU while changing nothing.
+> As of 2026-08-02 omitting it is no longer silent: a shared preflight
+> (`benchmark/scripts/lib/bench-preflight.mjs`) fails the run in under a second.
 > `embed_num_gpu()` defaults to **0**, and `/api/embed` honours that verbatim — i.e. the
 > embedder is *deliberately* CPU-pinned in normal operation, so the whole GPU stays free for
 > the 12B chat model (which alone takes 7.6 GB of a 12 GB card). That default is right for the

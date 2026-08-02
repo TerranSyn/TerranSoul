@@ -52,6 +52,7 @@ import {
   parseDomainVerdicts,
   rankVerified,
 } from './lib/jd-verify.mjs';
+import { runBenchPreflight } from './lib/bench-preflight.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '..', '..');
@@ -508,6 +509,16 @@ async function run() {
 }
 
 async function main() {
+  // BENCH-GUARD-SWEEP-1: this harness gates its dense channel on
+  // LONGMEM_EMBED, so a CPU-pinned embedder silently costs it hours.
+  // The guard is shared, not copied -- see lib/bench-preflight.mjs.
+  runBenchPreflight({
+    repoRoot: REPO_ROOT,
+    outDir: process.cwd(),
+    label: 'jd-max',
+    skip: process.argv.includes('--skip-preflight'),
+    allowCpuEmbedder: process.argv.includes('--allow-cpu-embedder'),
+  });
   const cmd = process.argv[2];
   if (cmd === 'run') return run();
   console.log('Usage: node benchmark/scripts/jd-max-bench.mjs run [--mode million]');
