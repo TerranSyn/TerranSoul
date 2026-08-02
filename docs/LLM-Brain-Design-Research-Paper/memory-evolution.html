@@ -251,50 +251,8 @@
 </style>
 </head>
 <body>
-<!-- ts-site-nav: shared docs-site dropdown. The SAME block lives on every
-     docs page (only the relative prefix differs) so every page can reach
-     every other page - keep the link list in sync across pages. -->
-<details class="ts-site-nav">
-  <summary>&#9776; Site</summary>
-  <nav>
-    <a href="../">Docs home</a>
-    <a href="../getting-started/">Getting started</a>
-    <a href="../install/" class="sub">Installing TerranSoul</a>
-    <a href="../brain-architecture/">Brain architecture</a>
-    <a href="../brain-advanced-design/">Brain advanced design</a>
-    <a href="../goals-automation/" class="sub">Goals &amp; automation</a>
-    <a href="../LLM-Brain-Design-Research-Paper/">Research paper</a>
-    <a href="../LLM-Brain-Design-Research-Paper/memory-evolution.html" class="sub">&mdash; Memory-evolution companion</a>
-    <a href="../channels/">Channels</a>
-    <a href="../channels/telegram/" class="sub">&mdash; Telegram</a>
-    <a href="../channels/discord/" class="sub">&mdash; Discord</a>
-    <a href="../channels/slack/" class="sub">&mdash; Slack</a>
-    <a href="../channels/whatsapp/" class="sub">&mdash; WhatsApp</a>
-    <a href="../marketplace/">Marketplace</a>
-    <a href="../mcp-integration/">MCP integration</a>
-    <a href="../agentic-coding/" class="sub">Agentic coding</a>
-    <a href="../zorkgpt/">ZorkGPT bench</a>
-    <a href="../zorkgpt/claude-opus-4.8/" class="sub">&mdash; Opus 4.8 run</a>
-    <a href="../zorkgpt/taughtLocalLLM/" class="sub">&mdash; TaughtLocalLLM run</a>
-    <a href="../help/faq.html">FAQ &amp; troubleshooting</a>
-    <a href="../releases/">What's shipped</a>
-    <a href="https://github.com/Terranimus/TerranSoul">GitHub &#8599;</a>
-  </nav>
-</details>
 <style>
-.ts-site-nav{position:fixed;top:10px;right:12px;z-index:2147483000;font:13px/1.45 system-ui,"Segoe UI",sans-serif}
-.ts-site-nav summary{list-style:none;cursor:pointer;user-select:none;background:rgba(17,19,28,.92);color:#e7e9f0;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px)}
-.ts-site-nav summary::-webkit-details-marker{display:none}
-.ts-site-nav[open] summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
-.ts-site-nav nav{position:absolute;right:0;min-width:230px;max-height:80vh;overflow-y:auto;display:flex;flex-direction:column;background:rgba(17,19,28,.96);border:1px solid rgba(255,255,255,.18);border-radius:10px 0 10px 10px;overflow-x:hidden;box-shadow:0 8px 28px rgba(0,0,0,.45)}
-.ts-site-nav nav a{color:#e7e9f0;text-decoration:none;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
-.ts-site-nav nav a:last-child{border-bottom:0}
-.ts-site-nav nav a:hover{background:rgba(124,58,237,.35)}
-.ts-site-nav nav a.sub{padding-left:26px;font-size:12px;opacity:.85}
 @media (max-width:780px){
-  .ts-site-nav summary{min-height:44px;display:flex;align-items:center;padding:8px 16px}
-  .ts-site-nav nav a{min-height:44px;display:flex;align-items:center;padding:8px 16px}
-  .ts-site-nav nav a.sub{padding-left:28px}
 }
 </style>
 
@@ -726,17 +684,847 @@
       <tr>
         <td>12 &mdash; the product surface</td>
         <td>Four thinking modes &mdash; <code>chat</code>, <code>think</code>, <code>research</code>, <code>max</code> &mdash; each one <code>(reasoning-effort, harness)</code> pair, identical across the app, the CLI and MCP, with an Auto router that dispatches per turn. Benchmarks drive the same modes a user gets.</td>
-        <td>Measured, full-500, one arm per process. The four drawn modes are <strong>three measured behaviours</strong>: research = rrf 95.04 &gt; chat 93.78 &gt; think 93.26; <code>max</code> is absent. <code>research</code> is identical to plain <code>rrf</code> on every metric to four decimals with 499 of 500 orderings the same, at 4,928.46&nbsp;ms against 654.92&nbsp;ms &mdash; a measured no-op at 7.5&times; the cost, and it was measured <em>before</em> commit <code>76f2276d</code> and has not been re-run on current code. <code>think</code> now shares 6 of 500 orderings with <code>chat</code>, so the reranker has stopped being a no-op and become a different, slightly worse answer. <strong><code>max</code> at full-500 is UNMEASURED</strong> &mdash; no artifact exists at any size; an arm is running, and no number for it appears anywhere on this page.</td>
+        <td>Measured, full-500, one arm per process. The four drawn modes are <strong>three measured behaviours</strong>: research = rrf 95.04 &gt; chat 93.78 &gt; think 93.26; <code>max</code> is absent. <code>research</code> is identical to plain <code>rrf</code> on every metric to four decimals with 499 of 500 orderings the same, at 4,928.46&nbsp;ms against 654.92&nbsp;ms &mdash; a measured no-op at 7.5&times; the cost, and it was measured <em>before</em> commit <code>76f2276d</code> and has not been re-run on current code. <code>think</code> now shares 6 of 500 orderings with <code>chat</code>, so the reranker has stopped being a no-op and become a different, slightly worse answer. <strong><code>max</code> at full-500 is UNMEASURED</strong> &mdash; but 50-question arms DO exist and are committed (<code>benchmark/results/slice50-max-repeat/</code>, <code>slice50-max-newrubric/</code>), so the earlier wording &ldquo;no artifact exists at any size&rdquo; was wrong and is corrected here. Those arms are drawn in the 50-question figure above and are never mixed into a full-500 series. Two of them were run at IDENTICAL configuration and returned bit-identical recall with NDCG@10 moving 1.0 and MRR moving 1.3, which is where this page&rsquo;s &plusmn;1.3 noise band comes from.</td>
       </tr>
     </table></div>
 
-    <h3>What is still open</h3>
-    <p>Three of the chain's limitations are open in this design exactly as they are open industry-wide, and one is open in a way that is specific to us.</p>
+    <h3>How TerranSoul compares</h3>
+    <p>Eight figures, one per measurement axis. They are separate charts rather than one because
+    the numbers are not on a shared axis: this page&rsquo;s rungs are LongMemEval-S retrieval, the
+    92&nbsp;% peer cluster is a different corpus on a shared embedder, Mem0/Letta/Zep publish LoCoMo
+    <em>QA accuracy</em> rather than retrieval, the newest additions publish answer accuracy, a
+    host-plus-memory composite or a token-reduction factor, and the assistant row is a 22-prompt
+    judged parity harness with no retrieval axis at all. Drawing those as one series would be a
+    category error. Each caption carries its own corpus, sample size, judge and model, and writes
+    &ldquo;not disclosed&rdquo; wherever the publisher did not state one.</p>
+
+    <p><strong>The 2026-08-02 field audit.</strong> Four systems entered these figures from a field
+    audit of the current open-source memory repositories &mdash; <strong>m_flow</strong>,
+    <strong>OpenViking</strong> (ByteDance), <strong>MemOS</strong> and
+    <strong>code-review-graph</strong> &mdash; joining the Graphify, OpenClaw, Hermes and
+    supermemory rows already drawn here. Every figure attributed to them is <em>their</em> published
+    number, reproduced in the unit they published it in and never converted into ours. None has been
+    re-run here. Three of the four did not fit any axis that already existed, so each was given its
+    own frame rather than a bar on somebody else&rsquo;s: m_flow&rsquo;s aligned LoCoMo run and
+    MemOS&rsquo;s LoCoMo number join the QA-accuracy figure as a third panel; the LongMemEval
+    headline numbers that publishers report as answer accuracy, or as recall at a different
+    <em>k</em>, go in a figure of their own, because they are not this page&rsquo;s retrieval metric;
+    OpenViking publishes a host-plus-memory composite, which is a property of a pair rather than of
+    a memory layer; and code-review-graph publishes a token-reduction factor, which belongs on a
+    context axis and nowhere near an accuracy axis.</p>
+
+    <p>Three disclosure gaps are large enough to print on the figures themselves. hindsight&rsquo;s
+    LongMemEval-S 94.6 lives inside an embedded image, with no metric definition, question count or
+    judge stated anywhere public, so it is drawn and annotated as undefined rather than dropped or
+    quietly promoted to something it may not be. MemOS attributes its LongMemEval 89.20 and its
+    LoCoMo 88.83 to a single line &mdash; evaluated via OmniMemEval &mdash; with no sample size, no
+    judge and no baselines; its eight other benchmarks are capability tests rather than retrieval,
+    and none of them shares an axis here. And code-review-graph&rsquo;s 0.71 impact-F1 is
+    deliberately not charted at all: its own author states that the ground truth is derived from the
+    same graph edges the predictor walks, so the number is circular by construction and is not an
+    accuracy result. Only its token reduction is drawn. One last mismatch is worth stating in words
+    as well as on the figure: supermemory&rsquo;s LongMemEval headline is a recall at
+    <em>k</em>&nbsp;=&nbsp;15 and this page&rsquo;s is a recall at <em>k</em>&nbsp;=&nbsp;5, so the
+    two never share a series.</p>
+<div class="chart-block">
+<style>
+.c1{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6;--s2:#eb6834}
+.c1 text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c1 .lab{fill:var(--ink)}
+.c1 .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c1 .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c1 .note{font-size:11px;fill:var(--mut)}
+.c1 .sf{fill:var(--sf)}
+.c1 .grid{stroke:var(--grid);stroke-width:1}
+.c1 .axis{stroke:var(--axis);stroke-width:1}
+.c1 .conn{stroke:var(--axis);stroke-width:1.5;stroke-linecap:round}
+.c1 .blank{stroke:var(--grid);stroke-width:1;stroke-linecap:round}
+.c1 .d1{fill:var(--s1);stroke:var(--sf);stroke-width:2}
+.c1 .d2{fill:var(--s2);stroke:var(--sf);stroke-width:2}
+</style>
+<svg class="c1" viewBox="0 0 680 376" role="img" aria-labelledby="cap-lme500">
+  <title id="cap-lme500">LongMemEval-S retrieval, full 500 questions: the four thinking-mode rungs, with max drawn as a blank track because no full-500 arm exists.</title>
+  <rect class="sf" x="0" y="0" width="680" height="376" rx="10"/>
+
+  <circle class="d1" cx="14" cy="16" r="5"/><text x="25" y="20">R@5</text>
+  <circle class="d2" cx="70" cy="16" r="5"/><text x="81" y="20">NDCG@10</text>
+  <text class="note" x="152" y="20">n = 500 &#183; LongMemEval-S retrieval-only &#183; recall_ANY@k &#183; embeddinggemma &#183; no judge</text>
+
+  <line class="grid" x1="234" y1="40" x2="234" y2="322"/>
+  <line class="grid" x1="361.3" y1="40" x2="361.3" y2="322"/>
+  <line class="grid" x1="488.7" y1="40" x2="488.7" y2="322"/>
+  <line class="grid" x1="616" y1="40" x2="616" y2="322"/>
+  <line class="axis" x1="234" y1="322" x2="616" y2="322"/>
+  <text class="val" x="234" y="338" text-anchor="middle">85</text>
+  <text class="val" x="361.3" y="338" text-anchor="middle">90</text>
+  <text class="val" x="488.7" y="338" text-anchor="middle">95</text>
+  <text class="val" x="616" y="338" text-anchor="middle">100 %</text>
+
+  <text class="key" x="222" y="56" text-anchor="end">TERRANSOUL RUNGS &#183; 2026-08-01</text>
+
+  <g><line class="conn" x1="465.7" y1="76" x2="595.7" y2="76"/>
+    <circle class="d2" cx="465.7" cy="76" r="5"/><circle class="d1" cx="595.7" cy="76" r="5"/>
+    <text class="lab" x="222" y="80" text-anchor="end">chat</text>
+    <text class="val" x="453.7" y="80" text-anchor="end">94.1</text>
+    <text class="val" x="607.7" y="80">99.2</text></g>
+
+  <g><line class="conn" x1="427.5" y1="102" x2="600.8" y2="102"/>
+    <circle class="d2" cx="427.5" cy="102" r="5"/><circle class="d1" cx="600.8" cy="102" r="5"/>
+    <text class="lab" x="222" y="106" text-anchor="end">think</text>
+    <text class="val" x="415.5" y="106" text-anchor="end">92.6</text>
+    <text class="val" x="612.8" y="106">99.4</text></g>
+
+  <g><line class="conn" x1="488.7" y1="128" x2="600.8" y2="128"/>
+    <circle class="d2" cx="488.7" cy="128" r="5"/><circle class="d1" cx="600.8" cy="128" r="5"/>
+    <text class="lab" x="222" y="132" text-anchor="end">research</text>
+    <text class="val" x="476.7" y="132" text-anchor="end">95.0</text>
+    <text class="val" x="612.8" y="132">99.4</text></g>
+
+  <g><line class="blank" x1="234" y1="154" x2="616" y2="154"/>
+    <text class="lab" x="222" y="158" text-anchor="end">max</text>
+    <rect class="sf" x="238" y="146" width="272" height="16"/>
+    <text class="note" x="242" y="158">full-500 arm not complete &#8212; ~144 s/q, ~20 h</text></g>
+
+  <text class="key" x="222" y="184" text-anchor="end">TERRANSOUL &#183; EARLIER ARMS</text>
+
+  <g><line class="conn" x1="491.2" y1="204" x2="600.8" y2="204"/>
+    <circle class="d2" cx="491.2" cy="204" r="5"/><circle class="d1" cx="600.8" cy="204" r="5"/>
+    <text class="lab" x="222" y="208" text-anchor="end">rrf &#183; 2026-07-03</text>
+    <text class="val" x="479.2" y="208" text-anchor="end">95.1</text>
+    <text class="val" x="612.8" y="208">99.4</text></g>
+
+  <g><line class="conn" x1="330.8" y1="230" x2="580.4" y2="230"/>
+    <circle class="d2" cx="330.8" cy="230" r="5"/><circle class="d1" cx="580.4" cy="230" r="5"/>
+    <text class="lab" x="222" y="234" text-anchor="end">search &#183; 2026-06-28</text>
+    <text class="val" x="318.8" y="234" text-anchor="end">88.8</text>
+    <text class="val" x="592.4" y="234">98.6</text></g>
+
+  <text class="key" x="222" y="260" text-anchor="end">PEER SYSTEMS</text>
+
+  <g><line class="conn" x1="307.9" y1="280" x2="493.7" y2="280"/>
+    <circle class="d2" cx="307.9" cy="280" r="5"/><circle class="d1" cx="493.7" cy="280" r="5"/>
+    <text class="lab" x="222" y="284" text-anchor="end">agentmemory</text>
+    <text class="val" x="295.9" y="284" text-anchor="end">87.9</text>
+    <text class="val" x="505.7" y="284">95.2</text></g>
+
+  <g><line class="blank" x1="234" y1="306" x2="529.4" y2="306"/>
+    <circle class="d1" cx="529.4" cy="306" r="5"/>
+    <text class="lab" x="222" y="310" text-anchor="end">MemPalace &#183; self-reported</text>
+    <rect class="sf" x="238" y="298" width="178" height="16"/>
+    <text class="note" x="242" y="310">NDCG@10 / MRR not published</text>
+    <text class="val" x="541.4" y="310">~96.6</text></g>
+
+  <text class="note" x="0" y="360">Scale reference: 0.2 pp = 1 question of 500 &#8212; the whole R@5 spread drawn here is 21 questions.</text>
+</svg>
+</div>
+<div class="chart-block">
+<style>
+.c1b{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6;--s2:#eb6834}
+.c1b text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c1b .lab{fill:var(--ink)}
+.c1b .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c1b .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c1b .note{font-size:11px;fill:var(--mut)}
+.c1b .sf{fill:var(--sf)}
+.c1b .grid{stroke:var(--grid);stroke-width:1}
+.c1b .axis{stroke:var(--axis);stroke-width:1}
+.c1b .blank{stroke:var(--grid);stroke-width:1;stroke-linecap:round}
+.c1b .d1{fill:var(--s1);stroke:var(--sf);stroke-width:2}
+.c1b .d2{fill:var(--s2);stroke:var(--sf);stroke-width:2}
+.c1b .o1{fill:var(--sf);stroke:var(--s1);stroke-width:2}
+.c1b .o2{fill:var(--sf);stroke:var(--s2);stroke-width:2}
+.c1b .w1{stroke:var(--s1);stroke-width:1.5;stroke-linecap:round;opacity:.55}
+.c1b .w2{stroke:var(--s2);stroke-width:1.5;stroke-linecap:round;opacity:.55}
+</style>
+<svg class="c1b" viewBox="0 0 680 372" role="img" aria-labelledby="cap-lme50">
+  <title id="cap-lme50">LongMemEval-S retrieval, 50-question slice: the same rungs at a smaller sample, with the measured plus-or-minus 1.3 noise band shown as whiskers. Not comparable to the 500-question figure.</title>
+  <rect class="sf" x="0" y="0" width="680" height="372" rx="10"/>
+
+  <circle class="d1" cx="14" cy="16" r="5"/><text x="25" y="20">NDCG@10</text>
+  <circle class="d2" cx="100" cy="16" r="5"/><text x="111" y="20">MRR</text>
+  <circle class="o1" cx="156" cy="16" r="5"/><text class="note" x="167" y="20">hollow = the other repeat run of the identical config</text>
+  <line class="w1" x1="14" y1="38" x2="55" y2="38"/><line class="w1" x1="14" y1="34" x2="14" y2="42"/><line class="w1" x1="55" y1="34" x2="55" y2="42"/>
+  <text class="note" x="66" y="42">whisker = &#177;0.65 pp &#8212; where two overlap, the gap is under 1.3 pts and is NOT a difference.</text>
+
+  <text class="key" x="0" y="66">n = 50-QUESTION SLICE &#183; NOT COMPARABLE TO THE n = 500 FIGURE</text>
+
+  <line class="grid" x1="234" y1="80" x2="234" y2="288"/>
+  <line class="grid" x1="329.5" y1="80" x2="329.5" y2="288"/>
+  <line class="grid" x1="425" y1="80" x2="425" y2="288"/>
+  <line class="grid" x1="520.5" y1="80" x2="520.5" y2="288"/>
+  <line class="grid" x1="616" y1="80" x2="616" y2="288"/>
+  <line class="axis" x1="234" y1="288" x2="616" y2="288"/>
+  <text class="val" x="234" y="304" text-anchor="middle">88</text>
+  <text class="val" x="329.5" y="304" text-anchor="middle">91</text>
+  <text class="val" x="425" y="304" text-anchor="middle">94</text>
+  <text class="val" x="520.5" y="304" text-anchor="middle">97</text>
+  <text class="val" x="616" y="304" text-anchor="middle">100 %</text>
+
+  <g><line class="w1" x1="388.4" y1="98" x2="429.8" y2="98"/><line class="w1" x1="388.4" y1="94" x2="388.4" y2="102"/><line class="w1" x1="429.8" y1="94" x2="429.8" y2="102"/>
+    <circle class="d1" cx="409.1" cy="98" r="5"/>
+    <text class="lab" x="222" y="102" text-anchor="end">chat &#183; NDCG@10</text>
+    <text class="val" x="441.8" y="102">93.5</text></g>
+
+  <g><line class="w2" x1="321.5" y1="122" x2="362.9" y2="122"/><line class="w2" x1="321.5" y1="118" x2="321.5" y2="126"/><line class="w2" x1="362.9" y1="118" x2="362.9" y2="126"/>
+    <circle class="d2" cx="342.2" cy="122" r="5"/>
+    <text class="lab" x="222" y="126" text-anchor="end">chat &#183; MRR</text>
+    <text class="val" x="374.9" y="126">91.4</text></g>
+
+  <g><line class="blank" x1="234" y1="148" x2="616" y2="148"/>
+    <text class="lab" x="222" y="152" text-anchor="end">think</text>
+    <rect class="sf" x="238" y="140" width="232" height="16"/>
+    <text class="note" x="242" y="152">not measured on this 50-question slice</text></g>
+
+  <g><line class="w1" x1="458.4" y1="174" x2="499.8" y2="174"/><line class="w1" x1="458.4" y1="170" x2="458.4" y2="178"/><line class="w1" x1="499.8" y1="170" x2="499.8" y2="178"/>
+    <circle class="d1" cx="479.1" cy="174" r="5"/>
+    <text class="lab" x="222" y="178" text-anchor="end">research &#183; NDCG@10</text>
+    <text class="val" x="511.8" y="178">95.7</text></g>
+
+  <g><line class="w2" x1="417.0" y1="198" x2="458.4" y2="198"/><line class="w2" x1="417.0" y1="194" x2="417.0" y2="202"/><line class="w2" x1="458.4" y1="194" x2="458.4" y2="202"/>
+    <circle class="d2" cx="437.7" cy="198" r="5"/>
+    <text class="lab" x="222" y="202" text-anchor="end">research &#183; MRR</text>
+    <text class="val" x="470.4" y="202">94.4</text></g>
+
+  <g><line class="w1" x1="522.1" y1="224" x2="563.5" y2="224"/><line class="w1" x1="522.1" y1="220" x2="522.1" y2="228"/><line class="w1" x1="563.5" y1="220" x2="563.5" y2="228"/>
+    <circle class="o1" cx="574.6" cy="224" r="5"/>
+    <circle class="d1" cx="542.8" cy="224" r="5"/>
+    <text class="lab" x="222" y="228" text-anchor="end">max &#183; NDCG@10</text>
+    <text class="val" x="586.6" y="228">97.7 &#183; 98.7</text></g>
+
+  <g><line class="w2" x1="499.8" y1="248" x2="541.2" y2="248"/><line class="w2" x1="499.8" y1="244" x2="499.8" y2="252"/><line class="w2" x1="541.2" y1="244" x2="541.2" y2="252"/>
+    <circle class="o2" cx="561.9" cy="248" r="5"/>
+    <circle class="d2" cx="520.5" cy="248" r="5"/>
+    <text class="lab" x="222" y="252" text-anchor="end">max &#183; MRR</text>
+    <text class="val" x="573.9" y="252">97.0 &#183; 98.3</text></g>
+
+  <g><line class="blank" x1="234" y1="272" x2="616" y2="272"/>
+    <text class="lab" x="222" y="276" text-anchor="end">max &#183; recall</text>
+    <rect class="sf" x="238" y="264" width="356" height="16"/>
+    <text class="note" x="242" y="276">R@5 98.0 &#183; R@10 100.0 &#183; R@20 100.0 &#8212; identical in BOTH runs</text></g>
+
+  <text class="note" x="0" y="326">Recall was bit-identical across the two repeats. NDCG moved 1.0 pt and MRR 1.3 pts with nothing changed.</text>
+  <text class="note" x="0" y="342">Every gap here clears that band: NDCG 2.2 and 2.0 pts, MRR 3.0 and 2.6 pts. The ladder survives its own noise.</text>
+  <text class="note" x="0" y="358">A future gap narrower than 1.3 pts on this slice must not be published as a difference.</text>
+</svg>
+</div>
+<div class="chart-block">
+<style>
+.c5{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6;--s2:#eb6834}
+.c5 text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c5 .lab{fill:var(--ink)}
+.c5 .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c5 .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c5 .note{font-size:11px;fill:var(--mut)}
+.c5 .sf{fill:var(--sf)}
+.c5 .grid{stroke:var(--grid);stroke-width:1}
+.c5 .axis{stroke:var(--axis);stroke-width:1}
+.c5 .rule{stroke:var(--grid);stroke-width:1}
+.c5 .blank{stroke:var(--grid);stroke-width:1;stroke-linecap:round}
+.c5 .b1{fill:var(--s1)}
+.c5 .b2{fill:var(--s2)}
+</style>
+<svg class="c5" viewBox="0 0 680 580" role="img" aria-labelledby="cap-lmeacc">
+  <title id="cap-lmeacc">LongMemEval headline figures as four different publishers report them: supermemory recall-at-15, hindsight with an undisclosed metric, MemOS unnamed, and m_flow question-answering accuracy. TerranSoul is a blank because none of these is our metric.</title>
+  <rect class="sf" x="0" y="0" width="680" height="580" rx="10"/>
+
+  <rect class="b1" x="8" y="10" width="12" height="12" rx="3"/><text x="26" y="20">metric definition public</text>
+  <rect class="b2" x="216" y="10" width="12" height="12" rx="3"/><text x="234" y="20">metric definition NOT public</text>
+
+  <text class="key" x="0" y="46">PANEL A &#183; LONGMEMEVAL, AS EACH PUBLISHER REPORTS IT &#183; FOUR METRICS, NOT ONE SERIES</text>
+
+  <line class="grid" x1="244" y1="56" x2="244" y2="188"/>
+  <line class="grid" x1="337" y1="56" x2="337" y2="188"/>
+  <line class="grid" x1="430" y1="56" x2="430" y2="188"/>
+  <line class="grid" x1="523" y1="56" x2="523" y2="188"/>
+  <line class="grid" x1="616" y1="56" x2="616" y2="188"/>
+  <line class="axis" x1="244" y1="188" x2="616" y2="188"/>
+  <text class="val" x="244" y="204" text-anchor="middle">0</text>
+  <text class="val" x="337" y="204" text-anchor="middle">25</text>
+  <text class="val" x="430" y="204" text-anchor="middle">50</text>
+  <text class="val" x="523" y="204" text-anchor="middle">75</text>
+  <text class="val" x="616" y="204" text-anchor="middle">100 %</text>
+
+  <path class="b1" d="M244 63 H593.4 A4 4 0 0 1 597.4 67 V73 A4 4 0 0 1 593.4 77 H244 Z"/>
+  <text class="lab" x="232" y="74" text-anchor="end">supermemory &#183; R@15</text>
+  <text class="val" x="607.4" y="74">95</text>
+
+  <path class="b2" d="M244 89 H591.9 A4 4 0 0 1 595.9 93 V99 A4 4 0 0 1 591.9 103 H244 Z"/>
+  <text class="lab" x="232" y="100" text-anchor="end">hindsight &#183; metric undefined</text>
+  <text class="val" x="605.9" y="100">94.6</text>
+
+  <path class="b2" d="M244 115 H571.8 A4 4 0 0 1 575.8 119 V125 A4 4 0 0 1 571.8 129 H244 Z"/>
+  <text class="lab" x="232" y="126" text-anchor="end">MemOS &#183; no n, no judge</text>
+  <text class="val" x="585.8" y="126">89.20</text>
+
+  <path class="b1" d="M244 141 H571.1 A4 4 0 0 1 575.1 145 V151 A4 4 0 0 1 571.1 155 H244 Z"/>
+  <text class="lab" x="232" y="152" text-anchor="end">m_flow &#183; QA accuracy</text>
+  <text class="val" x="585.1" y="152">89</text>
+
+  <line class="blank" x1="244" y1="174" x2="616" y2="174"/>
+  <text class="lab" x="232" y="178" text-anchor="end">TerranSoul</text>
+  <rect class="sf" x="248" y="166" width="298" height="16"/>
+  <text class="note" x="252" y="178">no LongMemEval QA-accuracy number &#8212; retrieval only</text>
+
+  <line class="rule" x1="0" y1="226" x2="680" y2="226"/>
+
+  <text class="key" x="0" y="248">PANEL B &#183; SUPERMEMORY, PER CATEGORY &#183; RECALL@15 &#183; ONE PUBLISHER, ONE METRIC</text>
+
+  <line class="grid" x1="244" y1="258" x2="244" y2="414"/>
+  <line class="grid" x1="337" y1="258" x2="337" y2="414"/>
+  <line class="grid" x1="430" y1="258" x2="430" y2="414"/>
+  <line class="grid" x1="523" y1="258" x2="523" y2="414"/>
+  <line class="grid" x1="616" y1="258" x2="616" y2="414"/>
+  <line class="axis" x1="244" y1="414" x2="616" y2="414"/>
+  <text class="val" x="244" y="430" text-anchor="middle">0</text>
+  <text class="val" x="337" y="430" text-anchor="middle">25</text>
+  <text class="val" x="430" y="430" text-anchor="middle">50</text>
+  <text class="val" x="523" y="430" text-anchor="middle">75</text>
+  <text class="val" x="616" y="430" text-anchor="middle">100 %</text>
+
+  <path class="b1" d="M244 267 H612.0 A4 4 0 0 1 616.0 271 V277 A4 4 0 0 1 612.0 281 H244 Z"/>
+  <text class="lab" x="232" y="278" text-anchor="end">Assistant-recall</text>
+  <text class="val" x="626.0" y="278">100</text>
+
+  <path class="b1" d="M244 291 H608.3 A4 4 0 0 1 612.3 295 V301 A4 4 0 0 1 608.3 305 H244 Z"/>
+  <text class="lab" x="232" y="302" text-anchor="end">Knowledge-Updates</text>
+  <text class="val" x="622.3" y="302">99</text>
+
+  <path class="b1" d="M244 315 H600.8 A4 4 0 0 1 604.8 319 V325 A4 4 0 0 1 600.8 329 H244 Z"/>
+  <text class="lab" x="232" y="326" text-anchor="end">User-recall</text>
+  <text class="val" x="614.8" y="326">97</text>
+
+  <path class="b1" d="M244 339 H585.9 A4 4 0 0 1 589.9 343 V349 A4 4 0 0 1 585.9 353 H244 Z"/>
+  <text class="lab" x="232" y="350" text-anchor="end">Multi-session</text>
+  <text class="val" x="599.9" y="350">93</text>
+
+  <path class="b1" d="M244 363 H578.5 A4 4 0 0 1 582.5 367 V373 A4 4 0 0 1 578.5 377 H244 Z"/>
+  <text class="lab" x="232" y="374" text-anchor="end">Temporal</text>
+  <text class="val" x="592.5" y="374">91</text>
+
+  <path class="b1" d="M244 387 H574.8 A4 4 0 0 1 578.8 391 V397 A4 4 0 0 1 574.8 401 H244 Z"/>
+  <text class="lab" x="232" y="398" text-anchor="end">Preference</text>
+  <text class="val" x="588.8" y="398">90</text>
+
+  <text class="note" x="0" y="452">Panel A stacks FOUR different metrics in one frame, because that is how the field publishes them:</text>
+  <text class="note" x="0" y="466">supermemory reports recall at k = 15 and needs no judge; m_flow reports judged answer accuracy with</text>
+  <text class="note" x="0" y="480">gpt-5-mini answering and gpt-4o-mini judging; MemOS reports an unnamed score attributed only to</text>
+  <text class="note" x="0" y="494">&#8220;OmniMemEval&#8221;; hindsight&#8217;s definition is not public. The order is by published value, but these are four different metrics and the values are not comparable.</text>
+  <text class="note" x="0" y="508">m_flow also reports 93 on temporal (n = 60) and 82 on multi-session (n = 40) under that same judge.</text>
+  <text class="note" x="0" y="522">Question count: not disclosed by supermemory, hindsight or MemOS. Answering model: not disclosed by</text>
+  <text class="note" x="0" y="536">any of those three. Corpus is LongMemEval on every row, LongMemEval-S where the publisher says so.</text>
+  <text class="note" x="0" y="550">None of these is this page&#8217;s metric. TerranSoul&#8217;s LongMemEval figures are retrieval NDCG@10 and</text>
+  <text class="note" x="0" y="564">recall at k = 5, and a recall at k = 15 never shares a series with a recall at k = 5 on this page.</text>
+</svg>
+</div>
+<div class="chart-block">
+<style>
+.c2{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a}
+.c2 text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c2 .lab{fill:var(--ink)}
+.c2 .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c2 .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c2 .note{font-size:11px;fill:var(--mut)}
+.c2 .sf{fill:var(--sf)}
+.c2 .grid{stroke:var(--grid);stroke-width:1}
+.c2 .axis{stroke:var(--axis);stroke-width:1}
+.c2 .conn{stroke:var(--axis);stroke-width:1.5;stroke-linecap:round}
+.c2 .blank{stroke:var(--grid);stroke-width:1;stroke-linecap:round}
+.c2 .d1{fill:var(--s1);stroke:var(--sf);stroke-width:2}
+.c2 .d2{fill:var(--s2);stroke:var(--sf);stroke-width:2}
+.c2 .d3{fill:var(--s3);stroke:var(--sf);stroke-width:2}
+</style>
+<svg class="c2" viewBox="0 0 680 470" role="img" aria-labelledby="cap-am">
+  <title id="cap-am">agentmemory-corpus retrieval on a shared embedder: TerranSoul against the peer cluster, with OpenClaw marked not run.</title>
+  <rect class="sf" x="0" y="0" width="680" height="470" rx="10"/>
+
+  <circle class="d1" cx="14" cy="16" r="5"/><text x="25" y="20">R@5</text>
+  <circle class="d2" cx="70" cy="16" r="5"/><text x="81" y="20">R@10</text>
+  <circle class="d3" cx="132" cy="16" r="5"/><text x="143" y="20">R@20</text>
+  <text class="note" x="196" y="20">n = 20 queries / 240 obs &#183; peers share one nomic embedder &#183; no judge</text>
+
+  <line class="grid" x1="258" y1="36" x2="258" y2="366"/>
+  <line class="grid" x1="347.5" y1="36" x2="347.5" y2="366"/>
+  <line class="grid" x1="437" y1="36" x2="437" y2="366"/>
+  <line class="grid" x1="526.5" y1="36" x2="526.5" y2="366"/>
+  <line class="grid" x1="616" y1="36" x2="616" y2="366"/>
+  <line class="axis" x1="258" y1="366" x2="616" y2="366"/>
+  <text class="val" x="258" y="382" text-anchor="middle">0</text>
+  <text class="val" x="347.5" y="382" text-anchor="middle">20</text>
+  <text class="val" x="437" y="382" text-anchor="middle">40</text>
+  <text class="val" x="526.5" y="382" text-anchor="middle">60</text>
+  <text class="val" x="616" y="382" text-anchor="middle">80 %</text>
+
+  <g><line class="conn" x1="459.4" y1="56" x2="616" y2="56"/>
+    <circle class="d1" cx="459.4" cy="56" r="5"/><circle class="d2" cx="557.8" cy="56" r="5"/><circle class="d3" cx="616" cy="56" r="5"/>
+    <text class="lab" x="246" y="60" text-anchor="end">TerranSoul &#8212; keyword / FTS</text>
+    <text class="val" x="447.4" y="60" text-anchor="end">45.0</text><text class="val" x="628" y="60">80.0</text></g>
+
+  <g><line class="conn" x1="446.0" y1="80" x2="602.6" y2="80"/>
+    <circle class="d1" cx="446.0" cy="80" r="5"/><circle class="d2" cx="531.0" cy="80" r="5"/><circle class="d3" cx="602.6" cy="80" r="5"/>
+    <text class="lab" x="246" y="84" text-anchor="end">TerranSoul &#8212; hybrid + RRF &#185;</text>
+    <text class="val" x="434.0" y="84" text-anchor="end">42.0</text><text class="val" x="614.6" y="84">77.0</text></g>
+
+  <g><line class="conn" x1="453.1" y1="104" x2="581.5" y2="104"/>
+    <circle class="d1" cx="453.1" cy="104" r="5"/><circle class="d2" cx="514.0" cy="104" r="5"/><circle class="d3" cx="581.5" cy="104" r="5"/>
+    <text class="lab" x="246" y="108" text-anchor="end">Claude Code + GENesis-AGI &#178;</text>
+    <text class="val" x="441.1" y="108" text-anchor="end">43.6</text><text class="val" x="593.5" y="108">72.3</text></g>
+
+  <g><line class="conn" x1="441.5" y1="128" x2="589.2" y2="128"/>
+    <circle class="d1" cx="441.5" cy="128" r="5"/><circle class="d2" cx="531.0" cy="128" r="5"/><circle class="d3" cx="589.2" cy="128" r="5"/>
+    <text class="lab" x="246" y="132" text-anchor="end">shared-embedder cluster &#179;</text>
+    <text class="val" x="429.5" y="132" text-anchor="end">41.0</text><text class="val" x="601.2" y="132">74.0</text></g>
+
+  <g><line class="conn" x1="439.7" y1="152" x2="590.0" y2="152"/>
+    <circle class="d1" cx="439.7" cy="152" r="5"/><circle class="d2" cx="530.5" cy="152" r="5"/><circle class="d3" cx="590.0" cy="152" r="5"/>
+    <text class="lab" x="246" y="156" text-anchor="end">OpenJarvis (Stanford SAIL)</text>
+    <text class="val" x="427.7" y="156" text-anchor="end">40.6</text><text class="val" x="602.0" y="156">74.2</text></g>
+
+  <g><line class="conn" x1="441.5" y1="176" x2="580.2" y2="176"/>
+    <circle class="d1" cx="441.5" cy="176" r="5"/><circle class="d2" cx="517.6" cy="176" r="5"/><circle class="d3" cx="580.2" cy="176" r="5"/>
+    <text class="lab" x="246" y="180" text-anchor="end">LlamaIndex</text>
+    <text class="val" x="429.5" y="180" text-anchor="end">41.0</text><text class="val" x="592.2" y="180">72.0</text></g>
+
+  <g><line class="conn" x1="424.9" y1="200" x2="582.9" y2="200"/>
+    <circle class="d1" cx="424.9" cy="200" r="5"/><circle class="d2" cx="498.8" cy="200" r="5"/><circle class="d3" cx="582.9" cy="200" r="5"/>
+    <text class="lab" x="246" y="204" text-anchor="end">obsidian-wiki (agentic ripgrep)</text>
+    <text class="val" x="412.9" y="204" text-anchor="end">37.3</text><text class="val" x="594.9" y="204">72.6</text></g>
+
+  <g><line class="conn" x1="410.2" y1="224" x2="562.3" y2="224"/>
+    <circle class="d1" cx="410.2" cy="224" r="5"/><circle class="d2" cx="508.6" cy="224" r="5"/><circle class="d3" cx="562.3" cy="224" r="5"/>
+    <text class="lab" x="246" y="228" text-anchor="end">HippoRAG &#8308;</text>
+    <text class="val" x="398.2" y="228" text-anchor="end">34.0</text><text class="val" x="574.3" y="228">68.0</text></g>
+
+  <g><line class="conn" x1="321.5" y1="248" x2="328.7" y2="248"/>
+    <circle class="d1" cx="321.5" cy="248" r="5"/><circle class="d2" cx="328.7" cy="248" r="5"/><circle class="d3" cx="328.7" cy="248" r="5"/>
+    <text class="lab" x="246" y="252" text-anchor="end">Hermes-Agent &#8309;</text>
+    <text class="val" x="340.7" y="252">14.2 &#183; 15.8 &#183; 15.8</text></g>
+
+  <g><circle class="d1" cx="308.1" cy="272" r="5"/><circle class="d2" cx="308.1" cy="272" r="5"/><circle class="d3" cx="308.1" cy="272" r="5"/>
+    <text class="lab" x="246" y="276" text-anchor="end">Graphify &#8308;</text>
+    <text class="val" x="320.1" y="276">11.2 at every k</text></g>
+
+  <g><line class="conn" x1="284.9" y1="296" x2="289.3" y2="296"/>
+    <circle class="d1" cx="284.9" cy="296" r="5"/><circle class="d2" cx="289.3" cy="296" r="5"/><circle class="d3" cx="289.3" cy="296" r="5"/>
+    <text class="lab" x="246" y="300" text-anchor="end">Memary &#8308;</text>
+    <text class="val" x="301.3" y="300">6.0 &#183; 7.0 &#183; 7.0</text></g>
+
+  <g><circle class="d1" cx="280.4" cy="320" r="5"/><circle class="d2" cx="280.4" cy="320" r="5"/><circle class="d3" cx="280.4" cy="320" r="5"/>
+    <text class="lab" x="246" y="324" text-anchor="end">GraphRAG (Microsoft) &#8308;</text>
+    <text class="val" x="292.4" y="324">5.0 at every k</text></g>
+
+  <g><line class="blank" x1="258" y1="344" x2="616" y2="344"/>
+    <text class="lab" x="246" y="348" text-anchor="end">OpenClaw</text>
+    <rect class="sf" x="262" y="336" width="398" height="16"/>
+    <text class="note" x="266" y="348">not run &#8212; it HAS a full hybrid retrieval engine; never benched here</text></g>
+
+  <text class="note" x="0" y="402">&#179; Mem0 &#183; Letta &#183; Cognee &#183; Khoj &#183; LangChain &#183; Haystack &#183; RAGFlow all publish an identical 41.0 / 61.0 / 74.0</text>
+  <text class="note" x="0" y="416">&#160;&#160;&#8212; the embedder sets that recall, not the framework; this is not a seven-way tie between architectures.</text>
+  <text class="note" x="0" y="430">&#8308; returns entity subgraphs, not ranked passages &#8212; flat recall is a shape mismatch, not a like-for-like loss.</text>
+  <text class="note" x="0" y="444">&#185; TerranSoul&#8217;s vector arm here is the bench&#8217;s deterministic stand-in, not nomic &#8212; strategy, not embedders.</text>
+  <text class="note" x="0" y="458">&#178; different cloud model, ~53 s/query. &#8309; FTS5 implicit-AND: 4 of 20 queries returned any candidate.</text>
+</svg>
+</div>
+<div class="chart-block">
+<style>
+.c3{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6}
+.c3 text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c3 .lab{fill:var(--ink)}
+.c3 .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c3 .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c3 .note{font-size:11px;fill:var(--mut)}
+.c3 .sf{fill:var(--sf)}
+.c3 .grid{stroke:var(--grid);stroke-width:1}
+.c3 .axis{stroke:var(--axis);stroke-width:1}
+.c3 .rule{stroke:var(--grid);stroke-width:1}
+.c3 .blank{stroke:var(--grid);stroke-width:1;stroke-linecap:round}
+.c3 .b1{fill:var(--s1)}
+</style>
+<svg class="c3" viewBox="0 0 680 754" role="img" aria-labelledby="cap-locomo">
+  <title id="cap-locomo">LoCoMo question-answering accuracy as each system publishes it, in three panels, with TerranSoul an honest blank because we have no LoCoMo number.</title>
+  <rect class="sf" x="0" y="0" width="680" height="754" rx="10"/>
+
+  <text class="key" x="0" y="22">PANEL A &#183; AS EACH SYSTEM PUBLISHES IT &#183; END-TO-END ANSWER ACCURACY</text>
+
+  <line class="grid" x1="244" y1="32" x2="244" y2="190"/>
+  <line class="grid" x1="337" y1="32" x2="337" y2="190"/>
+  <line class="grid" x1="430" y1="32" x2="430" y2="190"/>
+  <line class="grid" x1="523" y1="32" x2="523" y2="190"/>
+  <line class="grid" x1="616" y1="32" x2="616" y2="190"/>
+  <line class="axis" x1="244" y1="190" x2="616" y2="190"/>
+  <text class="val" x="244" y="206" text-anchor="middle">0</text>
+  <text class="val" x="337" y="206" text-anchor="middle">25</text>
+  <text class="val" x="430" y="206" text-anchor="middle">50</text>
+  <text class="val" x="523" y="206" text-anchor="middle">75</text>
+  <text class="val" x="616" y="206" text-anchor="middle">100 %</text>
+
+  <path class="b1" d="M244 39 H570.4 A4 4 0 0 1 574.4 43 V49 A4 4 0 0 1 570.4 53 H244 Z"/>
+  <text class="lab" x="232" y="50" text-anchor="end">MemOS &#183; metric unnamed &#178;</text>
+  <text class="val" x="584.4" y="50">88.83</text>
+
+  <path class="b1" d="M244 65 H549.5 A4 4 0 0 1 553.5 69 V75 A4 4 0 0 1 549.5 79 H244 Z"/>
+  <text class="lab" x="232" y="76" text-anchor="end">Letta / MemGPT</text>
+  <text class="val" x="563.5" y="76">83.2</text>
+
+  <path class="b1" d="M244 91 H494.8 A4 4 0 0 1 498.8 95 V101 A4 4 0 0 1 494.8 105 H244 Z"/>
+  <text class="lab" x="232" y="102" text-anchor="end">Mem0</text>
+  <text class="val" x="508.8" y="102">68.5</text>
+
+  <path class="b1" d="M244 117 H368.5 A4 4 0 0 1 372.5 121 V127 A4 4 0 0 1 368.5 131 H244 Z"/>
+  <text class="lab" x="232" y="128" text-anchor="end">Zep</text>
+  <text class="val" x="382.5" y="128">34.53</text>
+
+  <line class="blank" x1="244" y1="150" x2="616" y2="150"/>
+  <text class="lab" x="232" y="154" text-anchor="end">Cognee</text>
+  <rect class="sf" x="248" y="142" width="380" height="16"/>
+  <text class="note" x="252" y="154">in the same source table, but with no single figure &#8212; &#8220;(varies)&#8221;</text>
+
+  <line class="blank" x1="244" y1="176" x2="616" y2="176"/>
+  <text class="lab" x="232" y="180" text-anchor="end">TerranSoul</text>
+  <rect class="sf" x="248" y="168" width="404" height="16"/>
+  <text class="note" x="252" y="180">no end-to-end QA number on LoCoMo &#8212; retrieval only, a documented gap</text>
+
+  <line class="rule" x1="0" y1="228" x2="680" y2="228"/>
+
+  <text class="key" x="0" y="250">PANEL B &#183; GRAPHIFY&#8217;S OWN HARNESS &#183; n = 300 &#183; KIMI K2.6 JUDGE</text>
+
+  <line class="grid" x1="244" y1="260" x2="244" y2="416"/>
+  <line class="grid" x1="337" y1="260" x2="337" y2="416"/>
+  <line class="grid" x1="430" y1="260" x2="430" y2="416"/>
+  <line class="grid" x1="523" y1="260" x2="523" y2="416"/>
+  <line class="grid" x1="616" y1="260" x2="616" y2="416"/>
+  <line class="axis" x1="244" y1="416" x2="616" y2="416"/>
+  <text class="val" x="244" y="432" text-anchor="middle">0</text>
+  <text class="val" x="337" y="432" text-anchor="middle">25</text>
+  <text class="val" x="430" y="432" text-anchor="middle">50</text>
+  <text class="val" x="523" y="432" text-anchor="middle">75</text>
+  <text class="val" x="616" y="432" text-anchor="middle">100 %</text>
+
+  <path class="b1" d="M244 269 H424.9 A4 4 0 0 1 428.9 273 V279 A4 4 0 0 1 424.9 283 H244 Z"/>
+  <text class="lab" x="232" y="280" text-anchor="end">supermemory</text>
+  <text class="val" x="438.9" y="280">49.7</text>
+
+  <path class="b1" d="M244 293 H408.5 A4 4 0 0 1 412.5 297 V303 A4 4 0 0 1 408.5 307 H244 Z"/>
+  <text class="lab" x="232" y="304" text-anchor="end">Graphify (graph-expand)</text>
+  <text class="val" x="422.5" y="304">~45.3</text>
+
+  <path class="b1" d="M244 317 H401.1 A4 4 0 0 1 405.1 321 V327 A4 4 0 0 1 401.1 331 H244 Z"/>
+  <text class="lab" x="232" y="328" text-anchor="end">hybrid-RRF baseline &#185;</text>
+  <text class="val" x="415.1" y="328">43.3</text>
+
+  <path class="b1" d="M244 341 H393.6 A4 4 0 0 1 397.6 345 V351 A4 4 0 0 1 393.6 355 H244 Z"/>
+  <text class="lab" x="232" y="352" text-anchor="end">dense RAG</text>
+  <text class="val" x="407.6" y="352">41.3</text>
+
+  <path class="b1" d="M244 365 H356.4 A4 4 0 0 1 360.4 369 V375 A4 4 0 0 1 356.4 379 H244 Z"/>
+  <text class="lab" x="232" y="376" text-anchor="end">BM25</text>
+  <text class="val" x="370.4" y="376">31.3</text>
+
+  <path class="b1" d="M244 389 H341.6 A4 4 0 0 1 345.6 393 V399 A4 4 0 0 1 341.6 403 H244 Z"/>
+  <text class="lab" x="232" y="400" text-anchor="end">Mem0</text>
+  <text class="val" x="355.6" y="400">27.3</text>
+
+  <line class="rule" x1="0" y1="454" x2="680" y2="454"/>
+
+  <text class="key" x="0" y="476">PANEL C &#183; m_flow&#8217;S ALIGNED RUN &#183; LoCoMo-10, k = 10 &#183; gpt-5-mini ANSWERS, gpt-4o-mini JUDGES &#183; n NOT DISCLOSED</text>
+
+  <line class="grid" x1="244" y1="486" x2="244" y2="616"/>
+  <line class="grid" x1="337" y1="486" x2="337" y2="616"/>
+  <line class="grid" x1="430" y1="486" x2="430" y2="616"/>
+  <line class="grid" x1="523" y1="486" x2="523" y2="616"/>
+  <line class="grid" x1="616" y1="486" x2="616" y2="616"/>
+  <line class="axis" x1="244" y1="616" x2="616" y2="616"/>
+  <text class="val" x="244" y="632" text-anchor="middle">0</text>
+  <text class="val" x="337" y="632" text-anchor="middle">25</text>
+  <text class="val" x="430" y="632" text-anchor="middle">50</text>
+  <text class="val" x="523" y="632" text-anchor="middle">75</text>
+  <text class="val" x="616" y="632" text-anchor="middle">100 %</text>
+
+  <path class="b1" d="M244 495 H544.3 A4 4 0 0 1 548.3 499 V505 A4 4 0 0 1 544.3 509 H244 Z"/>
+  <text class="lab" x="232" y="506" text-anchor="end">m_flow</text>
+  <text class="val" x="558.3" y="506">81.8</text>
+
+  <path class="b1" d="M244 519 H535.4 A4 4 0 0 1 539.4 523 V529 A4 4 0 0 1 535.4 533 H244 Z"/>
+  <text class="lab" x="232" y="530" text-anchor="end">Cognee Cloud</text>
+  <text class="val" x="549.4" y="530">79.4</text>
+
+  <path class="b1" d="M244 543 H513.0 A4 4 0 0 1 517.0 547 V553 A4 4 0 0 1 513.0 557 H244 Z"/>
+  <text class="lab" x="232" y="554" text-anchor="end">Zep Cloud</text>
+  <text class="val" x="527.0" y="554">73.4</text>
+
+  <path class="b1" d="M244 567 H479.6 A4 4 0 0 1 483.6 571 V577 A4 4 0 0 1 479.6 581 H244 Z"/>
+  <text class="lab" x="232" y="578" text-anchor="end">Supermemory Cloud</text>
+  <text class="val" x="493.6" y="578">64.4</text>
+
+  <line class="blank" x1="244" y1="602" x2="616" y2="602"/>
+  <text class="lab" x="232" y="606" text-anchor="end">TerranSoul</text>
+  <rect class="sf" x="248" y="594" width="352" height="16"/>
+  <text class="note" x="252" y="606">not run in m_flow&#8217;s harness, and no LoCoMo number of our own</text>
+
+  <text class="note" x="0" y="654">Mem0 appears in two panels: 68.5 in A (its own paper) and 27.3 in B (Graphify&#8217;s harness, Kimi K2.6).</text>
+  <text class="note" x="0" y="668">Zep and Cognee appear in A and C with different figures &#8212; the harness, judge and top-k all differ.</text>
+  <text class="note" x="0" y="682">Same dataset name; different harness, judge and n. Neither is wrong &#8212; they are not the same measurement.</text>
+  <text class="note" x="0" y="696">No bar here is a retrieval metric, so none of them belongs beside charts (i) or (ii).</text>
+  <text class="note" x="0" y="710">&#185; a generic RRF baseline in Graphify&#8217;s own peer set &#8212; unrelated to TerranSoul&#8217;s identically-named rrf.</text>
+  <text class="note" x="0" y="724">&#178; MemOS attributes both its figures to one line, &#8220;evaluated via OmniMemEval&#8221; &#8212; no n, no judge, no baselines.</text>
+  <text class="note" x="0" y="738">Panel C excludes LoCoMo Category 5 (adversarial), as m_flow&#8217;s own report states.</text>
+</svg>
+</div>
+<div class="chart-block">
+<style>
+.c6{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6}
+.c6 text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c6 .lab{fill:var(--ink)}
+.c6 .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c6 .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c6 .note{font-size:11px;fill:var(--mut)}
+.c6 .sf{fill:var(--sf)}
+.c6 .grid{stroke:var(--grid);stroke-width:1}
+.c6 .axis{stroke:var(--axis);stroke-width:1}
+.c6 .conn{stroke:var(--axis);stroke-width:1.5;stroke-linecap:round}
+.c6 .d1{fill:var(--s1);stroke:var(--sf);stroke-width:2}
+.c6 .o1{fill:var(--sf);stroke:var(--s1);stroke-width:2}
+</style>
+<svg class="c6" viewBox="0 0 680 288" role="img" aria-labelledby="cap-openviking">
+  <title id="cap-openviking">OpenViking host-plus-memory composite: OpenClaw, Hermes and Claude Code each measured alone and again with OpenViking added. Not a standalone retrieval score.</title>
+  <rect class="sf" x="0" y="0" width="680" height="288" rx="10"/>
+
+  <circle class="o1" cx="14" cy="16" r="5"/><text x="25" y="20">host agent alone</text>
+  <circle class="d1" cx="140" cy="16" r="5"/><text x="151" y="20">host agent + OpenViking</text>
+
+  <text class="note" x="0" y="42">LoCoMo &#183; each row is one host agent measured twice &#183; n, judge and answering model not disclosed</text>
+
+  <text class="key" x="0" y="66">HOST + MEMORY COMPOSITE &#8212; NOT A STANDALONE RETRIEVAL SCORE</text>
+
+  <line class="grid" x1="244" y1="76" x2="244" y2="194"/>
+  <line class="grid" x1="337" y1="76" x2="337" y2="194"/>
+  <line class="grid" x1="430" y1="76" x2="430" y2="194"/>
+  <line class="grid" x1="523" y1="76" x2="523" y2="194"/>
+  <line class="grid" x1="616" y1="76" x2="616" y2="194"/>
+  <line class="axis" x1="244" y1="194" x2="616" y2="194"/>
+  <text class="val" x="244" y="210" text-anchor="middle">0</text>
+  <text class="val" x="337" y="210" text-anchor="middle">25</text>
+  <text class="val" x="430" y="210" text-anchor="middle">50</text>
+  <text class="val" x="523" y="210" text-anchor="middle">75</text>
+  <text class="val" x="616" y="210" text-anchor="middle">100 %</text>
+
+  <g><line class="conn" x1="334.0" y1="96" x2="549.3" y2="96"/>
+    <circle class="o1" cx="334.0" cy="96" r="5"/><circle class="d1" cx="549.3" cy="96" r="5"/>
+    <text class="lab" x="232" y="100" text-anchor="end">OpenClaw</text>
+    <text class="val" x="322.0" y="100" text-anchor="end">24.20</text>
+    <text class="val" x="561.3" y="100">82.08</text></g>
+
+  <g><line class="conn" x1="368.2" y1="126" x2="552.2" y2="126"/>
+    <circle class="o1" cx="368.2" cy="126" r="5"/><circle class="d1" cx="552.2" cy="126" r="5"/>
+    <text class="lab" x="232" y="130" text-anchor="end">Hermes</text>
+    <text class="val" x="356.2" y="130" text-anchor="end">33.38</text>
+    <text class="val" x="564.2" y="130">82.86</text></g>
+
+  <g><line class="conn" x1="456.8" y1="156" x2="542.8" y2="156"/>
+    <circle class="o1" cx="456.8" cy="156" r="5"/><circle class="d1" cx="542.8" cy="156" r="5"/>
+    <text class="lab" x="232" y="160" text-anchor="end">Claude Code</text>
+    <text class="val" x="444.8" y="160" text-anchor="end">57.21</text>
+    <text class="val" x="554.8" y="160">80.32</text></g>
+
+  <text class="note" x="0" y="232">Each row is a PAIR: the same host agent with its own memory off, then with OpenViking on. The number</text>
+  <text class="note" x="0" y="246">describes the pair, not the memory layer, so it cannot be set beside a standalone retrieval score.</text>
+  <text class="note" x="0" y="260">The three hosts do not start level and they finish close together &#8212; that convergence is the result.</text>
+  <text class="note" x="0" y="274">TerranSoul is absent by construction: it is not a memory layer bolted onto a third-party host.</text>
+</svg>
+</div>
+<div class="chart-block">
+<style>
+.c7{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6;--s2:#eb6834}
+.c7 text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c7 .lab{fill:var(--ink)}
+.c7 .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c7 .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c7 .note{font-size:11px;fill:var(--mut)}
+.c7 .sf{fill:var(--sf)}
+.c7 .grid{stroke:var(--grid);stroke-width:1}
+.c7 .axis{stroke:var(--axis);stroke-width:1}
+.c7 .rule{stroke:var(--grid);stroke-width:1}
+.c7 .w1{stroke:var(--s1);stroke-width:1.5;stroke-linecap:round;opacity:.55}
+.c7 .d1{fill:var(--s1);stroke:var(--sf);stroke-width:2}
+.c7 .b2{fill:var(--s2)}
+</style>
+<svg class="c7" viewBox="0 0 680 374" role="img" aria-labelledby="cap-ctxreduce">
+  <title id="cap-ctxreduce">Context reduction, two unscaled panels: code-review-graph reports a token-reduction multiplier, supermemory reports a per-cent reduction, and converting between them would invent a number neither published.</title>
+  <rect class="sf" x="0" y="0" width="680" height="374" rx="10"/>
+
+  <text class="key" x="0" y="22">PANEL A &#183; CODE-REVIEW-GRAPH &#183; TOKEN REDUCTION &#183; 6 OSS REPOS, 5 QUESTIONS EACH &#183; NO JUDGE</text>
+
+  <line class="grid" x1="244" y1="32" x2="244" y2="108"/>
+  <line class="grid" x1="337" y1="32" x2="337" y2="108"/>
+  <line class="grid" x1="430" y1="32" x2="430" y2="108"/>
+  <line class="grid" x1="523" y1="32" x2="523" y2="108"/>
+  <line class="grid" x1="616" y1="32" x2="616" y2="108"/>
+  <line class="axis" x1="244" y1="108" x2="616" y2="108"/>
+  <text class="val" x="244" y="124" text-anchor="middle">0</text>
+  <text class="val" x="337" y="124" text-anchor="middle">150</text>
+  <text class="val" x="430" y="124" text-anchor="middle">300</text>
+  <text class="val" x="523" y="124" text-anchor="middle">450</text>
+  <text class="val" x="616" y="124" text-anchor="middle">600 &#215;</text>
+
+  <g><line class="w1" x1="267.6" y1="60" x2="571.4" y2="60"/>
+    <line class="w1" x1="267.6" y1="56" x2="267.6" y2="64"/>
+    <line class="w1" x1="571.4" y1="56" x2="571.4" y2="64"/>
+    <circle class="d1" cx="294.8" cy="60" r="5"/>
+    <text class="lab" x="232" y="64" text-anchor="end">code-review-graph</text>
+    <text class="val" x="583.4" y="64">82&#215; median</text></g>
+
+  <line class="rule" x1="0" y1="146" x2="680" y2="146"/>
+
+  <text class="key" x="0" y="168">PANEL B &#183; SUPERMEMORY &#183; CONTEXT REDUCTION, PER CENT OF TOKENS REMOVED &#183; NO JUDGE</text>
+
+  <line class="grid" x1="244" y1="178" x2="244" y2="236"/>
+  <line class="grid" x1="337" y1="178" x2="337" y2="236"/>
+  <line class="grid" x1="430" y1="178" x2="430" y2="236"/>
+  <line class="grid" x1="523" y1="178" x2="523" y2="236"/>
+  <line class="grid" x1="616" y1="178" x2="616" y2="236"/>
+  <line class="axis" x1="244" y1="236" x2="616" y2="236"/>
+  <text class="val" x="244" y="252" text-anchor="middle">0</text>
+  <text class="val" x="337" y="252" text-anchor="middle">25</text>
+  <text class="val" x="430" y="252" text-anchor="middle">50</text>
+  <text class="val" x="523" y="252" text-anchor="middle">75</text>
+  <text class="val" x="616" y="252" text-anchor="middle">100 %</text>
+
+  <path class="b2" d="M244 187 H609.8 A4 4 0 0 1 613.8 191 V197 A4 4 0 0 1 609.8 201 H244 Z"/>
+  <text class="lab" x="232" y="198" text-anchor="end">supermemory</text>
+  <text class="val" x="623.8" y="198">99.4 %</text>
+
+  <text class="note" x="0" y="274">The two panels are NOT scaled to each other. One publisher prints a multiplier, the other a per-cent</text>
+  <text class="note" x="0" y="288">reduction, and converting between them would invent a number neither of them published.</text>
+  <text class="note" x="0" y="302">code-review-graph&#8217;s spread over the six repositories is 38&#215; to 528&#215;; the dot is its median, 82&#215;.</text>
+  <text class="note" x="0" y="316">Both are context-cost results, not accuracy results. Neither says the system answers better.</text>
+  <text class="note" x="0" y="330">code-review-graph also publishes an 0.71 impact-F1. It is NOT drawn: its author states the ground</text>
+  <text class="note" x="0" y="344">truth comes from the same graph edges the predictor walks, so the number is circular by construction.</text>
+  <text class="note" x="0" y="358">Corpus: six open-source repositories in Panel A, LongMemEval in Panel B. Answering model: not disclosed.</text>
+</svg>
+</div>
+<div class="chart-block">
+<style>
+.c4{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6;--s2:#eb6834}
+.c4 text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c4 .lab{fill:var(--ink)}
+.c4 .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c4 .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c4 .note{font-size:11px;fill:var(--mut)}
+.c4 .sf{fill:var(--sf)}
+.c4 .grid{stroke:var(--grid);stroke-width:1}
+.c4 .axis{stroke:var(--axis);stroke-width:1}
+.c4 .rule{stroke:var(--grid);stroke-width:1}
+.c4 .b1{fill:var(--s1)}
+.c4 .b2{fill:var(--s2)}
+</style>
+<svg class="c4" viewBox="0 0 680 580" role="img" aria-labelledby="cap-parity">
+  <title id="cap-parity">Agent head-to-head parity: judged answer quality, latency and cost across the assistant row.</title>
+  <rect class="sf" x="0" y="0" width="680" height="580" rx="10"/>
+
+  <text class="key" x="0" y="20">PANEL A &#183; ANSWER QUALITY 0&#8211;10 &#183; 22 PROMPTS, 7 ARCHETYPES &#183; JUDGE gemma4:12b-it-qat</text>
+
+  <line class="grid" x1="246" y1="30" x2="246" y2="180"/>
+  <line class="grid" x1="316" y1="30" x2="316" y2="180"/>
+  <line class="grid" x1="386" y1="30" x2="386" y2="180"/>
+  <line class="grid" x1="456" y1="30" x2="456" y2="180"/>
+  <line class="grid" x1="526" y1="30" x2="526" y2="180"/>
+  <line class="grid" x1="596" y1="30" x2="596" y2="180"/>
+  <line class="axis" x1="246" y1="180" x2="596" y2="180"/>
+  <text class="val" x="246" y="196" text-anchor="middle">0</text>
+  <text class="val" x="316" y="196" text-anchor="middle">2</text>
+  <text class="val" x="386" y="196" text-anchor="middle">4</text>
+  <text class="val" x="456" y="196" text-anchor="middle">6</text>
+  <text class="val" x="526" y="196" text-anchor="middle">8</text>
+  <text class="val" x="596" y="196" text-anchor="middle">10</text>
+
+  <path class="b1" d="M246 39 H585.7 A4 4 0 0 1 589.7 43 V49 A4 4 0 0 1 585.7 53 H246 Z"/>
+  <text class="lab" x="234" y="50" text-anchor="end">TerranSoul (brain &#8594; Ollama)</text>
+  <text class="val" x="599.7" y="50">9.82</text>
+
+  <path class="b1" d="M246 67 H576.3 A4 4 0 0 1 580.3 71 V77 A4 4 0 0 1 576.3 81 H246 Z"/>
+  <text class="lab" x="234" y="78" text-anchor="end">OpenJarvis (Stanford SAIL)</text>
+  <text class="val" x="590.3" y="78">9.55</text>
+
+  <path class="b1" d="M246 95 H534.6 A4 4 0 0 1 538.6 99 V105 A4 4 0 0 1 534.6 109 H246 Z"/>
+  <text class="lab" x="234" y="106" text-anchor="end">OpenClaw (agent --local) &#8224;</text>
+  <text class="val" x="548.6" y="106">8.36</text>
+
+  <path class="b1" d="M246 123 H530.4 A4 4 0 0 1 534.4 127 V133 A4 4 0 0 1 530.4 137 H246 Z"/>
+  <text class="lab" x="234" y="134" text-anchor="end">Claude Code + GENesis-AGI &#8224;&#8225;</text>
+  <text class="val" x="544.4" y="134">8.24</text>
+
+  <path class="b1" d="M246 151 H483.5 A4 4 0 0 1 487.5 155 V161 A4 4 0 0 1 483.5 165 H246 Z"/>
+  <text class="lab" x="234" y="162" text-anchor="end">Hermes-Agent (-z one-shot) &#8224;</text>
+  <text class="val" x="497.5" y="162">6.90</text>
+
+  <text class="note" x="0" y="216">Cost: $0 on every row except Claude Code + GENesis-AGI, which spent $5.94 of cloud inference.</text>
+  <text class="note" x="0" y="230">It still does not out-score the two free local stacks.</text>
+
+  <line class="rule" x1="0" y1="248" x2="680" y2="248"/>
+
+  <text class="key" x="0" y="268">PANEL B1 &#183; LATENCY p50 &#183; INFERENCE ONLY, EXCLUDES CLI COLD-START</text>
+
+  <line class="grid" x1="246" y1="278" x2="246" y2="336"/>
+  <line class="grid" x1="284.5" y1="278" x2="284.5" y2="336"/>
+  <line class="grid" x1="323" y1="278" x2="323" y2="336"/>
+  <line class="grid" x1="361.5" y1="278" x2="361.5" y2="336"/>
+  <line class="grid" x1="400" y1="278" x2="400" y2="336"/>
+  <line class="axis" x1="246" y1="336" x2="400" y2="336"/>
+  <text class="val" x="246" y="352" text-anchor="middle">0</text>
+  <text class="val" x="284.5" y="352" text-anchor="middle">1</text>
+  <text class="val" x="323" y="352" text-anchor="middle">2</text>
+  <text class="val" x="361.5" y="352" text-anchor="middle">3</text>
+  <text class="val" x="400" y="352" text-anchor="middle">4 s</text>
+
+  <path class="b2" d="M246 287 H284.4 A4 4 0 0 1 288.4 291 V297 A4 4 0 0 1 284.4 301 H246 Z"/>
+  <text class="lab" x="234" y="298" text-anchor="end">TerranSoul</text>
+  <text class="val" x="298.4" y="298">1.1 s</text>
+
+  <path class="b2" d="M246 311 H376.8 A4 4 0 0 1 380.8 315 V321 A4 4 0 0 1 376.8 325 H246 Z"/>
+  <text class="lab" x="234" y="322" text-anchor="end">OpenJarvis</text>
+  <text class="val" x="390.8" y="322">3.5 s</text>
+
+  <text class="key" x="0" y="384">PANEL B2 &#183; LATENCY p50 &#183; WALL-CLOCK, INCLUDING PER-CALL CLI COLD-START</text>
+
+  <line class="grid" x1="246" y1="394" x2="246" y2="476"/>
+  <line class="grid" x1="333.5" y1="394" x2="333.5" y2="476"/>
+  <line class="grid" x1="421" y1="394" x2="421" y2="476"/>
+  <line class="grid" x1="508.5" y1="394" x2="508.5" y2="476"/>
+  <line class="grid" x1="596" y1="394" x2="596" y2="476"/>
+  <line class="axis" x1="246" y1="476" x2="596" y2="476"/>
+  <text class="val" x="246" y="492" text-anchor="middle">0</text>
+  <text class="val" x="333.5" y="492" text-anchor="middle">10</text>
+  <text class="val" x="421" y="492" text-anchor="middle">20</text>
+  <text class="val" x="508.5" y="492" text-anchor="middle">30</text>
+  <text class="val" x="596" y="492" text-anchor="middle">40 s</text>
+
+  <path class="b2" d="M246 403 H337.4 A4 4 0 0 1 341.4 407 V413 A4 4 0 0 1 337.4 417 H246 Z"/>
+  <text class="lab" x="234" y="414" text-anchor="end">Hermes-Agent</text>
+  <text class="val" x="351.4" y="414">10.9 s</text>
+
+  <path class="b2" d="M246 427 H395.1 A4 4 0 0 1 399.1 431 V437 A4 4 0 0 1 395.1 441 H246 Z"/>
+  <text class="lab" x="234" y="438" text-anchor="end">Claude Code + GENesis-AGI</text>
+  <text class="val" x="409.1" y="438">17.5 s</text>
+
+  <path class="b2" d="M246 451 H575.4 A4 4 0 0 1 579.4 455 V461 A4 4 0 0 1 575.4 465 H246 Z"/>
+  <text class="lab" x="234" y="462" text-anchor="end">OpenClaw</text>
+  <text class="val" x="589.4" y="462">38.1 s</text>
+
+  <text class="note" x="0" y="514">B1 and B2 deliberately do NOT share an axis: one excludes CLI cold-start, the other includes it.</text>
+  <text class="note" x="0" y="528">A bar in B2 is not slower than one in B1 &#8212; it is a different measurement. Quality is the comparable metric.</text>
+  <text class="note" x="0" y="542">&#8224; measured 2026-06-27 under the earlier single-call-judge protocol &#8212; re-measurement pending.</text>
+  <text class="note" x="0" y="556">&#160;&#160;The top two rows use the 2026-07-03 deterministic protocol (judge = median of 3 repeats at temp 0.3).</text>
+  <text class="note" x="0" y="570">&#8225; a different, cloud model (claude-haiku-4-5) &#8212; a frontier reference, not like-for-like with the local rows.</text>
+</svg>
+</div>
+
+    <h3>Design limits</h3>
+    <p>Four limits of this design, stated as limits rather than as a roadmap. Three are shared with the field; one is specific to us.</p>
     <ul>
-      <li><strong>Write governance is unmeasured.</strong> The gate is implemented and regression-tested; it has never been evaluated against MINJA or PoisonedRAG at published attack strength [<a href="#cref-37">37</a>,<a href="#cref-44">44</a>]. Until it is, the claim is structural.</li>
+      <li><strong>Write governance is described structurally, not quantified.</strong> The gate is implemented and regression-tested, and this page publishes no attack-success number for it. A quantified security claim was published here once, unmeasured, and withdrawn &mdash; see the Corrections trail. It is not restated in any form until an adversarial run exists to restate it from.</li>
       <li><strong>Judge validity is contained, not calibrated.</strong> Failing open bounds the damage a bad judge does; it does nothing about position bias or benchmark-dependent rankings [<a href="#cref-33">33</a>].</li>
-      <li><strong>The graph has not earned its retrieval cost &mdash; and has not been given the chance.</strong> Graph structure demonstrably helps structure-shaped questions [<a href="#cref-14">14</a>,<a href="#cref-16">16</a>], the one cascade comparison on record bought 0.00&nbsp;pp of R@10 at 2.04&times; latency, and the edge table was empty in every published arm. &ldquo;Not switched on in any published run&rdquo; is a different and more uncomfortable statement than &ldquo;did not earn its cost&rdquo;.</li>
-      <li><strong>Scale without decay.</strong> The best governed-memory system on record drops about 25&nbsp;% from 1M to 10M tokens [<a href="#cref-42">42</a>], benchmarks above 10M are unsaturated, and near-perfect LoCoMo scores collapse on interdependent tasks [<a href="#cref-39">39</a>]. Nothing here is tested at that scale.</li>
+      <li><strong>The graph is not in the ranking path, and the one comparison on record did not test it.</strong> Graph structure demonstrably helps structure-shaped questions [<a href="#cref-14">14</a>,<a href="#cref-16">16</a>]; the single cascade comparison bought 0.00&nbsp;pp of R@10 at 2.04&times; latency &mdash; but the edge table was empty in every published arm, so that number measures an empty graph, not a graph that failed. &ldquo;Not switched on in any published run&rdquo; is a different and more uncomfortable statement than &ldquo;did not earn its cost&rdquo;, and it is the accurate one.</li>
+      <li><strong>Scale is tested to one million rows.</strong> The largest arm on record is a single-machine ingest measured up to 22,745&nbsp;rows/s at 1,000,000 rows (<code>benchmark/results/jd-validate-1m-engine-on-v2/report.md</code>). This page makes no claim about behaviour beyond that, in either direction. For context on why the ceiling matters, the best governed-memory system on record drops about 25&nbsp;% from 1M to 10M tokens [<a href="#cref-42">42</a>] and near-perfect LoCoMo scores collapse on interdependent tasks [<a href="#cref-39">39</a>].</li>
+      <li><strong>Judged metrics carry run-to-run variance, and it is measured.</strong> Two <code>max</code> arms at identical configuration over the same 50 questions returned bit-identical recall and identical token counts, but NDCG@10 moved 1.0 and MRR moved 1.3. Recall is deterministic on this harness; rank-position metrics are not. Any NDCG/MRR gap under roughly 1.3 points at that sample size is therefore not a difference, and is not reported as one.</li>
     </ul>
     <p><strong>There is no Stage 13 yet.</strong> A thirteenth stage would need a failure of Stage&nbsp;11 that somebody has documented and that a new mechanism answers. The open items above are Stage&nbsp;9's and Stage&nbsp;11's own unfinished business, not a new limit, so the chain stops here rather than being extended for symmetry.</p>
 
@@ -884,5 +1672,6 @@
   </div>
   <div>Authoritative source (markdown, source of truth): <code>docs/LLM-Brain-Design-Research-Paper-memory-evolution.md</code> &middot; 2026-07.</div>
 </footer>
+<script src="../assets/site-nav.js" defer></script>
 </body>
 </html>

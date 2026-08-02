@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DOCS-AUDIT-8 &mdash; chart preview</title>
+<style>
+:root{--pg:#f9f9f7;--pi:#0b0b0b;--ps:#52514e;--pr:#e1e0d9;
+ --sans:system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){--pg:#0d0d0d;--pi:#fff;--ps:#c3c2b7;--pr:#2c2c2a}}
+:root[data-theme="dark"]{--pg:#0d0d0d;--pi:#fff;--ps:#c3c2b7;--pr:#2c2c2a}
+*{box-sizing:border-box}
+body{margin:0;padding:32px 24px 96px;background:var(--pg);color:var(--pi);font-family:var(--sans);line-height:1.55}
+main{max-width:820px;margin:0 auto}
+h1{font-size:28px;margin:0 0 6px}
+.lede{color:var(--ps);font-size:15px;margin:0 0 24px;max-width:64ch}
+h2{font-size:17px;margin:0 0 12px;font-weight:600}
+figure.tsfig{margin:0 0 56px}
+.tsfig-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;border:1px solid var(--pr);border-radius:10px}
+.tsfig svg{display:block;width:100%;min-width:640px;height:auto}
+figcaption{font-size:13.5px;line-height:1.55;color:var(--ps);margin:10px 2px 0}
+code{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:.92em}
+button{font:inherit;font-size:13px;padding:7px 14px;border-radius:7px;border:1px solid var(--pr);background:transparent;color:var(--pi);cursor:pointer;margin-bottom:28px}
+</style></head><body><main>
+<h1>DOCS-AUDIT-8 &mdash; comparison charts, one per measurement axis</h1>
+<p class="lede">Preview only &mdash; staging for <code>docs/charts-docs-audit-8.md</code>. Nothing here is placed in
+<code>COMPARISON.md</code> or <code>memory-evolution.html</code>. Toggle the theme and check both modes;
+also narrow the window &mdash; each figure must scroll inside its own box, never scroll the page sideways.</p>
+<button onclick="var r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark'">Toggle light / dark</button>
+<figure class="tsfig">
+<h2>(i) LongMemEval-S retrieval &mdash; n = 500</h2>
+<div class="tsfig-scroll">
+<style>
+.c1{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6;--s2:#eb6834}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .c1{--sf:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--mut:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926}}
+:root[data-theme="dark"] .c1{--sf:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--mut:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926}
+.c1 text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c1 .lab{fill:var(--ink)}
+.c1 .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c1 .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c1 .note{font-size:11px;fill:var(--mut)}
+.c1 .sf{fill:var(--sf)}
+.c1 .grid{stroke:var(--grid);stroke-width:1}
+.c1 .axis{stroke:var(--axis);stroke-width:1}
+.c1 .conn{stroke:var(--axis);stroke-width:1.5;stroke-linecap:round}
+.c1 .blank{stroke:var(--grid);stroke-width:1;stroke-linecap:round}
+.c1 .d1{fill:var(--s1);stroke:var(--sf);stroke-width:2}
+.c1 .d2{fill:var(--s2);stroke:var(--sf);stroke-width:2}
+</style>
+<svg class="c1" viewBox="0 0 680 376" role="img" aria-labelledby="cap-lme500">
+  <rect class="sf" x="0" y="0" width="680" height="376" rx="10"/>
+
+  <circle class="d1" cx="14" cy="16" r="5"/><text x="25" y="20">R@5</text>
+  <circle class="d2" cx="70" cy="16" r="5"/><text x="81" y="20">NDCG@10</text>
+  <text class="note" x="152" y="20">n = 500 &#183; LongMemEval-S retrieval-only &#183; recall_ANY@k &#183; embeddinggemma &#183; no judge</text>
+
+  <line class="grid" x1="234" y1="40" x2="234" y2="322"/>
+  <line class="grid" x1="361.3" y1="40" x2="361.3" y2="322"/>
+  <line class="grid" x1="488.7" y1="40" x2="488.7" y2="322"/>
+  <line class="grid" x1="616" y1="40" x2="616" y2="322"/>
+  <line class="axis" x1="234" y1="322" x2="616" y2="322"/>
+  <text class="val" x="234" y="338" text-anchor="middle">85</text>
+  <text class="val" x="361.3" y="338" text-anchor="middle">90</text>
+  <text class="val" x="488.7" y="338" text-anchor="middle">95</text>
+  <text class="val" x="616" y="338" text-anchor="middle">100 %</text>
+
+  <text class="key" x="222" y="56" text-anchor="end">TERRANSOUL RUNGS &#183; 2026-08-01</text>
+
+  <g><line class="conn" x1="465.7" y1="76" x2="595.7" y2="76"/>
+    <circle class="d2" cx="465.7" cy="76" r="5"/><circle class="d1" cx="595.7" cy="76" r="5"/>
+    <text class="lab" x="222" y="80" text-anchor="end">chat</text>
+    <text class="val" x="453.7" y="80" text-anchor="end">94.1</text>
+    <text class="val" x="607.7" y="80">99.2</text></g>
+
+  <g><line class="conn" x1="427.5" y1="102" x2="600.8" y2="102"/>
+    <circle class="d2" cx="427.5" cy="102" r="5"/><circle class="d1" cx="600.8" cy="102" r="5"/>
+    <text class="lab" x="222" y="106" text-anchor="end">think</text>
+    <text class="val" x="415.5" y="106" text-anchor="end">92.6</text>
+    <text class="val" x="612.8" y="106">99.4</text></g>
+
+  <g><line class="conn" x1="488.7" y1="128" x2="600.8" y2="128"/>
+    <circle class="d2" cx="488.7" cy="128" r="5"/><circle class="d1" cx="600.8" cy="128" r="5"/>
+    <text class="lab" x="222" y="132" text-anchor="end">research</text>
+    <text class="val" x="476.7" y="132" text-anchor="end">95.0</text>
+    <text class="val" x="612.8" y="132">99.4</text></g>
+
+  <g><line class="blank" x1="234" y1="154" x2="616" y2="154"/>
+    <text class="lab" x="222" y="158" text-anchor="end">max</text>
+    <rect class="sf" x="238" y="146" width="272" height="16"/>
+    <text class="note" x="242" y="158">full-500 arm not complete &#8212; ~144 s/q, ~20 h</text></g>
+
+  <text class="key" x="222" y="184" text-anchor="end">TERRANSOUL &#183; EARLIER ARMS</text>
+
+  <g><line class="conn" x1="491.2" y1="204" x2="600.8" y2="204"/>
+    <circle class="d2" cx="491.2" cy="204" r="5"/><circle class="d1" cx="600.8" cy="204" r="5"/>
+    <text class="lab" x="222" y="208" text-anchor="end">rrf &#183; 2026-07-03</text>
+    <text class="val" x="479.2" y="208" text-anchor="end">95.1</text>
+    <text class="val" x="612.8" y="208">99.4</text></g>
+
+  <g><line class="conn" x1="330.8" y1="230" x2="580.4" y2="230"/>
+    <circle class="d2" cx="330.8" cy="230" r="5"/><circle class="d1" cx="580.4" cy="230" r="5"/>
+    <text class="lab" x="222" y="234" text-anchor="end">search &#183; 2026-06-28</text>
+    <text class="val" x="318.8" y="234" text-anchor="end">88.8</text>
+    <text class="val" x="592.4" y="234">98.6</text></g>
+
+  <text class="key" x="222" y="260" text-anchor="end">PEER SYSTEMS</text>
+
+  <g><line class="conn" x1="307.9" y1="280" x2="493.7" y2="280"/>
+    <circle class="d2" cx="307.9" cy="280" r="5"/><circle class="d1" cx="493.7" cy="280" r="5"/>
+    <text class="lab" x="222" y="284" text-anchor="end">agentmemory</text>
+    <text class="val" x="295.9" y="284" text-anchor="end">87.9</text>
+    <text class="val" x="505.7" y="284">95.2</text></g>
+
+  <g><line class="blank" x1="234" y1="306" x2="529.4" y2="306"/>
+    <circle class="d1" cx="529.4" cy="306" r="5"/>
+    <text class="lab" x="222" y="310" text-anchor="end">MemPalace &#183; self-reported</text>
+    <rect class="sf" x="238" y="298" width="178" height="16"/>
+    <text class="note" x="242" y="310">NDCG@10 / MRR not published</text>
+    <text class="val" x="541.4" y="310">~96.6</text></g>
+
+  <text class="note" x="0" y="360">Scale reference: 0.2 pp = 1 question of 500 &#8212; the whole R@5 spread drawn here is 21 questions.</text>
+</svg>
+</div>
+<figcaption id="cap-lme500">Retrieval-only, recall_ANY@k, embeddinggemma, no judge. Retrieval is not QA accuracy. Full caption in <code>docs/charts-docs-audit-8.md</code>.</figcaption>
+</figure>
+
+<figure class="tsfig">
+<h2>(i-b) The same rungs on a 50-question slice, with measured noise drawn</h2>
+<div class="tsfig-scroll">
+<style>
+.c1b{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6;--s2:#eb6834}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .c1b{--sf:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--mut:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926}}
+:root[data-theme="dark"] .c1b{--sf:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--mut:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926}
+.c1b text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c1b .lab{fill:var(--ink)}
+.c1b .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c1b .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c1b .note{font-size:11px;fill:var(--mut)}
+.c1b .sf{fill:var(--sf)}
+.c1b .grid{stroke:var(--grid);stroke-width:1}
+.c1b .axis{stroke:var(--axis);stroke-width:1}
+.c1b .blank{stroke:var(--grid);stroke-width:1;stroke-linecap:round}
+.c1b .d1{fill:var(--s1);stroke:var(--sf);stroke-width:2}
+.c1b .d2{fill:var(--s2);stroke:var(--sf);stroke-width:2}
+.c1b .o1{fill:var(--sf);stroke:var(--s1);stroke-width:2}
+.c1b .o2{fill:var(--sf);stroke:var(--s2);stroke-width:2}
+.c1b .w1{stroke:var(--s1);stroke-width:1.5;stroke-linecap:round;opacity:.55}
+.c1b .w2{stroke:var(--s2);stroke-width:1.5;stroke-linecap:round;opacity:.55}
+</style>
+<svg class="c1b" viewBox="0 0 680 372" role="img" aria-labelledby="cap-lme50">
+  <rect class="sf" x="0" y="0" width="680" height="372" rx="10"/>
+
+  <circle class="d1" cx="14" cy="16" r="5"/><text x="25" y="20">NDCG@10</text>
+  <circle class="d2" cx="100" cy="16" r="5"/><text x="111" y="20">MRR</text>
+  <circle class="o1" cx="156" cy="16" r="5"/><text class="note" x="167" y="20">hollow = the other repeat run of the identical config</text>
+  <line class="w1" x1="14" y1="38" x2="55" y2="38"/><line class="w1" x1="14" y1="34" x2="14" y2="42"/><line class="w1" x1="55" y1="34" x2="55" y2="42"/>
+  <text class="note" x="66" y="42">whisker = &#177;0.65 pp &#8212; where two overlap, the gap is under 1.3 pts and is NOT a difference.</text>
+
+  <text class="key" x="0" y="66">n = 50-QUESTION SLICE &#183; NOT COMPARABLE TO THE n = 500 FIGURE</text>
+
+  <line class="grid" x1="234" y1="80" x2="234" y2="288"/>
+  <line class="grid" x1="329.5" y1="80" x2="329.5" y2="288"/>
+  <line class="grid" x1="425" y1="80" x2="425" y2="288"/>
+  <line class="grid" x1="520.5" y1="80" x2="520.5" y2="288"/>
+  <line class="grid" x1="616" y1="80" x2="616" y2="288"/>
+  <line class="axis" x1="234" y1="288" x2="616" y2="288"/>
+  <text class="val" x="234" y="304" text-anchor="middle">88</text>
+  <text class="val" x="329.5" y="304" text-anchor="middle">91</text>
+  <text class="val" x="425" y="304" text-anchor="middle">94</text>
+  <text class="val" x="520.5" y="304" text-anchor="middle">97</text>
+  <text class="val" x="616" y="304" text-anchor="middle">100 %</text>
+
+  <g><line class="w1" x1="388.4" y1="98" x2="429.8" y2="98"/><line class="w1" x1="388.4" y1="94" x2="388.4" y2="102"/><line class="w1" x1="429.8" y1="94" x2="429.8" y2="102"/>
+    <circle class="d1" cx="409.1" cy="98" r="5"/>
+    <text class="lab" x="222" y="102" text-anchor="end">chat &#183; NDCG@10</text>
+    <text class="val" x="441.8" y="102">93.5</text></g>
+
+  <g><line class="w2" x1="321.5" y1="122" x2="362.9" y2="122"/><line class="w2" x1="321.5" y1="118" x2="321.5" y2="126"/><line class="w2" x1="362.9" y1="118" x2="362.9" y2="126"/>
+    <circle class="d2" cx="342.2" cy="122" r="5"/>
+    <text class="lab" x="222" y="126" text-anchor="end">chat &#183; MRR</text>
+    <text class="val" x="374.9" y="126">91.4</text></g>
+
+  <g><line class="blank" x1="234" y1="148" x2="616" y2="148"/>
+    <text class="lab" x="222" y="152" text-anchor="end">think</text>
+    <rect class="sf" x="238" y="140" width="232" height="16"/>
+    <text class="note" x="242" y="152">not measured on this 50-question slice</text></g>
+
+  <g><line class="w1" x1="458.4" y1="174" x2="499.8" y2="174"/><line class="w1" x1="458.4" y1="170" x2="458.4" y2="178"/><line class="w1" x1="499.8" y1="170" x2="499.8" y2="178"/>
+    <circle class="d1" cx="479.1" cy="174" r="5"/>
+    <text class="lab" x="222" y="178" text-anchor="end">research &#183; NDCG@10</text>
+    <text class="val" x="511.8" y="178">95.7</text></g>
+
+  <g><line class="w2" x1="417.0" y1="198" x2="458.4" y2="198"/><line class="w2" x1="417.0" y1="194" x2="417.0" y2="202"/><line class="w2" x1="458.4" y1="194" x2="458.4" y2="202"/>
+    <circle class="d2" cx="437.7" cy="198" r="5"/>
+    <text class="lab" x="222" y="202" text-anchor="end">research &#183; MRR</text>
+    <text class="val" x="470.4" y="202">94.4</text></g>
+
+  <g><line class="w1" x1="522.1" y1="224" x2="563.5" y2="224"/><line class="w1" x1="522.1" y1="220" x2="522.1" y2="228"/><line class="w1" x1="563.5" y1="220" x2="563.5" y2="228"/>
+    <circle class="o1" cx="574.6" cy="224" r="5"/>
+    <circle class="d1" cx="542.8" cy="224" r="5"/>
+    <text class="lab" x="222" y="228" text-anchor="end">max &#183; NDCG@10</text>
+    <text class="val" x="586.6" y="228">97.7 &#183; 98.7</text></g>
+
+  <g><line class="w2" x1="499.8" y1="248" x2="541.2" y2="248"/><line class="w2" x1="499.8" y1="244" x2="499.8" y2="252"/><line class="w2" x1="541.2" y1="244" x2="541.2" y2="252"/>
+    <circle class="o2" cx="561.9" cy="248" r="5"/>
+    <circle class="d2" cx="520.5" cy="248" r="5"/>
+    <text class="lab" x="222" y="252" text-anchor="end">max &#183; MRR</text>
+    <text class="val" x="573.9" y="252">97.0 &#183; 98.3</text></g>
+
+  <g><line class="blank" x1="234" y1="272" x2="616" y2="272"/>
+    <text class="lab" x="222" y="276" text-anchor="end">max &#183; recall</text>
+    <rect class="sf" x="238" y="264" width="356" height="16"/>
+    <text class="note" x="242" y="276">R@5 98.0 &#183; R@10 100.0 &#183; R@20 100.0 &#8212; identical in BOTH runs</text></g>
+
+  <text class="note" x="0" y="326">Recall was bit-identical across the two repeats. NDCG moved 1.0 pt and MRR 1.3 pts with nothing changed.</text>
+  <text class="note" x="0" y="342">Every gap here clears that band: NDCG 2.2 and 2.0 pts, MRR 3.0 and 2.6 pts. The ladder survives its own noise.</text>
+  <text class="note" x="0" y="358">A future gap narrower than 1.3 pts on this slice must not be published as a difference.</text>
+</svg>
+</div>
+<figcaption id="cap-lme50">n = 50. No value here may be placed beside a value from the n = 500 figure. Full caption in <code>docs/charts-docs-audit-8.md</code>.</figcaption>
+</figure>
+
+<figure class="tsfig">
+<h2>(ii) agentmemory-corpus retrieval &mdash; the shared-embedder cluster</h2>
+<div class="tsfig-scroll">
+<style>
+.c2{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .c2{--sf:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--mut:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#199e70}}
+:root[data-theme="dark"] .c2{--sf:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--mut:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#199e70}
+.c2 text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c2 .lab{fill:var(--ink)}
+.c2 .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c2 .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c2 .note{font-size:11px;fill:var(--mut)}
+.c2 .sf{fill:var(--sf)}
+.c2 .grid{stroke:var(--grid);stroke-width:1}
+.c2 .axis{stroke:var(--axis);stroke-width:1}
+.c2 .conn{stroke:var(--axis);stroke-width:1.5;stroke-linecap:round}
+.c2 .blank{stroke:var(--grid);stroke-width:1;stroke-linecap:round}
+.c2 .d1{fill:var(--s1);stroke:var(--sf);stroke-width:2}
+.c2 .d2{fill:var(--s2);stroke:var(--sf);stroke-width:2}
+.c2 .d3{fill:var(--s3);stroke:var(--sf);stroke-width:2}
+</style>
+<svg class="c2" viewBox="0 0 680 470" role="img" aria-labelledby="cap-am">
+  <rect class="sf" x="0" y="0" width="680" height="470" rx="10"/>
+
+  <circle class="d1" cx="14" cy="16" r="5"/><text x="25" y="20">R@5</text>
+  <circle class="d2" cx="70" cy="16" r="5"/><text x="81" y="20">R@10</text>
+  <circle class="d3" cx="132" cy="16" r="5"/><text x="143" y="20">R@20</text>
+  <text class="note" x="196" y="20">n = 20 queries / 240 obs &#183; peers share one nomic embedder &#183; no judge</text>
+
+  <line class="grid" x1="258" y1="36" x2="258" y2="366"/>
+  <line class="grid" x1="347.5" y1="36" x2="347.5" y2="366"/>
+  <line class="grid" x1="437" y1="36" x2="437" y2="366"/>
+  <line class="grid" x1="526.5" y1="36" x2="526.5" y2="366"/>
+  <line class="grid" x1="616" y1="36" x2="616" y2="366"/>
+  <line class="axis" x1="258" y1="366" x2="616" y2="366"/>
+  <text class="val" x="258" y="382" text-anchor="middle">0</text>
+  <text class="val" x="347.5" y="382" text-anchor="middle">20</text>
+  <text class="val" x="437" y="382" text-anchor="middle">40</text>
+  <text class="val" x="526.5" y="382" text-anchor="middle">60</text>
+  <text class="val" x="616" y="382" text-anchor="middle">80 %</text>
+
+  <g><line class="conn" x1="459.4" y1="56" x2="616" y2="56"/>
+    <circle class="d1" cx="459.4" cy="56" r="5"/><circle class="d2" cx="557.8" cy="56" r="5"/><circle class="d3" cx="616" cy="56" r="5"/>
+    <text class="lab" x="246" y="60" text-anchor="end">TerranSoul &#8212; keyword / FTS</text>
+    <text class="val" x="447.4" y="60" text-anchor="end">45.0</text><text class="val" x="628" y="60">80.0</text></g>
+
+  <g><line class="conn" x1="446.0" y1="80" x2="602.6" y2="80"/>
+    <circle class="d1" cx="446.0" cy="80" r="5"/><circle class="d2" cx="531.0" cy="80" r="5"/><circle class="d3" cx="602.6" cy="80" r="5"/>
+    <text class="lab" x="246" y="84" text-anchor="end">TerranSoul &#8212; hybrid + RRF &#185;</text>
+    <text class="val" x="434.0" y="84" text-anchor="end">42.0</text><text class="val" x="614.6" y="84">77.0</text></g>
+
+  <g><line class="conn" x1="453.1" y1="104" x2="581.5" y2="104"/>
+    <circle class="d1" cx="453.1" cy="104" r="5"/><circle class="d2" cx="514.0" cy="104" r="5"/><circle class="d3" cx="581.5" cy="104" r="5"/>
+    <text class="lab" x="246" y="108" text-anchor="end">Claude Code + GENesis-AGI &#178;</text>
+    <text class="val" x="441.1" y="108" text-anchor="end">43.6</text><text class="val" x="593.5" y="108">72.3</text></g>
+
+  <g><line class="conn" x1="441.5" y1="128" x2="589.2" y2="128"/>
+    <circle class="d1" cx="441.5" cy="128" r="5"/><circle class="d2" cx="531.0" cy="128" r="5"/><circle class="d3" cx="589.2" cy="128" r="5"/>
+    <text class="lab" x="246" y="132" text-anchor="end">shared-embedder cluster &#179;</text>
+    <text class="val" x="429.5" y="132" text-anchor="end">41.0</text><text class="val" x="601.2" y="132">74.0</text></g>
+
+  <g><line class="conn" x1="439.7" y1="152" x2="590.0" y2="152"/>
+    <circle class="d1" cx="439.7" cy="152" r="5"/><circle class="d2" cx="530.5" cy="152" r="5"/><circle class="d3" cx="590.0" cy="152" r="5"/>
+    <text class="lab" x="246" y="156" text-anchor="end">OpenJarvis (Stanford SAIL)</text>
+    <text class="val" x="427.7" y="156" text-anchor="end">40.6</text><text class="val" x="602.0" y="156">74.2</text></g>
+
+  <g><line class="conn" x1="441.5" y1="176" x2="580.2" y2="176"/>
+    <circle class="d1" cx="441.5" cy="176" r="5"/><circle class="d2" cx="517.6" cy="176" r="5"/><circle class="d3" cx="580.2" cy="176" r="5"/>
+    <text class="lab" x="246" y="180" text-anchor="end">LlamaIndex</text>
+    <text class="val" x="429.5" y="180" text-anchor="end">41.0</text><text class="val" x="592.2" y="180">72.0</text></g>
+
+  <g><line class="conn" x1="424.9" y1="200" x2="582.9" y2="200"/>
+    <circle class="d1" cx="424.9" cy="200" r="5"/><circle class="d2" cx="498.8" cy="200" r="5"/><circle class="d3" cx="582.9" cy="200" r="5"/>
+    <text class="lab" x="246" y="204" text-anchor="end">obsidian-wiki (agentic ripgrep)</text>
+    <text class="val" x="412.9" y="204" text-anchor="end">37.3</text><text class="val" x="594.9" y="204">72.6</text></g>
+
+  <g><line class="conn" x1="410.2" y1="224" x2="562.3" y2="224"/>
+    <circle class="d1" cx="410.2" cy="224" r="5"/><circle class="d2" cx="508.6" cy="224" r="5"/><circle class="d3" cx="562.3" cy="224" r="5"/>
+    <text class="lab" x="246" y="228" text-anchor="end">HippoRAG &#8308;</text>
+    <text class="val" x="398.2" y="228" text-anchor="end">34.0</text><text class="val" x="574.3" y="228">68.0</text></g>
+
+  <g><line class="conn" x1="321.5" y1="248" x2="328.7" y2="248"/>
+    <circle class="d1" cx="321.5" cy="248" r="5"/><circle class="d2" cx="328.7" cy="248" r="5"/><circle class="d3" cx="328.7" cy="248" r="5"/>
+    <text class="lab" x="246" y="252" text-anchor="end">Hermes-Agent &#8309;</text>
+    <text class="val" x="340.7" y="252">14.2 &#183; 15.8 &#183; 15.8</text></g>
+
+  <g><circle class="d1" cx="308.1" cy="272" r="5"/><circle class="d2" cx="308.1" cy="272" r="5"/><circle class="d3" cx="308.1" cy="272" r="5"/>
+    <text class="lab" x="246" y="276" text-anchor="end">Graphify &#8308;</text>
+    <text class="val" x="320.1" y="276">11.2 at every k</text></g>
+
+  <g><line class="conn" x1="284.9" y1="296" x2="289.3" y2="296"/>
+    <circle class="d1" cx="284.9" cy="296" r="5"/><circle class="d2" cx="289.3" cy="296" r="5"/><circle class="d3" cx="289.3" cy="296" r="5"/>
+    <text class="lab" x="246" y="300" text-anchor="end">Memary &#8308;</text>
+    <text class="val" x="301.3" y="300">6.0 &#183; 7.0 &#183; 7.0</text></g>
+
+  <g><circle class="d1" cx="280.4" cy="320" r="5"/><circle class="d2" cx="280.4" cy="320" r="5"/><circle class="d3" cx="280.4" cy="320" r="5"/>
+    <text class="lab" x="246" y="324" text-anchor="end">GraphRAG (Microsoft) &#8308;</text>
+    <text class="val" x="292.4" y="324">5.0 at every k</text></g>
+
+  <g><line class="blank" x1="258" y1="344" x2="616" y2="344"/>
+    <text class="lab" x="246" y="348" text-anchor="end">OpenClaw</text>
+    <rect class="sf" x="262" y="336" width="398" height="16"/>
+    <text class="note" x="266" y="348">not run &#8212; it HAS a full hybrid retrieval engine; never benched here</text></g>
+
+  <text class="note" x="0" y="402">&#179; Mem0 &#183; Letta &#183; Cognee &#183; Khoj &#183; LangChain &#183; Haystack &#183; RAGFlow all publish an identical 41.0 / 61.0 / 74.0</text>
+  <text class="note" x="0" y="416">&#160;&#160;&#8212; the embedder sets that recall, not the framework; this is not a seven-way tie between architectures.</text>
+  <text class="note" x="0" y="430">&#8308; returns entity subgraphs, not ranked passages &#8212; flat recall is a shape mismatch, not a like-for-like loss.</text>
+  <text class="note" x="0" y="444">&#185; TerranSoul&#8217;s vector arm here is the bench&#8217;s deterministic stand-in, not nomic &#8212; strategy, not embedders.</text>
+  <text class="note" x="0" y="458">&#178; different cloud model, ~53 s/query. &#8309; FTS5 implicit-AND: 4 of 20 queries returned any candidate.</text>
+</svg>
+</div>
+<figcaption id="cap-am">240 observations / 20 queries. Peer rows share one nomic-embed-text embedder. Full caption in <code>docs/charts-docs-audit-8.md</code>.</figcaption>
+</figure>
+
+<figure class="tsfig">
+<h2>(iii) LoCoMo QA accuracy &mdash; cited, not measured; TerranSoul is blank</h2>
+<div class="tsfig-scroll">
+<style>
+.c3{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .c3{--sf:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--mut:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5}}
+:root[data-theme="dark"] .c3{--sf:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--mut:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5}
+.c3 text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c3 .lab{fill:var(--ink)}
+.c3 .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c3 .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c3 .note{font-size:11px;fill:var(--mut)}
+.c3 .sf{fill:var(--sf)}
+.c3 .grid{stroke:var(--grid);stroke-width:1}
+.c3 .axis{stroke:var(--axis);stroke-width:1}
+.c3 .rule{stroke:var(--grid);stroke-width:1}
+.c3 .blank{stroke:var(--grid);stroke-width:1;stroke-linecap:round}
+.c3 .b1{fill:var(--s1)}
+</style>
+<svg class="c3" viewBox="0 0 680 484" role="img" aria-labelledby="cap-locomo">
+  <rect class="sf" x="0" y="0" width="680" height="484" rx="10"/>
+
+  <text class="key" x="0" y="22">PANEL A &#183; AS EACH SYSTEM PUBLISHES IT &#183; END-TO-END ANSWER ACCURACY</text>
+
+  <line class="grid" x1="244" y1="32" x2="244" y2="164"/>
+  <line class="grid" x1="337" y1="32" x2="337" y2="164"/>
+  <line class="grid" x1="430" y1="32" x2="430" y2="164"/>
+  <line class="grid" x1="523" y1="32" x2="523" y2="164"/>
+  <line class="grid" x1="616" y1="32" x2="616" y2="164"/>
+  <line class="axis" x1="244" y1="164" x2="616" y2="164"/>
+  <text class="val" x="244" y="180" text-anchor="middle">0</text>
+  <text class="val" x="337" y="180" text-anchor="middle">25</text>
+  <text class="val" x="430" y="180" text-anchor="middle">50</text>
+  <text class="val" x="523" y="180" text-anchor="middle">75</text>
+  <text class="val" x="616" y="180" text-anchor="middle">100 %</text>
+
+  <path class="b1" d="M244 39 H549.5 A4 4 0 0 1 553.5 43 V49 A4 4 0 0 1 549.5 53 H244 Z"/>
+  <text class="lab" x="232" y="50" text-anchor="end">Letta / MemGPT</text>
+  <text class="val" x="563.5" y="50">83.2</text>
+
+  <path class="b1" d="M244 65 H494.8 A4 4 0 0 1 498.8 69 V75 A4 4 0 0 1 494.8 79 H244 Z"/>
+  <text class="lab" x="232" y="76" text-anchor="end">Mem0</text>
+  <text class="val" x="508.8" y="76">68.5</text>
+
+  <path class="b1" d="M244 91 H368.5 A4 4 0 0 1 372.5 95 V101 A4 4 0 0 1 368.5 105 H244 Z"/>
+  <text class="lab" x="232" y="102" text-anchor="end">Zep</text>
+  <text class="val" x="382.5" y="102">34.53</text>
+
+  <line class="blank" x1="244" y1="124" x2="616" y2="124"/>
+  <text class="lab" x="232" y="128" text-anchor="end">Cognee</text>
+  <rect class="sf" x="248" y="116" width="380" height="16"/>
+  <text class="note" x="252" y="128">in the same source table, but with no single figure &#8212; &#8220;(varies)&#8221;</text>
+
+  <line class="blank" x1="244" y1="150" x2="616" y2="150"/>
+  <text class="lab" x="232" y="154" text-anchor="end">TerranSoul</text>
+  <rect class="sf" x="248" y="142" width="404" height="16"/>
+  <text class="note" x="252" y="154">no end-to-end QA number on LoCoMo &#8212; retrieval only, a documented gap</text>
+
+  <line class="rule" x1="0" y1="202" x2="680" y2="202"/>
+
+  <text class="key" x="0" y="224">PANEL B &#183; GRAPHIFY&#8217;S OWN HARNESS &#183; n = 300 &#183; KIMI K2.6 JUDGE</text>
+
+  <line class="grid" x1="244" y1="234" x2="244" y2="390"/>
+  <line class="grid" x1="337" y1="234" x2="337" y2="390"/>
+  <line class="grid" x1="430" y1="234" x2="430" y2="390"/>
+  <line class="grid" x1="523" y1="234" x2="523" y2="390"/>
+  <line class="grid" x1="616" y1="234" x2="616" y2="390"/>
+  <line class="axis" x1="244" y1="390" x2="616" y2="390"/>
+  <text class="val" x="244" y="406" text-anchor="middle">0</text>
+  <text class="val" x="337" y="406" text-anchor="middle">25</text>
+  <text class="val" x="430" y="406" text-anchor="middle">50</text>
+  <text class="val" x="523" y="406" text-anchor="middle">75</text>
+  <text class="val" x="616" y="406" text-anchor="middle">100 %</text>
+
+  <path class="b1" d="M244 243 H424.9 A4 4 0 0 1 428.9 247 V253 A4 4 0 0 1 424.9 257 H244 Z"/>
+  <text class="lab" x="232" y="254" text-anchor="end">supermemory</text>
+  <text class="val" x="438.9" y="254">49.7</text>
+
+  <path class="b1" d="M244 267 H408.5 A4 4 0 0 1 412.5 271 V277 A4 4 0 0 1 408.5 281 H244 Z"/>
+  <text class="lab" x="232" y="278" text-anchor="end">Graphify (graph-expand)</text>
+  <text class="val" x="422.5" y="278">~45.3</text>
+
+  <path class="b1" d="M244 291 H401.1 A4 4 0 0 1 405.1 295 V301 A4 4 0 0 1 401.1 305 H244 Z"/>
+  <text class="lab" x="232" y="302" text-anchor="end">hybrid-RRF baseline &#185;</text>
+  <text class="val" x="415.1" y="302">43.3</text>
+
+  <path class="b1" d="M244 315 H393.6 A4 4 0 0 1 397.6 319 V325 A4 4 0 0 1 393.6 329 H244 Z"/>
+  <text class="lab" x="232" y="326" text-anchor="end">dense RAG</text>
+  <text class="val" x="407.6" y="326">41.3</text>
+
+  <path class="b1" d="M244 339 H356.4 A4 4 0 0 1 360.4 343 V349 A4 4 0 0 1 356.4 353 H244 Z"/>
+  <text class="lab" x="232" y="350" text-anchor="end">BM25</text>
+  <text class="val" x="370.4" y="350">31.3</text>
+
+  <path class="b1" d="M244 363 H341.6 A4 4 0 0 1 345.6 367 V373 A4 4 0 0 1 341.6 377 H244 Z"/>
+  <text class="lab" x="232" y="374" text-anchor="end">Mem0</text>
+  <text class="val" x="355.6" y="374">27.3</text>
+
+  <text class="note" x="0" y="428">Mem0 appears in BOTH panels: 68.5 above (its own paper) and 27.3 below (Graphify&#8217;s harness, Kimi K2.6).</text>
+  <text class="note" x="0" y="442">Same dataset name; different harness, judge and n. Neither is wrong &#8212; they are not the same measurement.</text>
+  <text class="note" x="0" y="456">No bar here is a retrieval metric, so none of them belongs beside charts (i) or (ii).</text>
+  <text class="note" x="0" y="470">&#185; a generic RRF baseline in Graphify&#8217;s own peer set &#8212; unrelated to TerranSoul&#8217;s identically-named rrf.</text>
+</svg>
+</div>
+<figcaption id="cap-locomo">End-to-end answer accuracy (J-score), not retrieval. Two panels, two harnesses. Full caption in <code>docs/charts-docs-audit-8.md</code>.</figcaption>
+</figure>
+
+<figure class="tsfig">
+<h2>(iv) Parity agent head-to-head &mdash; quality, latency, cost</h2>
+<div class="tsfig-scroll">
+<style>
+.c4{--sf:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--mut:#898781;--grid:#e1e0d9;--axis:#c3c2b7;--s1:#2a78d6;--s2:#eb6834}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .c4{--sf:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--mut:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926}}
+:root[data-theme="dark"] .c4{--sf:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--mut:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926}
+.c4 text{font-family:var(--sans,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif);font-size:12px;fill:var(--ink2)}
+.c4 .lab{fill:var(--ink)}
+.c4 .key{font-size:10px;letter-spacing:.12em;fill:var(--mut)}
+.c4 .val{font-size:11px;fill:var(--ink2);font-variant-numeric:tabular-nums}
+.c4 .note{font-size:11px;fill:var(--mut)}
+.c4 .sf{fill:var(--sf)}
+.c4 .grid{stroke:var(--grid);stroke-width:1}
+.c4 .axis{stroke:var(--axis);stroke-width:1}
+.c4 .rule{stroke:var(--grid);stroke-width:1}
+.c4 .b1{fill:var(--s1)}
+.c4 .b2{fill:var(--s2)}
+</style>
+<svg class="c4" viewBox="0 0 680 580" role="img" aria-labelledby="cap-parity">
+  <rect class="sf" x="0" y="0" width="680" height="580" rx="10"/>
+
+  <text class="key" x="0" y="20">PANEL A &#183; ANSWER QUALITY 0&#8211;10 &#183; 22 PROMPTS, 7 ARCHETYPES &#183; JUDGE gemma4:12b-it-qat</text>
+
+  <line class="grid" x1="246" y1="30" x2="246" y2="180"/>
+  <line class="grid" x1="316" y1="30" x2="316" y2="180"/>
+  <line class="grid" x1="386" y1="30" x2="386" y2="180"/>
+  <line class="grid" x1="456" y1="30" x2="456" y2="180"/>
+  <line class="grid" x1="526" y1="30" x2="526" y2="180"/>
+  <line class="grid" x1="596" y1="30" x2="596" y2="180"/>
+  <line class="axis" x1="246" y1="180" x2="596" y2="180"/>
+  <text class="val" x="246" y="196" text-anchor="middle">0</text>
+  <text class="val" x="316" y="196" text-anchor="middle">2</text>
+  <text class="val" x="386" y="196" text-anchor="middle">4</text>
+  <text class="val" x="456" y="196" text-anchor="middle">6</text>
+  <text class="val" x="526" y="196" text-anchor="middle">8</text>
+  <text class="val" x="596" y="196" text-anchor="middle">10</text>
+
+  <path class="b1" d="M246 39 H585.7 A4 4 0 0 1 589.7 43 V49 A4 4 0 0 1 585.7 53 H246 Z"/>
+  <text class="lab" x="234" y="50" text-anchor="end">TerranSoul (brain &#8594; Ollama)</text>
+  <text class="val" x="599.7" y="50">9.82</text>
+
+  <path class="b1" d="M246 67 H576.3 A4 4 0 0 1 580.3 71 V77 A4 4 0 0 1 576.3 81 H246 Z"/>
+  <text class="lab" x="234" y="78" text-anchor="end">OpenJarvis (Stanford SAIL)</text>
+  <text class="val" x="590.3" y="78">9.55</text>
+
+  <path class="b1" d="M246 95 H534.6 A4 4 0 0 1 538.6 99 V105 A4 4 0 0 1 534.6 109 H246 Z"/>
+  <text class="lab" x="234" y="106" text-anchor="end">OpenClaw (agent --local) &#8224;</text>
+  <text class="val" x="548.6" y="106">8.36</text>
+
+  <path class="b1" d="M246 123 H530.4 A4 4 0 0 1 534.4 127 V133 A4 4 0 0 1 530.4 137 H246 Z"/>
+  <text class="lab" x="234" y="134" text-anchor="end">Claude Code + GENesis-AGI &#8224;&#8225;</text>
+  <text class="val" x="544.4" y="134">8.24</text>
+
+  <path class="b1" d="M246 151 H483.5 A4 4 0 0 1 487.5 155 V161 A4 4 0 0 1 483.5 165 H246 Z"/>
+  <text class="lab" x="234" y="162" text-anchor="end">Hermes-Agent (-z one-shot) &#8224;</text>
+  <text class="val" x="497.5" y="162">6.90</text>
+
+  <text class="note" x="0" y="216">Cost: $0 on every row except Claude Code + GENesis-AGI, which spent $5.94 of cloud inference.</text>
+  <text class="note" x="0" y="230">It still does not out-score the two free local stacks.</text>
+
+  <line class="rule" x1="0" y1="248" x2="680" y2="248"/>
+
+  <text class="key" x="0" y="268">PANEL B1 &#183; LATENCY p50 &#183; INFERENCE ONLY, EXCLUDES CLI COLD-START</text>
+
+  <line class="grid" x1="246" y1="278" x2="246" y2="336"/>
+  <line class="grid" x1="284.5" y1="278" x2="284.5" y2="336"/>
+  <line class="grid" x1="323" y1="278" x2="323" y2="336"/>
+  <line class="grid" x1="361.5" y1="278" x2="361.5" y2="336"/>
+  <line class="grid" x1="400" y1="278" x2="400" y2="336"/>
+  <line class="axis" x1="246" y1="336" x2="400" y2="336"/>
+  <text class="val" x="246" y="352" text-anchor="middle">0</text>
+  <text class="val" x="284.5" y="352" text-anchor="middle">1</text>
+  <text class="val" x="323" y="352" text-anchor="middle">2</text>
+  <text class="val" x="361.5" y="352" text-anchor="middle">3</text>
+  <text class="val" x="400" y="352" text-anchor="middle">4 s</text>
+
+  <path class="b2" d="M246 287 H284.4 A4 4 0 0 1 288.4 291 V297 A4 4 0 0 1 284.4 301 H246 Z"/>
+  <text class="lab" x="234" y="298" text-anchor="end">TerranSoul</text>
+  <text class="val" x="298.4" y="298">1.1 s</text>
+
+  <path class="b2" d="M246 311 H376.8 A4 4 0 0 1 380.8 315 V321 A4 4 0 0 1 376.8 325 H246 Z"/>
+  <text class="lab" x="234" y="322" text-anchor="end">OpenJarvis</text>
+  <text class="val" x="390.8" y="322">3.5 s</text>
+
+  <text class="key" x="0" y="384">PANEL B2 &#183; LATENCY p50 &#183; WALL-CLOCK, INCLUDING PER-CALL CLI COLD-START</text>
+
+  <line class="grid" x1="246" y1="394" x2="246" y2="476"/>
+  <line class="grid" x1="333.5" y1="394" x2="333.5" y2="476"/>
+  <line class="grid" x1="421" y1="394" x2="421" y2="476"/>
+  <line class="grid" x1="508.5" y1="394" x2="508.5" y2="476"/>
+  <line class="grid" x1="596" y1="394" x2="596" y2="476"/>
+  <line class="axis" x1="246" y1="476" x2="596" y2="476"/>
+  <text class="val" x="246" y="492" text-anchor="middle">0</text>
+  <text class="val" x="333.5" y="492" text-anchor="middle">10</text>
+  <text class="val" x="421" y="492" text-anchor="middle">20</text>
+  <text class="val" x="508.5" y="492" text-anchor="middle">30</text>
+  <text class="val" x="596" y="492" text-anchor="middle">40 s</text>
+
+  <path class="b2" d="M246 403 H337.4 A4 4 0 0 1 341.4 407 V413 A4 4 0 0 1 337.4 417 H246 Z"/>
+  <text class="lab" x="234" y="414" text-anchor="end">Hermes-Agent</text>
+  <text class="val" x="351.4" y="414">10.9 s</text>
+
+  <path class="b2" d="M246 427 H395.1 A4 4 0 0 1 399.1 431 V437 A4 4 0 0 1 395.1 441 H246 Z"/>
+  <text class="lab" x="234" y="438" text-anchor="end">Claude Code + GENesis-AGI</text>
+  <text class="val" x="409.1" y="438">17.5 s</text>
+
+  <path class="b2" d="M246 451 H575.4 A4 4 0 0 1 579.4 455 V461 A4 4 0 0 1 575.4 465 H246 Z"/>
+  <text class="lab" x="234" y="462" text-anchor="end">OpenClaw</text>
+  <text class="val" x="589.4" y="462">38.1 s</text>
+
+  <text class="note" x="0" y="514">B1 and B2 deliberately do NOT share an axis: one excludes CLI cold-start, the other includes it.</text>
+  <text class="note" x="0" y="528">A bar in B2 is not slower than one in B1 &#8212; it is a different measurement. Quality is the comparable metric.</text>
+  <text class="note" x="0" y="542">&#8224; measured 2026-06-27 under the earlier single-call-judge protocol &#8212; re-measurement pending.</text>
+  <text class="note" x="0" y="556">&#160;&#160;The top two rows use the 2026-07-03 deterministic protocol (judge = median of 3 repeats at temp 0.3).</text>
+  <text class="note" x="0" y="570">&#8225; a different, cloud model (claude-haiku-4-5) &#8212; a frontier reference, not like-for-like with the local rows.</text>
+</svg>
+</div>
+<figcaption id="cap-parity">22 prompts, 7 archetypes, gemma4:12b-it-qat judge. No retrieval axis at all. Full caption in <code>docs/charts-docs-audit-8.md</code>.</figcaption>
+</figure>
+</main></body></html>
