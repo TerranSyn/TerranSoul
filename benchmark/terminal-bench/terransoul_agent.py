@@ -197,7 +197,28 @@ class TerranSoulAgent(BaseAgent):
         if self.model_name:
             argv += ["--model", self.model_name]
 
-        env = {**os.environ, **(self.extra_env or {})}
+        # ISOLATE THE BRAIN STORE. Without this the CLI boots against the
+        # PRODUCTION store at %APPDATA%/com.terransoul/memory.db -- the same
+        # SQLite file the MCP tray holds open. The first run of this agent wedged
+        # there for 1h48m and died on AgentTimeoutError having emitted zero
+        # protocol frames: the contention happens during boot, so the loop never
+        # starts and the bridge is never exercised.
+        #
+        # It is also a correctness bug independent of the hang. A benchmark that
+        # reads and writes the user's real memory is contaminated by
+        # construction, which is what rules/bench-resource-discipline.md means by
+        # one MCP at a time and an isolated bench brain.
+        #
+        # The path MUST be absolute -- boot_cli_app_state rejects a relative one
+        # precisely because it would resolve against the process CWD and
+        # silently target the wrong store.
+        store_dir = (Path(self.logs_dir).resolve() / "ts-store")
+        store_dir.mkdir(parents=True, exist_ok=True)
+        env = {
+            **os.environ,
+            **(self.extra_env or {}),
+            "TERRANSOUL_HEADLESS_DATA_DIR": str(store_dir),
+        }
         proc = await asyncio.create_subprocess_exec(
             *argv,
             stdin=asyncio.subprocess.PIPE,
