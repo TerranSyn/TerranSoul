@@ -653,8 +653,8 @@
 
       <tr>
         <td>7 &mdash; observability &amp; judge</td>
-        <td>An LLM-judge rerank pass, which is what the <code>think</code> mode runs; judges fail open and never veto, following the DEAD-JUDGE-1 incident in which a stale model tag silently erased all recall.</td>
-        <td>Measured, and <strong>net-negative</strong>. <code>think</code> full-500 (<code>benchmark/results/fix11b-full500-think/</code>, 2026-07-27; valid only on post-<code>76f2276d</code> code): NDCG@10 93.26, MRR 94.21, R@5 98.6&nbsp;%, R@10 99.6&nbsp;%, R@20 99.8&nbsp;%, mean 4,765.40&nbsp;ms. <strong>Cost in the same row:</strong> 0.52 NDCG@10 <em>below</em> <code>chat</code> at 7.1&times; the latency (4,765.40&nbsp;ms against 675.01&nbsp;ms), with R@20 tied at 99.8. The commit's own acceptance line reads &ldquo;bench owed: <code>think</code> &ge; 93.782&rdquo;, which 93.26 does not clear, so this is an open never-regress obligation.</td>
+        <td>An LLM-judge rerank pass over the retrieved candidates, under the fail-open discipline that governs every judge on the read path: judges fail open and never veto, following the DEAD-JUDGE-1 incident in which a stale model tag silently erased all recall. The <code>think</code> mode used to run this pass on its retrieval path. Since 2026-08-02 it does not, and the reason is the measured number beside this row.</td>
+        <td>Measured, and <strong>net-negative</strong>. <code>think</code> full-500 (<code>benchmark/results/fix11b-full500-think/</code>, 2026-07-27; valid only on post-<code>76f2276d</code> code): NDCG@10 93.26, MRR 94.21, R@5 98.6&nbsp;%, R@10 99.6&nbsp;%, R@20 99.8&nbsp;%, mean 4,765.40&nbsp;ms. <strong>Cost in the same row:</strong> 0.52 NDCG@10 <em>below</em> <code>chat</code> at 7.1&times; the latency (4,765.40&nbsp;ms against 675.01&nbsp;ms), with R@20 tied at 99.8. The commit's own acceptance line reads &ldquo;bench owed: <code>think</code> &ge; 93.782&rdquo;, which 93.26 does not clear. <strong>That obligation is discharged by construction rather than by a better score.</strong> The rerank came off <code>think</code>'s retrieval path on 2026-08-02: <code>think</code> and <code>chat</code> now call the same retrieval function with the same arguments, and the rerank decision they pass is resolved by one shared production rule rather than by two matching literals, so the two cannot produce different orderings. The numbers above stay printed as what the reranking <code>think</code> actually scored &mdash; they are a record of a retired configuration, not a live rung.</td>
       </tr>
 
       <tr>
@@ -684,9 +684,74 @@
       <tr>
         <td>12 &mdash; the product surface</td>
         <td>Four thinking modes &mdash; <code>chat</code>, <code>think</code>, <code>research</code>, <code>max</code> &mdash; each one <code>(reasoning-effort, harness)</code> pair, identical across the app, the CLI and MCP, with an Auto router that dispatches per turn. Benchmarks drive the same modes a user gets.</td>
-        <td>Measured, full-500, one arm per process. The four drawn modes are <strong>three measured behaviours</strong>: research = rrf 95.04 &gt; chat 93.78 &gt; think 93.26; <code>max</code> is absent. <code>research</code> is identical to plain <code>rrf</code> on every metric to four decimals with 499 of 500 orderings the same, at 4,928.46&nbsp;ms against 654.92&nbsp;ms &mdash; a measured no-op at 7.5&times; the cost, and it was measured <em>before</em> commit <code>76f2276d</code> and has not been re-run on current code. <code>think</code> now shares 6 of 500 orderings with <code>chat</code>, so the reranker has stopped being a no-op and become a different, slightly worse answer. <strong><code>max</code> at full-500 is UNMEASURED</strong> &mdash; but 50-question arms DO exist and are committed (<code>benchmark/results/slice50-max-repeat/</code>, <code>slice50-max-newrubric/</code>), so the earlier wording &ldquo;no artifact exists at any size&rdquo; was wrong and is corrected here. Those arms are drawn in the 50-question figure above and are never mixed into a full-500 series. Two of them were run at IDENTICAL configuration and returned bit-identical recall with NDCG@10 moving 1.0 and MRR moving 1.3, which is where this page&rsquo;s &plusmn;1.3 noise band comes from.</td>
+        <td>Measured, full-500, one arm per process. The four drawn modes are <strong>three measured behaviours</strong>: research = rrf 95.04 &gt; chat 93.78 &gt; think 93.26; <code>max</code> is absent. <code>research</code> is identical to plain <code>rrf</code> on every metric to four decimals with 499 of 500 orderings the same, at 4,928.46&nbsp;ms against 654.92&nbsp;ms &mdash; a measured no-op at 7.5&times; the cost. <strong>That full-500 <code>research</code> figure predates the current code</strong>: it was measured <em>before</em> commit <code>76f2276d</code>, and it stays on this page labelled as such rather than being quietly refreshed. <code>research</code> HAS since been re-run on current code &mdash; NDCG@10 95.7 at n&nbsp;=&nbsp;50, in the four-rung table below &mdash; and that run does <em>not</em> replace 95.04, because 50 questions and 500 questions never share a series in either direction. What this row still owes is a full-500 repeat, not a re-run. <code>think</code> shared 6 of 500 orderings with <code>chat</code> on those arms, so the reranker had stopped being a no-op and become a different, slightly worse answer; the 2026-08-02 rung fix then retired the reranker from <code>think</code>'s retrieval path altogether, so <code>think</code> now runs <code>chat</code>'s retrieval unchanged and the three-behaviours reading applies to the arms as measured, not to the code as it stands. <strong><code>max</code> at full-500 is UNMEASURED</strong> &mdash; but 50-question arms DO exist and are committed (<code>benchmark/results/slice50-max-repeat/</code>, <code>slice50-max-newrubric/</code>, and now <code>p50-max-postrungfix/</code> on current code), so the earlier wording &ldquo;no artifact exists at any size&rdquo; was wrong and is corrected here. Those arms are drawn in the 50-question figure above and are never mixed into a full-500 series. Two of them were run at IDENTICAL configuration and returned bit-identical recall with NDCG@10 moving 1.0 and MRR moving 1.3, which is where this page&rsquo;s &plusmn;1.3 noise band comes from.</td>
       </tr>
     </table></div>
+
+    <h3>Four rungs, one configuration, one code revision &mdash; n&nbsp;=&nbsp;50</h3>
+    <p>Every retrieval number in the table above was measured on its own day, and two of them on code
+    that has since changed. The four thinking modes had never been run as a <em>set</em>:
+    <code>chat</code> and <code>think</code> came from one campaign, <code>research</code> from
+    another, <code>max</code> from a third, and the gaps between them were therefore differences
+    between runs as much as differences between rungs. On 2026-08-03 all four were measured on one
+    configuration, on the current code, one arm per process, over the same 50 questions, with the
+    embedder resident on the GPU. This is the first four-rung ladder on this page that is a ladder
+    rather than a collation. Artifacts, all committed:
+    <code>benchmark/results/p50-chat-postrungfix/</code>, <code>p50-think-postrungfix/</code>,
+    <code>p50-research-postrungfix/</code> and <code>p50-max-postrungfix/</code>.</p>
+
+    <div class="tablewrap"><table class="compare">
+      <tr><th>Rung</th><th>R@5</th><th>R@10</th><th>R@20</th><th>NDCG@10</th><th>MRR@20</th><th>Mean latency</th></tr>
+      <tr><td><code>chat</code></td><td>98.0&nbsp;%</td><td>100.0&nbsp;%</td><td>100.0&nbsp;%</td><td>93.5</td><td>91.4</td><td>550.52&nbsp;ms</td></tr>
+      <tr><td><code>think</code></td><td>98.0&nbsp;%</td><td>100.0&nbsp;%</td><td>100.0&nbsp;%</td><td>93.5</td><td>91.4</td><td>547.54&nbsp;ms</td></tr>
+      <tr><td><code>research</code></td><td>98.0&nbsp;%</td><td>100.0&nbsp;%</td><td>100.0&nbsp;%</td><td>95.7</td><td>94.4</td><td>5,024.74&nbsp;ms</td></tr>
+      <tr><td><code>max</code></td><td>100.0&nbsp;%</td><td>100.0&nbsp;%</td><td>100.0&nbsp;%</td><td>98.5</td><td>98.0</td><td>65,986.43&nbsp;ms</td></tr>
+    </table></div>
+
+    <p>Five caveats travel with that table. Publishing any of these numbers without them is a defect,
+    not a shortening.</p>
+    <ul>
+      <li><strong>It is a 50-question slice, and it cannot share a series or an axis with any
+      full-500 figure on this page.</strong> That is why it is in its own frame instead of being
+      merged into the coverage table or drawn on the full-500 chart. A 500-question number and a
+      50-question number are not two points on one line, in either direction.</li>
+      <li><strong>Every one of the 50 questions is single-session-user.</strong> LongMemEval's harder
+      categories &mdash; multi-session, temporal-reasoning, knowledge-update &mdash; do not appear in
+      the slice at all. This is favourable ground, and the numbers should be read as measured on
+      favourable ground.</li>
+      <li><strong>The measured noise band at this sample size is &plusmn;1.3 points on NDCG and
+      MRR</strong> (derived from two identical-configuration repeats; see Design limits). Differences
+      under it are not differences. <code>research</code> over <code>chat</code> is 2.2 NDCG@10 and
+      3.0 MRR@20; <code>max</code> over <code>research</code> is 2.8 and 3.6. Both clear the band. The
+      R@5 step from 98.0 to 100.0 is 2.0 pp, which on 50 questions is exactly one question, and one
+      question is not a trend.</li>
+      <li><strong><code>max</code> costs about 66 seconds a question, and the cost is part of the
+      result.</strong> 65,986.43&nbsp;ms against <code>chat</code>'s 550.52&nbsp;ms is 119.9&times;
+      the latency, bought for 5.0 NDCG@10 and 6.6 MRR@20. <code>research</code> is the same trade at a
+      survivable price: 2.2 NDCG@10 at 9.1&times;. Neither headline is publishable without its
+      latency beside it.</li>
+      <li><strong><code>think</code> is identical to <code>chat</code> here because it <em>is</em>
+      <code>chat</code>.</strong> Not a tie inside the noise band &mdash; the same retrieval function,
+      the same arguments, one shared rule deciding the rerank flag for both. The 3&nbsp;ms between
+      their means is process noise. A retrieval-only harness cannot see the one thing that does
+      differ, which is reasoning effort, so a tie is the correct outcome here rather than a missing
+      feature.</li>
+    </ul>
+
+    <p><strong>What this ladder retires, and what it does not.</strong> It retires two sentences this
+    page was carrying. The first was that <code>research</code> &ldquo;has not been re-run on current
+    code&rdquo;: it has, and the result is above. That does not promote 95.7 over the full-500 95.04
+    &mdash; the older figure keeps its place, labelled as predating the current code, and what is
+    owed for it is a full-500 repeat rather than a re-run. The second was that <code>think</code>
+    sitting 0.52 NDCG@10 below <code>chat</code> was an open never-regress obligation. It is not an
+    obligation any more, because it is not a gap that can exist: <strong><code>think</code> cannot
+    fall below <code>chat</code> at any sample size, because <code>think</code>'s retrieval
+    <em>is</em> <code>chat</code>'s retrieval</strong>, reached through the same function. Stated
+    plainly rather than favourably: the 0.52 claim was measured at n&nbsp;=&nbsp;500 and the evidence
+    replacing it is n&nbsp;=&nbsp;50, so the two are not a like-for-like refutation. The argument here
+    is not a statistical one. Identical inputs through an identical function cannot diverge, and no
+    sample size changes that. A full-500 <code>think</code> arm would confirm the paths really are
+    identical; it could not give the gap a way back.</p>
 
     <h3>How TerranSoul compares</h3>
     <p>Eight figures, one per measurement axis. They are separate charts rather than one because
@@ -791,9 +856,9 @@
 .c1 .d1{fill:var(--s1);stroke:var(--sf);stroke-width:2}
 .c1 .d2{fill:var(--s2);stroke:var(--sf);stroke-width:2}
 </style>
-<svg class="c1" viewBox="0 0 680 376" role="img" aria-labelledby="cap-lme500">
-  <title id="cap-lme500">LongMemEval-S retrieval, full 500 questions: the four thinking-mode rungs, with max drawn as a blank track because no full-500 arm exists.</title>
-  <rect class="sf" x="0" y="0" width="680" height="376" rx="10"/>
+<svg class="c1" viewBox="0 0 680 412" role="img" aria-labelledby="cap-lme500">
+  <title id="cap-lme500">LongMemEval-S retrieval, full 500 questions: the four thinking-mode rungs, with max drawn as a blank track because no full-500 arm exists. The think row records the reranking configuration that was retired on 2026-08-02 and is no longer what the mode runs.</title>
+  <rect class="sf" x="0" y="0" width="680" height="412" rx="10"/>
 
   <circle class="d1" cx="14" cy="16" r="5"/><text x="25" y="20">R@5</text>
   <circle class="d2" cx="70" cy="16" r="5"/><text x="81" y="20">NDCG@10</text>
@@ -864,6 +929,8 @@
     <text class="val" x="541.4" y="310">~96.6</text></g>
 
   <text class="note" x="0" y="360">Scale reference: 0.2 pp = 1 question of 500 &#8212; the whole R@5 spread drawn here is 21 questions.</text>
+  <text class="note" x="0" y="380">The think row ran the LLM-judge reranker, which was removed from think&#8217;s retrieval path on 2026-08-02.</text>
+  <text class="note" x="0" y="396">It is a record of a retired configuration. think now runs chat&#8217;s retrieval unchanged and cannot sit below it.</text>
 </svg>
 </div>
 <div class="chart-block">
@@ -885,9 +952,9 @@
 .c1b .w1{stroke:var(--s1);stroke-width:1.5;stroke-linecap:round;opacity:.55}
 .c1b .w2{stroke:var(--s2);stroke-width:1.5;stroke-linecap:round;opacity:.55}
 </style>
-<svg class="c1b" viewBox="0 0 680 372" role="img" aria-labelledby="cap-lme50">
-  <title id="cap-lme50">LongMemEval-S retrieval, 50-question slice: the same rungs at a smaller sample, with the measured plus-or-minus 1.3 noise band shown as whiskers. Not comparable to the 500-question figure.</title>
-  <rect class="sf" x="0" y="0" width="680" height="372" rx="10"/>
+<svg class="c1b" viewBox="0 0 680 396" role="img" aria-labelledby="cap-lme50">
+  <title id="cap-lme50">LongMemEval-S retrieval, 50-question slice: the same rungs at a smaller sample, with the measured plus-or-minus 1.3 noise band shown as whiskers. The think row lands exactly on the chat row because think runs chat's retrieval path unchanged. Not comparable to the 500-question figure.</title>
+  <rect class="sf" x="0" y="0" width="680" height="396" rx="10"/>
 
   <circle class="d1" cx="14" cy="16" r="5"/><text x="25" y="20">NDCG@10</text>
   <circle class="d2" cx="100" cy="16" r="5"/><text x="111" y="20">MRR</text>
@@ -919,10 +986,12 @@
     <text class="lab" x="222" y="126" text-anchor="end">chat &#183; MRR</text>
     <text class="val" x="374.9" y="126">91.4</text></g>
 
-  <g><line class="blank" x1="234" y1="148" x2="616" y2="148"/>
-    <text class="lab" x="222" y="152" text-anchor="end">think</text>
-    <rect class="sf" x="238" y="140" width="232" height="16"/>
-    <text class="note" x="242" y="152">not measured on this 50-question slice</text></g>
+  <g><line class="w2" x1="321.5" y1="148" x2="362.9" y2="148"/><line class="w2" x1="321.5" y1="144" x2="321.5" y2="152"/><line class="w2" x1="362.9" y1="144" x2="362.9" y2="152"/>
+    <line class="w1" x1="388.4" y1="148" x2="429.8" y2="148"/><line class="w1" x1="388.4" y1="144" x2="388.4" y2="152"/><line class="w1" x1="429.8" y1="144" x2="429.8" y2="152"/>
+    <circle class="d2" cx="342.2" cy="148" r="5"/>
+    <circle class="d1" cx="409.1" cy="148" r="5"/>
+    <text class="lab" x="222" y="152" text-anchor="end">think &#183; NDCG@10 &#183; MRR</text>
+    <text class="val" x="441.8" y="152">93.5 &#183; 91.4 &#8212; identical to chat</text></g>
 
   <g><line class="w1" x1="458.4" y1="174" x2="499.8" y2="174"/><line class="w1" x1="458.4" y1="170" x2="458.4" y2="178"/><line class="w1" x1="499.8" y1="170" x2="499.8" y2="178"/>
     <circle class="d1" cx="479.1" cy="174" r="5"/>
@@ -952,8 +1021,9 @@
     <text class="note" x="242" y="276">R@5 98.0 &#183; R@10 100.0 &#183; R@20 100.0 &#8212; identical in BOTH runs</text></g>
 
   <text class="note" x="0" y="326">Recall was bit-identical across the two repeats. NDCG moved 1.0 pt and MRR 1.3 pts with nothing changed.</text>
-  <text class="note" x="0" y="342">Every gap here clears that band: NDCG 2.2 and 2.0 pts, MRR 3.0 and 2.6 pts. The ladder survives its own noise.</text>
-  <text class="note" x="0" y="358">A future gap narrower than 1.3 pts on this slice must not be published as a difference.</text>
+  <text class="note" x="0" y="342">Every gap between DIFFERENT retrieval paths clears that band: NDCG 2.2 and 2.0 pts, MRR 3.0 and 2.6 pts.</text>
+  <text class="note" x="0" y="358">think and chat share one retrieval path, so their 0.0 is not a small gap &#8212; it is no gap that can exist.</text>
+  <text class="note" x="0" y="374">A future gap narrower than 1.3 pts on this slice must not be published as a difference.</text>
 </svg>
 </div>
 <div class="chart-block">
@@ -1675,6 +1745,8 @@
       <li><strong>2026-07-28 &mdash; a Japanese NDCG@10 range was withdrawn rather than re-published.</strong> The withdrawn text read: <em>&ldquo;a CJK trigram mirror lifts Japanese NDCG@10 9.5 &rarr; 42.3&ndash;65.0 at 1M rows&rdquo;</em>. Every digit of it predates the cross-lingual tokenizer fix, no full-500 artifact exists for it, and the re-measurement it was owed has never been run &mdash; so it described code that no longer exists, at a scale nothing on disk covers. It is withdrawn rather than re-stated with a caveat, because a range with no reproducible artifact behind it is not a measurement. Multilingual retrieval numbers live in the main paper, against their own artifacts.</li>
       <li><strong>2026-07-28 &mdash; the two twins of this article published different structures.</strong> The HTML was rewritten around a twelve-stage what-it-is / pros / cons / why-next argument with a coverage table; the Markdown twin was left at the older eleven-stage narrative for a day, so the two artifacts of the same article disagreed on the number of stages, on which stage described TerranSoul, and on 44 quantitative claims &mdash; and the parity gate could not see it, because it compared number <em>sets</em> and never structure. The Markdown is now a full mirror of the argument and every number; figures remain HTML-only, by declared design, and the gate now enforces both halves of that split.</li>
       <li><strong>2026-08-02 &mdash; the LoCoMo blank was labelled &ldquo;retrieval only, a documented gap&rdquo;, and it is not that.</strong> The wording said we had never built an end-to-end question-answering pass over LoCoMo. We had: <code>benchmark/scripts/locomo-mteb.mjs --qa-eval=mem0-paper</code> generates an answer and judges it, and predates this page. The real obstacle is one level down and was never checked before the caption was written &mdash; the MTEB distribution of LoCoMo ships gold <em>passages</em> and no gold <em>answers</em>, so that pass grades against retrieved passages on a graded 0&ndash;10 rubric with a local self-judge, and none of those three properties matches the proportion-correct that Letta, Mem0, Zep and MemOS report. The blank does not move, because a number that cannot join the series is not a fill. The caption does: &ldquo;we have not built it&rdquo; and &ldquo;we have built it and it does not yet mean what this axis says&rdquo; are different admissions, and only the second one is ours. A related over-claim in the harness&rsquo;s own console output &mdash; that its scores are &ldquo;directly comparable to the Mem0-paper baselines&rdquo; when the judge is <code>gpt-4o-mini</code> &mdash; is wrong for the same reason and independently of the judge, and is recorded here rather than quietly fixed.</li>
+      <li><strong>2026-08-03 &mdash; the <code>think</code> never-regress obligation is discharged, and the 2026-07-28 entry above closes on the wrong note.</strong> That entry ends &ldquo;the obligation is not discharged, only resized&rdquo;. It was true when written and is not true now, and the correct fix is to say so here rather than to edit the trail. The obligation was to get <code>think</code>'s NDCG@10 back above <code>chat</code>'s. It was closed on 2026-08-02 by removing the reranker from <code>think</code>'s retrieval path instead: <code>think</code> and <code>chat</code> now call the same retrieval function with the same arguments, and the rerank flag both pass is resolved by one shared production rule rather than by two literals that happened to agree. The gap did not shrink; it stopped being able to exist. Measured together at n&nbsp;=&nbsp;50 on 2026-08-03 the two are identical on all five retrieval metrics. Two things this does not license: the 93.26 figure is not withdrawn &mdash; it is what the reranking configuration really scored &mdash; and a mechanism argument is not a measurement, so the four-rung table says n&nbsp;=&nbsp;50 wherever it is quoted.</li>
+      <li><strong>2026-08-03 &mdash; the four thinking modes had never been measured as a set, and the page presented them as if they had.</strong> The rungs came from three separate campaigns on three different days, two of them on code that has since changed, so every gap between them mixed a rung difference with a run difference. The page said so about individual rows and never about the comparison as a whole. Four arms on one configuration on the current code now exist at n&nbsp;=&nbsp;50, in their own frame, and they are deliberately not merged into the full-500 coverage table: the fix for mixing sample sizes is a second frame, not a footnote.</li>
     </ol>
 
     <h2><span class="scene-num">References</span>Every citation, grouped by stage</h2>
