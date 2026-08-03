@@ -738,6 +738,55 @@
       feature.</li>
     </ul>
 
+    <p><strong>&ldquo;Same retrieval, more reasoning&rdquo; is a measured conclusion, not an
+    unexamined default.</strong> The obvious objection to a rung that retrieves identically to the
+    one below it is that nobody tried. Four interventions were built and benchmarked on the same
+    50-question slice against the same <code>chat</code> baseline, on 2026-08-03, and
+    <strong>every one of them made retrieval worse than plain RRF</strong>:</p>
+
+    <table class="tbl">
+      <caption>Four attempts to make <code>think</code> out-retrieve <code>chat</code>. Same slice,
+      same baseline, one arm per process. The best intervention still loses.</caption>
+      <thead><tr><th>Variant</th><th>NDCG@10</th><th>MRR@20</th><th>Latency</th><th>vs <code>chat</code></th></tr></thead>
+      <tbody>
+        <tr><td><code>chat</code> &mdash; hybrid + RRF, no judge</td><td>93.5</td><td>91.4</td><td>550.52&nbsp;ms</td><td>&mdash;</td></tr>
+        <tr><td><code>think</code>, no intervention</td><td>93.5</td><td>91.4</td><td>547.54&nbsp;ms</td><td>0.0</td></tr>
+        <tr><td>+ listwise judge, ungated</td><td>85.9</td><td>81.2</td><td>4,677.03&nbsp;ms</td><td>&minus;7.6</td></tr>
+        <tr><td>+ listwise judge, coverage-gated</td><td>88.1</td><td>84.0</td><td>4,832.36&nbsp;ms</td><td>&minus;5.4</td></tr>
+        <tr><td>+ MMR diversity</td><td>90.1</td><td>86.9</td><td>598.98&nbsp;ms</td><td>&minus;3.4</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>The two failure mechanisms are different and they converge.</strong> The judges lose
+    because a 12B ranks worse than RRF &mdash; and the gated run is what establishes that, because
+    with malformed permutations made impossible the judge <em>still</em> lost 5.4 points, so the
+    problem is ranking judgement rather than output format. MMR loses for the opposite reason to the
+    one that motivated it: it was adopted expecting diversity to surface the secondary golds that
+    multi-gold questions need, but on this corpus <strong>the golds are near-duplicates of each
+    other</strong> &mdash; the same fact mentioned across different sessions &mdash; so a redundancy
+    penalty demotes precisely the documents being retrieved. Diversity is the wrong objective when
+    the correct answers are similar.</p>
+
+    <p>Both point at the same conclusion: <strong>RRF's ordering is already right for this
+    workload</strong>, and a rung that reorders it pays latency to be worse. So <code>think</code>
+    ships as <em>the same retrieval as <code>chat</code>, at the same cost</em> &mdash; 547.54&nbsp;ms
+    against 550.52&nbsp;ms &mdash; <em>with more reasoning effort</em>
+    (<code>ReasoningEffort::Medium</code> against <code>Off</code>). That difference is real and it is
+    invisible here, because this harness scores retrieval and never reads an answer. Making it
+    measurable needs an answer-generation and judging stage the harness does not have &mdash; that is
+    a feature to build, not a run to schedule, and until it exists the honest claim for this rung is
+    the narrow one.</p>
+
+    <p class="note">Two fixes outlived the attempt. The listwise judge had <strong>no quality
+    gate</strong>: its permutation parser backfilled whatever the model omitted, so a reply naming
+    three of twenty documents became a complete, well-formed permutation that was applied wholesale
+    over RRF &mdash; and the same path is used by <code>max</code>, whose R@5 100.0 was therefore
+    achieved <em>despite</em> an ungated judge. It now carries the same coverage floor the pointwise
+    path always had. And MMR stopped being dark code: it was seeded off, so the diversified search
+    returned plain RRF byte-identically and MMR had never influenced a published number on this page
+    despite being described on it. It is now measured, and the measurement says leave it off for this
+    workload.</p>
+
     <p><strong>What this ladder retires, and what it does not.</strong> It retires two sentences this
     page was carrying. The first was that <code>research</code> &ldquo;has not been re-run on current
     code&rdquo;: it has, and the result is above. That does not promote 95.7 over the full-500 95.04
