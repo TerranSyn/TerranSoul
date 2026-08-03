@@ -777,6 +777,20 @@
     a feature to build, not a run to schedule, and until it exists the honest claim for this rung is
     the narrow one.</p>
 
+    <p><strong>That parity has since been confirmed at full-500, and the confirmation is stronger
+    than the claim it confirms.</strong> Independent 500-question arms, one per process, on current
+    code (2026-08-03, <code>benchmark/results/rel010-full500-chat/</code> and
+    <code>rel010-full500-think/</code>): R@5 99.2&nbsp;%, R@10 99.8&nbsp;%, R@20 100.0&nbsp;%,
+    NDCG@10 0.9411437551799973 and MRR@20 0.9455532467532467 &mdash; <strong>identical between the
+    two modes on every retrieval metric, to the last decimal</strong> &mdash; with only mean latency
+    separating them, 657.20&nbsp;ms against 661.16&nbsp;ms, a 0.6&nbsp;% gap that is run-to-run
+    noise. At 50 questions the two rungs merely <em>scored</em> the same, which is equally consistent
+    with two similar-but-distinct pipelines landing on similar numbers. At 500 questions, agreement
+    to one part in 10<sup>16</sup> across five metrics is not a score: it is evidence that the same
+    computation ran twice. The 2026-08-02 rung fix that took the reranker off <code>think</code>'s
+    retrieval path did exactly what it was meant to, and this row's claim is now measured at the same
+    sample size as the rest of the full-500 series rather than inferred from a 50-question slice.</p>
+
     <p class="note">Two fixes outlived the attempt. The listwise judge had <strong>no quality
     gate</strong>: its permutation parser backfilled whatever the model omitted, so a reply naming
     three of twenty documents became a complete, well-formed permutation that was applied wholesale
