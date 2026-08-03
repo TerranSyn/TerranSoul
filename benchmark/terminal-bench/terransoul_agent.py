@@ -218,6 +218,12 @@ class TerranSoulAgent(BaseAgent):
             **os.environ,
             **(self.extra_env or {}),
             "TERRANSOUL_HEADLESS_DATA_DIR": str(store_dir),
+            # TB-7: one task then exit. Without this the CLI boots a RESIDENT
+            # host -- chat gateways holding sockets, a cron scheduler, the /loop
+            # self-pacing driver -- for a single command. Harbor spawns this once
+            # per trial, so a full sweep paid 445 resident boots and the first two
+            # runs timed out in startup without issuing one tool call.
+            "TERRANSOUL_HEADLESS_ONESHOT": "1",
         }
         proc = await asyncio.create_subprocess_exec(
             *argv,
