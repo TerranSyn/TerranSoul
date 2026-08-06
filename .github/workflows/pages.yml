@@ -63,10 +63,14 @@ jobs:
           NODE_OPTIONS: --no-deprecation
         uses: actions/deploy-pages@v5
         with:
-          # Back to 10 minutes. 60s was set while the backend was stuck
+          # 25 minutes. MEASURED, not guessed: this repo's Pages backend took
+          # 540s on the deploy that succeeded and blew past 600s on the next
+          # one, which then failed at the timeout rather than for any fault of
+          # its own. Our side of the work is 5 seconds; the rest is GitHub.
+          # Originally 10 minutes. 60s was set while the backend was stuck
           # at "deployment_queued" forever and the short timeout turned a
           # ten-minute hang into one fast error. Once deployments started
           # reaching "deployment_in_progress" that same 60s began ABORTING
           # healthy deploys of a 26 MB artifact. Short timeouts are right
           # for a hang and wrong for slow work; this one is slow work.
-          timeout: 600000
+          timeout: 1500000
