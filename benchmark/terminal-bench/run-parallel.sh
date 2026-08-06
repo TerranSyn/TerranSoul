@@ -84,7 +84,15 @@ mapfile -t ALL < <(cd "$TASKS_DIR" && ls -1d */ 2>/dev/null | sed 's#/$##' | sor
 # least TB_ATTEMPTS trials that did NOT error — errored trials are excluded
 # deliberately, because a trial killed at setup (see run-dg.sh's reap note)
 # never ran the agent and must not be banked as an attempt.
-ATTEMPTS_WANTED="${TB_ATTEMPTS:-2}"
+# TWO DIFFERENT NUMBERS, and conflating them costs real money.
+#   TB_TARGET_ATTEMPTS  how many clean trials a task needs before it counts as
+#                       DONE. This is the campaign's k.
+#   TB_ATTEMPTS         how many attempts each job runs when it is launched.
+# For a fresh campaign they are equal. For a k=2 -> k=5 continuation they are
+# NOT: every task already has 2 clean trials, so the target is 5 but each job
+# only needs to add 3. Setting both to 5 re-runs 5 per task on top of the
+# existing 2 — 7 per task, ~178 surplus trials, roughly $196 wasted.
+ATTEMPTS_WANTED="${TB_TARGET_ATTEMPTS:-${TB_ATTEMPTS:-2}}"
 DONE_FILE="$REPO/mcp-data/.tb-completed-derived.txt"
 JOBS_DIR="$HERE/jobs" ATTEMPTS_WANTED="$ATTEMPTS_WANTED" OUT="$DONE_FILE" python - <<'PY'
 import json, glob, os, collections
@@ -112,10 +120,25 @@ with open(os.environ['OUT'], 'w', newline='') as fh:
 print(f"[par] derived completion: {len(done)} task(s) already have >={want} clean trial(s)")
 PY
 
+# ⚠️ ON A k-CONTINUATION THE GLOBAL $STATE MUST NOT GATE. It records "done at
+# the k this campaign was running", so after a completed k=2 it holds tasks that
+# still need more attempts to reach k=5. Honouring it would silently exclude
+# them — measured on the k=2 -> k=5 dry run: 29 tasks reported "already done"
+# when only 7 actually had 5 clean trials, i.e. 22 tasks would never have been
+# topped up and the k=5 number would have been built on their k=2 evidence.
+#
+# When TB_TARGET_ATTEMPTS is set we are continuing an existing campaign, so the
+# DERIVED completion (counted from jobs/ on disk) is the only authority. The
+# per-worker retry ledgers still bound retries within the run, so a genuinely
+# hopeless task cannot loop forever.
 TODO=()
 for t in "${ALL[@]}"; do
   grep -qxF "$t" "$DONE_FILE" 2>/dev/null && continue      # ground truth wins
-  grep -qxF "$t" "$STATE" 2>/dev/null || TODO+=("$t")
+  if [ -n "${TB_TARGET_ATTEMPTS:-}" ]; then
+    TODO+=("$t")                                           # continuation: derived only
+  else
+    grep -qxF "$t" "$STATE" 2>/dev/null || TODO+=("$t")
+  fi
 done
 
 echo "[par] tasks total   : ${#ALL[@]}"
@@ -189,7 +212,7 @@ for ((w=0; w<WORKERS; w++)); do
   # Observed on the first launch: three workers on build-cython-ext at once.
   nohup env \
     TB_RESUME=1 \
-    TB_ATTEMPTS=2 TB_DEFER_WRITES=0 TB_ONE_JOB_PER_TASK=1 TB_CONCURRENCY=1 \
+    TB_ATTEMPTS="${TB_ATTEMPTS:-2}" TB_DEFER_WRITES=0 TB_ONE_JOB_PER_TASK=1 TB_CONCURRENCY=1 \
     TB_PROXY_MODE=learn PYTHONIOENCODING=utf-8 PYTHONUTF8=1 \
     TB_JOB_PREFIX="par${w}${STAMP}" \
     TB_PROXY_PORT="$((7425+w))" \

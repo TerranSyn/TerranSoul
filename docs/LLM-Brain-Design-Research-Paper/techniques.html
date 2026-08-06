@@ -351,7 +351,21 @@
   .toc .toc-in{padding:2px 16px 14px;max-height:min(58vh,560px);overflow-y:auto;
        border-top:1px solid var(--rule);
        columns:2;column-gap:26px}
-  @media (max-width:820px){.toc .toc-in{columns:1;max-height:50vh}}
+  /* ⛔ ANCHOR NAVIGATION vs A STICKY TOC. Jumping to #ivfpq put the heading
+     UNDER the sticky panel, so the section the reader asked for was the one
+     thing they could not see. Two fixes, because one is not enough:
+       1. scroll-margin-top on every heading, so an anchor jump leaves room for
+          the collapsed bar instead of landing flush against the viewport top;
+       2. on narrow screens the TOC stops being sticky altogether. An open
+          panel capped at 50vh was covering half a phone screen permanently —
+          there is no offset that makes that usable, so it scrolls away
+          instead. */
+  h2[id],h3[id]{scroll-margin-top:72px}
+  @media (max-width:820px){
+    .toc{position:static}
+    .toc .toc-in{columns:1;max-height:none}
+    h2[id],h3[id]{scroll-margin-top:12px}
+  }
   .toc a{display:block;break-inside:avoid;text-decoration:none;color:var(--ink-soft);
        font-size:13.5px;line-height:1.45;padding:3px 0;border-bottom:1px solid transparent}
   .toc a:hover{color:var(--accent-ink);border-bottom-color:var(--accent-soft)}
@@ -411,7 +425,7 @@
         <div class="toc-grp">Stage 3 Approximate nearest neighbour at scale - 2016-2023</div>
         <a class="t2" href="#hnsw">HNSW HNSW - hierarchical navigable small world on by default</a>
         <a class="t2" href="#router">Shard router Shard router on by default</a>
-        <a class="t2" href="#ivfpq">IVF-PQ IVF-PQ - inverted file with product quantization wired default off</a>
+        <a class="t2" href="#ivfpq">IVF-PQ IVF-PQ - inverted file with product quantization code only no callers</a>
         <a class="t2" href="#diskann">DiskANN DiskANN - keeping the graph on SSD</a>
         <a class="t2" href="#rabitq">RaBitQ RaBitQ - quantization with an error bar code only no callers</a>
         <a class="t2" href="#turbovec">TurboVec TurboVec - sub-byte codes, full-precision query code only no callers</a>
@@ -749,7 +763,7 @@
     </figure>
     <div class="sblock"><span class="slabel">What it costs</span><p>It is lossy pruning with no downstream recovery: any shard not selected contributes zero candidates, so a true nearest neighbour living in an unselected shard is silently lost — no error, just missing recall. The "centroids" are not k-means centroids either; they are a deterministic every-100th-vector sample tagged by source shard, so a small or oddly-distributed shard can be under-sampled and never win a vote (the repo's own live router has just 2 centroids for long__judgment vs 109 for long__semantic). Because top-p is over centroids, not shards, dedup can return fewer shards than intended. And the pruning assumes each selected shard actually has a searchable index: the disk IVF-PQ path had to abandon routing entirely and probe all 15 shards (store.rs:8695-8703) after the router picked [procedural, episodic] while the only IVF-PQ index lived in semantic, producing R@10 = 0.</p></div>
     <div class="sblock ts"><span class="slabel">In TerranSoul</span><p>On the default path, with no feature flag on the chain, and with the staleness fallback as its safety net. Worth stating alongside: a Terminal-Bench audit found the isolated bench store had an <em>empty</em> router and no ANN indexes at all, so at that corpus size the exact-scan fallback was doing the work. The loss there was the scale claim, not recall.</p></div>
-    <h2 id="ivfpq"><span class="scene-num">IVF-PQ</span>IVF-PQ &mdash; inverted file with product quantization<span class="chip chip-off">wired &middot; default off</span></h2>
+    <h2 id="ivfpq"><span class="scene-num">IVF-PQ</span>IVF-PQ &mdash; inverted file with product quantization<span class="chip chip-none">code only &middot; no callers</span></h2>
     <p class="tag">Partitions vectors into k-means cells and compresses each to a few bytes, so a query scans only a few cells.</p>
     <div class="sblock"><span class="slabel">The problem</span><p>Exact nearest-neighbour search compares the query against every stored vector at full precision: at 1M docs x 768 float32 dims that is ~3 GB resident and ~768M multiply-adds per query. IVF-PQ attacks both costs at once — an inverted file skips most of the corpus (only nprobe of nlist cells are visited), and product quantization replaces each float vector with a handful of centroid IDs (768 floats = 3072 B becomes ~96 B), so the surviving candidates are scored by table lookup instead of arithmetic. The price is that both the skipping and the compression are lossy, so results are approximate.</p></div>
     <figure class="tsfig fig-ivfpq">
@@ -791,7 +805,7 @@
       <figcaption id="figcap-ivfpq">K-means produces coarse centroids and every vector is filed into the inverted list of its nearest one. Each vector is then replaced by its residual — itself minus its own cell’s centroid — which collapses all cells onto a common origin so one shared codebook describes them all. The residual is cut into contiguous chunks, each snapped to the nearest of 256 centroids in that subspace’s codebook, and the float vector is discarded in favour of one byte per subspace. At query time only the nearest <em>nprobe</em> cells are opened, and each candidate’s distance is a sum of precomputed table lookups.</figcaption>
     </figure>
     <div class="sblock"><span class="slabel">What it costs</span><p>Doubly lossy, and the two losses compound. A true neighbour sitting in a cell that nprobe did not open is unrecoverable at any later stage — the recall ceiling is fixed by nprobe/nlist, not by re-ranking — and PQ codes discard the residual detail, so distances within an opened cell are only approximate and near-ties get mis-ordered. It also needs an offline training pass over a sample (this implementation caps at 100k vectors, 20 Lloyd iterations) and has no cheap incremental insert: as the corpus drifts away from the trained centroids, cells go lopsided and recall decays until the whole index is retrained and re-encoded. Finally the embedding dim must be divisible by pq_m, which constrains parameter choice (build errors out otherwise).</p></div>
-    <div class="sblock ts"><span class="slabel">In TerranSoul</span><p>Implemented and genuinely wired into a production entry point, where it shadows HNSW inside one vector-search function when an on-disk index file exists &mdash; but it ships behind a config row that defaults off, and the hybrid path used by chat and the thinking modes has no IVF-PQ branch at all. Reachable, not reached.</p></div>
+    <div class="sblock ts"><span class="slabel">In TerranSoul</span><p>Wired, and never reached &mdash; but not for the reason a config flag would suggest. <code>vector_search</code> prefers a shard&rsquo;s IVF-PQ index over HNSW <em>when the on-disk index file exists</em>, and nothing in normal operation ever builds one: the builder is reachable only through an explicit desktop command, and no index file exists in either store. So every query falls through to the HNSW branch. That is a scale decision rather than an oversight &mdash; the code calls IVF-PQ &ldquo;the billion-scale path&rdquo;, because HNSW&rsquo;s cost grows with shard size while IVF-PQ&rsquo;s stays bounded by <em>nprobe</em>. At roughly a thousand memories per shard that trade is backwards: IVF-PQ would add two independent approximations (cells never opened, plus lossy codes) and a k-means training step, to save memory this corpus does not need. It is dormant infrastructure for a corpus size this deployment does not have. Separately, the hybrid path used by chat and the thinking modes has no IVF-PQ branch at all.</p></div>
     <h2 id="diskann"><span class="scene-num">DiskANN</span>DiskANN &mdash; keeping the graph on SSD</h2>
     <p class="tag">The graph and full vectors live on SSD; RAM keeps compressed copies to steer the walk and disk reranks.</p>
     <div class="sblock"><span class="slabel">The problem</span><p>In-memory graph indexes like HNSW and NSG reach a good neighbourhood in a handful of hops, but the entire graph plus every full-precision vector has to be resident in DRAM — at billion scale that is hundreds of gigabytes, so one machine holds only a slice of the corpus and the index must be sharded across a cluster. The alternative that did fit in RAM was to quantize every vector hard enough to shrink the index, which discards exactly the precision needed to separate a true nearest neighbour from a near-miss, capping recall. Neither option delivered high recall at billion scale on a single node.</p></div>

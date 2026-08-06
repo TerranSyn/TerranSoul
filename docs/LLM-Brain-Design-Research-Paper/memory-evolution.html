@@ -263,7 +263,21 @@
   .toc .toc-in{padding:2px 16px 14px;max-height:min(58vh,560px);overflow-y:auto;
        border-top:1px solid var(--rule);
        columns:2;column-gap:26px}
-  @media (max-width:820px){.toc .toc-in{columns:1;max-height:50vh}}
+  /* ⛔ ANCHOR NAVIGATION vs A STICKY TOC. Jumping to #ivfpq put the heading
+     UNDER the sticky panel, so the section the reader asked for was the one
+     thing they could not see. Two fixes, because one is not enough:
+       1. scroll-margin-top on every heading, so an anchor jump leaves room for
+          the collapsed bar instead of landing flush against the viewport top;
+       2. on narrow screens the TOC stops being sticky altogether. An open
+          panel capped at 50vh was covering half a phone screen permanently —
+          there is no offset that makes that usable, so it scrolls away
+          instead. */
+  h2[id],h3[id]{scroll-margin-top:72px}
+  @media (max-width:820px){
+    .toc{position:static}
+    .toc .toc-in{columns:1;max-height:none}
+    h2[id],h3[id]{scroll-margin-top:12px}
+  }
   .toc a{display:block;break-inside:avoid;text-decoration:none;color:var(--ink-soft);
        font-size:13.5px;line-height:1.45;padding:3px 0;border-bottom:1px solid transparent}
   .toc a:hover{color:var(--accent-ink);border-bottom-color:var(--accent-soft)}
