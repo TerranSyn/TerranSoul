@@ -56,10 +56,17 @@ jobs:
           path: docs
 
       - id: deployment
+        env:
+          # Silences a punycode DeprecationWarning emitted by the action's
+          # OWN dependencies under Node 24. Cosmetic log noise, unrelated to
+          # any deployment failure - suppressed so it stops drawing the eye.
+          NODE_OPTIONS: --no-deprecation
         uses: actions/deploy-pages@v5
         with:
-          # Fail in 1 minute, not 10. The default 600000 ms means a
-          # wedged Pages backend spins for ten minutes emitting
-          # "deployment_queued" before admitting failure - which is
-          # ten minutes of looking hung instead of one clear error.
-          timeout: 60000
+          # Back to 10 minutes. 60s was set while the backend was stuck
+          # at "deployment_queued" forever and the short timeout turned a
+          # ten-minute hang into one fast error. Once deployments started
+          # reaching "deployment_in_progress" that same 60s began ABORTING
+          # healthy deploys of a 26 MB artifact. Short timeouts are right
+          # for a hang and wrong for slow work; this one is slow work.
+          timeout: 600000
