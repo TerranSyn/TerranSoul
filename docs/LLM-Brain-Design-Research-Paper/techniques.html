@@ -141,16 +141,6 @@
   .tsfig .f-mono{font-family:var(--mono);font-size:11px;fill:var(--accent-ink)}
 
   /* Figure 1 — vocabulary mismatch, and the space that closes it. */
-  .fig-vocab .v-reach{animation:fv-reach 13s ease-in-out infinite}
-  .fig-vocab .v-stop{animation:fv-stop 13s ease-in-out infinite}
-  .fig-vocab .v-a{animation:fv-a 13s ease-in-out infinite}
-  .fig-vocab .v-b{animation:fv-b 13s ease-in-out infinite}
-  .fig-vocab .v-link{animation:fv-link 13s ease-in-out infinite}
-  @keyframes fv-reach{0%,6%{stroke-dashoffset:100}24%,100%{stroke-dashoffset:0}}
-  @keyframes fv-stop{0%,26%{opacity:0}34%,100%{opacity:1}}
-  @keyframes fv-a{0%,40%{transform:translate(-74px,0);opacity:.3}62%,100%{transform:translate(0,0);opacity:1}}
-  @keyframes fv-b{0%,40%{transform:translate(74px,0);opacity:.3}62%,100%{transform:translate(0,0);opacity:1}}
-  @keyframes fv-link{0%,64%{opacity:0}76%,100%{opacity:1}}
 
   
   /* ---- page-local additions ------------------------------------------- */
@@ -307,6 +297,42 @@
 .fig-robustrag .v-agg{animation:fx-draw 14s ease-in-out 4.8s infinite backwards;transform-box:fill-box;transform-origin:center}
 .fig-camel .m-flow{animation:fx-draw 14s ease-in-out 1.2s infinite backwards;transform-box:fill-box;transform-origin:center}
 .fig-camel .m-cap{animation:fx-lit 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rerank .rr-a{animation:fx-draw 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rerank .rr-judge{animation:fx-lit 14s ease-in-out 1.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rerank .rr-b{animation:fx-draw 14s ease-in-out 2.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rerank .rr-c{animation:fx-draw 14s ease-in-out 3.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rerank .rr-drop{animation:fx-dim 14s ease-in-out 4.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hybrid .hy-1{animation:fx-draw 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hybrid .hy-2{animation:fx-draw 14s ease-in-out 0.9s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hybrid .hy-fuse{animation:fx-lit 14s ease-in-out 1.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hybrid .hy-3{animation:fx-draw 14s ease-in-out 2.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-llmjudge .j-out{animation:fx-lit 14s ease-in-out 1.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-llmjudge .j-f1{animation:fx-lit 14s ease-in-out 1.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-llmjudge .j-f2{animation:fx-lit 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-llmjudge .j-f3{animation:fx-lit 14s ease-in-out 3.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-llmjudge .j-f4{animation:fx-lit 14s ease-in-out 3.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-prefix .px-1{animation:fx-draw 14s ease-in-out 0.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-prefix .px-2{animation:fx-draw 14s ease-in-out 1.1s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-prefix .px-3{animation:fx-draw 14s ease-in-out 1.9s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-abstain .ab-lo{animation:fx-lit 14s ease-in-out 1.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-abstain .ab-hi{animation:fx-lit 14s ease-in-out 1.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-chunking .ch-cut{animation:fx-lit 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-chunking .ch-ctx{animation:fx-lit 14s ease-in-out 1.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-chunking .ch-pc{animation:fx-lit 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-chunking .ch-up{animation:fx-draw 14s ease-in-out 3.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-chunking .ch-parent{animation:fx-lit 14s ease-in-out 3.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-modes .md-r{animation:fx-lit 14s ease-in-out 1.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-modes .md-gap{animation:fx-lit 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-writegate .wg-in{animation:fx-draw 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-writegate .wg-gate{animation:fx-lit 14s ease-in-out 1.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-writegate .wg-a{animation:fx-draw 14s ease-in-out 2.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-writegate .wg-b{animation:fx-draw 14s ease-in-out 2.3s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-writegate .wg-c{animation:fx-draw 14s ease-in-out 2.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-writegate .wg-note{animation:fx-lit 14s ease-in-out 3.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-verifyrank .vr-c1{animation:fx-lit 14s ease-in-out 1.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-verifyrank .vr-c2{animation:fx-lit 14s ease-in-out 1.5s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-verifyrank .vr-c3{animation:fx-lit 14s ease-in-out 2.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-verifyrank .vr-w{animation:fx-draw 14s ease-in-out 2.8s infinite backwards;transform-box:fill-box;transform-origin:center}
   @media (prefers-reduced-motion: reduce){
     .tsfig *{animation:none !important;transition:none !important}
   }
@@ -467,6 +493,69 @@
       <figcaption id="figcap-mrl">A dual encoder normally emits one vector at one width, chosen for the hardest case and then paid on every stored vector and every distance computation. Matryoshka training attaches a loss to each nested prefix — 64, 128, 256 and full — so the leading coordinates are obliged to carry the general signal on their own and the trailing ones only refine it. A prefix can then be cut off and used directly, with no second model and no post-hoc reduction: sweep the entire index at 64 dimensions, then rerank the shortlist at full width.</figcaption>
     </figure>
     <div class="sblock"><span class="slabel">What it costs</span><p>The nesting has to be trained in — truncating an ordinary embedding is a different operation and degrades it sharply — so this is a property of the model you picked, not a switch you can flip on the one you already have. And a short prefix genuinely is weaker than the full vector, so the cheap sweep only holds up when full-width vectors are still kept somewhere for the rerank pass, which brings back much of the storage the truncation was meant to save.</p></div>
+    <h2 id="prefix"><span class="scene-num">Asymmetric query/document prefixes</span>Asymmetric query/document prefixes</h2>
+    <p class="tag">Tell the encoder which role a text is playing, because a question and its answer are different kinds of text.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>A dual encoder embeds the question and the passage with the same weights, though one asks and one tells. Models trained with role markers learn to place the two appropriately; without the marker at inference they are handed an input distribution they were not trained on.</p></div>
+    <figure class="tsfig fig-prefix">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 196" role="img" aria-labelledby="figcap-prefix">
+<text class="f-key" x="16" y="18">SAME ENCODER, TWO ROLES</text>
+<rect class="f-panel" x="16" y="26" width="648" height="82" rx="8" />
+<rect class="f-hot" x="36" y="46" width="120" height="22" rx="3" />
+<text class="f-mono" x="44" y="62">query: &#8230;</text>
+<rect class="f-box" x="160" y="46" width="150" height="22" rx="3" />
+<text class="f-mono" x="168" y="62">what did she say about</text>
+<rect class="f-hot" x="36" y="78" width="120" height="22" rx="3" />
+<text class="f-mono" x="44" y="94">document: &#8230;</text>
+<rect class="f-box" x="160" y="78" width="150" height="22" rx="3" />
+<text class="f-mono" x="168" y="94">she mentioned that the</text>
+<path class="f-live f-draw px-1" pathLength="100" d="M318 57 L392 68" />
+<path class="f-live f-draw px-2" pathLength="100" d="M318 89 L392 78" />
+<rect class="f-box" x="398" y="52" width="110" height="44" rx="5" />
+<text class="f-key" x="453" y="78" text-anchor="middle">ONE ENCODER</text>
+<path class="f-live f-draw px-3" pathLength="100" d="M512 74 L566 74" />
+<circle class="f-node-on" cx="600" cy="74" r="12" />
+<text class="f-key" x="600" y="100" text-anchor="middle">DISTINCT ROLES</text>
+<text x="16" y="132">a question and its answer are not the same KIND of text, and the prefix says so</text>
+<rect class="f-panel" x="16" y="144" width="648" height="42" rx="8" />
+<text class="f-key" x="32" y="164">MEASURED, AND IT DOES NOT GENERALISE</text>
+<text x="32" y="180">prefixes HELP the prefix-trained embedder and HURT models never trained with them</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-prefix">A dual encoder embeds a question and the passage answering it with the same weights, even though they are different kinds of text — one asks, one tells. Prefixing each input with its role lets a model trained that way place them appropriately in the space. It is not a free improvement: measured here, prefixes help the embedder that was trained with them and actively hurt models that never saw them, so it is a property of the specific embedder, not a general trick.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>It is a property of the specific embedder, not a general improvement. Measured here: prefixes help the model trained with them and actively hurt models that never saw them, particularly on short text — so this is a per-model calibration, and applying it blind is as likely to cost as to gain.</p></div>
+    <h2 id="hybrid"><span class="scene-num">Hybrid search</span>Hybrid search &mdash; sparse + dense fusion<span class="chip chip-on">on by default</span></h2>
+    <p class="tag">Run the lexical and the dense channel, and fuse their rankings instead of choosing between them.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Lexical retrieval cannot match a paraphrase; a pooled embedding cannot preserve an exact identifier. Each is a hard failure on the other’s home ground, and neither degrades gracefully into the other. Replacing one with the other therefore trades one blind spot for another rather than removing either.</p></div>
+    <figure class="tsfig fig-hybrid">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 216" role="img" aria-labelledby="figcap-hybrid">
+<text class="f-key" x="16" y="18">SPARSE CHANNEL &#183; FTS5 / BM25</text>
+<rect class="f-panel" x="16" y="26" width="290" height="76" rx="8" />
+<text class="f-mono" x="32" y="52">exact terms, rare identifiers,</text>
+<text class="f-mono" x="32" y="72">version strings, error codes</text>
+<text class="f-key" x="32" y="92">FAILS ON PARAPHRASE</text>
+<text class="f-key" x="16" y="126">DENSE CHANNEL &#183; EMBEDDINGS</text>
+<rect class="f-panel" x="16" y="134" width="290" height="76" rx="8" />
+<text class="f-mono" x="32" y="160">meaning, paraphrase,</text>
+<text class="f-mono" x="32" y="180">cross-lingual matches</text>
+<text class="f-key" x="32" y="200">FAILS ON EXACT IDENTIFIERS</text>
+<path class="f-live f-draw hy-1" pathLength="100" d="M310 64 L372 100" />
+<path class="f-live f-draw hy-2" pathLength="100" d="M310 172 L372 136" />
+<rect class="f-hot hy-fuse" x="378" y="86" width="130" height="64" rx="8" />
+<text class="f-key" x="443" y="112" text-anchor="middle">RRF FUSION</text>
+<text class="f-key" x="443" y="128" text-anchor="middle">BY RANK</text>
+<path class="f-live f-draw hy-3" pathLength="100" d="M512 118 L570 118" />
+<rect class="f-box" x="576" y="86" width="88" height="64" rx="8" />
+<text class="f-key" x="620" y="112" text-anchor="middle">ONE</text>
+<text class="f-key" x="620" y="128" text-anchor="middle">RANKING</text>
+<text x="16" y="228">neither channel is a fallback for the other &#8212; each covers the other&#8217;s blind spot</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-hybrid">The two retrieval channels fail in opposite directions: lexical matching cannot find a paraphrase, and a pooled embedding blurs the exact identifier that made a passage the right answer. Running both and fusing by rank keeps each one’s strength where the other is blind, which is why 2026 practice is fusion rather than replacement. This is the configuration that, on this system’s only fully-measured benchmark, produced the best rank-sensitive result — plain hybrid with RRF, beating every rung layered on top of it.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Two indexes to build, two to keep current, and a fusion step whose behaviour depends on both. It also cannot fix a query that neither channel can serve. On this system it is nonetheless the configuration that measured best on rank-sensitive retrieval at full scale — every additional rung layered above it either tied it or cost accuracy.</p></div>
 
     <p class="stage-head">Stage 3 &middot; Approximate nearest neighbour at scale &mdash; 2016&ndash;2023</p>
     <h2 id="hnsw"><span class="scene-num">HNSW</span>HNSW &mdash; hierarchical navigable small world<span class="chip chip-on">on by default</span></h2>
@@ -913,6 +1002,81 @@
       <figcaption id="figcap-mmr">Ranking by relevance alone fills the whole result set with the same fact restated, because near-duplicates all score well against the query. MMR selects greedily: at each step it picks the candidate maximising relevance to the query <em>minus</em> a weighted similarity to everything already selected, so the second copy of an idea is penalised precisely for resembling the first. The set covers more of the answer at the same relevance — at the cost of a λ that trades the two and cannot be derived from first principles.</figcaption>
     </figure>
     <div class="sblock"><span class="slabel">What it costs</span><p>It is greedy and myopic: each slot is filled locally and never revisited, so the chosen set is not the best set. The penalty is blind to why two passages resemble each other, so when the correct evidence genuinely is repeated — corroborating sources, or several golds restating one fact — MMR evicts exactly the passages the answer needed and diversity actively costs accuracy. Lambda is a hand-set constant with no principled per-query value, and the pairwise comparisons add work on top of plain ranking.</p></div>
+    <h2 id="rerank"><span class="scene-num">Reranking</span>Reranking &mdash; the rung that was rolled back<span class="chip chip-off">wired &middot; default off</span></h2>
+    <p class="tag">A model rescores the retrieved candidates before the answer is written. Measured here: it lost.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Similarity ranks by resemblance, and resemblance is not answer-bearingness. The obvious fix is to have a model read each candidate against the query and reorder them, which is what every managed retrieval product added between 2024 and 2026. It is also the technique this system put on its &lt;code&gt;think&lt;/code&gt; mode and then removed.</p></div>
+    <figure class="tsfig fig-rerank">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 232" role="img" aria-labelledby="figcap-rerank">
+<text class="f-key" x="16" y="18">RETRIEVE &#8594; RERANK &#8594; ANSWER</text>
+<rect class="f-panel" x="16" y="26" width="648" height="80" rx="8" />
+<rect class="f-box" x="32" y="44" width="96" height="44" rx="5" />
+<text class="f-key" x="80" y="62" text-anchor="middle">HYBRID</text><text class="f-key" x="80" y="76" text-anchor="middle">TOP-20</text>
+<path class="f-live f-draw rr-a" pathLength="100" d="M132 66 L184 66" />
+<rect class="f-hot rr-judge" x="190" y="44" width="150" height="44" rx="5" />
+<text class="f-key" x="265" y="62" text-anchor="middle">LLM JUDGE SCORES</text>
+<text class="f-key" x="265" y="76" text-anchor="middle">EACH CANDIDATE</text>
+<path class="f-live f-draw rr-b" pathLength="100" d="M344 66 L396 66" />
+<rect class="f-box" x="402" y="44" width="110" height="44" rx="5" />
+<text class="f-key" x="457" y="66" text-anchor="middle">REORDERED</text>
+<path class="f-live f-draw rr-c" pathLength="100" d="M516 66 L568 66" />
+<rect class="f-box" x="574" y="44" width="74" height="44" rx="5" />
+<text class="f-key" x="611" y="66" text-anchor="middle">ANSWER</text>
+
+<text class="f-key" x="16" y="128">WHY IT LOST ON MULTI-GOLD QUESTIONS</text>
+<rect class="f-panel" x="16" y="136" width="648" height="70" rx="8" />
+<text class="f-key" x="32" y="156">BEFORE</text>
+<rect class="f-hot" x="92" y="146" width="34" height="16" rx="2" /><text class="f-key" x="109" y="158" text-anchor="middle">g1</text>
+<rect class="f-hot" x="130" y="146" width="34" height="16" rx="2" /><text class="f-key" x="147" y="158" text-anchor="middle">g2</text>
+<rect class="f-box" x="168" y="146" width="34" height="16" rx="2" />
+<rect class="f-hot" x="206" y="146" width="34" height="16" rx="2" /><text class="f-key" x="223" y="158" text-anchor="middle">g3</text>
+<text class="f-key" x="256" y="158">three golds, already ranked</text>
+<text class="f-key" x="32" y="188">AFTER</text>
+<rect class="f-hot" x="92" y="176" width="34" height="16" rx="2" /><text class="f-key" x="109" y="188" text-anchor="middle">g1</text>
+<rect class="f-box" x="130" y="176" width="34" height="16" rx="2" />
+<rect class="f-box" x="168" y="176" width="34" height="16" rx="2" />
+<rect class="f-box rr-drop" x="206" y="176" width="34" height="16" rx="2" />
+<text class="f-key rr-drop" x="256" y="188">judge scored TOPICAL relatedness &#8594; secondary golds demoted</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-rerank">A judge model rescores the retrieved candidates before the answer is written, on the assumption that a model reading each candidate against the query ranks better than a similarity score. Measured on this system it did not: the judge scores <em>topical relatedness</em> rather than answer-bearingness, so on a question with several gold passages it demotes the secondary golds that plain hybrid retrieval had already placed correctly. Since 324 of LongMemEval-S’s 500 questions are multi-gold, that mechanism dominates — and the rerank was removed from <code>think</code>’s retrieval path on 2026-08-02.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Measured negative on this system, twice, and the mechanism is understood rather than mysterious: the judge scores &lt;em&gt;topical relatedness&lt;/em&gt;, so on a question with several gold passages it demotes the secondary golds that plain hybrid retrieval had already ranked correctly. 324 of LongMemEval-S’s 500 questions are multi-gold, so that failure dominates the average. It also costs a model call per candidate. Removed from &lt;code&gt;think&lt;/code&gt;’s retrieval path on 2026-08-02; &lt;code&gt;think&lt;/code&gt; and &lt;code&gt;chat&lt;/code&gt; now call the same function and cannot produce different orderings.</p></div>
+    <h2 id="chunking"><span class="scene-num">Contextual retrieval, late chunking, parent-child</span>Contextual retrieval, late chunking, parent-child</h2>
+    <p class="tag">Three ways to stop a fixed-size split from severing text from the context that gives it meaning.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Chunking at a fixed size cuts sentences away from their subject, so the chunk both retrieves badly and reads as a fragment when it does. Every downstream stage inherits the loss, and no reranker can restore context that was discarded at ingest.</p></div>
+    <figure class="tsfig fig-chunking">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 222" role="img" aria-labelledby="figcap-chunking">
+<text class="f-key" x="16" y="18">NAIVE FIXED-SIZE CHUNKS</text>
+<rect class="f-panel" x="16" y="26" width="300" height="70" rx="8" />
+<rect class="f-box" x="32" y="44" width="84" height="34" rx="3" />
+<rect class="f-box" x="122" y="44" width="84" height="34" rx="3" />
+<rect class="f-box" x="212" y="44" width="88" height="34" rx="3" />
+<line class="f-wire-d ch-cut" x1="118" y1="38" x2="118" y2="84" />
+<text class="f-key" x="32" y="112">A SENTENCE&#8217;S SUBJECT ENDS UP IN THE PREVIOUS CHUNK</text>
+<text class="f-key" x="348" y="18">CONTEXTUAL &#183; LATE &#183; PARENT-CHILD</text>
+<rect class="f-panel" x="348" y="26" width="316" height="70" rx="8" />
+<rect class="f-hot ch-ctx" x="364" y="38" width="284" height="14" rx="2" />
+<text class="f-key" x="372" y="49">1 &#183; CONTEXT PREPENDED AT INGEST</text>
+<rect class="f-box" x="364" y="58" width="284" height="14" rx="2" />
+<text class="f-key" x="372" y="69">2 &#183; EMBED THE WHOLE DOC, SPLIT AFTER</text>
+<rect class="f-box ch-pc" x="364" y="78" width="284" height="14" rx="2" />
+<text class="f-key" x="372" y="89">3 &#183; MATCH SMALL, RETURN THE PARENT</text>
+<rect class="f-panel" x="16" y="112" width="648" height="76" rx="8" />
+<rect class="f-box" x="32" y="130" width="40" height="44" rx="3" />
+<text class="f-key" x="52" y="156" text-anchor="middle">CHILD</text>
+<path class="f-live f-draw ch-up" pathLength="100" d="M78 152 L128 152" />
+<rect class="f-hot ch-parent" x="134" y="122" width="180" height="60" rx="4" />
+<text class="f-key" x="224" y="148" text-anchor="middle">PARENT RETURNED</text>
+<text class="f-key" x="224" y="164" text-anchor="middle">TO THE GENERATOR</text>
+<text x="336" y="146">the precise unit does the MATCHING;</text>
+<text x="336" y="166">the larger unit does the ANSWERING.</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-chunking">Splitting a document at a fixed size cuts sentences away from the context that makes them meaningful, and the resulting chunk retrieves badly or reads as a fragment. Three techniques attack it from different sides: contextual retrieval prepends a generated description of where the chunk sits before embedding it; late chunking embeds the whole document first and splits the token embeddings afterwards, so every chunk’s vector was computed with the full document in view; and parent-child resolution matches on the small precise unit but returns its larger parent to the generator — the split that matches best is rarely the span that answers best.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>All three cost at ingest. Contextual retrieval needs a model call per chunk; late chunking needs the whole document to fit the encoder’s window, which caps document size; parent-child resolution returns more tokens than it matched, spending context budget to buy coherence. On this system they are built but not benchmarked — recorded as such rather than claimed.</p></div>
 
     <p class="stage-head">Stage 6 &middot; Agentic and corrective RAG &mdash; 2023&ndash;2026</p>
     <h2 id="selfrag"><span class="scene-num">Self-RAG</span>Self-RAG</h2>
@@ -978,6 +1142,71 @@
       <figcaption id="figcap-crag">A retriever that returns the wrong passages hands the generator confident, irrelevant context. CRAG puts a lightweight evaluator in front of generation that grades the retrieval as correct, ambiguous or incorrect, and branches: correct passages are refined by cutting them into strips and keeping only the relevant ones; incorrect retrieval falls back to web search rather than proceeding; ambiguous takes both paths. The evaluator is small and separate from the generator, so the failure it catches is retrieval failure specifically.</figcaption>
     </figure>
     <div class="sblock"><span class="slabel">What it costs</span><p>Everything hinges on a small external evaluator that must be fine-tuned, plus two thresholds set empirically and re-tuned per dataset — and a misgrade propagates silently in both directions: a bad set labelled Correct gets refined and handed over as if trustworthy, while a good set labelled Incorrect triggers a needless web round trip. The corrective fallback also trades a curated corpus for the open web, adding latency, per-query cost, an external dependency and unvetted content, and nothing in the loop checks the finished answer against the evidence that produced it.</p></div>
+    <h2 id="abstain"><span class="scene-num">Abstention</span>Abstention</h2>
+    <p class="tag">Make “I don’t know” a valid output, so weak evidence stops producing confident sentences.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>A generator handed poor context still writes fluently. That is what turns a retrieval miss into a wrong answer delivered with the same confidence as a right one — the failure that makes RAG systems untrustworthy rather than merely imperfect.</p></div>
+    <figure class="tsfig fig-abstain">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 198" role="img" aria-labelledby="figcap-abstain">
+<rect class="f-panel" x="16" y="26" width="300" height="76" rx="8" />
+<text class="f-key" x="32" y="46">ALWAYS ANSWER</text>
+<path class="f-wire" d="M32 60 L296 60" />
+<rect class="f-hot" x="32" y="68" width="264" height="18" rx="3" />
+<text class="f-key" x="164" y="81" text-anchor="middle">CONFIDENT SENTENCE, NO SUPPORT</text>
+<text class="f-key" x="16" y="122">WEAK EVIDENCE STILL PRODUCES A FLUENT ANSWER</text>
+<text class="f-key" x="348" y="18">ABSTAIN ON A THRESHOLD</text>
+<rect class="f-panel" x="348" y="26" width="316" height="76" rx="8" />
+<line class="f-wire" x1="368" y1="84" x2="644" y2="84" />
+<line class="f-wire-d" x1="470" y1="40" x2="470" y2="84" />
+<text class="f-key" x="470" y="36" text-anchor="middle">&#964;</text>
+<rect class="f-box ab-lo" x="368" y="56" width="98" height="22" rx="3" />
+<text class="f-key" x="417" y="71" text-anchor="middle">SAY SO</text>
+<rect class="f-hot ab-hi" x="474" y="56" width="170" height="22" rx="3" />
+<text class="f-key" x="559" y="71" text-anchor="middle">ANSWER, WITH CITATIONS</text>
+<text class="f-key" x="348" y="122">&#8220;I DON&#8217;T KNOW&#8221; IS A CORRECT OUTPUT</text>
+<rect class="f-panel" x="16" y="136" width="648" height="48" rx="8" />
+<text x="32" y="160">the threshold is the whole design: too high and the system refuses work it could do,</text>
+<text x="32" y="178">too low and abstention stops meaning anything. It cannot be derived, only tuned.</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-abstain">A generator handed weak evidence still produces a fluent, confident sentence — the failure that makes retrieval errors dangerous rather than merely unhelpful. Abstention makes "I don’t know" a valid output: below a support threshold the system declines instead of answering. The mechanism is simple and the threshold is the entire design, because it cannot be derived from first principles — set too high the system refuses work it could have done, too low and abstaining stops carrying information.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The threshold is the whole design and cannot be derived. Too high and the system declines work it could have done; too low and abstaining stops carrying information. It also needs a support signal to threshold &lt;em&gt;on&lt;/em&gt;, which is usually a judge — inheriting that judge’s failure modes.</p></div>
+
+    <p class="stage-head">Stage 7 &middot; Observability and evaluation &mdash; 2023&ndash;2025</p>
+    <h2 id="llmjudge"><span class="scene-num">LLM-as-a-judge</span>LLM-as-a-judge</h2>
+    <p class="tag">Have a model grade outputs, because string-overlap metrics score the wrong thing.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Exact match, BLEU and ROUGE score surface overlap, so a correct answer in different words fails and a fluent wrong one passes. Once systems generate free text, the metric stops measuring the quality anyone cares about, and human grading does not scale to every run.</p></div>
+    <figure class="tsfig fig-llmjudge">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 206" role="img" aria-labelledby="figcap-llmjudge">
+<text class="f-key" x="16" y="18">WHAT IT REPLACES</text>
+<rect class="f-panel" x="16" y="26" width="270" height="70" rx="8" />
+<text class="f-mono" x="32" y="52">exact match / BLEU / ROUGE</text>
+<text class="f-key" x="32" y="76">SCORES STRING OVERLAP, NOT CORRECTNESS</text>
+<text class="f-key" x="16" y="116">THE JUDGE</text>
+<rect class="f-panel" x="16" y="124" width="270" height="70" rx="8" />
+<rect class="f-box" x="32" y="140" width="72" height="18" rx="3" /><text class="f-key" x="68" y="153" text-anchor="middle">QUESTION</text>
+<rect class="f-box" x="112" y="140" width="72" height="18" rx="3" /><text class="f-key" x="148" y="153" text-anchor="middle">ANSWER</text>
+<rect class="f-box" x="192" y="140" width="80" height="18" rx="3" /><text class="f-key" x="232" y="153" text-anchor="middle">EVIDENCE</text>
+<rect class="f-hot j-out" x="32" y="166" width="240" height="18" rx="3" />
+<text class="f-key" x="152" y="179" text-anchor="middle">MODEL EMITS A GRADE</text>
+<text class="f-key" x="326" y="18">THE FAILURE MODES, MEASURED</text>
+<rect class="f-panel" x="326" y="26" width="338" height="168" rx="8" />
+<rect class="f-box j-f1" x="342" y="42" width="306" height="26" rx="4" />
+<text class="f-key" x="352" y="59">SCORES CORRECT RECALL AS HALLUCINATION WITHOUT THE CONTEXT</text>
+<rect class="f-box j-f2" x="342" y="76" width="306" height="26" rx="4" />
+<text class="f-key" x="352" y="93">RELIABLE (AGREES WITH ITSELF) YET NOT VALID</text>
+<rect class="f-box j-f3" x="342" y="110" width="306" height="26" rx="4" />
+<text class="f-key" x="352" y="127">PARTIAL COVERAGE IS A BIASED SAMPLE, NOT A WEAK SIGNAL</text>
+<rect class="f-hot j-f4" x="342" y="144" width="306" height="34" rx="4" />
+<text class="f-key" x="352" y="160">SO: FAIL OPEN. A JUDGE MAY PROMOTE,</text>
+<text class="f-key" x="352" y="174">NEVER VETO &#8212; AND GATE ON COVERAGE</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-llmjudge">Automatic metrics score string overlap, so a correct answer phrased differently fails and a fluent wrong one passes. An LLM judge reads question, answer and evidence and grades — which works, and brings its own failures: it marks correct recall as hallucination when the memory context is withheld, it can be highly self-consistent while still not measuring the thing you wanted, and scoring only part of a set is a biased sample rather than a weak signal. The discipline that follows is to let a judge promote but never veto, and to gate on coverage rather than on all-or-nothing agreement.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The judge is a model, so it inherits model failure modes and adds its own. Measured here: it scores correct recall as hallucination when the memory context is withheld from it, and reliability is not validity — a judge can agree with itself across runs while still not measuring what was intended. Partial coverage is the subtle one: scoring only some of a set is a &lt;em&gt;biased&lt;/em&gt; sample, not a weak signal, and promoting those few over the rest measurably damaged results. The discipline that follows is fail-open — a judge may promote, never veto — plus a coverage floor.</p></div>
 
     <p class="stage-head">Stage 8 &middot; Two-way agent memory &mdash; 2023&ndash;2026</p>
     <h2 id="memgpt"><span class="scene-num">MemGPT</span>MemGPT &mdash; OS-style memory paging</h2>
@@ -1375,49 +1604,179 @@
     </figure>
     <div class="sblock"><span class="slabel">What it costs</span><p>It defends only what a plan can settle in advance, so genuinely data-dependent control flow — read the mail, then decide what to do — is either refused or escalated to the user, and enough of those prompts turn the guarantee into a rubber stamp. Policies must be authored and maintained per tool, the user's own query is assumed trusted, and the architecture costs a second privileged model plus a custom interpreter beside the agent.</p></div>
 
-    <p class="stage-head">Closing</p>
-    <h2><span class="scene-num">Summary</span>What each technique actually buys, and with what</h2>
-    <p>Read down this table rather than across it. Almost every row buys its improvement by spending one of four things &mdash; memory, latency, an offline training loop, or accuracy itself &mdash; and the pattern of what a technique is willing to spend tells you more about when to use it than its name does.</p>
+    <p class="stage-head">Stage 12 &middot; What this system itself runs</p>
+    <h2 id="modes"><span class="scene-num">Thinking modes as (effort &times; harness) pairs</span>Thinking modes as (effort &times; harness) pairs<span class="chip chip-on">on by default</span></h2>
+    <p class="tag">Four named modes that vary two things at once — and do not form the ladder they are drawn as.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Users want one dial: more effort, better answer. The implementation varies two independent things — the reasoning effort passed to the model, and the harness wrapped around it (rerank, sub-queries, verification) — and those do not compose into a single ordered scale.</p></div>
+    <figure class="tsfig fig-modes">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 232" role="img" aria-labelledby="figcap-modes">
+<text class="f-key" x="16" y="18">AS DRAWN &#183; A FOUR-RUNG LADDER</text>
+<rect class="f-panel" x="16" y="26" width="300" height="86" rx="8" />
+<rect class="f-box" x="32" y="88" width="60" height="16" rx="2" /><text class="f-key" x="62" y="100" text-anchor="middle">chat</text>
+<rect class="f-box" x="98" y="74" width="60" height="30" rx="2" /><text class="f-key" x="128" y="94" text-anchor="middle">think</text>
+<rect class="f-box" x="164" y="60" width="60" height="44" rx="2" /><text class="f-key" x="194" y="86" text-anchor="middle">research</text>
+<rect class="f-box" x="230" y="44" width="66" height="60" rx="2" /><text class="f-key" x="263" y="78" text-anchor="middle">max</text>
+<text class="f-key" x="16" y="130">EACH RUNG STRICTLY ABOVE THE LAST</text>
+
+<text class="f-key" x="348" y="18">AS MEASURED AT FULL-500</text>
+<rect class="f-panel" x="348" y="26" width="316" height="86" rx="8" />
+<rect class="f-hot md-r" x="364" y="60" width="66" height="44" rx="2" /><text class="f-key" x="397" y="86" text-anchor="middle">rrf</text>
+<rect class="f-hot md-r" x="436" y="60" width="66" height="44" rx="2" /><text class="f-key" x="469" y="86" text-anchor="middle">research</text>
+<rect class="f-box" x="508" y="70" width="66" height="34" rx="2" /><text class="f-key" x="541" y="92" text-anchor="middle">chat</text>
+<rect class="f-box" x="580" y="74" width="66" height="30" rx="2" /><text class="f-key" x="613" y="94" text-anchor="middle">think</text>
+<line class="f-wire-d md-gap" x1="364" y1="52" x2="646" y2="52" />
+<text class="f-key md-gap" x="505" y="46" text-anchor="middle">max &#183; NOT MEASURED AT THIS SIZE</text>
+<text class="f-key" x="348" y="130">THREE BEHAVIOURS, NOT FOUR RUNGS</text>
+
+<rect class="f-panel" x="16" y="146" width="648" height="66" rx="8" />
+<text class="f-key" x="32" y="166">WHAT THE MODES ACTUALLY VARY</text>
+<rect class="f-box" x="32" y="176" width="180" height="22" rx="3" />
+<text class="f-key" x="122" y="191" text-anchor="middle">REASONING EFFORT</text>
+<text class="f-mono" x="222" y="191">&#215;</text>
+<rect class="f-box" x="240" y="176" width="180" height="22" rx="3" />
+<text class="f-key" x="330" y="191" text-anchor="middle">HARNESS AROUND IT</text>
+<text class="f-key" x="436" y="191">&#8212; not a single &#8220;depth&#8221; dial</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-modes">The four thinking modes are drawn as a ladder in which each rung strictly contains the one below. At the only sample size with bound artifacts — the full 500 questions — that is not what the measurements show: <code>research</code> ties plain RRF, both sit above <code>chat</code>, <code>think</code> sits below <code>chat</code>, and <code>max</code> has no full-500 measurement at all. Three measured behaviours, not four rungs. What the modes actually vary is a pair — reasoning effort and the harness wrapped around it — rather than one depth dial, which is why more of one does not automatically mean better retrieval.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Measured at full scale the ladder does not hold: &lt;code&gt;research&lt;/code&gt; ties plain RRF, both beat &lt;code&gt;chat&lt;/code&gt;, and &lt;code&gt;think&lt;/code&gt; scored &lt;em&gt;below&lt;/em&gt; &lt;code&gt;chat&lt;/code&gt; while it still carried the reranker. &lt;code&gt;max&lt;/code&gt; has no full-500 measurement at all. The four-rung figure was retired on 2026-07-27 as a retracted claim; three measured behaviours is the honest count.</p></div>
+    <h2 id="writegate"><span class="scene-num">Governed write gate + earned autonomy</span>Governed write gate + earned autonomy<span class="chip chip-on">on by default</span></h2>
+    <p class="tag">Classify every incoming write as allow, quarantine or block, with a trust level that moves on outcomes.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>A memory an agent can write to is a memory anything reaching that agent’s input can write to. Memory-injection attacks exploit exactly this, and a poisoned memory is worse than a poisoned retrieval because it persists and is retrieved again.</p></div>
+    <figure class="tsfig fig-writegate">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 206" role="img" aria-labelledby="figcap-writegate">
+<text class="f-key" x="16" y="18">INCOMING WRITE</text>
+<rect class="f-box" x="16" y="70" width="96" height="34" rx="5" />
+<text class="f-key" x="64" y="91" text-anchor="middle">CANDIDATE</text>
+<path class="f-live f-draw wg-in" pathLength="100" d="M116 87 L166 87" />
+<rect class="f-hot wg-gate" x="172" y="58" width="120" height="58" rx="6" />
+<text class="f-key" x="232" y="82" text-anchor="middle">GOVERNED</text>
+<text class="f-key" x="232" y="98" text-anchor="middle">WRITE GATE</text>
+<path class="f-live f-draw wg-a" pathLength="100" d="M296 72 L350 44" />
+<path class="f-live f-draw wg-b" pathLength="100" d="M296 87 L350 87" />
+<path class="f-live f-draw wg-c" pathLength="100" d="M296 102 L350 130" />
+<rect class="f-box" x="356" y="30" width="150" height="28" rx="4" />
+<text class="f-key" x="431" y="48" text-anchor="middle">ALLOW &#8594; STORED</text>
+<rect class="f-box" x="356" y="73" width="150" height="28" rx="4" />
+<text class="f-key" x="431" y="91" text-anchor="middle">QUARANTINE &#8594; HELD</text>
+<rect class="f-box" x="356" y="116" width="150" height="28" rx="4" />
+<text class="f-key" x="431" y="134" text-anchor="middle">BLOCK &#8594; REFUSED</text>
+<rect class="f-panel" x="524" y="30" width="140" height="114" rx="8" />
+<text class="f-key" x="540" y="50">EARNED AUTONOMY</text>
+<text class="f-key" x="540" y="72">trust rises with</text>
+<text class="f-key" x="540" y="86">successful writes,</text>
+<text class="f-key" x="540" y="100">falls with failures</text>
+<text class="f-key wg-note" x="540" y="126">ONE BAD ARG CAN</text>
+<text class="f-key wg-note" x="540" y="138">CLOSE THE GATE</text>
+<text x="16" y="192">a memory an agent can write to is a memory an attacker can write to &#8212; the gate is the trust boundary</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-writegate">An agent that can write to its own memory can also be made to write to it by anything that reaches its input, which is the mechanism behind memory-injection attacks. A governed write gate classifies every candidate write as allow, quarantine or block, and ties the threshold to earned autonomy — trust that rises with successful writes and falls with failures. The cost is real and was measured here: a single malformed call debits trust, and a category can drop below its threshold and refuse subsequent writes, so the gate that protects the store can also silence the learning it exists to protect.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The gate is a trust boundary, and trust boundaries have false positives. Measured on this system: a single malformed call debits the trust score, a category can fall below its threshold, and subsequent legitimate writes are then refused — the mechanism protecting the store can silence the learning it exists to protect. A bootstrap defect of exactly this shape blocked every write on a fresh store until it was fixed.</p></div>
+    <h2 id="verifyrank"><span class="scene-num">Verify-and-rank</span>Verify-and-rank &mdash; claim-level, weakest-link<span class="chip chip-off">wired &middot; default off</span></h2>
+    <p class="tag">Decompose the top candidate into claims, check each, and score it by its least-supported one.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Reranking every candidate is expensive and measured negative here. The alternative is to spend the model call only where it can change the outcome, and to check something more specific than “is this relevant” — a passage can be topically perfect and still not support the claim being made.</p></div>
+    <figure class="tsfig fig-verifyrank">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 212" role="img" aria-labelledby="figcap-verifyrank">
+<text class="f-key" x="16" y="18">RANKED CANDIDATES</text>
+<rect class="f-panel" x="16" y="26" width="240" height="150" rx="8" />
+<rect class="f-box" x="32" y="42" width="208" height="20" rx="3" /><text class="f-mono" x="40" y="57">1</text>
+<rect class="f-box" x="32" y="68" width="208" height="20" rx="3" /><text class="f-mono" x="40" y="83">2</text>
+<rect class="f-box" x="32" y="94" width="208" height="20" rx="3" /><text class="f-mono" x="40" y="109">3</text>
+<rect class="f-box" x="32" y="120" width="208" height="20" rx="3" /><text class="f-mono" x="40" y="135">4</text>
+<rect class="f-box" x="32" y="146" width="208" height="20" rx="3" /><text class="f-mono" x="40" y="161">5</text>
+<text class="f-key" x="288" y="18">CLAIM-LEVEL VERIFICATION</text>
+<rect class="f-panel" x="288" y="26" width="376" height="150" rx="8" />
+<text class="f-key" x="304" y="46">FOR THE TOP CANDIDATE ONLY</text>
+<rect class="f-hot vr-c1" x="304" y="56" width="164" height="18" rx="3" />
+<text class="f-key" x="312" y="69">CLAIM 1 &#183; SUPPORTED</text>
+<rect class="f-hot vr-c2" x="304" y="80" width="164" height="18" rx="3" />
+<text class="f-key" x="312" y="93">CLAIM 2 &#183; SUPPORTED</text>
+<rect class="f-box vr-c3" x="304" y="104" width="164" height="18" rx="3" />
+<text class="f-key" x="312" y="117">CLAIM 3 &#183; NOT SUPPORTED</text>
+<path class="f-live f-draw vr-w" pathLength="100" d="M474 113 L520 113" />
+<rect class="f-box" x="526" y="96" width="124" height="34" rx="4" />
+<text class="f-key" x="588" y="112" text-anchor="middle">WEAKEST LINK</text>
+<text class="f-key" x="588" y="126" text-anchor="middle">SETS THE SCORE</text>
+<text class="f-key" x="304" y="148">CONFIDENCE GATE &#8594; DEFAULT TO THE INCUMBENT</text>
+<text class="f-key" x="304" y="166">A VERIFIER THAT IS UNSURE CHANGES NOTHING</text>
+<text x="16" y="200">the expensive check runs on the few candidates whose order it could actually change</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-verifyrank">Reranking every candidate with a model is expensive and, measured here, can be worse than not doing it. Verify-and-rank inverts the shape: instead of rescoring everything, it decomposes the top candidate into individual claims, checks each against the evidence, and takes the weakest link as the score — a passage is only as supported as its least-supported claim. A confidence gate means a verifier that is unsure defaults to the incumbent ordering rather than reshuffling it, so the technique can decline to act. It is the most accurate configuration measured on the 50-question slice, and the slowest by a wide margin.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>It is the slowest configuration measured by a wide margin — it issues many local-model generations per search, where chat and think issue none. Its accuracy advantage is recorded only on a 50-question slice that is 100 % single-session-user, which is favourable ground; at full scale it has never been measured. A confidence gate lets it decline to reorder, which is what keeps it from repeating the reranker’s failure.</p></div>
+
+    <p class="stage-head">Measured</p>
+    <h2><span class="scene-num">Benched</span>What this system has actually measured</h2>
+    <p>Everything above is a mechanism. This section is the evidence: which configurations were run against a benchmark, what they scored, and which of those numbers are <em>bound</em> — recorded in <code>docs/published-numbers.json</code> against the artifact they came from, and re-verified by <code>npm&nbsp;run&nbsp;docs:check-numbers</code> so a later measurement change breaks a check instead of silently leaving a page wrong.</p>
+    <p>An unbound number is not a wrong number. It means the artifact exists but nothing re-reads it, so it can drift out of agreement with the page without anything noticing. The distinction is drawn here rather than hidden because this project has retracted published figures before.</p>
 
     <table class="tbl">
-      <thead><tr><th>Technique</th><th>Fixes</th><th>Spends</th></tr></thead>
+      <thead><tr><th>Configuration</th><th>Set</th><th>NDCG@10</th><th>MRR</th><th>Bound?</th></tr></thead>
       <tbody>
-        <tr><td>BM25</td><td>naive term counting</td><td>nothing &mdash; but only matches shared words</td></tr>
-        <tr><td>Dense / DPR</td><td>the vocabulary gap</td><td>exact identifiers, and supervised training pairs</td></tr>
-        <tr><td>Matryoshka</td><td>one fixed embedding width</td><td>a little accuracy at short prefixes</td></tr>
-        <tr><td>HNSW</td><td>O(n) exact scan</td><td>memory, and certainty</td></tr>
-        <tr><td>Shard router</td><td>probing every shard</td><td>recall in unselected shards</td></tr>
-        <tr><td>IVF-PQ</td><td>RAM-resident full vectors</td><td>accuracy twice &mdash; cells missed, codes lossy</td></tr>
-        <tr><td>DiskANN</td><td>the corpus outgrowing RAM</td><td>random SSD reads per hop</td></tr>
-        <tr><td>RaBitQ</td><td>quantization you cannot trust</td><td>a float per vector; weak in low dimension</td></tr>
-        <tr><td>TurboVec</td><td>storage footprint</td><td>nothing on candidates &mdash; it still scans all of them</td></tr>
-        <tr><td>Typed-edge traversal</td><td>similarity is not structure</td><td>extraction, schema and upkeep</td></tr>
-        <tr><td>GraphRAG</td><td>corpus-wide questions</td><td>a large one-off index-time model spend</td></tr>
-        <tr><td>RAG</td><td>frozen weights</td><td>context budget; the model is conditioned, not taught</td></tr>
-        <tr><td>HyDE</td><td>question and answer look different</td><td>a generation before every search</td></tr>
-        <tr><td>RRF</td><td>incomparable score scales</td><td>the scores&rsquo; magnitude information</td></tr>
-        <tr><td>MMR</td><td>near-duplicate result sets</td><td>a &lambda; nobody can derive</td></tr>
-        <tr><td>Self-RAG</td><td>retrieving when it does not help</td><td>training, and a critic that is the same model</td></tr>
-        <tr><td>CRAG</td><td>confidently wrong retrieval</td><td>an extra evaluator, and a web fallback</td></tr>
-        <tr><td>MemGPT paging</td><td>the context wall</td><td>paging mistakes become the model&rsquo;s mistakes</td></tr>
-        <tr><td>Bi-temporal graph</td><td>overwriting destroys history</td><td>storage that only grows, and two clocks to keep straight</td></tr>
-        <tr><td>Sleep-time compute</td><td>consolidation on the request path</td><td>reads that can land mid-reorganisation</td></tr>
-        <tr><td>Write-time resolution</td><td>arbitrating conflicts on every read</td><td>slower, ordered writes with less context</td></tr>
-        <tr><td>ColBERT</td><td>detail lost to pooling</td><td>storage and compute that scale with tokens</td></tr>
-        <tr><td>ColPali</td><td>OCR discarding layout</td><td>many vectors per page, and a vision model at query time</td></tr>
-        <tr><td>Multi-vector reduction</td><td>MaxSim not being indexable</td><td>an approximation, reranked exactly</td></tr>
-        <tr><td>MUVERA</td><td>the same</td><td>dimensionality &mdash; the sketch can exceed what it replaced</td></tr>
-        <tr><td>Memory-R1</td><td>hand-tuned write heuristics</td><td>an offline training loop</td></tr>
-        <tr><td>HippoRAG-2</td><td>a chain of calls per hop</td><td>graph construction; cannot un-take a hop</td></tr>
-        <tr><td>RobustRAG</td><td>one passage steering the answer</td><td>one generation per passage</td></tr>
-        <tr><td>CaMeL</td><td>instructions and data sharing a channel</td><td>a second privileged model, and flexibility</td></tr>
+        <tr><td><strong>rrf</strong> — hybrid + RRF</td><td>full 500</td><td>95.04</td><td><strong>95.76</strong></td><td>bound</td></tr>
+        <tr><td>research</td><td>full 500</td><td>95.04</td><td><strong>95.76</strong></td><td>bound</td></tr>
+        <tr><td>chat</td><td>full 500</td><td>93.78</td><td>94.36</td><td>bound</td></tr>
+        <tr><td>think <em>(while it still carried the reranker)</em></td><td>full 500</td><td>93.26</td><td>94.36</td><td>bound</td></tr>
+        <tr><td><strong>max</strong></td><td>full 500</td><td colspan="2"><strong>never measured</strong> — one attempt stopped at 227/500 and is named STALE; another output directory is empty</td><td>&mdash;</td></tr>
+        <tr><td>max</td><td>50q slice</td><td>98.5</td><td>98.0</td><td>unbound</td></tr>
+        <tr><td>research</td><td>50q slice</td><td>95.7</td><td>94.4</td><td>unbound</td></tr>
+        <tr><td>chat / think <em>(post rung-fix, identical)</em></td><td>50q slice</td><td>93.5</td><td>91.4</td><td>unbound</td></tr>
       </tbody>
     </table>
 
-    <h2><span class="scene-num">Note</span>Two places this page and its parent must agree</h2>
-    <p>The parent article&rsquo;s Stage&nbsp;12 coverage row lists &ldquo;per-shard usearch HNSW, IVF-PQ, TurboVec, and a shard router&rdquo; in one breath. Read against the source: two of those four are on the default path, one is default-off, and one has no callers at all. That row and the chips on this page need to say the same thing, and this page is the more specific of the two because it was written from the code.</p>
-    <p>Second, the seeded <code>ann.hnsw.expansion_search</code> and <code>expansion_add</code> configuration rows are documented as tuning the live index and do not: every production call site passes the hard-coded defaults. Behaviour is unaffected, because the seeded values happen to equal those defaults &mdash; but a reader who changed the seed row expecting an effect would get none, and that is worth fixing at the source rather than describing here.</p>
-    <p class="small">Techniques are presented in the order the parent article introduces them; stage numbers refer to its twelve-stage chain. Citations for every technique live in that article&rsquo;s reference list rather than being duplicated here, so there is one copy to keep correct.</p>
+    <h3>The negative results, which are the useful half</h3>
+    <p>Four techniques were implemented, measured, and found to cost accuracy. They are recorded here because a page that lists only what worked is not evidence of anything.</p>
+    <table class="tbl">
+      <thead><tr><th>Technique</th><th>Measured against</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr><td>MMR diversity re-rank</td><td>think, 50q</td><td><strong>&minus;3.4 NDCG</strong> — and before this run it was dark code nothing called</td></tr>
+        <tr><td>Listwise judge rerank</td><td>think, 50q</td><td><strong>&minus;7.6 NDCG</strong>; with a confidence gate, still <strong>&minus;5.4</strong></td></tr>
+        <tr><td>Graded-EV judge</td><td>max, 50q</td><td>the <strong>worst</strong> max arm measured</td></tr>
+        <tr><td>Cascade / cross-round edge walk</td><td>100 adversarial queries</td><td><strong>0.00 pp</strong> — and the edge table was <em>empty</em>, so the run measured nothing at all</td></tr>
+        <tr><td>LLM-judge rerank on <code>think</code></td><td>full 500</td><td>below plain chat; <strong>retired 2026-08-02</strong></td></tr>
+      </tbody>
+    </table>
+
+    <h2><span class="scene-num">Best</span>The best combination for a top-1 outcome</h2>
+
+    <div class="disclosure-card">
+      <strong>First, the honest constraint: no true top-1 metric was ever measured.</strong> The harness emits exactly five retrieval keys — <code>recall_any_at_5</code>, <code>recall_any_at_10</code>, <code>recall_any_at_20</code>, <code>ndcg_at_10</code> and <code>mrr</code>. There is no <code>recall@1</code> and no <code>precision@1</code> at any sample size. <strong>MRR is the closest available proxy</strong> and it is rank-1-<em>sensitive</em>, not a top-1 measurement: on the 324 of 500 questions that have several gold passages it scores where the <em>first</em> gold landed, not whether rank 1 was correct. Everything below reads MRR as that proxy and should be read as such.
+    </div>
+
+    <p><strong>At full scale — the only size with bound artifacts — the answer is plain hybrid retrieval with RRF fusion.</strong> It records the best MRR measured on this system, and <code>research</code> ties it to four decimals while taking roughly 7.5&times; the latency and returning 499 of 500 identical orderings. <code>chat</code> and <code>think</code> trail it. Every rung layered above hybrid+RRF either matched it or cost accuracy.</p>
+
+    <p>So the recommended configuration for rank-1 retrieval is the <em>simplest</em> one measured:</p>
+    <div class="legend">
+      <strong>sparse (FTS5/BM25) + dense embeddings &rarr; RRF fusion at k=60</strong>
+      <span class="sep-dot">&middot;</span> no reranker
+      <span class="sep-dot">&middot;</span> no MMR
+      <span class="sep-dot">&middot;</span> no listwise judge
+    </div>
+
+    <p>That is an uncomfortable recommendation for a project that built the other rungs, which is why it is worth stating plainly rather than burying. The techniques above it are not useless — they are unproven <em>on this metric, on this corpus, at this scale</em>.</p>
+
+    <h3>Five things that would make that claim wrong</h3>
+    <ol>
+      <li><strong>The ladder is not a ladder at full scale.</strong> The four drawn modes are three measured behaviours: research ties rrf, both beat chat, think scored below chat. The increasing-four-rungs figure was retired on 2026-07-27 as a retracted claim.</li>
+      <li><strong><code>max</code> is unmeasured at full scale.</strong> Every max number on this page is n&nbsp;&le;&nbsp;50. Combining “max is best” with any 500-question framing asserts something no artifact supports — and max <em>is</em> the best arm on the slice, so this is the gap most likely to be filled in the flattering direction.</li>
+      <li><strong>The 50-question slice is 100 % single-session-user.</strong> LongMemEval’s hard categories — multi-session, temporal reasoning, knowledge update — do not appear in it at all. It is favourable ground, and 50q and 500q results never share a series in either direction.</li>
+      <li><strong>The noise band at n=50 is about &plusmn;1.3 points</strong> on NDCG and MRR, derived from two identical-configuration repeats. Several apparent “best” arms differ by less than that, and an R@5 step from 98 % to 100 % on 50 questions is exactly one question.</li>
+      <li><strong>MRR is not top-1.</strong> Restated because it is the load-bearing caveat: a system could improve MRR while getting rank 1 wrong more often, and nothing measured here would detect it.</li>
+    </ol>
+
+    <p class="small">What would settle it: emit <code>recall@1</code> from the harness, and run <code>max</code> to completion at 500 questions. Until both exist, “best for top-1” is an inference from a proxy, and this page says so rather than rounding it up.</p>
+
+    <p class="stage-head">Coverage</p>
+    <h2><span class="scene-num">Note</span>What this page covers, and what it deliberately does not</h2>
+    <p>A full-text audit of the parent article found <strong>111 distinct named techniques</strong>. This page gives <strong>38</strong> of them their own mechanism and animation — chosen as those with real weight in the article, plus every technique this system implements or measured. The remainder are largely one-mention items (entity disambiguation, web-search fallback, knowledge refinement, semantic entropy, FSRS reconsolidation), stated boundaries rather than built things (per-token embedder, offline RL loop, second privileged planner), or named products and benchmarks rather than methods.</p>
+    <p>Two entries in the parent that this page corrects rather than repeats: the Stage&nbsp;12 coverage row lists TurboVec among shipped indexes when it has no callers, and the seeded HNSW <code>expansion_*</code> configuration rows are documented as tuning the live index but are never read — every production call site passes the compiled defaults.</p>
   </article>
 </div>
 
