@@ -1,0 +1,59 @@
+name: Deploy docs to Pages
+
+# WHY THIS EXISTS. This site was published by the LEGACY Jekyll builder until
+# 2026-08-06, when its builds stopped running entirely: duration=0ms, failing
+# four seconds in, with the only diagnostic being the string "Page build
+# failed." The successful builds before it had been slowing steadily as the
+# docs grew (54s -> 266s -> 386s), and then the builder simply refused the
+# site. The mirror kept publishing correct content for three hours while
+# terranimus.github.io served a build from 10:44.
+#
+# Two things this fixes:
+#   1. It does not run Jekyll at all. These pages are hand-authored static
+#      HTML with no front-matter, no Liquid and no _layouts, so there was
+#      never anything for Jekyll to do except fail.
+#   2. It produces LOGS. The legacy builder's single generic error string is
+#      why a three-hour outage looked like a caching problem.
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never cancel a deploy in flight: a half-published site is worse than a
+# slightly stale one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Report what is about to be published
+        run: |
+          echo "files under docs/: $(find docs -type f | wc -l)"
+          echo "total size:        $(du -sh docs | cut -f1)"
+          echo "largest files:"
+          find docs -type f -printf '%s %p\n' | sort -rn | head -5 \
+            | awk '{printf "  %8.1f KB  %s\n", $1/1024, $2}'
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
