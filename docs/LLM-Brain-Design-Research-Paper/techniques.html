@@ -1,0 +1,1436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Retrieval and Memory Techniques - Twenty-Nine Mechanisms, Animated</title>
+<meta name="description" content="A drill-down companion to 'The Evolution of Memory for AI Systems'. Every retrieval and memory technique the article cites - BM25, dense retrieval, Matryoshka, HNSW, IVF-PQ, DiskANN, RaBitQ, TurboVec, knowledge-graph traversal, GraphRAG, RAG, HyDE, RRF, MMR, Self-RAG, CRAG, MemGPT paging, bi-temporal graphs, sleep-time compute, ColBERT, ColPali, MUVERA, Memory-R1, HippoRAG-2, RobustRAG and CaMeL - explained mechanically, each with an animated diagram of how it works and an honest statement of what it costs." />
+<style>
+
+  :root{
+    --bg: oklch(0.985 0.008 80);
+    --bg-card: oklch(0.97 0.01 80);
+    --bg-deep: oklch(0.93 0.012 75);
+    --ink: oklch(0.22 0.015 60);
+    --ink-soft: oklch(0.42 0.012 65);
+    --ink-faint: oklch(0.62 0.01 70);
+    --rule: oklch(0.88 0.012 75);
+    --accent: oklch(0.62 0.14 45);
+    --accent-soft: oklch(0.92 0.04 55);
+    --accent-ink: oklch(0.38 0.10 45);
+    --sans: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --serif: Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --maxw: 1280px;
+    --col: 720px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:400;line-height:1.55;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--accent-soft);color:var(--accent-ink)}
+  a{color:var(--accent-ink);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;text-decoration-color:color-mix(in oklch, var(--accent-ink) 35%, transparent)}
+  a:hover{text-decoration-color:var(--accent-ink)}
+  .topbar{position:sticky;top:0;z-index:50;background:color-mix(in oklch, var(--bg) 88%, transparent);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--rule)}
+  .topbar-in{max-width:var(--maxw);margin:0 auto;padding:12px 32px;display:flex;align-items:center;gap:20px;font-size:13px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:600;font-size:17px;letter-spacing:-0.01em}
+  .brand-mark{width:18px;height:18px;border-radius:50%;background:var(--accent);position:relative}
+  .brand-mark::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg)}
+  .crumbs{color:var(--ink-faint);display:flex;gap:10px;align-items:center}
+  .crumbs span{color:var(--ink-soft)}
+  .crumbs em{font-style:normal;color:var(--ink)}
+  .topbar .spacer{flex:1}
+  .topbar a.lnk{color:var(--ink-soft);text-decoration:none}
+  .topbar a.lnk:hover{color:var(--ink)}
+  .topbar .meta{color:var(--ink-faint);font-family:var(--mono);font-size:11px;letter-spacing:0.05em;text-transform:uppercase}
+  @media (max-width:780px){.crumbs,.topbar .meta{display:none}.topbar-in{gap:12px;padding:10px 18px;flex-wrap:wrap}.topbar a.lnk{display:inline-flex;align-items:center;min-height:44px;padding:6px 0}}
+  .page{max-width:var(--maxw);margin:0 auto;padding:0 32px;display:grid;grid-template-columns:1fr;gap:48px}
+  article{padding:64px 0 96px;max-width:var(--col);margin:0 auto}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:24px}
+  .eyebrow .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);vertical-align:middle;margin:0 10px 2px 0}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(34px, 4.4vw, 48px);line-height:1.08;letter-spacing:-0.02em;margin:0 0 24px;color:var(--ink);text-wrap:balance}
+  h1 em{font-style:italic;color:var(--accent-ink);font-weight:500}
+  .deck{font-family:var(--serif);font-size:22px;line-height:1.45;color:var(--ink-soft);font-weight:400;font-style:italic;margin:0 0 40px;text-wrap:pretty}
+  .byline{display:flex;gap:16px;align-items:center;padding:16px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font-size:13px;color:var(--ink-soft);margin-bottom:48px;flex-wrap:wrap}
+  .byline .who{display:flex;gap:10px;align-items:center}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;font-family:var(--serif);font-weight:600;color:var(--accent-ink);font-size:13px}
+  .byline strong{color:var(--ink);font-weight:500}
+  .byline .sep{color:var(--ink-faint)}
+  article h2{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.18;letter-spacing:-0.01em;margin:60px 0 6px;color:var(--ink);text-wrap:balance}
+  article h2 .scene-num{display:block;font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-ink);font-weight:500;margin-bottom:10px}
+  article h3{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.3;margin:36px 0 8px;color:var(--ink)}
+  article p{font-size:18px;line-height:1.65;margin:0 0 20px;color:var(--ink);text-wrap:pretty}
+  article ul, article ol{font-size:18px;line-height:1.65;padding-left:24px;margin:0 0 24px}
+  article ul li, article ol li{margin-bottom:10px}
+  article code, article kbd{font-family:var(--mono);font-size:0.86em;background:var(--bg-deep);padding:1px 6px;border-radius:3px;color:var(--accent-ink);overflow-wrap:anywhere}
+  .small{font-size:14px;color:var(--ink-soft)}
+  ol.refs{font-size:14px;line-height:1.5;color:var(--ink-soft)}
+  ol.refs li{margin-bottom:7px}
+  ol.refs cite{font-style:italic;color:var(--ink)}
+  .refgroup{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent-ink);margin:28px 0 6px}
+  /* Stage blocks: the four-part shape every stage is written in. */
+  .sblock{margin:0 0 18px}
+  .sblock .slabel{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:4px}
+  .sblock p{margin:0;font-size:17px}
+  .sblock.next{border-left:3px solid var(--accent-soft);padding-left:16px}
+  table.compare{width:100%;border-collapse:collapse;font-size:14.5px;margin:16px 0 24px}
+  table.compare th, table.compare td{padding:12px 14px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+  table.compare th{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:500}
+  table.compare td{color:var(--ink)}
+  table.compare td:first-child{white-space:nowrap;font-weight:500}
+  table.compare tr:last-child td{border-bottom:0}
+  .tablewrap{overflow-x:auto}
+  .disclosure-card{background:oklch(0.96 0.015 55);border:1px solid oklch(0.85 0.03 50);border-radius:8px;padding:16px 20px;margin:0 0 40px;font-size:14px;color:var(--ink-soft);line-height:1.55}
+  .disclosure-card strong{color:var(--ink);font-weight:600}
+  footer.page-foot{border-top:1px solid var(--rule);padding:48px 32px;max-width:var(--maxw);margin:48px auto 0;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;font-size:13px;color:var(--ink-soft)}
+  footer.page-foot .links{display:flex;gap:20px;flex-wrap:wrap}
+  footer.page-foot a{color:var(--ink)}
+  .endmark{display:flex;align-items:center;gap:14px;color:var(--ink-faint);font-family:var(--mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;margin:40px 0 0}
+  .endmark::before,.endmark::after{content:"";flex:1;height:1px;background:var(--rule)}
+  @media (max-width:640px){
+    .page{grid-template-columns:minmax(0,1fr);padding:0 18px}
+    article{min-width:0;max-width:100%}
+    table.compare td:first-child{white-space:normal}
+    footer.page-foot{grid-template-columns:1fr}
+  }
+
+  /* ------------------------------------------------------------------ *
+   * FIGURES — inline animated SVG, driven by CSS keyframes only.
+   *
+   * NO <script> AND NO SMIL (<animate>, <animateTransform>). SMIL cannot be
+   * switched off by a media query, so one SMIL element would break the
+   * reduced-motion guarantee for the whole set. Nothing is fetched either:
+   * every figure renders identically from a file:// URL with no network.
+   *
+   * REDUCED MOTION IS THE FINAL FRAME, NOT A DEGRADED ONE. Each figure is
+   * authored so that its UNANIMATED rendering is the last and most
+   * informative state; the keyframes only travel toward that state and then
+   * hold there for the rest of the cycle. A reader with motion disabled sees
+   * the finished mechanism — never a blank frame, and never a first frame
+   * that shows only the problem.
+   *
+   * ONE COPY OF EVERY WORD. Every figure carries a visible <figcaption> and
+   * its <svg> is role="img" aria-labelledby="<that caption's id>". No <desc>,
+   * no aria-label prose, no alt text restating the caption: sighted and
+   * screen-reader readers get the identical string, and there is exactly one
+   * string to keep true. The corrections trail below records what the other
+   * arrangement cost when a figure description drifted out of sync.
+   *
+   * COLOUR comes only from the tokens declared at the top of this sheet, so
+   * no figure can vanish against a theme it was not written for.
+   * ------------------------------------------------------------------ */
+  figure.tsfig{margin:30px 0 34px}
+  .tsfig-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;border:1px solid var(--rule);border-radius:8px;background:var(--bg-card)}
+  .tsfig svg{display:block;width:100%;min-width:520px;height:auto}
+  figure.tsfig figcaption{font-size:14.5px;line-height:1.55;color:var(--ink-soft);margin:10px 2px 0}
+  .tsfig .f-panel{fill:var(--bg-deep);stroke:var(--rule);stroke-width:1}
+  .tsfig .f-box{fill:var(--bg);stroke:var(--rule);stroke-width:1}
+  .tsfig .f-hot{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+  .tsfig .f-wire{fill:none;stroke:var(--ink-faint);stroke-width:1.4}
+  .tsfig .f-wire-d{fill:none;stroke:var(--ink-faint);stroke-width:1.4;stroke-dasharray:4 4}
+  .tsfig .f-live{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round}
+  .tsfig .f-node{fill:var(--bg);stroke:var(--ink-faint);stroke-width:1.3}
+  .tsfig .f-node-on{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.8}
+  .tsfig .f-dot{fill:var(--ink-faint)}
+  .tsfig .f-dot-on{fill:var(--accent)}
+  .tsfig .f-arrow{fill:var(--ink-faint);stroke:none}
+  /* pathLength="100" normalises every stroke, so one dash rule draws any path. */
+  .tsfig .f-draw{stroke-dasharray:100;stroke-dashoffset:0}
+  .tsfig text{font-family:var(--sans);font-size:12px;fill:var(--ink-soft)}
+  .tsfig .f-key{font-family:var(--mono);font-size:9px;letter-spacing:0.14em;fill:var(--ink-faint)}
+  .tsfig .f-edge{font-family:var(--mono);font-size:9px;letter-spacing:0.03em;fill:var(--ink-faint)}
+  .tsfig .f-strong{fill:var(--ink);font-weight:600}
+  .tsfig .f-mono{font-family:var(--mono);font-size:11px;fill:var(--accent-ink)}
+
+  /* Figure 1 — vocabulary mismatch, and the space that closes it. */
+  .fig-vocab .v-reach{animation:fv-reach 13s ease-in-out infinite}
+  .fig-vocab .v-stop{animation:fv-stop 13s ease-in-out infinite}
+  .fig-vocab .v-a{animation:fv-a 13s ease-in-out infinite}
+  .fig-vocab .v-b{animation:fv-b 13s ease-in-out infinite}
+  .fig-vocab .v-link{animation:fv-link 13s ease-in-out infinite}
+  @keyframes fv-reach{0%,6%{stroke-dashoffset:100}24%,100%{stroke-dashoffset:0}}
+  @keyframes fv-stop{0%,26%{opacity:0}34%,100%{opacity:1}}
+  @keyframes fv-a{0%,40%{transform:translate(-74px,0);opacity:.3}62%,100%{transform:translate(0,0);opacity:1}}
+  @keyframes fv-b{0%,40%{transform:translate(74px,0);opacity:.3}62%,100%{transform:translate(0,0);opacity:1}}
+  @keyframes fv-link{0%,64%{opacity:0}76%,100%{opacity:1}}
+
+  
+  /* ---- page-local additions ------------------------------------------- */
+  .chip{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;
+        text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--rule);
+        vertical-align:middle;margin-left:6px;white-space:nowrap}
+  .chip-on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+  .chip-off{background:var(--bg-deep);color:var(--ink-soft)}
+  .chip-none{background:transparent;border-style:dashed;color:var(--ink-faint)}
+  .legend{font-size:13.5px;line-height:2.1;color:var(--ink-soft);background:var(--bg-card);
+          border:1px solid var(--rule);border-radius:8px;padding:12px 16px;margin:18px 0}
+  .legend .sep-dot{margin:0 8px;color:var(--ink-faint)}
+  p.tag{font-size:15px;color:var(--ink-soft);font-style:italic;margin:-4px 0 14px}
+  .sblock.ts{border-left-color:var(--accent)}
+  .stage-head{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+              color:var(--ink-faint);border-top:1px solid var(--rule);padding-top:18px;margin-top:44px}
+  table.tbl{width:100%;border-collapse:collapse;margin:22px 0;font-size:14px}
+  table.tbl th,table.tbl td{border-bottom:1px solid var(--rule);padding:9px 10px;text-align:left;vertical-align:top}
+  table.tbl th{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint)}
+
+  /* Four keyframes drive every figure on this page. Each one TRAVELS TOWARD the
+     element's declared base state and then holds, so the unanimated rendering
+     (prefers-reduced-motion, or a printout) is the finished mechanism. */
+  @keyframes fx-draw{0%{stroke-dashoffset:100}22%,100%{stroke-dashoffset:0}}
+  @keyframes fx-lit{0%{opacity:.14}22%,100%{opacity:1}}
+  @keyframes fx-dim{0%{opacity:1}22%,100%{opacity:.26}}
+  @keyframes fx-grow{0%{transform:scaleX(.05);transform-origin:left center}26%,100%{transform:scaleX(1);transform-origin:left center}}
+  @keyframes fx-ring{0%{opacity:0;transform:scale(.35)}30%,100%{opacity:1;transform:scale(1)}}
+  @keyframes fx-spin{0%{opacity:.2;transform:rotate(-24deg)}30%,100%{opacity:1;transform:rotate(0)}}
+
+.fig-bm25 .k-hit{animation:fx-lit 14s ease-in-out 0.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-bm25 .k-dead{animation:fx-dim 14s ease-in-out 1.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-bm25 .k-curve{animation:fx-draw 14s ease-in-out 2.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-bm25 .k-p1{animation:fx-lit 14s ease-in-out 3.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-bm25 .k-p2{animation:fx-lit 14s ease-in-out 3.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-bm25 .k-p3{animation:fx-lit 14s ease-in-out 4.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-bm25 .k-bar1{animation:fx-grow 14s ease-in-out 5.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-bm25 .k-bar2{animation:fx-grow 14s ease-in-out 5.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-dpr .d-tower{animation:fx-dim 14s ease-in-out 3.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-dpr .d-pos{animation:fx-lit 14s ease-in-out 1.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-dpr .d-pull{animation:fx-draw 14s ease-in-out 2.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-dpr .d-ring{animation:fx-ring 14s ease-in-out 4.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-mrl .m-p256{animation:fx-lit 14s ease-in-out 0.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-mrl .m-p128{animation:fx-lit 14s ease-in-out 1.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-mrl .m-p64{animation:fx-lit 14s ease-in-out 1.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-mrl .m-sweep{animation:fx-lit 14s ease-in-out 2.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-mrl .m-full{animation:fx-grow 14s ease-in-out 3.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-diskann .v-pq{animation:fx-lit 14s ease-in-out 0.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-diskann .v-h1{animation:fx-draw 14s ease-in-out 1.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-diskann .v-h2{animation:fx-draw 14s ease-in-out 2.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-diskann .v-fin{animation:fx-lit 14s ease-in-out 3.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hnsw .h-a1{animation:fx-draw 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hnsw .h-drop1{animation:fx-draw 14s ease-in-out 1.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hnsw .h-a2{animation:fx-draw 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hnsw .h-drop2{animation:fx-draw 14s ease-in-out 3.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hnsw .h-beam{animation:fx-ring 14s ease-in-out 4.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hnsw .h-hit{animation:fx-lit 14s ease-in-out 4.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hnsw .h-base{animation:fx-lit 14s ease-in-out 0.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-ivfpq .q-probe{animation:fx-draw 14s ease-in-out 0.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-ivfpq .q-cell{animation:fx-lit 14s ease-in-out 1.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-ivfpq .p-slice{animation:fx-lit 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-ivfpq .p-code{animation:fx-lit 14s ease-in-out 3.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rabitq .b-spin{animation:fx-spin 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rabitq .b-bar1{animation:fx-lit 14s ease-in-out 2.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rabitq .b-cut{animation:fx-dim 14s ease-in-out 3.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rabitq .b-bar2{animation:fx-lit 14s ease-in-out 3.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-turbovec .t-rot{animation:fx-spin 14s ease-in-out 0.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-turbovec .t-brk{animation:fx-lit 14s ease-in-out 1.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-turbovec .t-pack{animation:fx-lit 14s ease-in-out 2.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-turbovec .t-dot{animation:fx-draw 14s ease-in-out 3.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-router .r-probe{animation:fx-draw 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-router .r-c1{animation:fx-lit 14s ease-in-out 1.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-router .r-fan{animation:fx-draw 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-router .r-sel{animation:fx-lit 14s ease-in-out 3.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-router .r-shards{animation:fx-lit 14s ease-in-out 0.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-kg .g-e1{animation:fx-draw 14s ease-in-out 1.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-kg .g-n2{animation:fx-lit 14s ease-in-out 1.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-kg .g-e2{animation:fx-draw 14s ease-in-out 2.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-kg .g-n3{animation:fx-lit 14s ease-in-out 3.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-graphrag .c-com{animation:fx-ring 14s ease-in-out 0.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-graphrag .c-s1{animation:fx-lit 14s ease-in-out 1.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-graphrag .c-s2{animation:fx-lit 14s ease-in-out 2.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-graphrag .c-glob{animation:fx-lit 14s ease-in-out 3.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rag .a-s1{animation:fx-draw 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rag .a-s2{animation:fx-draw 14s ease-in-out 1.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rag .a-s3{animation:fx-draw 14s ease-in-out 2.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rag .a-out{animation:fx-lit 14s ease-in-out 3.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hyde .y-s1{animation:fx-draw 14s ease-in-out 1.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hyde .y-emb{animation:fx-lit 14s ease-in-out 1.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hyde .y-s2{animation:fx-draw 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hyde .y-q{animation:fx-lit 14s ease-in-out 3.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-rrf .f-r1{animation:fx-lit 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-mmr .m-k1{animation:fx-lit 14s ease-in-out 1.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-mmr .m-pen{animation:fx-draw 14s ease-in-out 1.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-mmr .m-x{animation:fx-dim 14s ease-in-out 2.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-mmr .m-k2{animation:fx-lit 14s ease-in-out 3.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-mmr .m-k3{animation:fx-lit 14s ease-in-out 4.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-selfrag .s-t1{animation:fx-lit 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-selfrag .s-t2{animation:fx-lit 14s ease-in-out 1.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-selfrag .s-t3{animation:fx-lit 14s ease-in-out 2.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-selfrag .s-back{animation:fx-draw 14s ease-in-out 3.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-crag .g-in{animation:fx-draw 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-crag .g-o1{animation:fx-draw 14s ease-in-out 1.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-crag .g-o2{animation:fx-draw 14s ease-in-out 2.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-crag .g-o3{animation:fx-draw 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-crag .c-strip{animation:fx-lit 14s ease-in-out 3.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-memgpt .p-out{animation:fx-draw 14s ease-in-out 1.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-memgpt .p-evict{animation:fx-dim 14s ease-in-out 1.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-memgpt .p-back{animation:fx-draw 14s ease-in-out 2.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-memgpt .p-in{animation:fx-lit 14s ease-in-out 3.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-memgpt .p-store{animation:fx-lit 14s ease-in-out 0.3s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-bitemporal .z-old{animation:fx-dim 14s ease-in-out 1.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-bitemporal .z-new{animation:fx-lit 14s ease-in-out 2.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-bitemporal .z-live{animation:fx-lit 14s ease-in-out 3.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-sleeptime .w-a{animation:fx-draw 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-sleeptime .w-b{animation:fx-draw 14s ease-in-out 1.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-sleeptime .w-bg{animation:fx-lit 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-toki .k-r{animation:fx-draw 14s ease-in-out 0.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-toki .k-w{animation:fx-draw 14s ease-in-out 2.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-toki .k-gate{animation:fx-lit 14s ease-in-out 2.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-colbert .l-toks{animation:fx-lit 14s ease-in-out 0.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-colbert .l-max{animation:fx-draw 14s ease-in-out 2.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-colpali .o-1{animation:fx-draw 14s ease-in-out 0.5s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-colpali .o-2{animation:fx-draw 14s ease-in-out 1.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-colpali .o-3{animation:fx-draw 14s ease-in-out 1.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-colpali .o-4{animation:fx-draw 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-colpali .o-grid{animation:fx-lit 14s ease-in-out 3.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-lemur .u-many{animation:fx-lit 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-lemur .u-map{animation:fx-draw 14s ease-in-out 1.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-lemur .u-one{animation:fx-lit 14s ease-in-out 2.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-lemur .u-idx{animation:fx-draw 14s ease-in-out 3.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-muvera .m-max{animation:fx-draw 14s ease-in-out 0.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-muvera .m-cut{animation:fx-lit 14s ease-in-out 2.0s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-muvera .m-blocks{animation:fx-lit 14s ease-in-out 2.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-muvera .m-flat{animation:fx-grow 14s ease-in-out 3.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-memoryr1 .n-p{animation:fx-draw 14s ease-in-out 0.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-memoryr1 .n-acts{animation:fx-lit 14s ease-in-out 1.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-memoryr1 .n-r{animation:fx-draw 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-memoryr1 .n-fb{animation:fx-draw 14s ease-in-out 3.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hipporag .i-1{animation:fx-draw 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hipporag .i-2{animation:fx-draw 14s ease-in-out 1.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hipporag .r-w1{animation:fx-lit 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hipporag .r-w2{animation:fx-lit 14s ease-in-out 2.9s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hipporag .r-w3{animation:fx-lit 14s ease-in-out 3.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-hipporag .r-w4{animation:fx-lit 14s ease-in-out 3.9s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-robustrag .v-bad{animation:fx-lit 14s ease-in-out 0.6s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-robustrag .v-cat{animation:fx-draw 14s ease-in-out 1.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-robustrag .v-iso{animation:fx-lit 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-robustrag .v-bad2{animation:fx-lit 14s ease-in-out 2.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-robustrag .v-r1{animation:fx-draw 14s ease-in-out 3.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-robustrag .v-r2{animation:fx-draw 14s ease-in-out 3.5s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-robustrag .v-r3{animation:fx-draw 14s ease-in-out 3.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-robustrag .v-out{animation:fx-dim 14s ease-in-out 4.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-robustrag .v-agg{animation:fx-draw 14s ease-in-out 4.8s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-camel .m-flow{animation:fx-draw 14s ease-in-out 1.2s infinite backwards;transform-box:fill-box;transform-origin:center}
+.fig-camel .m-cap{animation:fx-lit 14s ease-in-out 2.4s infinite backwards;transform-box:fill-box;transform-origin:center}
+  @media (prefers-reduced-motion: reduce){
+    .tsfig *{animation:none !important;transition:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="brand-mark"></span> <a href="../" style="color:var(--ink);text-decoration:none">TerranSoul</a></div>
+    <div class="crumbs">
+      <span>Papers</span> <span>/</span> <span>Memory evolution</span> <span>/</span> <em>Techniques</em>
+    </div>
+    <div class="spacer"></div>
+    <a class="lnk" href="memory-evolution.html">&larr; Memory evolution</a>
+    <div class="meta">2026-08</div>
+  </div>
+</div>
+
+<div class="page">
+  <article>
+    <div class="eyebrow"><span class="dot"></span>Drill-down companion &middot; every technique, animated</div>
+    <h1>Retrieval and memory techniques: <em>twenty-nine mechanisms, one page.</em></h1>
+    <p class="deck">The companion article tells the history &mdash; twelve stages, each one solving the documented failure of the stage before it. This page opens the machinery. Every technique that article cites gets the same three things here: the failure it exists to fix, an animation of how it actually works, and the cost it charges for the fix.</p>
+
+    <div class="disclosure-card">
+      <strong>What this page is.</strong> An explainer for the <em>algorithms</em>, in the order the parent article introduces them. Every mechanism is described as the technique works in general &mdash; these are published methods with papers, not features of this project. Six of them also exist in TerranSoul&rsquo;s codebase, and those carry a status chip recording what an audit of the source actually found, including three marked <span class="chip chip-none">code only &middot; no callers</span>. <strong>No benchmark numbers appear anywhere on this page.</strong> Published figures are bound to their source artifacts in <code>docs/published-numbers.json</code> and verified by <code>npm&nbsp;run&nbsp;docs:check-numbers</code>; an explainer is not the place to introduce unbound ones. Parent article: <a href="memory-evolution.html"><em>The Evolution of Memory for AI Systems</em></a>.
+    </div>
+
+    <div class="byline">
+      <div class="who"><div class="avatar">T</div><div><strong>TerranSoul Research</strong><br /><span class="small">Drill-down companion, August 2026.</span></div></div>
+      <div class="sep">&middot;</div>
+      <div>Parent: <a href="memory-evolution.html">Memory evolution</a> &middot; Main paper: <a href="index.html">Three Falsifiable Hypotheses</a>.</div>
+    </div>
+
+    <h2><span class="scene-num">How to read</span>Every technique is a trade, and the trade is the point</h2>
+    <p>A list of index and retrieval names reads like a feature set, which is the wrong mental model. Each of these exists because something before it failed in a specific way, and each buys its fix with a resource: memory, latency, training data, a second model, or accuracy itself. The <em>what it costs</em> paragraph under each animation is therefore the load-bearing one &mdash; it is what tells you when <em>not</em> to reach for the technique.</p>
+    <p>Where a technique is present in this project, a chip says so honestly. That matters because the parent article was audited in July&nbsp;2026 and found to carry four overstated claims, including a module described as shipped that had zero callers, and a graph result measured against an empty edge table. The project&rsquo;s rule since then &mdash; <code>rules/no-unexercised-features.md</code> &mdash; is that a retrieval capability no default path exercises does not ship and is not published. Three chips on this page say <em>code only</em> for exactly that reason.</p>
+
+    <div class="legend">
+      <span class="chip chip-on">on by default</span> a default chat / think / research / max query reaches it
+      <span class="sep-dot">&middot;</span>
+      <span class="chip chip-off">wired &middot; default off</span> implemented and reachable, behind a config row that ships off
+      <span class="sep-dot">&middot;</span>
+      <span class="chip chip-none">code only &middot; no callers</span> the algorithm works and is tested; nothing in production calls it
+    </div>
+
+    <p class="small">Figures animate on a loop and are inline SVG driven only by CSS keyframes &mdash; no scripts, no SMIL, nothing fetched, so every one renders identically from a <code>file://</code> URL. Each is authored so that its <em>unanimated</em> state is the finished mechanism rather than a blank first frame, which is what a reader with <code>prefers-reduced-motion</code> set, or a printed copy, will see.</p>
+
+    <p class="stage-head">Stage 1 &middot; Lexical retrieval &mdash; 1970s&ndash;2000s</p>
+    <h2 id="bm25"><span class="scene-num">BM25</span>BM25</h2>
+    <p class="tag">Score by matched terms, but make extra repeats stop counting and make long documents count for less.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Earlier count-based ranking treated term frequency linearly, so a page repeating a word fifty times scored roughly fifty times higher than a page mentioning it once, and padding or boilerplate outranked genuine matches. Document length was unhandled as well: a long document accumulated matches simply by being long. Ranking needed a scoring function in which additional repetitions and additional length both stop paying off.</p></div>
+    <figure class="tsfig fig-bm25">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 216" role="img" aria-labelledby="figcap-bm25">
+<text class="f-key" x="16" y="18">POSTINGS &#183; ONE ROW PER TERM</text>
+<rect class="f-panel" x="16" y="26" width="330" height="120" rx="8" />
+<text class="f-mono" x="32" y="52">mars</text>
+<g class="k-hit"><rect class="f-hot" x="96" y="38" width="22" height="18" rx="3" /><rect class="f-hot" x="124" y="38" width="22" height="18" rx="3" /><rect class="f-hot" x="152" y="38" width="22" height="18" rx="3" /></g>
+<text class="f-mono" x="32" y="86">rover</text>
+<g class="k-hit"><rect class="f-hot" x="96" y="72" width="22" height="18" rx="3" /><rect class="f-hot" x="124" y="72" width="22" height="18" rx="3" /></g>
+<text class="f-mono k-dead" x="32" y="120">the</text>
+<g class="k-dead"><rect class="f-box" x="96" y="106" width="22" height="18" rx="3" /><rect class="f-box" x="124" y="106" width="22" height="18" rx="3" /><rect class="f-box" x="152" y="106" width="22" height="18" rx="3" /><rect class="f-box" x="180" y="106" width="22" height="18" rx="3" /><rect class="f-box" x="208" y="106" width="22" height="18" rx="3" /><rect class="f-box" x="236" y="106" width="22" height="18" rx="3" /></g>
+<line class="f-wire" x1="92" y1="115" x2="264" y2="115" />
+<text class="f-key" x="270" y="120">IN EVERY DOC &#8594; WEIGHT &#8776; 0</text>
+<text x="16" y="166">rare terms weigh most; a term in every document weighs nothing</text>
+
+<text class="f-key" x="378" y="18">SATURATION</text>
+<rect class="f-panel" x="378" y="26" width="286" height="120" rx="8" />
+<path class="f-wire-d" d="M400 128 L400 44 M400 128 L644 128" />
+<path class="f-live f-draw k-curve" pathLength="100" d="M400 126 C 430 66, 470 52, 520 48 C 570 45, 610 44, 640 44" />
+<text class="f-key" x="404" y="40">score</text>
+<text class="f-key" x="600" y="142">occurrences</text>
+<circle class="f-dot-on k-p1" cx="424" cy="92" r="4" />
+<circle class="f-dot-on k-p2" cx="470" cy="53" r="4" />
+<circle class="f-dot-on k-p3" cx="600" cy="44" r="4" />
+<text class="f-key" x="500" y="76">the 10th mention barely moves it</text>
+<text x="378" y="166">and a long document is scaled down for its length</text>
+
+<text class="f-key" x="16" y="192">RESULT</text>
+<rect class="f-hot k-bar1" x="96" y="180" width="150" height="14" rx="3" />
+<text class="f-key" x="256" y="191">short doc, rare terms</text>
+<rect class="f-box k-bar2" x="96" y="200" width="86" height="14" rx="3" />
+<text class="f-key" x="256" y="211">long doc, repeated common terms</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-bm25">Only the postings rows for the query’s own terms are opened; a document appearing on none of them is never scored. Each matched term is weighted by how few documents contain it, so a term present in every document contributes essentially nothing. Additional occurrences of the same term climb steeply and then bend flat — the tenth mention barely improves on the second — and the whole contribution is scaled down in proportion to how much longer the document is than the collection average. The short document carrying rare terms finishes above the long, repetitive one.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>It can only reward words the query and the document literally share, so a passage that answers the question in different words scores zero and word order and meaning are ignored entirely. Its saturation and length knobs are corpus-dependent, and the scores they produce are comparable only inside one collection, never across two.</p></div>
+
+    <p class="stage-head">Stage 2 &middot; Semantic retrieval &mdash; 2013&ndash;2021</p>
+    <h2 id="dpr"><span class="scene-num">Dense passage retrieval</span>Dense passage retrieval</h2>
+    <p class="tag">Two trained encoders turn question and passage into points, so retrieval becomes nearest-point search.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Lexical scoring can only count terms the two texts happen to share, so a passage that answers the question in different words scores zero — no tuning of the saturation or length parameters closes a vocabulary gap. Earlier attempts to replace term matching with dense vectors generally lost to strong lexical baselines, leaving open whether a learned dense representation could beat term matching on retrieval accuracy at all.</p></div>
+    <figure class="tsfig fig-dpr">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 222" role="img" aria-labelledby="figcap-dpr">
+<text class="f-key" x="16" y="18">TWO TOWERS &#183; SEPARATE WEIGHTS</text>
+<rect class="f-panel" x="16" y="26" width="250" height="150" rx="8" />
+<rect class="f-box" x="40" y="46" width="72" height="98" rx="6" />
+<text class="f-key" x="76" y="100" text-anchor="middle">QUESTION</text>
+<rect class="f-box d-tower" x="164" y="46" width="72" height="98" rx="6" />
+<text class="f-key d-tower" x="200" y="100" text-anchor="middle">PASSAGE</text>
+<line class="f-wire-d" x1="138" y1="40" x2="138" y2="150" />
+<text class="f-key" x="138" y="166" text-anchor="middle">NO CROSS-ATTENTION</text>
+
+<text class="f-key" x="298" y="18">ONE SHARED SPACE</text>
+<rect class="f-panel" x="298" y="26" width="366" height="150" rx="8" />
+<circle class="f-dot" cx="360" cy="60" r="3.5" /><circle class="f-dot" cx="410" cy="140" r="3.5" />
+<circle class="f-dot" cx="470" cy="52" r="3.5" /><circle class="f-dot" cx="530" cy="150" r="3.5" />
+<circle class="f-dot" cx="600" cy="70" r="3.5" /><circle class="f-dot" cx="630" cy="130" r="3.5" />
+<circle class="f-dot" cx="340" cy="110" r="3.5" /><circle class="f-dot" cx="560" cy="98" r="3.5" />
+<circle class="f-dot-on d-pos" cx="500" cy="96" r="5" />
+<circle class="f-node-on" cx="440" cy="100" r="8" />
+<text class="f-key" x="440" y="122" text-anchor="middle">QUERY</text>
+<circle class="f-live d-ring" cx="440" cy="100" r="62" fill="none" />
+<path class="f-live f-draw d-pull" pathLength="100" d="M500 96 L456 99" />
+<text class="f-key" x="516" y="88">CORRECT PASSAGE</text>
+<text x="298" y="196">nearest by inner product &#8212; the winner may share no words with the query</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-dpr">Question and passage are encoded by two separate towers that never see each other’s text, so every passage collapses into a single pooled point that can be computed once, offline, and frozen into an index. Training pulls the correct passage’s point toward its question and pushes the other passages in the batch away, including hard negatives mined from a lexical retriever. At query time only the question is encoded, and the nearest points by inner product are returned — which is how a passage sharing no words with the query can still be retrieved.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Everything a passage says must survive compression into one fixed-width vector with no token-level comparison against the query, so exact names, version strings, part numbers and rare identifiers blur together. It also needs supervised question-passage training pairs, transfers poorly to domains unlike the ones it was trained on — where lexical matching often wins back — and any change to the encoder means re-embedding the entire corpus.</p></div>
+    <h2 id="mrl"><span class="scene-num">Matryoshka representation learning</span>Matryoshka representation learning</h2>
+    <p class="tag">Train one embedding so its first 64 numbers already work on their own, and cut the rest when you need to.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>A dual encoder emits one vector at one fixed width, chosen once at training time for the hardest case, and that width is then paid on every stored vector, every distance computation and every byte of index memory — including for queries a much coarser vector would have answered. Getting a cheaper index meant training a second, smaller model or applying post-hoc dimensionality reduction that degrades accuracy. One representation could not serve both a cheap first pass and an accurate final one.</p></div>
+    <figure class="tsfig fig-mrl">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 206" role="img" aria-labelledby="figcap-mrl">
+<text class="f-key" x="16" y="18">ONE EMBEDDING &#183; NESTED PREFIXES</text>
+<rect class="f-panel" x="16" y="26" width="648" height="98" rx="8" />
+<rect class="f-box" x="36" y="46" width="608" height="26" rx="4" />
+<rect class="f-hot m-p64"  x="36" y="46" width="76"  height="26" rx="4" />
+<rect class="f-hot m-p128" x="36" y="46" width="152" height="26" rx="4" />
+<rect class="f-hot m-p256" x="36" y="46" width="304" height="26" rx="4" />
+<line class="f-wire" x1="112" y1="76" x2="112" y2="88" /><text class="f-key" x="112" y="100" text-anchor="middle">64</text>
+<line class="f-wire" x1="188" y1="76" x2="188" y2="88" /><text class="f-key" x="188" y="100" text-anchor="middle">128</text>
+<line class="f-wire" x1="340" y1="76" x2="340" y2="88" /><text class="f-key" x="340" y="100" text-anchor="middle">256</text>
+<line class="f-wire" x1="644" y1="76" x2="644" y2="88" /><text class="f-key" x="628" y="100" text-anchor="middle">full</text>
+<text class="f-key" x="380" y="40">EVERY PREFIX IS TRAINED AS ITS OWN EMBEDDING</text>
+
+<text class="f-key" x="16" y="146">SWEEP SHORT</text>
+<rect class="f-panel" x="16" y="154" width="300" height="44" rx="8" />
+<g class="m-sweep">
+<rect class="f-hot" x="32" y="168" width="14" height="16" rx="2" /><rect class="f-hot" x="52" y="168" width="14" height="16" rx="2" />
+<rect class="f-hot" x="72" y="168" width="14" height="16" rx="2" /><rect class="f-hot" x="92" y="168" width="14" height="16" rx="2" />
+<rect class="f-hot" x="112" y="168" width="14" height="16" rx="2" /><rect class="f-hot" x="132" y="168" width="14" height="16" rx="2" />
+</g>
+<text class="f-key" x="160" y="180">whole index, 64 dims</text>
+
+<text class="f-key" x="348" y="146">RERANK FULL</text>
+<rect class="f-panel" x="348" y="154" width="316" height="44" rx="8" />
+<rect class="f-hot m-full" x="364" y="168" width="120" height="16" rx="2" />
+<text class="f-key" x="496" y="180">shortlist only, all dims</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-mrl">A dual encoder normally emits one vector at one width, chosen for the hardest case and then paid on every stored vector and every distance computation. Matryoshka training attaches a loss to each nested prefix — 64, 128, 256 and full — so the leading coordinates are obliged to carry the general signal on their own and the trailing ones only refine it. A prefix can then be cut off and used directly, with no second model and no post-hoc reduction: sweep the entire index at 64 dimensions, then rerank the shortlist at full width.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The nesting has to be trained in — truncating an ordinary embedding is a different operation and degrades it sharply — so this is a property of the model you picked, not a switch you can flip on the one you already have. And a short prefix genuinely is weaker than the full vector, so the cheap sweep only holds up when full-width vectors are still kept somewhere for the rerank pass, which brings back much of the storage the truncation was meant to save.</p></div>
+
+    <p class="stage-head">Stage 3 &middot; Approximate nearest neighbour at scale &mdash; 2016&ndash;2023</p>
+    <h2 id="hnsw"><span class="scene-num">HNSW</span>HNSW &mdash; hierarchical navigable small world<span class="chip chip-on">on by default</span></h2>
+    <p class="tag">Multi-layer proximity graph: greedy hops across sparse shortcut layers, then a widened beam search at the base.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Finding the nearest embeddings to a query by brute force costs one distance computation per stored vector — O(n) per query, which at 10k+ vectors dominates retrieval latency and at millions is hopeless. HNSW replaces that full scan with a navigable graph walk that touches only a few hundred nodes, giving roughly O(log n) hops at the cost of being approximate rather than exact. The naive alternative in this repo is still present as the fallback: `MemoryStore::vector_search` degrades to loading every embedded row and cosine-scoring all of them.</p></div>
+    <figure class="tsfig fig-hnsw">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 250" role="img" aria-labelledby="figcap-hnsw">
+<text class="f-key" x="16" y="18">LAYER 2 &#183; SPARSE, LONG EDGES</text>
+<rect class="f-panel" x="16" y="26" width="648" height="56" rx="8" />
+<path class="f-wire-d" d="M96 54 L300 44 M300 44 L520 60" />
+<circle class="f-node" cx="300" cy="44" r="5" /><circle class="f-node" cx="520" cy="60" r="5" />
+<circle class="f-node-on" cx="96" cy="54" r="7.5" />
+<text class="f-key" x="96" y="74" text-anchor="middle">ENTRY</text>
+<path class="f-live f-draw h-a1" pathLength="100" d="M96 54 L300 44" />
+<text class="f-key" x="16" y="102">LAYER 1 &#183; MEDIUM</text>
+<rect class="f-panel" x="16" y="110" width="648" height="56" rx="8" />
+<path class="f-wire-d" d="M140 140 L300 128 M300 128 L420 148 M420 148 L520 132 M520 132 L600 144" />
+<circle class="f-node" cx="140" cy="140" r="5" /><circle class="f-node" cx="420" cy="148" r="5" />
+<circle class="f-node" cx="520" cy="132" r="5" /><circle class="f-node" cx="600" cy="144" r="5" />
+<circle class="f-node" cx="300" cy="128" r="5" />
+<path class="f-live f-draw h-drop1" pathLength="100" d="M300 50 L300 122" />
+<path class="f-live f-draw h-a2" pathLength="100" d="M300 128 L420 148" />
+<text class="f-key" x="16" y="186">LAYER 0 &#183; EVERY VECTOR</text>
+<rect class="f-panel" x="16" y="194" width="648" height="44" rx="8" />
+<g class="h-base">
+<circle class="f-node" cx="70" cy="216" r="4" /><circle class="f-node" cx="120" cy="216" r="4" />
+<circle class="f-node" cx="170" cy="216" r="4" /><circle class="f-node" cx="220" cy="216" r="4" />
+<circle class="f-node" cx="270" cy="216" r="4" /><circle class="f-node" cx="320" cy="216" r="4" />
+<circle class="f-node" cx="370" cy="216" r="4" /><circle class="f-node" cx="470" cy="216" r="4" />
+<circle class="f-node" cx="520" cy="216" r="4" /><circle class="f-node" cx="570" cy="216" r="4" />
+<circle class="f-node" cx="620" cy="216" r="4" />
+</g>
+<path class="f-live f-draw h-drop2" pathLength="100" d="M420 154 L420 208" />
+<ellipse class="f-hot h-beam" cx="420" cy="216" rx="52" ry="15" />
+<circle class="f-node-on h-hit" cx="400" cy="216" r="5.5" />
+<circle class="f-node-on h-hit" cx="420" cy="216" r="5.5" />
+<circle class="f-node-on h-hit" cx="440" cy="216" r="5.5" />
+<text class="f-key h-hit" x="420" y="238" text-anchor="middle">ef BEAM</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-hnsw">Each vector draws a level from an exponentially decaying distribution, so a thin few percent are promoted into sparse upper layers that act as long-range shortcuts over the same point set. A query enters at the single top node and hops greedily to whichever neighbour is closer, dropping a layer whenever no neighbour improves — long edges first, short edges last. At layer 0 the single pointer widens into a best-first beam of width <em>ef</em>, stopping once the frontier’s best candidate is worse than the worst of the current top-<em>k</em>.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Approximate by construction: recall is a tunable, not a guarantee, and the greedy walk can miss a true neighbour that sits behind a graph bottleneck — recall degrades as the corpus grows unless ef_search is raised, which trades latency back. The graph must be resident (RAM or mmap) and carries a per-vector edge overhead of roughly M*2 links on top of the vectors themselves, so memory grows linearly with n and there is no cheap on-disk-only mode. Deletion is a tombstone, not a repair: removed nodes leave dangling structure that fragments traversal until a compaction/rebuild (tracked here as `fragmentation_ratio`, ann_index.rs:773). Inserts are relatively expensive (each one runs its own ef_construction-wide search), and the index cannot apply attribute filters during traversal — any predicate must be applied after the k results come back, so a highly selective filter can return almost nothing.</p></div>
+    <div class="sblock ts"><span class="slabel">In TerranSoul</span><p>On the default path for every mode &mdash; the shipped desktop build compiles the native ANN feature and candidate generation for chat, think, research and max all reach the same per-shard index. One honest caveat from the audit: the seeded <code>ann.hnsw.expansion_*</code> config rows are <em>inert</em>, because every production call site passes the hard-coded defaults instead. Behaviour is unchanged &mdash; the seeded values equal those defaults &mdash; but the rows do nothing.</p></div>
+    <h2 id="router"><span class="scene-num">Shard router</span>Shard router<span class="chip chip-on">on by default</span></h2>
+    <p class="tag">Searches a tiny index of sampled embeddings to decide which few of 15 shards deserve a full ANN probe.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>The corpus is partitioned into 15 shards (3 memory tiers x 5 cognitive kinds), each with its own ANN index. Without a router, every query must open and search all 15 indexes and merge 15 ranked lists, so cost scales with shard count rather than with relevance — even though for a typical query almost all shards contain nothing near the query vector. The router replaces that fan-out with one search over a ~175-vector index that predicts the 2-3 shards worth probing.</p></div>
+    <figure class="tsfig fig-router">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 236" role="img" aria-labelledby="figcap-router">
+<text class="f-key" x="16" y="18">QUERY</text>
+<circle class="f-node-on" cx="48" cy="52" r="10" />
+<text class="f-key" x="110" y="18">CENTROID INDEX &#183; ~1% SAMPLE</text>
+<rect class="f-panel" x="110" y="26" width="188" height="72" rx="8" />
+<circle class="f-dot" cx="140" cy="50" r="3.5" /><circle class="f-dot" cx="170" cy="66" r="3.5" />
+<circle class="f-dot" cx="200" cy="44" r="3.5" /><circle class="f-dot" cx="232" cy="72" r="3.5" />
+<circle class="f-dot" cx="264" cy="52" r="3.5" /><circle class="f-dot" cx="284" cy="80" r="3.5" />
+<circle class="f-dot-on r-c1" cx="170" cy="66" r="5" />
+<circle class="f-dot-on r-c1" cx="232" cy="72" r="5" />
+<circle class="f-dot-on r-c1" cx="264" cy="52" r="5" />
+<path class="f-live f-draw r-probe" pathLength="100" d="M58 52 L110 56" />
+<text x="110" y="116">top-5 centroids &#8594; read tags &#8594; dedupe</text>
+<text class="f-key" x="330" y="18">SHARDS &#183; ONE ANN INDEX EACH</text>
+<rect class="f-panel" x="330" y="26" width="334" height="150" rx="8" />
+<g class="r-shards">
+<rect class="f-box" x="346" y="42" width="60" height="26" rx="4" /><rect class="f-box" x="414" y="42" width="60" height="26" rx="4" />
+<rect class="f-box" x="482" y="42" width="60" height="26" rx="4" /><rect class="f-box" x="550" y="42" width="60" height="26" rx="4" />
+<rect class="f-box" x="346" y="80" width="60" height="26" rx="4" /><rect class="f-box" x="482" y="80" width="60" height="26" rx="4" />
+<rect class="f-box" x="550" y="80" width="60" height="26" rx="4" /><rect class="f-box" x="346" y="118" width="60" height="26" rx="4" />
+<rect class="f-box" x="414" y="118" width="60" height="26" rx="4" /><rect class="f-box" x="482" y="118" width="60" height="26" rx="4" />
+<rect class="f-box" x="550" y="118" width="60" height="26" rx="4" /><rect class="f-box" x="618" y="42" width="30" height="26" rx="4" />
+<rect class="f-box" x="618" y="80" width="30" height="26" rx="4" /><rect class="f-box" x="618" y="118" width="30" height="26" rx="4" />
+</g>
+<rect class="f-hot r-sel" x="414" y="80" width="60" height="26" rx="4" />
+<rect class="f-hot r-sel" x="482" y="42" width="60" height="26" rx="4" />
+<rect class="f-hot r-sel" x="550" y="118" width="60" height="26" rx="4" />
+<path class="f-live f-draw r-fan" pathLength="100" d="M298 62 L414 93 M298 62 L482 55 M298 62 L550 131" />
+<text x="330" y="196">2&ndash;3 shards probed; the rest never opened</text>
+<text class="f-key" x="330" y="216">FALLBACK &#183; ROUTER EMPTY OR STALE &#8594; PROBE ALL</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-router">Sharding only pays off if a query can skip most shards. Walking each shard’s embeddings with a stride keeps roughly one vector in a hundred as a centroid tagged with the shard it came from, and all the tags go into a single small index — a few hundred vectors rather than the whole corpus. A query searches only that index, takes its nearest centroids, reads their shard tags and dedupes them to a handful of distinct shards, which are the only ones a real ANN search opens. If the router is missing or stale, the system falls back to probing everything.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>It is lossy pruning with no downstream recovery: any shard not selected contributes zero candidates, so a true nearest neighbour living in an unselected shard is silently lost — no error, just missing recall. The "centroids" are not k-means centroids either; they are a deterministic every-100th-vector sample tagged by source shard, so a small or oddly-distributed shard can be under-sampled and never win a vote (the repo's own live router has just 2 centroids for long__judgment vs 109 for long__semantic). Because top-p is over centroids, not shards, dedup can return fewer shards than intended. And the pruning assumes each selected shard actually has a searchable index: the disk IVF-PQ path had to abandon routing entirely and probe all 15 shards (store.rs:8695-8703) after the router picked [procedural, episodic] while the only IVF-PQ index lived in semantic, producing R@10 = 0.</p></div>
+    <div class="sblock ts"><span class="slabel">In TerranSoul</span><p>On the default path, with no feature flag on the chain, and with the staleness fallback as its safety net. Worth stating alongside: a Terminal-Bench audit found the isolated bench store had an <em>empty</em> router and no ANN indexes at all, so at that corpus size the exact-scan fallback was doing the work. The loss there was the scale claim, not recall.</p></div>
+    <h2 id="ivfpq"><span class="scene-num">IVF-PQ</span>IVF-PQ &mdash; inverted file with product quantization<span class="chip chip-off">wired &middot; default off</span></h2>
+    <p class="tag">Partitions vectors into k-means cells and compresses each to a few bytes, so a query scans only a few cells.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Exact nearest-neighbour search compares the query against every stored vector at full precision: at 1M docs x 768 float32 dims that is ~3 GB resident and ~768M multiply-adds per query. IVF-PQ attacks both costs at once — an inverted file skips most of the corpus (only nprobe of nlist cells are visited), and product quantization replaces each float vector with a handful of centroid IDs (768 floats = 3072 B becomes ~96 B), so the surviving candidates are scored by table lookup instead of arithmetic. The price is that both the skipping and the compression are lossy, so results are approximate.</p></div>
+    <figure class="tsfig fig-ivfpq">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 244" role="img" aria-labelledby="figcap-ivfpq">
+<text class="f-key" x="16" y="18">COARSE CELLS &#183; K-MEANS</text>
+<rect class="f-panel" x="16" y="26" width="300" height="164" rx="8" />
+<path class="f-wire-d" d="M120 26 L96 190 M216 26 L246 190 M16 108 L316 96" />
+<circle class="f-dot" cx="60" cy="66" r="3" /><circle class="f-dot" cx="86" cy="52" r="3" /><circle class="f-dot" cx="70" cy="150" r="3" />
+<circle class="f-dot" cx="170" cy="60" r="3" /><circle class="f-dot" cx="150" cy="140" r="3" /><circle class="f-dot" cx="190" cy="160" r="3" />
+<circle class="f-dot" cx="270" cy="60" r="3" /><circle class="f-dot" cx="285" cy="150" r="3" />
+<circle class="f-node" cx="70" cy="70" r="5.5" /><circle class="f-node" cx="70" cy="150" r="5.5" />
+<circle class="f-node" cx="170" cy="150" r="5.5" /><circle class="f-node" cx="272" cy="60" r="5.5" />
+<circle class="f-node-on q-cell" cx="170" cy="60" r="6.5" />
+<circle class="f-node-on q-cell" cx="272" cy="150" r="6.5" />
+<circle class="f-node-on" cx="196" cy="92" r="8" />
+<text class="f-key" x="196" y="114" text-anchor="middle">QUERY</text>
+<path class="f-live f-draw q-probe" pathLength="100" d="M196 92 L170 60 M196 92 L272 150" />
+<text x="16" y="210">nprobe cells opened; the rest never touched</text>
+<text class="f-key" x="348" y="18">RESIDUAL &#8594; SUBSPACES &#8594; BYTES</text>
+<rect class="f-panel" x="348" y="26" width="316" height="164" rx="8" />
+<text class="f-key" x="364" y="46">v &#8722; centroid</text>
+<rect class="f-box" x="364" y="54" width="284" height="20" rx="3" />
+<g class="p-slice">
+<rect class="f-box" x="364" y="88" width="66" height="20" rx="3" /><rect class="f-box" x="436" y="88" width="66" height="20" rx="3" />
+<rect class="f-box" x="508" y="88" width="66" height="20" rx="3" /><rect class="f-box" x="580" y="88" width="66" height="20" rx="3" />
+</g>
+<path class="f-wire" d="M397 74 L397 88 M469 74 L469 88 M541 74 L541 88 M613 74 L613 88" />
+<g class="p-code">
+<rect class="f-hot" x="364" y="126" width="66" height="22" rx="3" /><rect class="f-hot" x="436" y="126" width="66" height="22" rx="3" />
+<rect class="f-hot" x="508" y="126" width="66" height="22" rx="3" /><rect class="f-hot" x="580" y="126" width="66" height="22" rx="3" />
+<text class="f-mono" x="397" y="141" text-anchor="middle">0x2E</text><text class="f-mono" x="469" y="141" text-anchor="middle">0xA1</text>
+<text class="f-mono" x="541" y="141" text-anchor="middle">0x07</text><text class="f-mono" x="613" y="141" text-anchor="middle">0xC4</text>
+</g>
+<text x="364" y="172">one byte per subspace &#183; the float vector is discarded</text>
+<text x="348" y="210">distance = sum of table lookups, no float maths</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-ivfpq">K-means produces coarse centroids and every vector is filed into the inverted list of its nearest one. Each vector is then replaced by its residual — itself minus its own cell’s centroid — which collapses all cells onto a common origin so one shared codebook describes them all. The residual is cut into contiguous chunks, each snapped to the nearest of 256 centroids in that subspace’s codebook, and the float vector is discarded in favour of one byte per subspace. At query time only the nearest <em>nprobe</em> cells are opened, and each candidate’s distance is a sum of precomputed table lookups.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Doubly lossy, and the two losses compound. A true neighbour sitting in a cell that nprobe did not open is unrecoverable at any later stage — the recall ceiling is fixed by nprobe/nlist, not by re-ranking — and PQ codes discard the residual detail, so distances within an opened cell are only approximate and near-ties get mis-ordered. It also needs an offline training pass over a sample (this implementation caps at 100k vectors, 20 Lloyd iterations) and has no cheap incremental insert: as the corpus drifts away from the trained centroids, cells go lopsided and recall decays until the whole index is retrained and re-encoded. Finally the embedding dim must be divisible by pq_m, which constrains parameter choice (build errors out otherwise).</p></div>
+    <div class="sblock ts"><span class="slabel">In TerranSoul</span><p>Implemented and genuinely wired into a production entry point, where it shadows HNSW inside one vector-search function when an on-disk index file exists &mdash; but it ships behind a config row that defaults off, and the hybrid path used by chat and the thinking modes has no IVF-PQ branch at all. Reachable, not reached.</p></div>
+    <h2 id="diskann"><span class="scene-num">DiskANN</span>DiskANN &mdash; keeping the graph on SSD</h2>
+    <p class="tag">The graph and full vectors live on SSD; RAM keeps compressed copies to steer the walk and disk reranks.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>In-memory graph indexes like HNSW and NSG reach a good neighbourhood in a handful of hops, but the entire graph plus every full-precision vector has to be resident in DRAM — at billion scale that is hundreds of gigabytes, so one machine holds only a slice of the corpus and the index must be sharded across a cluster. The alternative that did fit in RAM was to quantize every vector hard enough to shrink the index, which discards exactly the precision needed to separate a true nearest neighbour from a near-miss, capping recall. Neither option delivered high recall at billion scale on a single node.</p></div>
+    <figure class="tsfig fig-diskann">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 216" role="img" aria-labelledby="figcap-diskann">
+<text class="f-key" x="16" y="18">RAM &#183; COMPRESSED VECTORS</text>
+<rect class="f-panel" x="16" y="26" width="300" height="70" rx="8" />
+<g class="v-pq">
+<rect class="f-hot" x="36" y="46" width="26" height="18" rx="2" /><rect class="f-hot" x="68" y="46" width="26" height="18" rx="2" />
+<rect class="f-hot" x="100" y="46" width="26" height="18" rx="2" /><rect class="f-hot" x="132" y="46" width="26" height="18" rx="2" />
+<rect class="f-hot" x="164" y="46" width="26" height="18" rx="2" /><rect class="f-hot" x="196" y="46" width="26" height="18" rx="2" />
+<rect class="f-hot" x="228" y="46" width="26" height="18" rx="2" /><rect class="f-hot" x="260" y="46" width="26" height="18" rx="2" />
+</g>
+<text class="f-key" x="36" y="82">PQ CODES &#183; CHEAP, APPROXIMATE</text>
+
+<text class="f-key" x="348" y="18">SSD &#183; VAMANA GRAPH + FULL VECTORS</text>
+<rect class="f-panel" x="348" y="26" width="316" height="70" rx="8" />
+<path class="f-wire-d" d="M376 62 L426 46 M426 46 L476 70 M476 70 L536 50 M536 50 L596 68 M426 46 L536 50 M476 70 L596 68 M596 68 L636 46" />
+<circle class="f-node" cx="376" cy="62" r="4.5" /><circle class="f-node" cx="426" cy="46" r="4.5" />
+<circle class="f-node" cx="476" cy="70" r="4.5" /><circle class="f-node" cx="536" cy="50" r="4.5" />
+<circle class="f-node" cx="596" cy="68" r="4.5" /><circle class="f-node" cx="636" cy="46" r="4.5" />
+<text class="f-key" x="376" y="88">LONG EDGES KEEP THE DIAMETER SMALL</text>
+
+<rect class="f-panel" x="16" y="112" width="648" height="88" rx="8" />
+<text class="f-key" x="36" y="132">EACH HOP</text>
+<rect class="f-box" x="36" y="142" width="128" height="40" rx="5" />
+<text class="f-key" x="100" y="160" text-anchor="middle">RANK BY PQ</text>
+<text class="f-key" x="100" y="174" text-anchor="middle">IN MEMORY</text>
+<path class="f-live f-draw v-h1" pathLength="100" d="M170 162 L232 162" />
+<rect class="f-box" x="238" y="142" width="140" height="40" rx="5" />
+<text class="f-key" x="308" y="160" text-anchor="middle">ONE SSD READ</text>
+<text class="f-key" x="308" y="174" text-anchor="middle">FOR THE NEIGHBOURS</text>
+<path class="f-live f-draw v-h2" pathLength="100" d="M384 162 L446 162" />
+<rect class="f-hot v-fin" x="452" y="142" width="188" height="40" rx="5" />
+<text class="f-key" x="546" y="160" text-anchor="middle">RERANK SURVIVORS</text>
+<text class="f-key" x="546" y="174" text-anchor="middle">WITH FULL VECTORS</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-diskann">A graph index that must be resident caps the corpus at what fits in RAM. DiskANN splits the structure: a Vamana graph built with deliberately long edges — which keeps the graph’s diameter small and therefore the number of hops low — lives on SSD alongside the full-precision vectors, while only compressed codes stay in memory. Each hop ranks candidates using the cheap in-memory codes and spends a single SSD read fetching that node’s neighbours, so the number of random reads tracks hops rather than corpus size, and the surviving shortlist is rescored against the full vectors at the end.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Every expansion round is an SSD round trip and each hop depends on the previous one, so latency is set by disk seeks rather than compute and the drive idles between rounds — widening the beam buys recall by spending more I/O per query. Navigation still runs on lossy codes, so reranking can only reorder what the walk actually visited, and the on-disk layout is a static build: inserts and deletes need a rebuild or a separate merge process.</p></div>
+    <h2 id="rabitq"><span class="scene-num">RaBitQ</span>RaBitQ &mdash; quantization with an error bar<span class="chip chip-none">code only &middot; no callers</span></h2>
+    <p class="tag">Compresses each vector to B bits per dimension, then unbiases the similarity estimate with a stored per-vector correction factor.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>A million 768-dim float32 embeddings are ~3 GB, so an exact scan is memory-bandwidth-bound and cannot stay resident. Classic binary/product quantization shrinks that 32x but gives a biased, unbounded distance estimate — you only find out it mis-ranked by re-reading the full vectors, so systems over-fetch a large candidate pool "just in case". RaBitQ makes the estimate provably unbiased with a concentration bound per vector, so the search can prune on a real interval instead of a heuristic pool multiplier.</p></div>
+    <figure class="tsfig fig-rabitq">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 226" role="img" aria-labelledby="figcap-rabitq">
+<text class="f-key" x="16" y="18">CENTER &#183; NORMALIZE &#183; RANDOM ROTATION</text>
+<rect class="f-panel" x="16" y="26" width="300" height="128" rx="8" />
+<circle class="f-wire" cx="166" cy="90" r="52" fill="none" />
+<path class="f-wire-d" d="M114 90 L218 90 M166 38 L166 142" />
+<g class="b-spin"><path class="f-live" d="M166 90 L206 62" /><circle class="f-node-on" cx="206" cy="62" r="6" /></g>
+<circle class="f-node" cx="196" cy="52" r="4.5" /><circle class="f-node" cx="212" cy="76" r="4.5" />
+<text class="f-key" x="166" y="164" text-anchor="middle">CODEWORD ON THE B-BIT GRID</text>
+<text class="f-key" x="348" y="18">ESTIMATE &#183; BOUND &#183; PRUNE</text>
+<rect class="f-panel" x="348" y="26" width="316" height="128" rx="8" />
+<line class="f-wire" x1="368" y1="130" x2="644" y2="130" />
+<text class="f-key" x="368" y="146">worse</text><text class="f-key" x="620" y="146">better</text>
+<line class="f-wire-d" x1="524" y1="44" x2="524" y2="130" />
+<text class="f-key" x="524" y="40" text-anchor="middle">k-TH BEST</text>
+<g class="b-bar1">
+<line class="f-live" x1="398" y1="66" x2="470" y2="66" />
+<line class="f-live" x1="398" y1="60" x2="398" y2="72" /><line class="f-live" x1="470" y1="60" x2="470" y2="72" />
+<circle class="f-dot-on" cx="434" cy="66" r="4" />
+</g>
+<text class="f-key b-cut" x="482" y="70">whole interval below &#8594; pruned untouched</text>
+<g class="b-bar2">
+<line class="f-live" x1="546" y1="98" x2="614" y2="98" />
+<line class="f-live" x1="546" y1="92" x2="546" y2="104" /><line class="f-live" x1="614" y1="92" x2="614" y2="104" />
+<circle class="f-dot-on" cx="580" cy="98" r="4" />
+</g>
+<text class="f-key" x="546" y="118">survives &#8594; exact rerank</text>
+<text x="348" y="176">error concentrates as O(1/&#8730;D): tight at 768 dims, loose at 32</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-rabitq">Each vector is centred on its cluster centroid and rescaled onto the unit sphere, then one shared random orthogonal transform spins every vector so no coordinate is privileged. Each rotated coordinate drops its float for a B-bit integer and the vector jumps to the grid codeword with the largest inner product. One float per vector is kept — the cosine between the true vector and its codeword — and dividing the cheap codeword-query product by it turns a biased estimate into an unbiased one. An error bar of order 1/√D is drawn around each estimate, and any candidate whose entire interval falls below the current k-th best is discarded without ever being reconstructed.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The guarantee is probabilistic and dimension-dependent: the estimator is unbiased with error concentrating as O(1/sqrt(D)), so it is excellent at 768+ dims and weak in low dimension, and it bounds the estimate rather than eliminating error. Getting exact top-k still requires reranking survivors against full-precision vectors, so the original floats must remain on disk — the saving is on the hot in-memory index, not on total storage. The random rotation costs O(D log D) per query and destroys coordinate sparsity and interpretability, and the per-vector factors add roughly one to two floats of overhead per vector, which is material at B=1 where the code itself is only D bits. Finally it compresses each vector but does not reduce how many vectors are scanned, so it must be layered on IVF or HNSW to avoid a full scan.</p></div>
+    <div class="sblock ts"><span class="slabel">In TerranSoul</span><p><strong>No production caller exists anywhere in the repo.</strong> The implementation is real and tested; nothing invokes it. Under <code>rules/no-unexercised-features.md</code> that leaves three lawful futures &mdash; wire it and bench it, delete it, or bench it first &mdash; and until one happens it is not a capability of this system.</p></div>
+    <h2 id="turbovec"><span class="scene-num">TurboVec</span>TurboVec &mdash; sub-byte codes, full-precision query<span class="chip chip-none">code only &middot; no callers</span></h2>
+    <p class="tag">Rotates each embedding, packs it to 2- or 4-bit codes, and scores those codes against a full-precision query.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>A 768-dim float32 embedding costs 3 KB, so a million-memory corpus needs ~3 GB of RAM just to hold vectors the brute-force scorer must touch on every query. Keeping them as f32 makes the index bigger than the machine's cache and often bigger than its memory budget. TurboQuant shrinks each vector 16x (4-bit) or 32x (2-bit) so the whole index stays resident and each comparison reads bytes instead of floats — trading a few points of recall for the memory footprint.</p></div>
+    <figure class="tsfig fig-turbovec">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 224" role="img" aria-labelledby="figcap-turbovec">
+<text class="f-key" x="16" y="18">1 &#183; WHITEN</text>
+<rect class="f-panel" x="16" y="26" width="150" height="60" rx="8" />
+<path class="f-wire" d="M32 72 L46 44 L60 66 L74 38 L88 70 L102 48 L116 62 L130 40 L150 68" />
+<text class="f-key" x="16" y="104">lopsided &#8594; unit variance</text>
+<text class="f-key" x="188" y="18">2 &#183; HADAMARD ROTATE</text>
+<rect class="f-panel" x="188" y="26" width="150" height="60" rx="8" />
+<g class="t-rot"><path class="f-live" d="M204 56 L218 50 L232 60 L246 48 L260 58 L274 52 L288 56 L302 50 L322 56" /></g>
+<text class="f-key" x="188" y="104">energy spread evenly</text>
+<text class="f-key" x="360" y="18">3 &#183; &#177;3&#963; WINDOW</text>
+<rect class="f-panel" x="360" y="26" width="150" height="60" rx="8" />
+<line class="f-wire-d t-brk" x1="376" y1="38" x2="494" y2="38" />
+<line class="f-wire-d t-brk" x1="376" y1="74" x2="494" y2="74" />
+<path class="f-wire" d="M376 56 L400 48 L424 62 L448 50 L472 58 L494 52" />
+<text class="f-key" x="360" y="104">Welford, online</text>
+<text class="f-key" x="532" y="18">4 &#183; PACK</text>
+<rect class="f-panel" x="532" y="26" width="132" height="60" rx="8" />
+<g class="t-pack">
+<rect class="f-hot" x="546" y="42" width="24" height="28" rx="3" /><rect class="f-hot" x="576" y="42" width="24" height="28" rx="3" />
+<rect class="f-hot" x="606" y="42" width="24" height="28" rx="3" /><rect class="f-hot" x="636" y="42" width="18" height="28" rx="3" />
+</g>
+<text class="f-mono" x="598" y="61" text-anchor="middle">2-bit</text>
+<text class="f-key" x="532" y="104">4 dims per byte</text>
+<rect class="f-panel" x="16" y="126" width="648" height="66" rx="8" />
+<text class="f-key" x="32" y="146">ASYMMETRIC SCORING</text>
+<text class="f-mono" x="32" y="170">query: FULL f32</text>
+<path class="f-live f-draw t-dot" pathLength="100" d="M150 165 L300 165" />
+<text class="f-mono" x="316" y="170">&#215;</text>
+<text class="f-mono" x="340" y="170">stored code &#8594; expanded to bin centre on the fly</text>
+<text x="16" y="212">every live entry still scanned &#8212; a footprint win, not an ANN speedup</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-turbovec">Each coordinate is optionally whitened to unit variance, then multiplied by a fixed seeded sign pattern and passed through an in-place Walsh–Hadamard transform, which spreads the vector’s energy evenly so no single dimension dominates the rounding. A running Welford update tracks per-dimension mean and variance and snaps a ±3σ window around them; each coordinate’s position in that window is rounded to one of four or sixteen levels and bit-packed several dimensions to a byte. The query stays full-precision through the same path and each stored code is expanded back to its bin centre as it is scored — the asymmetry that keeps the ranking usable at two bits.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>It compresses the comparison, not the candidate set: search still dequantizes and dots every live entry, so query cost stays O(N x dims) — this is a memory-footprint win, not an ANN speedup, and it has no graph or inverted-list pruning. Quantization is lossy (documented as roughly 97% recall@10 at 4-bit and 93% at 2-bit, and those figures are inherited from upstream, not measured here). Because the codebook is learned online, the +/-3-sigma bounds shift with every insert while already-packed codes are never re-encoded, so old entries are decoded against newer bounds and accuracy silently drifts until the index is rebuilt. The FWHT also pads to the next power of two and then truncates back to `dims` (1024 -&gt; 768 for a typical embedding), which discards part of the transform and makes the rotation non-orthogonal at non-power-of-two dimensionality.</p></div>
+    <div class="sblock ts"><span class="slabel">In TerranSoul</span><p><strong>No callers.</strong> A repo-wide search finds the type in exactly two places: its own module definition and its own tests. It appears in the parent article&rsquo;s Stage&nbsp;12 coverage row, which is where that row and this chip need reconciling.</p></div>
+
+    <p class="stage-head">Stage 4 &middot; Knowledge graphs &mdash; 2001&ndash;2010s</p>
+    <h2 id="kg"><span class="scene-num">Typed-edge traversal</span>Typed-edge traversal</h2>
+    <p class="tag">Facts stored as typed, directed edges between entities, so a multi-hop answer is a walked path.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Vector search scores a passage by how similar it is to the query, which breaks on questions whose answer spans two facts. The bridging fact — that the company she works for was acquired by someone else — is not topically similar to the question that needs it, so it never enters the top-k. And a similarity index returns text, not composable relations: nothing it stores says how two retrieved passages connect, so there is nothing to chain.</p></div>
+    <figure class="tsfig fig-kg">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 206" role="img" aria-labelledby="figcap-kg">
+<text class="f-key" x="16" y="18">FLAT SIMILARITY</text>
+<rect class="f-panel" x="16" y="26" width="286" height="140" rx="8" />
+<circle class="f-node-on" cx="70" cy="96" r="9" />
+<text class="f-key" x="70" y="120" text-anchor="middle">QUERY</text>
+<circle class="f-dot-on" cx="150" cy="60" r="4" /><circle class="f-dot-on" cx="168" cy="96" r="4" />
+<circle class="f-dot-on" cx="150" cy="132" r="4" /><circle class="f-dot" cx="230" cy="72" r="4" />
+<circle class="f-dot" cx="246" cy="112" r="4" />
+<path class="f-wire-d" d="M80 96 L150 60 M80 96 L168 96 M80 96 L150 132" />
+<text x="16" y="186">returns things that RESEMBLE the query</text>
+<text class="f-key" x="348" y="18">TYPED EDGES</text>
+<rect class="f-panel" x="348" y="26" width="316" height="140" rx="8" />
+<circle class="f-node-on" cx="392" cy="118" r="9" />
+<text class="f-key" x="392" y="142" text-anchor="middle">SHE</text>
+<circle class="f-node g-n2" cx="506" cy="70" r="9" />
+<text class="f-key g-n2" x="506" y="56" text-anchor="middle">EMPLOYER</text>
+<circle class="f-node g-n3" cx="624" cy="118" r="9" />
+<text class="f-key g-n3" x="624" y="142" text-anchor="middle">ACQUIRER</text>
+<path class="f-live f-draw g-e1" pathLength="100" d="M401 112 L497 76" />
+<path class="f-live f-draw g-e2" pathLength="100" d="M515 76 L615 112" />
+<text class="f-edge g-e1" x="440" y="86">WORKS AT</text>
+<text class="f-edge g-e2" x="546" y="86">ACQUIRED BY</text>
+<text x="348" y="186">two typed hops &#8212; and the walk IS the derivation</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-kg">Nearest-by-similarity returns things that resemble the query, which cannot answer a question whose answer is two relations away. Typed edges let the same question be walked one relation at a time: the entity is located, an outgoing edge of the right type is followed, then another. The path that reaches the answer is also its explanation, which a similarity score never is.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The graph has to be built and kept true, and traversal amplifies errors rather than tolerating them: one hallucinated edge or one unresolved duplicate entity yields a wrong answer that arrives with a convincing derivation attached. The relation vocabulary is also fixed before the questions are asked, so a fact the schema has no type for is invisible to the walk no matter how plainly the source text stated it — and because branching grows with each hop, real systems cap depth and prune, silently discarding the longest derivations.</p></div>
+    <h2 id="graphrag"><span class="scene-num">GraphRAG</span>GraphRAG &mdash; hierarchical communities</h2>
+    <p class="tag">Cluster the entity graph into nested communities, summarize each, and route whole-corpus questions there.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Typed-edge traversal only works when the question hands you somewhere to start. Ask something about the corpus as a whole — what themes run through it, how two bodies of work relate — and there is no entity to anchor to and no single path that constitutes the answer, because the answer is a property of the collection rather than of any node in it. Plain top-k retrieval fails the same question for the same reason: no chunk contains the answer, so retrieving the best chunks retrieves nothing useful.</p></div>
+    <figure class="tsfig fig-graphrag">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 222" role="img" aria-labelledby="figcap-graphrag">
+<text class="f-key" x="16" y="18">ENTITY GRAPH</text>
+<rect class="f-panel" x="16" y="26" width="240" height="132" rx="8" />
+<path class="f-wire-d" d="M60 60 L96 84 M96 84 L60 110 M60 110 L60 60 M170 62 L206 86 M206 86 L172 112 M172 112 L170 62 M96 84 L170 62" />
+<circle class="f-node" cx="60" cy="60" r="4.5" /><circle class="f-node" cx="96" cy="84" r="4.5" /><circle class="f-node" cx="60" cy="110" r="4.5" />
+<circle class="f-node" cx="170" cy="62" r="4.5" /><circle class="f-node" cx="206" cy="86" r="4.5" /><circle class="f-node" cx="172" cy="112" r="4.5" />
+<ellipse class="f-hot c-com" cx="72" cy="85" rx="40" ry="38" />
+<ellipse class="f-hot c-com" cx="182" cy="87" rx="40" ry="38" />
+<text class="f-key" x="16" y="178">LEIDEN &#8594; NESTED COMMUNITIES</text>
+<text class="f-key" x="288" y="18">SUMMARY PER COMMUNITY</text>
+<rect class="f-panel" x="288" y="26" width="180" height="132" rx="8" />
+<rect class="f-box c-s1" x="304" y="44" width="148" height="26" rx="4" />
+<rect class="f-box c-s1" x="304" y="78" width="148" height="26" rx="4" />
+<rect class="f-hot c-s2" x="304" y="112" width="148" height="26" rx="4" />
+<text class="f-key" x="378" y="129" text-anchor="middle">ROLL-UP OF BOTH</text>
+<text class="f-key" x="288" y="178">WRITTEN ONCE, AT INDEX TIME</text>
+<text class="f-key" x="500" y="18">QUERY ROUTING</text>
+<rect class="f-panel" x="500" y="26" width="164" height="132" rx="8" />
+<rect class="f-box" x="516" y="44" width="132" height="40" rx="5" />
+<text class="f-key" x="582" y="60" text-anchor="middle">LOCAL &#183; NARROW Q</text>
+<text class="f-key" x="582" y="74" text-anchor="middle">&#8594; ENTITY NEIGHBOURHOOD</text>
+<rect class="f-hot c-glob" x="516" y="98" width="132" height="40" rx="5" />
+<text class="f-key" x="582" y="114" text-anchor="middle">GLOBAL &#183; &#8220;WHAT ARE</text>
+<text class="f-key" x="582" y="128" text-anchor="middle">THE THEMES?&#8221; &#8594; SUMMARIES</text>
+<text x="16" y="212">a corpus-wide question is answered from summaries, never by reading every chunk</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-graphrag">Retrieval over chunks can answer “what does this document say about X” but not “what are the themes across the whole corpus”, because no chunk contains the answer. GraphRAG extracts an entity graph, partitions it into nested communities with a clustering algorithm, and has the model write a summary of each community — and of each community of communities — once, at index time. A narrow question routes to a local entity neighbourhood; a corpus-wide question is answered by reading the summaries instead of the corpus.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The hierarchy is a precomputation, not a lookup: an LLM call per chunk to extract entities and relations, plus a generated summary for every community at every level, all of which must be rebuilt or incrementally patched whenever the corpus changes. And a global query is not one retrieval but one LLM call per community summary in the map stage, so answer cost scales with the size of the partition rather than with the question — while the partition itself was computed without knowing the question, so a query that cuts across communities is answered from summaries written for another purpose, and detail already compressed out of a summary cannot be recovered at query time.</p></div>
+
+    <p class="stage-head">Stage 5 &middot; Retrieval-augmented generation &mdash; 2020&ndash;2024</p>
+    <h2 id="rag"><span class="scene-num">RAG</span>RAG</h2>
+    <p class="tag">A small evaluator grades the retrieved documents and routes them to refinement, to web search, or to both.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Self-critique tells the system its evidence is bad but leaves it nowhere better to go: the corpus is static, so once every retrieved document is marked irrelevant the only moves left are answering from parametric memory or abstaining. It also grades at whole-document granularity, so a document judged relevant enters the prompt with all its surrounding irrelevant text attached, diluting the signal it was retrieved for. And it needs the generator itself instruction-tuned to produce the critique, which is not available for an off-the-shelf model.</p></div>
+    <figure class="tsfig fig-rag">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 198" role="img" aria-labelledby="figcap-rag">
+<rect class="f-panel" x="16" y="30" width="128" height="60" rx="8" />
+<text class="f-key" x="80" y="56" text-anchor="middle">QUESTION</text>
+<text class="f-key" x="80" y="72" text-anchor="middle">FROZEN MODEL</text>
+<path class="f-live f-draw a-s1" pathLength="100" d="M148 60 L200 60" />
+<rect class="f-panel" x="206" y="30" width="150" height="60" rx="8" />
+<text class="f-key" x="281" y="56" text-anchor="middle">RETRIEVE k</text>
+<text class="f-key" x="281" y="72" text-anchor="middle">FROM THE CORPUS</text>
+<path class="f-live f-draw a-s2" pathLength="100" d="M360 60 L412 60" />
+<rect class="f-panel" x="418" y="30" width="150" height="60" rx="8" />
+<text class="f-key" x="493" y="56" text-anchor="middle">PREPEND AS</text>
+<text class="f-key" x="493" y="72" text-anchor="middle">CONTEXT</text>
+<path class="f-live f-draw a-s3" pathLength="100" d="M572 60 L620 60" />
+<rect class="f-hot a-out" x="596" y="30" width="68" height="60" rx="8" />
+<text class="f-key" x="630" y="64" text-anchor="middle">ANSWER</text>
+<rect class="f-panel" x="16" y="112" width="648" height="56" rx="8" />
+<text class="f-key" x="32" y="132">WEIGHTS NEVER CHANGE</text>
+<line class="f-wire-d" x1="32" y1="146" x2="330" y2="146" />
+<text x="340" y="150">new knowledge arrives by editing the corpus, not by retraining</text>
+<text x="16" y="188">the model is conditioned, not taught &#8212; which is the whole point, and the whole limit</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-rag">A frozen model knows only what its weights encode, and updating that means retraining. RAG changes the question from “what does the model know” to “what can it be shown”: the question retrieves a handful of passages, those passages are prepended as context, and the model answers conditioned on them. Knowledge is then updated by editing the corpus. The model is conditioned rather than taught — which is the mechanism’s advantage and its ceiling.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Everything hinges on a small external evaluator that must be fine-tuned, plus two thresholds set empirically and re-tuned per dataset — and a misgrade propagates silently in both directions: a bad set labelled Correct gets refined and handed over as if trustworthy, while a good set labelled Incorrect triggers a needless web round trip. The corrective fallback also trades a curated corpus for the open web, adding latency, per-query cost, an external dependency and unvetted content, and nothing in the loop checks the finished answer against the evidence that produced it.</p></div>
+    <h2 id="hyde"><span class="scene-num">HyDE</span>HyDE &mdash; hypothetical document embeddings</h2>
+    <p class="tag">Ask the model to write the answer it expects, then search with that text's vector instead of the query's.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>RAG's retrieval step compares the query's vector directly against document vectors, but a short question and the long passage that answers it share almost no surface form, so their embeddings are not naturally close. The usual fix is supervised relevance labels that teach an encoder the query-to-document mapping — labels a fresh corpus, a niche domain, or a new language does not have. Without them, zero-shot dense retrieval lands in the wrong neighbourhood.</p></div>
+    <figure class="tsfig fig-hyde">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 206" role="img" aria-labelledby="figcap-hyde">
+<text class="f-key" x="16" y="18">THE GAP</text>
+<rect class="f-panel" x="16" y="26" width="300" height="76" rx="8" />
+<text class="f-mono" x="32" y="52">q: &#8220;why did it stall?&#8221;</text>
+<text class="f-mono" x="32" y="78">doc: &#8220;throughput collapsed because&#8230;&#8221;</text>
+<text class="f-key" x="16" y="120">A QUESTION AND ITS ANSWER LOOK DIFFERENT</text>
+<text class="f-key" x="348" y="18">HyDE</text>
+<rect class="f-panel" x="348" y="26" width="316" height="76" rx="8" />
+<rect class="f-box" x="364" y="42" width="92" height="44" rx="5" />
+<text class="f-key" x="410" y="60" text-anchor="middle">MODEL WRITES</text>
+<text class="f-key" x="410" y="74" text-anchor="middle">A FAKE ANSWER</text>
+<path class="f-live f-draw y-s1" pathLength="100" d="M460 64 L500 64" />
+<rect class="f-hot y-emb" x="506" y="42" width="66" height="44" rx="5" />
+<text class="f-key" x="539" y="68" text-anchor="middle">EMBED IT</text>
+<path class="f-live f-draw y-s2" pathLength="100" d="M576 64 L610 64" />
+<circle class="f-node-on y-q" cx="634" cy="64" r="10" />
+<text class="f-key" x="348" y="120">SEARCH WITH THE ANSWER'S VECTOR, NOT THE QUESTION'S</text>
+<rect class="f-panel" x="16" y="136" width="648" height="52" rx="8" />
+<text x="32" y="158">the hypothetical document is never shown to the user and need not be factually true &#8212;</text>
+<text x="32" y="176">it only has to land in the right neighbourhood of the embedding space.</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-hyde">A question and the passage that answers it are written differently, so embedding the question searches from the wrong place in the space. HyDE has the model draft a hypothetical answer first, embeds <em>that</em>, and searches with it. The draft is never shown to anyone and does not need to be factually correct — it only needs to land in the right neighbourhood, because a wrong answer about the right subject still has the vocabulary and shape of the documents worth finding.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>It spends a full language-model generation before retrieval even begins, so every query pays that latency and cost. It also assumes the model can plausibly imagine the shape of the answer: for a private corpus, an unfamiliar entity, or in-house jargon it has never seen, the invented passage drags the search vector into the wrong region and retrieval gets worse than simply searching with the plain query. The false details are filtered only by the embedding bottleneck, which is a soft filter, not a guarantee.</p></div>
+    <h2 id="rrf"><span class="scene-num">Reciprocal rank fusion</span>Reciprocal rank fusion</h2>
+    <p class="tag">Merge ranked lists using rank position alone, so retrievers with incompatible scores can be combined.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Neither retrieval channel is sufficient alone — lexical search misses paraphrase, dense search misses exact identifiers, version strings and part numbers — so you want both lists. But their scores are not comparable: BM25 is unbounded and corpus-dependent while cosine similarity sits in its own range with its own distribution, so score-based fusion needs a normalisation that must be re-tuned per corpus and that one blown-up score can dominate. Learning fusion weights instead requires training labels.</p></div>
+    <figure class="tsfig fig-rrf">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 216" role="img" aria-labelledby="figcap-rrf">
+<text class="f-key" x="16" y="18">CHANNEL A &#183; LEXICAL</text>
+<rect class="f-panel" x="16" y="26" width="180" height="140" rx="8" />
+<rect class="f-box" x="32" y="42" width="148" height="22" rx="3" /><text class="f-mono" x="40" y="58">1. doc-7</text>
+<rect class="f-box" x="32" y="70" width="148" height="22" rx="3" /><text class="f-mono" x="40" y="86">2. doc-3</text>
+<rect class="f-box" x="32" y="98" width="148" height="22" rx="3" /><text class="f-mono" x="40" y="114">3. doc-9</text>
+<text class="f-key" x="32" y="146">SCORES: 14.2, 9.8, 8.1</text>
+<text class="f-key" x="216" y="18">CHANNEL B &#183; DENSE</text>
+<rect class="f-panel" x="216" y="26" width="180" height="140" rx="8" />
+<rect class="f-box" x="232" y="42" width="148" height="22" rx="3" /><text class="f-mono" x="240" y="58">1. doc-3</text>
+<rect class="f-box" x="232" y="70" width="148" height="22" rx="3" /><text class="f-mono" x="240" y="86">2. doc-4</text>
+<rect class="f-box" x="232" y="98" width="148" height="22" rx="3" /><text class="f-mono" x="240" y="114">3. doc-7</text>
+<text class="f-key" x="232" y="146">SCORES: 0.83, 0.81, 0.78</text>
+<text class="f-key" x="416" y="18">FUSE BY RANK, NOT SCORE</text>
+<rect class="f-panel" x="416" y="26" width="248" height="140" rx="8" />
+<text class="f-mono" x="432" y="52">1 / (k + rank)</text>
+<line class="f-wire-d" x1="432" y1="60" x2="648" y2="60" />
+<rect class="f-hot f-r1" x="432" y="72" width="200" height="22" rx="3" />
+<text class="f-mono f-r1" x="440" y="88">doc-3 &#183; ranked 2 and 1</text>
+<rect class="f-box" x="432" y="100" width="164" height="22" rx="3" />
+<text class="f-mono" x="440" y="116">doc-7 &#183; ranked 1 and 3</text>
+<rect class="f-box" x="432" y="128" width="112" height="22" rx="3" />
+<text class="f-mono" x="440" y="144">doc-4</text>
+<text x="16" y="196">14.2 and 0.83 are not comparable quantities &#8212; their RANKS are</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-rrf">Two retrieval channels return scores on incompatible scales: a lexical score of 14.2 and a cosine of 0.83 cannot be added, and normalising them requires assumptions about distributions that shift per query. Reciprocal rank fusion discards the scores entirely and uses only position, summing 1/(k+rank) across channels. A document ranked respectably by both channels beats one ranked first by a single channel, and the constant k damps the influence of the very top positions so one confident channel cannot dominate.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Throwing away the scores throws away confidence: a retriever that is emphatically certain counts for exactly as much as one that is nearly indifferent, and every list carries equal weight unless you re-introduce weights by hand. The k = 60 constant is the value used in the original experiments rather than something derived from your data, and it flattens the top of each list, so one system that is uniquely right about a hard query can be outvoted by two that agree and are wrong. Documents that fell past a list's cutoff contribute nothing, which quietly makes the result depend on how deep each list was taken.</p></div>
+    <h2 id="mmr"><span class="scene-num">Maximal marginal relevance</span>Maximal marginal relevance</h2>
+    <p class="tag">Pick results one at a time, subtracting how similar each candidate is to what you already picked.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Every step up to here scores each document independently against the query, so nothing stops the top of the list filling with passages that say the same thing. When only a handful of slots reach the context window, near-duplicates spend them: the second, third and fourth results add almost no new information, and the other facets of the question never appear at all.</p></div>
+    <figure class="tsfig fig-mmr">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 208" role="img" aria-labelledby="figcap-mmr">
+<text class="f-key" x="16" y="18">RANKED BY RELEVANCE ALONE</text>
+<rect class="f-panel" x="16" y="26" width="300" height="132" rx="8" />
+<circle class="f-node-on" cx="60" cy="92" r="8" /><text class="f-key" x="60" y="114" text-anchor="middle">QUERY</text>
+<circle class="f-dot-on" cx="180" cy="72" r="5" /><circle class="f-dot-on" cx="192" cy="86" r="5" />
+<circle class="f-dot-on" cx="176" cy="100" r="5" /><circle class="f-dot-on" cx="196" cy="110" r="5" />
+<circle class="f-dot" cx="272" cy="60" r="5" /><circle class="f-dot" cx="266" cy="130" r="5" />
+<ellipse class="f-wire-d" cx="186" cy="92" rx="34" ry="32" fill="none" />
+<text class="f-key" x="186" y="146" text-anchor="middle">FOUR NEAR-DUPLICATES</text>
+<text class="f-key" x="348" y="18">MMR &#183; GREEDY, WITH A PENALTY</text>
+<rect class="f-panel" x="348" y="26" width="316" height="132" rx="8" />
+<circle class="f-node-on" cx="392" cy="92" r="8" />
+<circle class="f-dot-on m-k1" cx="500" cy="86" r="5.5" />
+<circle class="f-dot m-x" cx="512" cy="100" r="5" /><circle class="f-dot m-x" cx="496" cy="110" r="5" />
+<circle class="f-dot m-x" cx="516" cy="72" r="5" />
+<circle class="f-dot-on m-k2" cx="596" cy="60" r="5.5" />
+<circle class="f-dot-on m-k3" cx="590" cy="130" r="5.5" />
+<path class="f-live f-draw m-pen" pathLength="100" d="M505 86 L512 100 M505 86 L496 110 M505 86 L516 72" />
+<text class="f-key" x="348" y="176">each pick is penalised by its similarity to what is ALREADY chosen</text>
+<text x="16" y="200">same relevance, more of the answer &#8212; at the cost of a knob nobody can set from first principles</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-mmr">Ranking by relevance alone fills the whole result set with the same fact restated, because near-duplicates all score well against the query. MMR selects greedily: at each step it picks the candidate maximising relevance to the query <em>minus</em> a weighted similarity to everything already selected, so the second copy of an idea is penalised precisely for resembling the first. The set covers more of the answer at the same relevance — at the cost of a λ that trades the two and cannot be derived from first principles.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>It is greedy and myopic: each slot is filled locally and never revisited, so the chosen set is not the best set. The penalty is blind to why two passages resemble each other, so when the correct evidence genuinely is repeated — corroborating sources, or several golds restating one fact — MMR evicts exactly the passages the answer needed and diversity actively costs accuracy. Lambda is a hand-set constant with no principled per-query value, and the pairwise comparisons add work on top of plain ranking.</p></div>
+
+    <p class="stage-head">Stage 6 &middot; Agentic and corrective RAG &mdash; 2023&ndash;2026</p>
+    <h2 id="selfrag"><span class="scene-num">Self-RAG</span>Self-RAG</h2>
+    <p class="tag">The model emits control tokens that decide when to retrieve, then grades the passages and its own sentences.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Plain RAG retrieves a fixed number of passages for every input, whether or not the question needs outside evidence, and pastes them into the prompt unconditionally. Nothing between the retriever and the reader asks whether a passage is relevant, and nothing afterwards asks whether the sentence just written is actually carried by that passage — so irrelevant context degrades the answer and a citation can be attached to a claim the cited text never made. The pipeline is equally fluent in both cases and emits no signal about which happened.</p></div>
+    <figure class="tsfig fig-selfrag">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 216" role="img" aria-labelledby="figcap-selfrag">
+<rect class="f-panel" x="16" y="26" width="648" height="66" rx="8" />
+<text class="f-key" x="32" y="46">GENERATION, INTERRUPTED BY ITS OWN TOKENS</text>
+<rect class="f-box" x="32" y="56" width="86" height="24" rx="4" /><text class="f-key" x="75" y="72" text-anchor="middle">PROMPT</text>
+<rect class="f-hot s-t1" x="128" y="56" width="104" height="24" rx="4" /><text class="f-key" x="180" y="72" text-anchor="middle">[RETRIEVE?]</text>
+<rect class="f-box" x="242" y="56" width="86" height="24" rx="4" /><text class="f-key" x="285" y="72" text-anchor="middle">PASSAGE</text>
+<rect class="f-hot s-t2" x="338" y="56" width="104" height="24" rx="4" /><text class="f-key" x="390" y="72" text-anchor="middle">[RELEVANT?]</text>
+<rect class="f-box" x="452" y="56" width="86" height="24" rx="4" /><text class="f-key" x="495" y="72" text-anchor="middle">DRAFT</text>
+<rect class="f-hot s-t3" x="548" y="56" width="104" height="24" rx="4" /><text class="f-key" x="600" y="72" text-anchor="middle">[SUPPORTED?]</text>
+<rect class="f-panel" x="16" y="108" width="316" height="80" rx="8" />
+<text class="f-key" x="32" y="128">NO RETRIEVAL NEEDED</text>
+<text x="32" y="150">a question the weights already answer</text>
+<text x="32" y="168">skips retrieval entirely</text>
+<rect class="f-panel" x="348" y="108" width="316" height="80" rx="8" />
+<text class="f-key" x="364" y="128">UNSUPPORTED DRAFT</text>
+<path class="f-live f-draw s-back" pathLength="100" d="M364 150 L560 150" />
+<text x="364" y="168">critique fails &#8594; regenerate or retrieve again</text>
+<text x="16" y="208">the critic is the same model, emitting reflection tokens inline</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-selfrag">Always retrieving is wasteful for questions the weights already answer, and always trusting what comes back is worse. Self-RAG trains the model to emit reflection tokens inline: one deciding whether retrieval is needed at all, then, per passage, whether it is relevant, and finally whether the draft it produced is actually supported by it. Failing the critique sends the generation back for another attempt. The critic is the same model, so there is no second system to host — and no independent check either.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The reflection tokens have to be trained in — the generator is fine-tuned on a corpus that a separate critic model annotated offline — so this is not something you bolt onto a frozen or API-only model, and each segment now costs K parallel continuations plus a scoring pass instead of one forward pass. And the grader is the model grading itself at segment level: a "fully supported" tag is a prediction about the passage, not a check against it, so a segment carrying one fabrication among several correct statements can still clear the gate.</p></div>
+    <h2 id="crag"><span class="scene-num">CRAG</span>CRAG &mdash; corrective RAG</h2>
+    <p class="tag">A small evaluator grades the retrieved documents and routes them to refinement, to web search, or to both.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Self-critique tells the system its evidence is bad but leaves it nowhere better to go: the corpus is static, so once every retrieved document is marked irrelevant the only moves left are answering from parametric memory or abstaining. It also grades at whole-document granularity, so a document judged relevant enters the prompt with all its surrounding irrelevant text attached, diluting the signal it was retrieved for. And it needs the generator itself instruction-tuned to produce the critique, which is not available for an off-the-shelf model.</p></div>
+    <figure class="tsfig fig-crag">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 220" role="img" aria-labelledby="figcap-crag">
+<rect class="f-panel" x="16" y="26" width="176" height="60" rx="8" />
+<text class="f-key" x="104" y="52" text-anchor="middle">RETRIEVE</text>
+<text class="f-key" x="104" y="68" text-anchor="middle">TOP-k PASSAGES</text>
+<path class="f-live f-draw g-in" pathLength="100" d="M196 56 L246 56" />
+<rect class="f-hot" x="252" y="26" width="176" height="60" rx="8" />
+<text class="f-key" x="340" y="52" text-anchor="middle">LIGHTWEIGHT EVALUATOR</text>
+<text class="f-key" x="340" y="68" text-anchor="middle">SCORES THE RETRIEVAL</text>
+<path class="f-live f-draw g-o1" pathLength="100" d="M432 46 L488 34" />
+<path class="f-live f-draw g-o2" pathLength="100" d="M432 56 L488 100" />
+<path class="f-live f-draw g-o3" pathLength="100" d="M432 66 L488 166" />
+<rect class="f-box" x="494" y="20" width="170" height="30" rx="5" />
+<text class="f-key" x="579" y="39" text-anchor="middle">CORRECT &#8594; REFINE, USE</text>
+<rect class="f-box" x="494" y="86" width="170" height="30" rx="5" />
+<text class="f-key" x="579" y="105" text-anchor="middle">AMBIGUOUS &#8594; BOTH</text>
+<rect class="f-box" x="494" y="152" width="170" height="30" rx="5" />
+<text class="f-key" x="579" y="171" text-anchor="middle">WRONG &#8594; WEB SEARCH</text>
+<rect class="f-panel" x="16" y="112" width="412" height="70" rx="8" />
+<text class="f-key" x="32" y="132">DECOMPOSE &#8211; FILTER &#8211; RECOMPOSE</text>
+<g class="c-strip">
+<rect class="f-box" x="32" y="142" width="60" height="20" rx="3" /><rect class="f-hot" x="100" y="142" width="60" height="20" rx="3" />
+<rect class="f-box" x="168" y="142" width="60" height="20" rx="3" /><rect class="f-hot" x="236" y="142" width="60" height="20" rx="3" />
+<rect class="f-box" x="304" y="142" width="60" height="20" rx="3" />
+</g>
+<text x="32" y="176">a passage is cut into strips; only the relevant strips survive</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-crag">A retriever that returns the wrong passages hands the generator confident, irrelevant context. CRAG puts a lightweight evaluator in front of generation that grades the retrieval as correct, ambiguous or incorrect, and branches: correct passages are refined by cutting them into strips and keeping only the relevant ones; incorrect retrieval falls back to web search rather than proceeding; ambiguous takes both paths. The evaluator is small and separate from the generator, so the failure it catches is retrieval failure specifically.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Everything hinges on a small external evaluator that must be fine-tuned, plus two thresholds set empirically and re-tuned per dataset — and a misgrade propagates silently in both directions: a bad set labelled Correct gets refined and handed over as if trustworthy, while a good set labelled Incorrect triggers a needless web round trip. The corrective fallback also trades a curated corpus for the open web, adding latency, per-query cost, an external dependency and unvetted content, and nothing in the loop checks the finished answer against the evidence that produced it.</p></div>
+
+    <p class="stage-head">Stage 8 &middot; Two-way agent memory &mdash; 2023&ndash;2026</p>
+    <h2 id="memgpt"><span class="scene-num">MemGPT</span>MemGPT &mdash; OS-style memory paging</h2>
+    <p class="tag">The model calls functions to move its own memory between a fixed window and outside storage.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>A fixed context window with a rolling summary silently discards whatever falls off the end, and the eviction policy lives outside the model — it cannot say "keep this" or ask for a dropped turn back. Retrieval-augmented alternatives fetch once, before generation, on a query the pipeline chose; if that single fetch misses, the model has no second attempt and answers from what it happens to be holding. MemGPT's premise is that the model itself is the only component that knows what it is missing.</p></div>
+    <figure class="tsfig fig-memgpt">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 212" role="img" aria-labelledby="figcap-memgpt">
+<text class="f-key" x="16" y="18">MAIN CONTEXT &#183; FIXED, SMALL</text>
+<rect class="f-panel" x="16" y="26" width="286" height="150" rx="8" />
+<rect class="f-box" x="32" y="42" width="254" height="22" rx="3" /><text class="f-key" x="40" y="57">SYSTEM</text>
+<rect class="f-box" x="32" y="70" width="254" height="22" rx="3" /><text class="f-key" x="40" y="85">WORKING SET</text>
+<rect class="f-hot p-in" x="32" y="98" width="254" height="22" rx="3" /><text class="f-key" x="40" y="113">PAGED IN ON DEMAND</text>
+<rect class="f-box p-evict" x="32" y="126" width="254" height="22" rx="3" /><text class="f-key" x="40" y="141">EVICTED</text>
+<line class="f-wire-d" x1="32" y1="158" x2="286" y2="158" />
+<text class="f-key" x="32" y="172">HARD TOKEN LIMIT</text>
+<path class="f-live f-draw p-out" pathLength="100" d="M306 112 L392 112" />
+<path class="f-live f-draw p-back" pathLength="100" d="M392 136 L306 136" />
+<text class="f-key" x="316" y="104">page out</text>
+<text class="f-key" x="316" y="156">page in</text>
+<text class="f-key" x="404" y="18">EXTERNAL CONTEXT &#183; UNBOUNDED</text>
+<rect class="f-panel" x="404" y="26" width="260" height="150" rx="8" />
+<g class="p-store">
+<rect class="f-box" x="420" y="44" width="228" height="18" rx="3" /><rect class="f-box" x="420" y="68" width="228" height="18" rx="3" />
+<rect class="f-box" x="420" y="92" width="228" height="18" rx="3" /><rect class="f-box" x="420" y="116" width="228" height="18" rx="3" />
+<rect class="f-box" x="420" y="140" width="228" height="18" rx="3" />
+</g>
+<text x="16" y="202">the model issues its own paging calls &#8212; memory management as a tool, not a framework concern</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-memgpt">A context window is a hard wall, and a conversation that outgrows it loses its beginning. MemGPT borrows virtual memory: a small fixed main context holds the system prompt and working set, an unbounded external store holds everything else, and the model itself issues function calls to page information in and out. Memory management becomes something the agent does rather than something the framework does to it — which also means a paging mistake is now the model’s mistake.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Every page-in and page-out is an LLM decision, so recall quality is capped by the model's function-calling reliability — the authors report sharply degraded behaviour on weaker models and note the agent often stops paging through retriever results before exhausting them. The bookkeeping also spends the user's own latency and token budget, since the agent pauses mid-conversation to edit memory, and an overwrite of an in-context block has no undo.</p></div>
+    <h2 id="bitemporal"><span class="scene-num">Bi-temporal knowledge graph</span>Bi-temporal knowledge graph</h2>
+    <p class="tag">Each fact carries a valid-from and valid-to, so an update expires the old edge instead of deleting it.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Archival memory from the previous stage stores each statement as an independent chunk, so when a fact changes — a user leaves one employer for another — the old and new statements sit side by side as equally retrievable neighbours, and the retriever ranks by similarity rather than by which one is still true. The usual fix, overwriting the record, destroys the ability to answer "what was true in March" and flattens a genuine change in the world into an error correction. Neither behaviour distinguishes when a fact was true from when the system happened to learn it.</p></div>
+    <figure class="tsfig fig-bitemporal">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 210" role="img" aria-labelledby="figcap-bitemporal">
+<text class="f-key" x="16" y="18">OVERWRITE &#183; HISTORY DESTROYED</text>
+<rect class="f-panel" x="16" y="26" width="300" height="70" rx="8" />
+<rect class="f-box z-old" x="32" y="46" width="268" height="24" rx="3" />
+<text class="f-mono z-old" x="40" y="63">works_at: Acme</text>
+<rect class="f-hot z-new" x="32" y="46" width="268" height="24" rx="3" />
+<text class="f-mono z-new" x="40" y="63">works_at: Globex</text>
+<text class="f-key" x="16" y="112">&#8220;WHERE DID SHE WORK LAST YEAR?&#8221; &#8594; UNANSWERABLE</text>
+<text class="f-key" x="348" y="18">BI-TEMPORAL &#183; EDGES EXPIRE</text>
+<rect class="f-panel" x="348" y="26" width="316" height="70" rx="8" />
+<line class="f-wire" x1="364" y1="80" x2="648" y2="80" />
+<rect class="f-box" x="364" y="42" width="130" height="20" rx="3" />
+<text class="f-mono" x="370" y="57">Acme</text>
+<rect class="f-hot z-live" x="500" y="42" width="148" height="20" rx="3" />
+<text class="f-mono" x="506" y="57">Globex</text>
+<line class="f-wire-d" x1="497" y1="36" x2="497" y2="86" />
+<text class="f-key" x="364" y="94">valid_from &#8594; valid_to</text>
+<text class="f-key" x="560" y="94">still open</text>
+<rect class="f-panel" x="16" y="126" width="648" height="54" rx="8" />
+<text class="f-key" x="32" y="146">TWO CLOCKS</text>
+<text x="120" y="150">when the fact was TRUE in the world &#183; when the system LEARNED it</text>
+<text x="32" y="170">a late-arriving correction can close an edge in the past without erasing what was believed then</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-bitemporal">Overwriting a fact destroys the ability to answer questions about the past, and agent memory accumulates exactly the kind of fact that changes. A bi-temporal graph closes an edge instead of deleting it, stamping when the fact was true in the world and, separately, when the system learned it. Two clocks are needed because they diverge: a correction that arrives today may apply to last year, and only the second clock explains why the system answered as it did at the time.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Every write now costs LLM passes — entity extraction plus contradiction adjudication — so ingestion is far slower and more expensive than appending a chunk to a vector store, and any extraction slip becomes a first-class fact wearing an authoritative timestamp. Valid-from frequently has to be inferred when the source never states it, and because nothing is deleted the graph grows monotonically and every query must carry a time filter to stay correct.</p></div>
+
+    <p class="stage-head">Stage 9 &middot; Governed, self-consolidating memory &mdash; 2025&ndash;2026</p>
+    <h2 id="sleeptime"><span class="scene-num">Sleep-time compute</span>Sleep-time compute</h2>
+    <p class="tag">A second agent rewrites the shared memory between turns, so consolidation stops costing reply latency.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>In the single-agent paging design, one agent does both the conversation and the bookkeeping, so every memory edit is paid out of the user's reply time — which pushes edits toward the cheapest possible form: one line appended at the moment of overflow, never reorganized, until the block degrades into an append log. It also means any reasoning over the accumulated context is re-derived from scratch on every query, at exactly the moment the user is waiting.</p></div>
+    <figure class="tsfig fig-sleeptime">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 196" role="img" aria-labelledby="figcap-sleeptime">
+<text class="f-key" x="16" y="18">WHILE ANSWERING</text>
+<rect class="f-panel" x="16" y="26" width="300" height="72" rx="8" />
+<rect class="f-box" x="32" y="44" width="60" height="36" rx="4" /><text class="f-key" x="62" y="66" text-anchor="middle">Q</text>
+<path class="f-live f-draw w-a" pathLength="100" d="M96 62 L140 62" />
+<rect class="f-box" x="146" y="44" width="70" height="36" rx="4" /><text class="f-key" x="181" y="66" text-anchor="middle">RETRIEVE</text>
+<path class="f-live f-draw w-b" pathLength="100" d="M220 62 L262 62" />
+<rect class="f-hot" x="268" y="44" width="34" height="36" rx="4" /><text class="f-key" x="285" y="66" text-anchor="middle">A</text>
+<text class="f-key" x="16" y="114">LATENCY BUDGET: EVERY MILLISECOND IS THE USER'S</text>
+<text class="f-key" x="348" y="18">WHILE IDLE</text>
+<rect class="f-panel" x="348" y="26" width="316" height="72" rx="8" />
+<g class="w-bg">
+<rect class="f-hot" x="364" y="40" width="60" height="18" rx="3" /><rect class="f-hot" x="432" y="40" width="60" height="18" rx="3" />
+<rect class="f-hot" x="500" y="40" width="60" height="18" rx="3" /><rect class="f-hot" x="568" y="40" width="80" height="18" rx="3" />
+</g>
+<text class="f-key" x="364" y="76">SUMMARISE &#183; MERGE DUPLICATES &#183; RESOLVE CONFLICTS &#183; RE-EMBED</text>
+<text class="f-key" x="348" y="114">NO USER IS WAITING</text>
+<rect class="f-panel" x="16" y="128" width="648" height="52" rx="8" />
+<text x="32" y="152">work whose value is not time-critical is moved off the request path entirely &#8212;</text>
+<text x="32" y="170">the cost is that the store a query reads may be mid-reorganisation.</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-sleeptime">Consolidating memory — summarising, merging duplicates, resolving contradictions, re-embedding — is expensive and its value is not time-critical, yet doing it during a request spends the user’s latency budget. Sleep-time compute moves it to idle periods, so the agent reorganises what it knows while nobody is waiting. The cost is that a query can arrive mid-reorganisation, and the store it reads is then in a state neither the old nor the new one.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The offline work only pays off when the questions that actually arrive are ones the pre-computation anticipated; the sleep-time compute paper ties the benefit directly to how predictable the query is from the context, and when it is not, those tokens buy nothing. It is also strictly more total compute, not less — you fund a second agent's inference on every batch of turns — and a wrong consolidation is now baked into a shared block the primary agent trusts and, in this architecture, cannot correct.</p></div>
+    <h2 id="toki"><span class="scene-num">Write-time contradiction resolution</span>Write-time contradiction resolution</h2>
+    <p class="tag">Treats a contradicting write as concurrency control: a declared isolation level and an audit row.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Stage 6 gave facts a validity interval, but it left open who decides which of two conflicting claims wins. Production systems already resolve this four ways — last-writer-wins, evidence-weighted merge, await-confirmation, per-rule policy — yet per TOKI none of them declares the isolation level it assumes or the write-time anomalies it admits, and the adjudicator is a language model sitting on the write path whose verdict is never logged under a key. The result is three concrete failures: you cannot replay how a belief was reached, the stored state drifts from what the audit trail implies, and the losing claim is destroyed outright.</p></div>
+    <figure class="tsfig fig-toki">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 200" role="img" aria-labelledby="figcap-toki">
+<text class="f-key" x="16" y="18">READ-TIME RESOLUTION</text>
+<rect class="f-panel" x="16" y="26" width="300" height="84" rx="8" />
+<rect class="f-box" x="32" y="44" width="120" height="20" rx="3" /><text class="f-mono" x="38" y="59">fact A</text>
+<rect class="f-box" x="32" y="70" width="120" height="20" rx="3" /><text class="f-mono" x="38" y="85">not-A</text>
+<path class="f-live f-draw k-r" pathLength="100" d="M158 68 L206 68" />
+<rect class="f-hot" x="212" y="52" width="88" height="32" rx="4" />
+<text class="f-key" x="256" y="72" text-anchor="middle">DECIDE AT READ</text>
+<text class="f-key" x="16" y="126">PAID ON EVERY QUERY, FOREVER</text>
+<text class="f-key" x="348" y="18">WRITE-TIME RESOLUTION</text>
+<rect class="f-panel" x="348" y="26" width="316" height="84" rx="8" />
+<rect class="f-box" x="364" y="44" width="110" height="20" rx="3" /><text class="f-mono" x="370" y="59">incoming</text>
+<rect class="f-hot k-gate" x="490" y="38" width="70" height="32" rx="4" />
+<text class="f-key" x="525" y="58" text-anchor="middle">GATE</text>
+<path class="f-live f-draw k-w" pathLength="100" d="M478 54 L486 54" />
+<rect class="f-box" x="578" y="38" width="70" height="32" rx="4" />
+<text class="f-key" x="613" y="58" text-anchor="middle">STORE</text>
+<text class="f-key" x="364" y="98">CONFLICTING WRITES SERIALISED LIKE TRANSACTIONS</text>
+<text x="16" y="186">the store never holds a contradiction, so no reader has to arbitrate one</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-toki">If contradictions are allowed into the store, every future read has to arbitrate them — a cost paid forever, by every query, usually by the most expensive component in the system. Treating a conflicting write as a concurrency problem instead moves the decision to write time: incoming facts pass through a gate that serialises them against what is already stored, so the store never holds a contradiction. The trade is that writes become ordered and more expensive, and the arbitration happens with less context than a reader would have had.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>This buys a correctness contract, not speed or accuracy: you pay an extra row per contradiction and a keyed log entry per adjudication, and the language-model judge stays on the write path, so writes get heavier exactly where volume is highest. The paper is explicit that its cross-system comparison is underpowered and claims no superiority, and the soundness results hold within a relational schedule model — what you get is a stated guarantee, not evidence that recall improves.</p></div>
+
+    <p class="stage-head">Stage 11 &middot; The learned and robust frontier &mdash; 2025&ndash;2026</p>
+    <h2 id="colbert"><span class="scene-num">ColBERT</span>ColBERT &mdash; late interaction</h2>
+    <p class="tag">Keeps one vector per token instead of one per passage, then scores each query token against its best match.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>A dense bi-encoder pools an entire passage into a single fixed-length vector, so a rare identifier, a version string or the one term that actually mattered for this query is averaged away with everything else. The obvious fix — a cross-encoder that attends jointly over query and document — restores the fine-grained matching but has to run a full transformer pass for every query-document pair at search time, so it can only re-rank a shortlist somebody else produced. Neither option can search a corpus with token-level precision.</p></div>
+    <figure class="tsfig fig-colbert">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 212" role="img" aria-labelledby="figcap-colbert">
+<text class="f-key" x="16" y="18">SINGLE VECTOR</text>
+<rect class="f-panel" x="16" y="26" width="286" height="120" rx="8" />
+<g class="l-toks"><rect class="f-box" x="32" y="44" width="34" height="18" rx="2" /><rect class="f-box" x="72" y="44" width="34" height="18" rx="2" />
+<rect class="f-box" x="112" y="44" width="34" height="18" rx="2" /><rect class="f-box" x="152" y="44" width="34" height="18" rx="2" />
+<rect class="f-box" x="192" y="44" width="34" height="18" rx="2" /><rect class="f-box" x="232" y="44" width="34" height="18" rx="2" /></g>
+<path class="f-wire" d="M149 66 L149 84" />
+<rect class="f-hot" x="104" y="90" width="90" height="22" rx="3" />
+<text class="f-key" x="149" y="105" text-anchor="middle">MEAN POOL</text>
+<text class="f-key" x="32" y="134">EVERYTHING AVERAGED INTO ONE POINT</text>
+<text class="f-key" x="334" y="18">LATE INTERACTION &#183; MaxSim</text>
+<rect class="f-panel" x="334" y="26" width="330" height="120" rx="8" />
+<circle class="f-node-on" cx="368" cy="52" r="4.5" /><circle class="f-node-on" cx="368" cy="82" r="4.5" /><circle class="f-node-on" cx="368" cy="112" r="4.5" />
+<circle class="f-node" cx="620" cy="44" r="4.5" /><circle class="f-node" cx="620" cy="72" r="4.5" />
+<circle class="f-node" cx="620" cy="100" r="4.5" /><circle class="f-node" cx="620" cy="126" r="4.5" />
+<path class="f-live f-draw l-max" pathLength="100" d="M374 52 L614 44 M374 82 L614 100 M374 112 L614 100" />
+<text class="f-key" x="368" y="136">QUERY TOKENS</text>
+<text class="f-key" x="600" y="136">DOC TOKENS</text>
+<text class="f-key" x="440" y="30">ONE ARROW PER QUERY TOKEN, TO ITS BEST MATCH</text>
+<text x="16" y="176">a rare identifier survives because it keeps its own vector instead of being averaged away</text>
+<text x="16" y="196">the price: storage and compute grow with TOKENS, not documents</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-colbert">Pooling a passage into one vector averages a rare identifier together with everything around it, and the detail that made the passage the right answer disappears. Late interaction keeps one vector per token and scores with MaxSim — each query token contributes its single best match against any document token — so a term that matters exactly once still contributes fully. The price is that storage and computation now scale with tokens rather than documents, which is why the rest of this family exists.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The index now holds a vector per token rather than per passage — roughly an order of magnitude more space, which ColBERTv2's centroid-plus-residual compression shrinks but does not remove — and retrieval needs a purpose-built engine that gathers candidates across token vectors before scoring, not one lookup in an ordinary vector database. It also requires an encoder that exposes per-token output, which most hosted and local embedding endpoints do not: they return one pooled vector per text.</p></div>
+    <h2 id="colpali"><span class="scene-num">ColPali</span>ColPali &mdash; late interaction over page images</h2>
+    <p class="tag">Indexes the picture of a page: a vision model embeds image patches and query words match patches directly.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>The standard document-retrieval pipeline is a chain of lossy parsers — PDF extraction, OCR, layout detection, chunking, sometimes captioning — and the errors compound: tables lose their row and column structure, charts and diagrams become nothing or a bad caption, multi-column pages get interleaved into nonsense, and typography, position and every other visual cue carries no signal at all. The obvious alternative, one CLIP-style vector per page image, reintroduces exactly the single-vector bottleneck that late interaction was built to escape, on pages that are far denser than a passage.</p></div>
+    <figure class="tsfig fig-colpali">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 196" role="img" aria-labelledby="figcap-colpali">
+<text class="f-key" x="16" y="18">OCR PIPELINE</text>
+<rect class="f-panel" x="16" y="26" width="300" height="76" rx="8" />
+<rect class="f-box" x="32" y="44" width="52" height="40" rx="4" /><text class="f-key" x="58" y="68" text-anchor="middle">PAGE</text>
+<path class="f-live f-draw o-1" pathLength="100" d="M88 64 L118 64" />
+<rect class="f-box" x="124" y="44" width="52" height="40" rx="4" /><text class="f-key" x="150" y="68" text-anchor="middle">OCR</text>
+<path class="f-live f-draw o-2" pathLength="100" d="M180 64 L210 64" />
+<rect class="f-box" x="216" y="44" width="84" height="40" rx="4" /><text class="f-key" x="258" y="62" text-anchor="middle">LAYOUT +</text><text class="f-key" x="258" y="76" text-anchor="middle">CHUNKING</text>
+<text class="f-key" x="16" y="118">TABLES, FIGURES AND COLUMNS LOST AT EVERY STEP</text>
+<text class="f-key" x="348" y="18">COLPALI</text>
+<rect class="f-panel" x="348" y="26" width="316" height="76" rx="8" />
+<rect class="f-box" x="364" y="44" width="52" height="40" rx="4" /><text class="f-key" x="390" y="68" text-anchor="middle">PAGE</text>
+<path class="f-live f-draw o-3" pathLength="100" d="M420 64 L452 64" />
+<rect class="f-hot" x="458" y="44" width="90" height="40" rx="4" />
+<text class="f-key" x="503" y="62" text-anchor="middle">VISION LM</text>
+<text class="f-key" x="503" y="76" text-anchor="middle">PATCH VECTORS</text>
+<path class="f-live f-draw o-4" pathLength="100" d="M552 64 L584 64" />
+<g class="o-grid">
+<rect class="f-hot" x="590" y="46" width="16" height="16" rx="2" /><rect class="f-hot" x="610" y="46" width="16" height="16" rx="2" />
+<rect class="f-hot" x="630" y="46" width="16" height="16" rx="2" /><rect class="f-hot" x="590" y="66" width="16" height="16" rx="2" />
+<rect class="f-hot" x="610" y="66" width="16" height="16" rx="2" /><rect class="f-hot" x="630" y="66" width="16" height="16" rx="2" />
+</g>
+<text class="f-key" x="348" y="118">THE PAGE IMAGE IS THE DOCUMENT</text>
+<text x="16" y="182">late interaction over image patches &#8212; a chart is retrievable without ever becoming text</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-colpali">A document pipeline that begins with OCR loses layout, tables and figures before retrieval starts, and every downstream stage inherits those losses. ColPali skips the text stage: a vision language model embeds the page image directly into patch vectors, and the same late-interaction scoring runs over patches instead of tokens. A chart or a table becomes retrievable as itself, without a text representation ever existing — at the cost of storing many vectors per page and needing a vision model at query time.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>Indexing is expensive at both ends: every page needs a full vision-language-model forward pass rather than a cheap text embedding, and it stores on the order of a thousand patch vectors per page, so the index is heavier than a text-token late-interaction index and most vector databases still have no native multi-vector support. Retrieval also returns a whole page, which means the downstream generator has to be able to read the page image, and anything too fine to survive the model's fixed input resolution is effectively invisible.</p></div>
+    <h2 id="lemur"><span class="scene-num">Reducing multi-vector to single-vector ANN</span>Reducing multi-vector to single-vector ANN</h2>
+    <p class="tag">Learns one vector per document whose inner product with a pooled query vector estimates the MaxSim score.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Late interaction buys its quality by searching over per-token vectors: every query token launches its own nearest-neighbour search, the hits have to be gathered per document and rescored, and the whole thing needs a specialised engine rather than a stock ANN library — so latency and index complexity scale with token count. The earlier reduction to single-vector search, MUVERA's fixed dimensional encodings, sidesteps the engine problem with a data-independent randomized space partition, but that encoding has to be very high-dimensional to preserve recall.</p></div>
+    <figure class="tsfig fig-lemur">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 192" role="img" aria-labelledby="figcap-lemur">
+<text class="f-key" x="16" y="18">THE OBSTACLE</text>
+<rect class="f-panel" x="16" y="26" width="286" height="76" rx="8" />
+<circle class="f-node-on" cx="52" cy="50" r="4" /><circle class="f-node-on" cx="52" cy="70" r="4" /><circle class="f-node-on" cx="52" cy="90" r="4" />
+<circle class="f-node" cx="240" cy="44" r="4" /><circle class="f-node" cx="240" cy="62" r="4" />
+<circle class="f-node" cx="240" cy="80" r="4" /><circle class="f-node" cx="240" cy="98" r="4" />
+<path class="f-wire-d" d="M58 50 L234 44 M58 50 L234 62 M58 70 L234 80 M58 90 L234 98 M58 70 L234 44" />
+<text class="f-key" x="16" y="118">MaxSim IS NOT AN INNER PRODUCT &#8212; NO ANN INDEX ACCEPTS IT</text>
+<text class="f-key" x="334" y="18">REDUCTION</text>
+<rect class="f-panel" x="334" y="26" width="330" height="76" rx="8" />
+<g class="u-many">
+<circle class="f-node-on" cx="366" cy="48" r="4" /><circle class="f-node-on" cx="366" cy="66" r="4" /><circle class="f-node-on" cx="366" cy="84" r="4" />
+</g>
+<path class="f-live f-draw u-map" pathLength="100" d="M374 66 L438 66" />
+<rect class="f-hot u-one" x="444" y="54" width="96" height="24" rx="3" />
+<text class="f-key" x="492" y="70" text-anchor="middle">ONE VECTOR</text>
+<path class="f-live f-draw u-idx" pathLength="100" d="M546 66 L588 66" />
+<rect class="f-box" x="594" y="50" width="56" height="32" rx="4" />
+<text class="f-key" x="622" y="70" text-anchor="middle">ANN</text>
+<text class="f-key" x="334" y="118">ORDINARY SINGLE-VECTOR SEARCH, THEN EXACT RERANK</text>
+<text x="16" y="178">the family&#8217;s recurring move: make the expensive score approximable by a cheap one</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-lemur">MaxSim is not an inner product, so no ordinary nearest-neighbour index can serve it and multi-vector retrieval loses the entire ANN ecosystem. The reduction approach maps a token bag to a single vector chosen so that plain inner-product search over those vectors approximates the multi-vector score, recovering standard indexing for a first pass and leaving exact late interaction to rerank the shortlist. It is the family’s recurring move: make an expensive score approximable by a cheap one, then pay the expensive one only on survivors.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The document vectors are not something the encoder produces — each is fitted against a network trained over that specific corpus, so the index is corpus-bound: building it is a multi-stage offline job and adding documents later is awkward rather than a plain insert. And it is an estimate, so exact MaxSim reranking of the candidate list is still mandatory; wherever that rerank dominates the cost — image-patch documents with far more vectors each, for instance — the speedup narrows.</p></div>
+    <h2 id="muvera"><span class="scene-num">MUVERA</span>MUVERA &mdash; fixed dimensional encodings<span class="chip chip-none">code only &middot; no callers</span></h2>
+    <p class="tag">Sketches a ColBERT token bag into one fixed-length vector whose dot product approximates MaxSim.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>ColBERT-style late interaction scores a query against a document with Chamfer/MaxSim — every query token takes the max inner product over every document token, then those maxima are summed. That is not a single inner product, so it cannot ride a normal MIPS/ANN index: you either brute-force the full token matrix of every candidate (quadratic in tokens, linear in corpus) or run one ANN query per query token and stitch the results back together with a multi-stage gather-and-rescore engine like PLAID. MUVERA replaces both with a data-oblivious sketch: encode each token bag as ONE fixed-dimensional vector such that a plain dot product provably approximates Chamfer, so multi-vector retrieval becomes a single-vector ANN lookup plus an optional exact rerank.</p></div>
+    <figure class="tsfig fig-muvera">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 232" role="img" aria-labelledby="figcap-muvera">
+<text class="f-key" x="16" y="18">TOKEN CLOUDS &#183; MaxSim</text>
+<rect class="f-panel" x="16" y="26" width="250" height="128" rx="8" />
+<circle class="f-node-on" cx="60" cy="56" r="4.5" /><circle class="f-node-on" cx="60" cy="86" r="4.5" /><circle class="f-node-on" cx="60" cy="116" r="4.5" />
+<circle class="f-node" cx="222" cy="46" r="4.5" /><circle class="f-node" cx="222" cy="76" r="4.5" />
+<circle class="f-node" cx="222" cy="106" r="4.5" /><circle class="f-node" cx="222" cy="134" r="4.5" />
+<path class="f-live f-draw m-max" pathLength="100" d="M60 56 L222 46 M60 86 L222 106 M60 116 L222 106" />
+<text class="f-key" x="60" y="140" text-anchor="middle">QUERY</text>
+<text class="f-key" x="222" y="152" text-anchor="middle">DOC</text>
+<text x="16" y="174">one arrow per query token</text>
+<text class="f-key" x="298" y="18">SIMHASH BUCKETS</text>
+<rect class="f-panel" x="298" y="26" width="164" height="128" rx="8" />
+<path class="f-wire-d m-cut" d="M298 74 L462 62 M380 26 L364 154" />
+<circle class="f-dot-on" cx="330" cy="50" r="3.5" /><circle class="f-dot-on" cx="352" cy="44" r="3.5" />
+<circle class="f-dot" cx="418" cy="44" r="3.5" /><circle class="f-dot" cx="436" cy="52" r="3.5" />
+<circle class="f-dot" cx="330" cy="120" r="3.5" /><circle class="f-dot" cx="410" cy="118" r="3.5" />
+<text class="f-key" x="314" y="96">SUM q</text><text class="f-key" x="396" y="96">AVG d</text>
+<text x="298" y="174">the asymmetry is the trick</text>
+<text class="f-key" x="494" y="18">FIXED-DIM ENCODING</text>
+<rect class="f-panel" x="494" y="26" width="170" height="128" rx="8" />
+<g class="m-blocks">
+<rect class="f-hot" x="510" y="46" width="30" height="18" rx="2" /><rect class="f-hot" x="546" y="46" width="30" height="18" rx="2" />
+<rect class="f-hot" x="582" y="46" width="30" height="18" rx="2" /><rect class="f-hot" x="618" y="46" width="30" height="18" rx="2" />
+<rect class="f-hot" x="510" y="72" width="30" height="18" rx="2" /><rect class="f-hot" x="546" y="72" width="30" height="18" rx="2" />
+<rect class="f-hot" x="582" y="72" width="30" height="18" rx="2" /><rect class="f-hot" x="618" y="72" width="30" height="18" rx="2" />
+</g>
+<rect class="f-box m-flat" x="510" y="112" width="138" height="20" rx="3" />
+<text class="f-key" x="579" y="126" text-anchor="middle">ONE VECTOR</text>
+<text x="494" y="174">project, concatenate, repeat</text>
+<text x="16" y="206">indexed in an ordinary HNSW; one inner-product search, then exact MaxSim reranks</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-muvera">Random hyperplanes slice the space and stamp each token with a sign code that drops it into a bucket. Inside each bucket the query tokens collapse into a sum while the document tokens collapse into an average — that asymmetry is what makes a plain dot product approximate MaxSim. Empty document buckets borrow the nearest occupied bucket’s centroid so a query token never lands on nothing, each block is randomly projected, and the blocks are concatenated into one fixed-length vector an ordinary index can hold.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The sketch buys single-vector indexing with dimensionality: the FDE is 2^k_sim x d_proj x r_reps floats (the paper operates around ~10k dims and then needs product quantization to be storable), so a document's single MUVERA vector can be an order of magnitude larger than its ordinary dense embedding. It is an approximation with real variance — accuracy is bought by raising r_reps and d_proj, and quality leans on re-ranking the ANN shortlist with exact MaxSim, so it reduces rather than eliminates the multi-vector scoring cost. The SimHash partition also degrades when a token bag is large and diverse relative to B buckets, and the empty-bucket fill is a heuristic that can attribute a document region a query token never truly matched. Most importantly, MUVERA only makes existing late interaction cheap — it creates no retrieval quality on its own and is worthless without an upstream per-token (ColBERT-style) encoder, which is exactly the dependency blocking it in this repo.</p></div>
+    <div class="sblock ts"><span class="slabel">In TerranSoul</span><p><strong>No callers</strong> &mdash; and worth being blunt about why it could not simply be switched on: late interaction needs a per-token embedder, and the local Ollama-style server returns one mean-pooled vector per text. That is the boundary Stage&nbsp;11 of the parent article describes: the frontier is not wrong, it is priced in a currency a local deployment cannot spend.</p></div>
+    <h2 id="memoryr1"><span class="scene-num">Memory-R1</span>Memory-R1 &mdash; a learned write policy</h2>
+    <p class="tag">A policy learns when to add, update, delete or do nothing, trained only on whether the answer came out right.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Prior memory stores decided their own write operations with hand-written prompts and heuristics. When a new turn contradicted a stored fact, a prompted manager typically appended a second entry instead of revising the first, because nothing told it which choice was correct. The contradictions then compounded: every later retrieval surfaced both versions, and the error rate grew with the length of the conversation.</p></div>
+    <figure class="tsfig fig-memoryr1">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 198" role="img" aria-labelledby="figcap-memoryr1">
+<text class="f-key" x="16" y="18">HAND-WRITTEN RULES</text>
+<rect class="f-panel" x="16" y="26" width="286" height="76" rx="8" />
+<text class="f-mono" x="32" y="50">if similarity &gt; 0.85: merge</text>
+<text class="f-mono" x="32" y="70">if age &gt; 30d and unused: drop</text>
+<text class="f-mono" x="32" y="90">else: append</text>
+<text class="f-key" x="16" y="118">THRESHOLDS NOBODY CAN DERIVE</text>
+<text class="f-key" x="348" y="18">LEARNED POLICY</text>
+<rect class="f-panel" x="348" y="26" width="316" height="76" rx="8" />
+<rect class="f-box" x="364" y="42" width="76" height="44" rx="4" />
+<text class="f-key" x="402" y="60" text-anchor="middle">CANDIDATE</text>
+<text class="f-key" x="402" y="74" text-anchor="middle">WRITE</text>
+<path class="f-live f-draw n-p" pathLength="100" d="M444 64 L484 64" />
+<g class="n-acts">
+<rect class="f-hot" x="490" y="36" width="72" height="16" rx="2" /><text class="f-key" x="526" y="48" text-anchor="middle">ADD</text>
+<rect class="f-box" x="490" y="56" width="72" height="16" rx="2" /><text class="f-key" x="526" y="68" text-anchor="middle">UPDATE</text>
+<rect class="f-box" x="490" y="76" width="72" height="16" rx="2" /><text class="f-key" x="526" y="88" text-anchor="middle">DELETE / NOOP</text>
+</g>
+<path class="f-live f-draw n-r" pathLength="100" d="M572 64 L610 64" />
+<rect class="f-box" x="616" y="48" width="40" height="32" rx="4" />
+<text class="f-key" x="636" y="68" text-anchor="middle">TASK</text>
+<path class="f-live f-draw n-fb" pathLength="100" d="M636 88 L636 100 L402 100 L402 90" />
+<text class="f-key" x="470" y="114">REWARD FROM DOWNSTREAM TASK SUCCESS</text>
+<text x="16" y="182">the write policy is trained, not tuned &#8212; and it needs an offline training loop a frozen deployment does not have</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-memoryr1">Whether to add, update, delete or ignore an incoming fact is normally decided by hand-written thresholds that nobody can derive from first principles and that quietly rot as the corpus changes. Memory-R1 makes the write decision a learned policy, trained by reinforcement from whether downstream task performance improved. The signal is honest — memory is judged by whether it helped — but it requires an offline training loop, which a frozen, local deployment by definition does not have.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The only training signal is downstream answer correctness, so a single scalar has to explain one edit among many and credit assignment is noisy; it also needs an offline RL loop and labelled QA pairs from the same question distribution, which a frozen local model cannot have. And the manager can only revise entries the similarity search surfaced — if the contradicting entry is not retrieved, the sole reachable action is ADD, which is exactly the failure it exists to fix.</p></div>
+    <h2 id="hipporag"><span class="scene-num">HippoRAG-2</span>HippoRAG-2 &mdash; personalized PageRank</h2>
+    <p class="tag">Retrieval becomes a walk on a graph, so a passage can rank high without ever matching the query.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Flat vector retrieval scores each passage on its own similarity to the query. A two-hop question names the first entity but not the bridge, so the passage holding the answer shares no wording or meaning with the query and never enters the top-k at all. Iterative retrieve-read loops can reach it, but only by spending several LLM calls per query; and the first HippoRAG fixed multi-hop with an entity-only graph while losing ground on simple queries, because the passages themselves were never in the graph.</p></div>
+    <figure class="tsfig fig-hipporag">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 202" role="img" aria-labelledby="figcap-hipporag">
+<text class="f-key" x="16" y="18">ITERATIVE MULTI-HOP</text>
+<rect class="f-panel" x="16" y="26" width="286" height="90" rx="8" />
+<rect class="f-box" x="32" y="44" width="56" height="24" rx="3" /><text class="f-key" x="60" y="60" text-anchor="middle">HOP 1</text>
+<path class="f-live f-draw i-1" pathLength="100" d="M92 56 L118 56" />
+<rect class="f-box" x="124" y="44" width="56" height="24" rx="3" /><text class="f-key" x="152" y="60" text-anchor="middle">HOP 2</text>
+<path class="f-live f-draw i-2" pathLength="100" d="M184 56 L210 56" />
+<rect class="f-box" x="216" y="44" width="56" height="24" rx="3" /><text class="f-key" x="244" y="60" text-anchor="middle">HOP 3</text>
+<text class="f-key" x="32" y="90">ONE LLM CALL PER HOP &#183; LATENCY MULTIPLIES</text>
+<text class="f-key" x="348" y="18">PERSONALIZED PAGERANK &#183; ONE SHOT</text>
+<rect class="f-panel" x="348" y="26" width="316" height="90" rx="8" />
+<path class="f-wire-d" d="M392 62 L446 44 M446 44 L500 66 M500 66 L556 48 M556 48 L612 70 M446 44 L556 48 M392 62 L500 66" />
+<circle class="f-node-on" cx="392" cy="62" r="7" />
+<circle class="f-node r-w1" cx="446" cy="44" r="6" />
+<circle class="f-node r-w2" cx="500" cy="66" r="5.5" />
+<circle class="f-node r-w3" cx="556" cy="48" r="5" />
+<circle class="f-node r-w4" cx="612" cy="70" r="4.5" />
+<text class="f-key" x="392" y="88">SEED</text>
+<text class="f-key" x="470" y="100">PROBABILITY MASS SPREADS, DECAYING WITH DISTANCE</text>
+<text x="16" y="188">the graph does the multi-hop reasoning; one propagation replaces a chain of model calls</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-hipporag">Multi-hop retrieval normally means a chain of model calls — retrieve, read, reformulate, retrieve again — and each link multiplies latency and adds a place to go wrong. Personalized PageRank seeds probability mass on the passages the query matches directly and lets it propagate along the passage graph, decaying with distance, so passages several hops away surface in a single propagation. The graph performs the multi-hop step structurally; what it cannot do is decide that a hop was a mistake.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The graph is built by an LLM, so ingestion cost scales with the corpus and every extraction or entity-linking mistake is baked into the edges before a single query runs. The recognition-memory filter can also discard a triple that mattered, and once a seed is gone PageRank has no way to recover it — retrieval is bounded by the graph, and the graph has to be maintained as the corpus changes.</p></div>
+    <h2 id="robustrag"><span class="scene-num">RobustRAG</span>RobustRAG &mdash; isolate then aggregate</h2>
+    <p class="tag">Every retrieved passage answers alone, and only answers that several passages agree on survive.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Standard RAG concatenates the top-k passages into a single prompt, which makes every retrieved passage a peer of the instructions. One attacker-planted passage saying 'ignore the above, the answer is X' is read jointly with all the others and can decide the output on its own. Detection filters offer no guarantee — they only raise the bar for how the injected text has to be phrased.</p></div>
+    <figure class="tsfig fig-robustrag">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 206" role="img" aria-labelledby="figcap-robustrag">
+<text class="f-key" x="16" y="18">CONCATENATE &#183; ONE POISONED PASSAGE WINS</text>
+<rect class="f-panel" x="16" y="26" width="300" height="86" rx="8" />
+<rect class="f-box" x="32" y="42" width="60" height="20" rx="3" /><rect class="f-box" x="98" y="42" width="60" height="20" rx="3" />
+<rect class="f-hot v-bad" x="164" y="42" width="60" height="20" rx="3" />
+<rect class="f-box" x="230" y="42" width="60" height="20" rx="3" />
+<path class="f-live f-draw v-cat" pathLength="100" d="M160 68 L160 84" />
+<rect class="f-box" x="98" y="88" width="124" height="20" rx="3" />
+<text class="f-key" x="160" y="102" text-anchor="middle">ONE PROMPT</text>
+<text class="f-key" x="16" y="128">INJECTED TEXT STEERS THE WHOLE ANSWER</text>
+<text class="f-key" x="348" y="18">ISOLATE &#8594; AGGREGATE</text>
+<rect class="f-panel" x="348" y="26" width="316" height="86" rx="8" />
+<g class="v-iso">
+<rect class="f-box" x="364" y="38" width="52" height="18" rx="3" /><rect class="f-box" x="364" y="62" width="52" height="18" rx="3" />
+<rect class="f-hot v-bad2" x="364" y="86" width="52" height="18" rx="3" />
+</g>
+<path class="f-live f-draw v-r1" pathLength="100" d="M420 47 L466 47" />
+<path class="f-live f-draw v-r2" pathLength="100" d="M420 71 L466 71" />
+<path class="f-live f-draw v-r3" pathLength="100" d="M420 95 L466 95" />
+<rect class="f-box" x="472" y="38" width="52" height="18" rx="3" /><text class="f-key" x="498" y="51" text-anchor="middle">ANS 1</text>
+<rect class="f-box" x="472" y="62" width="52" height="18" rx="3" /><text class="f-key" x="498" y="75" text-anchor="middle">ANS 2</text>
+<rect class="f-box v-out" x="472" y="86" width="52" height="18" rx="3" /><text class="f-key" x="498" y="99" text-anchor="middle">ANS 3</text>
+<path class="f-live f-draw v-agg" pathLength="100" d="M530 71 L572 71" />
+<rect class="f-hot" x="578" y="54" width="70" height="34" rx="4" />
+<text class="f-key" x="613" y="75" text-anchor="middle">AGGREGATE</text>
+<text class="f-key" x="348" y="128">EACH PASSAGE ANSWERED ALONE &#8212; NO PASSAGE SEES ANOTHER</text>
+<text x="16" y="192">a certified bound: with k corrupted passages out of n, the aggregate cannot be flipped</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-robustrag">Concatenating retrieved passages into one prompt gives any single passage the power to steer the entire answer, which is exactly what a prompt-injection attack needs. Isolate-then-aggregate answers each passage independently — no passage ever sees another — and then combines the independent answers. Because a corrupted passage can only influence its own answer, the aggregation admits a certified bound on how many corrupted passages the system tolerates: a guarantee, rather than a benchmark delta.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>The bill is roughly one LLM call per retrieved passage instead of one per query, and the stronger decoding-based aggregator needs next-token probabilities that many inference servers never expose. Isolation also destroys by construction any answer that requires combining two passages, and the certificate holds only up to a bounded number of corrupted passages — past that bound it says nothing.</p></div>
+    <h2 id="camel"><span class="scene-num">CaMeL</span>CaMeL &mdash; capabilities and information flow</h2>
+    <p class="tag">The plan is written before any untrusted text is read, so retrieved data can change values but not steps.</p>
+    <div class="sblock"><span class="slabel">The problem</span><p>Isolate-then-aggregate protects the answer, not the actions. In a tool-using agent the same context that holds a retrieved email or web page also decides the next tool call, so injected text does not have to win a vote — it only has to be read once to redirect a send, a write or a payment. Nothing about aggregating answers stops a poisoned document from supplying the recipient address.</p></div>
+    <figure class="tsfig fig-camel">
+      <div class="tsfig-scroll">
+        <svg viewBox="0 0 680 204" role="img" aria-labelledby="figcap-camel">
+<text class="f-key" x="16" y="18">PRIVILEGED PLANNER &#183; NEVER SEES DATA</text>
+<rect class="f-panel" x="16" y="26" width="300" height="80" rx="8" />
+<rect class="f-hot" x="32" y="44" width="268" height="22" rx="3" />
+<text class="f-mono" x="40" y="59">plan: fetch(x) &#8594; summarise &#8594; send(y)</text>
+<text class="f-key" x="32" y="88">WRITES THE CONTROL FLOW UP FRONT</text>
+<path class="f-live f-draw m-flow" pathLength="100" d="M166 110 L166 132" />
+<text class="f-key" x="348" y="18">QUARANTINED EXECUTOR &#183; SEES DATA, NO AUTHORITY</text>
+<rect class="f-panel" x="348" y="26" width="316" height="80" rx="8" />
+<rect class="f-box" x="364" y="44" width="284" height="22" rx="3" />
+<text class="f-mono" x="372" y="59">untrusted text &#8594; values only</text>
+<text class="f-key" x="364" y="88">CANNOT CHANGE WHAT RUNS NEXT</text>
+<rect class="f-panel" x="16" y="138" width="648" height="52" rx="8" />
+<text class="f-key" x="32" y="158">CAPABILITY CHECK ON EVERY VALUE</text>
+<g class="m-cap">
+<rect class="f-box" x="240" y="146" width="90" height="20" rx="3" /><text class="f-key" x="285" y="160" text-anchor="middle">SOURCE</text>
+<rect class="f-box" x="340" y="146" width="90" height="20" rx="3" /><text class="f-key" x="385" y="160" text-anchor="middle">ALLOWED SINKS</text>
+<rect class="f-hot" x="440" y="146" width="90" height="20" rx="3" /><text class="f-key" x="485" y="160" text-anchor="middle">BLOCKED</text>
+</g>
+<text x="32" y="182">injected instructions arrive as DATA, and data cannot rewrite the plan</text>
+        </svg>
+      </div>
+      <figcaption id="figcap-camel">A prompt injection works because instructions and data arrive through the same channel and the model cannot tell them apart. CaMeL separates the two structurally: a privileged planner writes the control flow before any untrusted content is seen, and a quarantined executor that does see the content can only produce values — it has no authority to change what runs next. Every value carries a capability recording where it came from and which sinks it may reach, so injected text arrives as data and data cannot rewrite the plan. The cost is a second, privileged model and a real loss of flexibility.</figcaption>
+    </figure>
+    <div class="sblock"><span class="slabel">What it costs</span><p>It defends only what a plan can settle in advance, so genuinely data-dependent control flow — read the mail, then decide what to do — is either refused or escalated to the user, and enough of those prompts turn the guarantee into a rubber stamp. Policies must be authored and maintained per tool, the user's own query is assumed trusted, and the architecture costs a second privileged model plus a custom interpreter beside the agent.</p></div>
+
+    <p class="stage-head">Closing</p>
+    <h2><span class="scene-num">Summary</span>What each technique actually buys, and with what</h2>
+    <p>Read down this table rather than across it. Almost every row buys its improvement by spending one of four things &mdash; memory, latency, an offline training loop, or accuracy itself &mdash; and the pattern of what a technique is willing to spend tells you more about when to use it than its name does.</p>
+
+    <table class="tbl">
+      <thead><tr><th>Technique</th><th>Fixes</th><th>Spends</th></tr></thead>
+      <tbody>
+        <tr><td>BM25</td><td>naive term counting</td><td>nothing &mdash; but only matches shared words</td></tr>
+        <tr><td>Dense / DPR</td><td>the vocabulary gap</td><td>exact identifiers, and supervised training pairs</td></tr>
+        <tr><td>Matryoshka</td><td>one fixed embedding width</td><td>a little accuracy at short prefixes</td></tr>
+        <tr><td>HNSW</td><td>O(n) exact scan</td><td>memory, and certainty</td></tr>
+        <tr><td>Shard router</td><td>probing every shard</td><td>recall in unselected shards</td></tr>
+        <tr><td>IVF-PQ</td><td>RAM-resident full vectors</td><td>accuracy twice &mdash; cells missed, codes lossy</td></tr>
+        <tr><td>DiskANN</td><td>the corpus outgrowing RAM</td><td>random SSD reads per hop</td></tr>
+        <tr><td>RaBitQ</td><td>quantization you cannot trust</td><td>a float per vector; weak in low dimension</td></tr>
+        <tr><td>TurboVec</td><td>storage footprint</td><td>nothing on candidates &mdash; it still scans all of them</td></tr>
+        <tr><td>Typed-edge traversal</td><td>similarity is not structure</td><td>extraction, schema and upkeep</td></tr>
+        <tr><td>GraphRAG</td><td>corpus-wide questions</td><td>a large one-off index-time model spend</td></tr>
+        <tr><td>RAG</td><td>frozen weights</td><td>context budget; the model is conditioned, not taught</td></tr>
+        <tr><td>HyDE</td><td>question and answer look different</td><td>a generation before every search</td></tr>
+        <tr><td>RRF</td><td>incomparable score scales</td><td>the scores&rsquo; magnitude information</td></tr>
+        <tr><td>MMR</td><td>near-duplicate result sets</td><td>a &lambda; nobody can derive</td></tr>
+        <tr><td>Self-RAG</td><td>retrieving when it does not help</td><td>training, and a critic that is the same model</td></tr>
+        <tr><td>CRAG</td><td>confidently wrong retrieval</td><td>an extra evaluator, and a web fallback</td></tr>
+        <tr><td>MemGPT paging</td><td>the context wall</td><td>paging mistakes become the model&rsquo;s mistakes</td></tr>
+        <tr><td>Bi-temporal graph</td><td>overwriting destroys history</td><td>storage that only grows, and two clocks to keep straight</td></tr>
+        <tr><td>Sleep-time compute</td><td>consolidation on the request path</td><td>reads that can land mid-reorganisation</td></tr>
+        <tr><td>Write-time resolution</td><td>arbitrating conflicts on every read</td><td>slower, ordered writes with less context</td></tr>
+        <tr><td>ColBERT</td><td>detail lost to pooling</td><td>storage and compute that scale with tokens</td></tr>
+        <tr><td>ColPali</td><td>OCR discarding layout</td><td>many vectors per page, and a vision model at query time</td></tr>
+        <tr><td>Multi-vector reduction</td><td>MaxSim not being indexable</td><td>an approximation, reranked exactly</td></tr>
+        <tr><td>MUVERA</td><td>the same</td><td>dimensionality &mdash; the sketch can exceed what it replaced</td></tr>
+        <tr><td>Memory-R1</td><td>hand-tuned write heuristics</td><td>an offline training loop</td></tr>
+        <tr><td>HippoRAG-2</td><td>a chain of calls per hop</td><td>graph construction; cannot un-take a hop</td></tr>
+        <tr><td>RobustRAG</td><td>one passage steering the answer</td><td>one generation per passage</td></tr>
+        <tr><td>CaMeL</td><td>instructions and data sharing a channel</td><td>a second privileged model, and flexibility</td></tr>
+      </tbody>
+    </table>
+
+    <h2><span class="scene-num">Note</span>Two places this page and its parent must agree</h2>
+    <p>The parent article&rsquo;s Stage&nbsp;12 coverage row lists &ldquo;per-shard usearch HNSW, IVF-PQ, TurboVec, and a shard router&rdquo; in one breath. Read against the source: two of those four are on the default path, one is default-off, and one has no callers at all. That row and the chips on this page need to say the same thing, and this page is the more specific of the two because it was written from the code.</p>
+    <p>Second, the seeded <code>ann.hnsw.expansion_search</code> and <code>expansion_add</code> configuration rows are documented as tuning the live index and do not: every production call site passes the hard-coded defaults. Behaviour is unaffected, because the seeded values happen to equal those defaults &mdash; but a reader who changed the seed row expecting an effect would get none, and that is worth fixing at the source rather than describing here.</p>
+    <p class="small">Techniques are presented in the order the parent article introduces them; stage numbers refer to its twelve-stage chain. Citations for every technique live in that article&rsquo;s reference list rather than being duplicated here, so there is one copy to keep correct.</p>
+  </article>
+</div>
+
+<footer class="page-foot">
+  <div class="links">
+    <a href="../">&larr; TerranSoul home</a>
+    <a href="memory-evolution.html">Memory evolution</a>
+    <a href="index.html">Main paper</a>
+    <a href="../brain-advanced-design/">Brain advanced design</a>
+    <a href="https://github.com/Terranimus/TerranSoul">GitHub</a>
+  </div>
+  <div>Drill-down companion to <em>The Evolution of Memory for AI Systems</em> &middot; 2026-08.</div>
+</footer>
+<script src="../assets/site-nav.js" defer></script>
+</body>
+</html>

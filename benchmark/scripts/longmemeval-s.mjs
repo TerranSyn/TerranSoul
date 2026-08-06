@@ -244,7 +244,12 @@ function sessionPayloads(entry) {
   });
 }
 
-function recallAny(retrievedSessionIds, goldSessionIds, k) {
+// Exported for `docbench-score.mjs` (DOCBENCH-1). The identity unit there is a
+// `doc#page` key rather than a session id, but these functions are id-agnostic,
+// so DocBench reuses the SAME definitions instead of declaring its own. That is
+// deliberate: MAX-100-17 was a metric whose definition drifted between arms, and
+// two hand-written NDCGs in one repo is the same bug waiting to happen.
+export function recallAny(retrievedSessionIds, goldSessionIds, k) {
   const top = new Set(retrievedSessionIds.slice(0, k));
   return goldSessionIds.some(id => top.has(id)) ? 1.0 : 0.0;
 }
@@ -257,7 +262,7 @@ function dcg(relevances, k) {
   return sum;
 }
 
-function ndcg(retrievedSessionIds, goldSessionIds, k) {
+export function ndcg(retrievedSessionIds, goldSessionIds, k) {
   const gold = new Set(goldSessionIds);
   const seen = new Set();
   const deduped = retrievedSessionIds.filter(id => (seen.has(id) ? false : (seen.add(id), true)));

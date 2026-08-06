@@ -288,6 +288,7 @@
     <p>The history is usually told as a sequence of replacements: keywords gave way to embeddings, embeddings to vector databases, retrieval to graphs, graphs to agents. It is nothing of the sort. Every earlier substrate is still load-bearing inside its successor &mdash; BM25 inside hybrid retrievers, approximate-nearest-neighbour indexes inside every product that calls itself semantic, knowledge graphs inside 2026's agent-memory startups.</p>
     <p>What moves forward is the <em>failure mode</em>. Each stage solved the documented limitation of the stage before it and, at production scale, exposed a new one. That is the argument of this article, and it is falsifiable: if a transition has no failure behind it, the link is not real. Two of the eleven transitions below do not have one, and both are marked as such rather than papered over.</p>
     <p>Each stage is written the same way &mdash; <em>what it is</em>, <em>pros</em>, <em>cons</em>, and <em>why the next stage</em>. The cons are the load-bearing part.</p>
+    <p>This article names the techniques; it does not open them. A companion page, <a href="techniques.html"><em>Retrieval and memory techniques</em></a>, takes the twenty-nine mechanisms cited below &mdash; BM25, dense retrieval, Matryoshka, HNSW, IVF-PQ, DiskANN, RaBitQ, TurboVec, typed-edge traversal, GraphRAG, RAG, HyDE, RRF, MMR, Self-RAG, CRAG, MemGPT paging, bi-temporal graphs, sleep-time compute, write-time contradiction resolution, ColBERT, ColPali, MUVERA, Memory-R1, HippoRAG-2, RobustRAG and CaMeL &mdash; and gives each one an animated diagram of how it works, the failure it exists to fix, and what it charges for the fix.</p>
     <p class="small">Scope note: this article covers <em>memory and retrieval</em> for AI systems &mdash; how a language model recalls facts, conversations, and documents. It does not cover code-intelligence tooling (AST-level code graphs, symbol indexes, or coding-assistant token-saving techniques), which is a separate subsystem with its own design questions and is out of scope here.</p>
 
     <h2><span class="scene-num">Stage 1</span>Lexical / keyword search &mdash; 1970s&ndash;2000s</h2>
@@ -1930,6 +1931,7 @@
   <div class="links">
     <a href="../">&larr; TerranSoul home</a>
     <a href="index.html">Main paper</a>
+    <a href="techniques.html">Techniques, animated</a>
     <a href="../brain-advanced-design/">Brain advanced design</a>
     <a href="https://github.com/Terranimus/TerranSoul">GitHub</a>
   </div>
