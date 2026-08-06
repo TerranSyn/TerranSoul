@@ -60,6 +60,20 @@ for f in "$LOGS"/tbench-par[0-9].log; do
   accepted=$(printf '%s' "$body" | grep -oE 'witness 3 .*: [0-9]+ accepted' | grep -oE '[0-9]+ accepted' | awk '{s+=$1} END{print s+0}')
   refused=$(printf '%s' "$body"  | grep -oE '[0-9]+ refused' | awk '{s+=$1} END{print s+0}')
   denied=$(printf '%s' "$body"   | grep -oE '[0-9]+ gate-denied' | awk '{s+=$1} END{print s+0}')
+
+  # ⛔ WHY A SECOND, LIVE COUNT EXISTS. `accepted` above is summed from the
+  # `witness 3` line, which run-dg prints when a TASK FINISHES. A worker in the
+  # middle of its first task therefore reports "0 accepted" while its proxy log
+  # is full of accepted writes — indistinguishable from a worker whose brain
+  # integration is broken. Observed 2026-08-06: worker 0 read as 0 accepted for
+  # 27 minutes and was reported as the prime suspect, while its log showed
+  # brain_search, brain_ingest_lesson AND brain_append all accepted. The
+  # summary count is not wrong, it is just the wrong signal for liveness.
+  # These count raw proxy verdicts in the current run window instead, so
+  # in-flight activity is visible before the first task completes.
+  _live() { printf '%s' "$body" | grep -oE "\"name\":\"($1)\",\"verdict\":\"accepted\"" | grep -c . || true; }
+  live_w=$(_live 'brain_ingest_lesson|brain_append|brain_add_edge|brain_close_edge')
+  live_r=$(_live 'brain_search|brain_suggest_context|kg_neighbors')
   cur="$(printf '%s' "$body" | grep -E '^\[sweep\]   task ' | tail -1 | sed -E 's/^\[sweep\]   task ([^ ]+).*/\1/')"
 
   shard="$REPO/mcp-data/.tb-par${w}-state.txt.shard"
@@ -73,7 +87,8 @@ for f in "$LOGS"/tbench-par[0-9].log; do
   printf '  worker %s [%s] %s\n' "$w" "$alive" "$prefix"
   printf '      progress   : %s/%s done   started this run: %s   now: %s\n' "$done_n" "$tot" "$started" "${cur:-<none>}"
   printf '      failures   : %s preflight/infra, %s errored\n' "$preflight" "$errored"
-  printf '      brain calls: %s accepted, %s refused, %s gate-denied\n' "$accepted" "$refused" "$denied"
+  printf '      brain calls: %s accepted, %s refused, %s gate-denied  (confirmed at task end)\n' "$accepted" "$refused" "$denied"
+  printf '      in flight  : %s write(s), %s read(s) accepted so far this run\n' "$live_w" "$live_r"
   any=1
 done
 [ "$any" = "1" ] || echo "  no worker logs found under $LOGS"

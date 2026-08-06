@@ -41,13 +41,34 @@ BATCH="${TB_BATCH:-10}"
 export TB_ATTEMPTS="${TB_ATTEMPTS:-5}"
 export TB_CONCURRENCY="${TB_CONCURRENCY:-4}"
 export TB_PROXY_MODE="${TB_PROXY_MODE:-learn}"
-# Deferral is what makes k>1 submittable: without it a lesson written during
-# attempt 1 of task X is immediately retrievable by attempts 2..5 of the SAME
-# task, which is precisely the cross-attempt leakage that inflates pass@k (the
-# leaky config cost ~$982/~20 h and bought only a bigger number). The machinery
-# existed but was opt-in, while TB_ATTEMPTS defaults to 5 here — so the unsafe
-# combination was the DEFAULT. It selects the one-job-per-task branch below.
-export TB_DEFER_WRITES="${TB_DEFER_WRITES:-1}"
+# DEFERRAL IS OFF BY DEFAULT — owner decision 2026-08-06, and it is a product
+# decision rather than a bench-tuning one: "It should both self-improve for
+# every task in the first iteration and pass that knowledge to iterations 2-5.
+# It should be the default behaviour for TerranSoul for all self-learning."
+#
+# What that means concretely: a lesson written during attempt 1 of task X is
+# immediately retrievable by attempts 2..5 of the SAME task, exactly as it
+# would be for a user who hit the same problem twice. Production TerranSoul has
+# no deferral mechanism at all, so deferral-ON was the configuration that made
+# the BENCH deviate from the shipped product — the harness was measuring a
+# system nobody runs.
+#
+# THE COST, STATED PLAINLY so nobody rediscovers it in a review: attempts are
+# then not independent, so pass@k is not comparable to entries whose agents
+# start each attempt blank. Any leaderboard submission built on this setting
+# MUST disclose it. Cross-TASK learning (task N using lessons from 1..N-1) is
+# the separate, uncontested claim and holds under either setting.
+#
+# TB_DEFER_WRITES=1 still works and is still tested (deferred-writes.test.sh);
+# it is now the opt-in for a strict-independence arm, not the default.
+export TB_DEFER_WRITES="${TB_DEFER_WRITES:-0}"
+# One-job-per-task must NOT ride on the deferral flag. It used to default to
+# whatever deferral was, so flipping deferral to 0 would silently fall through
+# to the BATCH branch (10 tasks x k attempts in ONE harbor job at concurrency
+# 4), where a task's attempts overlap and attempt 1's lesson does not exist
+# when attempt 2 starts — which would defeat the very within-task learning
+# this default exists to enable.
+export TB_ONE_JOB_PER_TASK="${TB_ONE_JOB_PER_TASK:-1}"
 # THE RETRIEVAL RUNG THIS SWEEP RUNS AT — owner decision 2026-08-04, made on a
 # measurement rather than a preference: `max` costs 374 s per brain_search on
 # the local 12B versus 0.5 s at `think`, so a full sweep at max blows the

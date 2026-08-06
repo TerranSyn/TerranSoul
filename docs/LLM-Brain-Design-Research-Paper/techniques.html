@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Retrieval and Memory Techniques - Twenty-Nine Mechanisms, Animated</title>
-<meta name="description" content="A drill-down companion to 'The Evolution of Memory for AI Systems'. Every retrieval and memory technique the article cites - BM25, dense retrieval, Matryoshka, HNSW, IVF-PQ, DiskANN, RaBitQ, TurboVec, knowledge-graph traversal, GraphRAG, RAG, HyDE, RRF, MMR, Self-RAG, CRAG, MemGPT paging, bi-temporal graphs, sleep-time compute, ColBERT, ColPali, MUVERA, Memory-R1, HippoRAG-2, RobustRAG and CaMeL - explained mechanically, each with an animated diagram of how it works and an honest statement of what it costs." />
+<title>Retrieval and Memory Techniques - 111 Mechanisms, Animated</title>
+<meta name="description" content="A drill-down companion to 'The Evolution of Memory for AI Systems'. All 111 retrieval and memory techniques the article cites - lexical and dense retrieval, ANN indexes, quantisation, graph and temporal memory, agentic retrieval, rerankers, late interaction and defence - explained mechanically, 104 of them with an animated diagram of how the mechanism works and an honest statement of what it costs." />
 <style>
 
   :root{
@@ -968,7 +968,7 @@
 <div class="page">
   <article>
     <div class="eyebrow"><span class="dot"></span>Drill-down companion &middot; every technique, animated</div>
-    <h1>Retrieval and memory techniques: <em>twenty-nine mechanisms, one page.</em></h1>
+    <h1>Retrieval and memory techniques: <em>one hundred and eleven mechanisms, one page.</em></h1>
     <p class="deck">The companion article tells the history &mdash; twelve stages, each one solving the documented failure of the stage before it. This page opens the machinery. Every technique that article cites gets the same three things here: the failure it exists to fix, an animation of how it actually works, and the cost it charges for the fix.</p>
 
     <div class="disclosure-card">
@@ -5888,7 +5888,7 @@
 
     <p class="stage-head">Coverage</p>
     <h2 id="what-this-page-covers-and-what-it-deliberately-does-not"><span class="scene-num">Note</span>What this page covers, and what it deliberately does not</h2>
-    <p>A full-text audit of the parent article found <strong>111 distinct named techniques</strong>, and this page now covers <strong>all of them</strong>: every one with its own mechanism and animated diagram — chosen as those with real weight in the article, plus every technique this system implements or measured. The remainder are largely one-mention items (entity disambiguation, web-search fallback, knowledge refinement, semantic entropy, FSRS reconsolidation), stated boundaries rather than built things (per-token embedder, offline RL loop, second privileged planner), or named products and benchmarks rather than methods.</p>
+    <p>A full-text audit of the parent article found <strong>111 distinct named techniques</strong>, and this page covers <strong>all of them</strong> &mdash; <strong>104 of the 111 have their own mechanism and animated diagram</strong>, chosen as those with real weight in the article, plus every technique this system implements or measured. The remaining seven are named and placed here rather than animated, because they are one-mention items (entity disambiguation, web-search fallback, knowledge refinement, semantic entropy, FSRS reconsolidation), stated boundaries rather than built things (per-token embedder, offline RL loop, second privileged planner), or named products and benchmarks rather than methods.</p>
     <p>Two entries in the parent that this page corrects rather than repeats: the Stage&nbsp;12 coverage row lists TurboVec among shipped indexes when it has no callers, and the seeded HNSW <code>expansion_*</code> configuration rows are documented as tuning the live index but are never read — every production call site passes the compiled defaults.</p>
   </article>
 </div>

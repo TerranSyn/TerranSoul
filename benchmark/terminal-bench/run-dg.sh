@@ -494,14 +494,65 @@ JOB="${TB_JOB_PREFIX:-dg}-$(date +%Y%m%d-%H%M%S)"
 # that runs cleanly and scores plausibly.
 # -m claude-opus-5 is Opus 5. `claude-opus-4-5` is Opus 4.5 and was passed by
 # mistake once; it is a different model.
+# ── DATASET PROVENANCE, and why `-p` is not submittable ─────────────────────
+# `-p <path>` runs the tasks but stamps each trial with
+#     task: { type: "local", source: "tasks", path: "D:\\...\\tasks\\<task>" }
+# The leaderboard's CI selects trials with `t["source"] == DATASET`, where
+# DATASET is the registry name `terminal-bench/terminal-bench-2-1`
+# (leaderboard/src/leaderboard/core/hub.py). A local run therefore contributes
+# ZERO trials to a submission — the filter drops every one, and the submission
+# is empty rather than wrong, which is the failure mode least likely to be
+# noticed.
+#
+# Verified 2026-08-06 before switching: the pinned ref resolves to exactly the
+# same 89 tasks, and all 89 task.toml files are byte-identical to this repo's
+# local clone once CRLF is normalised (the clone has CRLF, the registry LF).
+# So the measurements taken via `-p` were on the right content; only their
+# provenance was untaggable.
+#
+# The playbook's warning about `-d` stands but is narrower than it reads: a
+# BARE dataset name resolves to `terminal-bench-core`, a different and partly
+# contaminated benchmark. A pinned `org/name@sha256:...` does not.
+#   TB_DATASET unset -> -p <local path>   (fast local iteration, NOT submittable)
+#   TB_DATASET set   -> -d <name@ref>     (registry provenance, submittable)
+if [ -n "${TB_DATASET:-}" ]; then
+  DATASET_ARGS=(-d "$TB_DATASET")
+  echo "[run-dg] dataset: REGISTRY $TB_DATASET (submittable provenance)"
+else
+  DATASET_ARGS=(-p "$TB21_DIR/tasks")
+  echo "[run-dg] dataset: local path (fast iteration; NOT submittable)"
+fi
+
+# ── AGENT IDENTITY ───────────────────────────────────────────────────────────
+# Harbor records the trial's agent from the literal `-a` string (it lands in
+# config.agents[].name and lock.json verbatim; overriding BaseAgent.name() does
+# NOT change it — verified by probe). The leaderboard builds a row's identity
+# from that string, so a run launched as `claude-code` becomes a Claude Code row.
+#
+# A custom agent is loaded by IMPORT PATH, and harbor runs from its own uv-tool
+# venv which has no idea this repo exists. Without $HERE on PYTHONPATH the run
+# dies at agent construction with a bare ModuleNotFoundError, which the sweep
+# reports only as "FAILED before producing a result (preflight/infra)" — the
+# same opaque symptom the namespaced-task-name bug produced.
+if [ -n "${TB_AGENT:-}" ] && [ "${TB_AGENT}" != "claude-code" ]; then
+  export PYTHONPATH="$HERE${PYTHONPATH:+:$PYTHONPATH}"
+fi
+#
+# TB_AGENT unset -> claude-code                (local iteration; matches upstream)
+# TB_AGENT set   -> a custom import path, e.g. "terransoul:TerranSoul"
+#                   (owner decision 2026-08-06 — see terransoul.py, which also
+#                    records the playbook rule this overrides). The raw key is
+#                    mapped to a readable name via the leaderboard's
+#                    display-names.json, which SUBMIT.md is explicit is the
+#                    place to do that.
 args=(
   run
-  -a claude-code
+  -a "${TB_AGENT:-claude-code}"
   -m claude-opus-5
-  -p "$TB21_DIR/tasks"
+  "${DATASET_ARGS[@]}"
   --env docker
   --mcp-config "$MCP_CONFIG"
-  -o "$HERE/jobs" --job-name "$JOB"
+  -o "${TB_JOBS_DIR:-$HERE/jobs}" --job-name "$JOB"
   -k "$ATTEMPTS" -n "$CONCURRENCY" -y
   # ── Harbor Hub upload ──────────────────────────────────────────────────────
   # A submission requires the job AND EVERY TRIAL to be publicly readable on
@@ -577,10 +628,29 @@ args+=(
 # runs untrusted benchmark code. That is the whole point of the proxy.
 # TB_TASKS: space-separated task ids, one -i each. Used by run-sweep.sh to run
 # the benchmark in batches that each fit inside the OAuth token's lifetime.
+# ⚠️ REGISTRY TASK NAMES ARE NAMESPACED, LOCAL ONES ARE NOT. A local `-p` run
+# lists task DIRECTORIES, so the filter is a bare `fix-git`. The registry names
+# the same task `terminal-bench/fix-git`, and an unprefixed filter matches
+# nothing:
+#     ValueError: No tasks matched the filter(s) ['fix-git'].
+#                 There are 89 tasks available in this dataset.
+# Harbor raises that inside Job.create, which the sweep reports only as
+# "FAILED before producing a result (preflight/infra)" — so every task fails
+# identically and the real message is buried in a stack trace. Caught on the
+# first probe of the submittable arm; without the probe it would have been 445
+# trials of nothing.
+_task_filter() {
+  if [ -n "${TB_DATASET:-}" ]; then
+    # org prefix from the dataset spec: "terminal-bench/terminal-bench-2-1@..."
+    printf '%s/%s' "${TB_DATASET%%/*}" "$1"
+  else
+    printf '%s' "$1"
+  fi
+}
 if [ -n "${TB_TASKS:-}" ]; then
-  for t in $TB_TASKS; do args+=(-i "$t"); done
+  for t in $TB_TASKS; do args+=(-i "$(_task_filter "$t")"); done
 elif [ -n "$TASK" ]; then
-  args+=(-i "$TASK")
+  args+=(-i "$(_task_filter "$TASK")")
 fi
 [ -n "$LIMIT" ] && args+=(-l "$LIMIT")
 
@@ -602,7 +672,13 @@ if [ "${TB_DEFER_WRITES:-}" = "1" ]; then
   wait_for_embeddings "post-flush" "${TB_EMBED_WAIT_S:-1800}"
 fi
 
-JOB_DIR="$HERE/jobs/$JOB"
+# Must honour TB_JOBS_DIR exactly as the -o flag above does. It did not, and the
+# result was a run that SUCCEEDED being reported as "NO result.json — the run did
+# not get far enough to produce one": the reporting looked in $HERE/jobs while
+# harbor had written to $TB_JOBS_DIR. A false failure report on a passing trial
+# is worse than a crash, because the natural next step is to debug the run rather
+# than the reporter.
+JOB_DIR="${TB_JOBS_DIR:-$HERE/jobs}/$JOB"
 
 echo
 echo "[run-dg] ── question 1: did the task pass? ──────────────────────────────"

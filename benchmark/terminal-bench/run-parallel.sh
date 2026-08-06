@@ -94,7 +94,12 @@ mapfile -t ALL < <(cd "$TASKS_DIR" && ls -1d */ 2>/dev/null | sed 's#/$##' | sor
 # existing 2 — 7 per task, ~178 surplus trials, roughly $196 wasted.
 ATTEMPTS_WANTED="${TB_TARGET_ATTEMPTS:-${TB_ATTEMPTS:-2}}"
 DONE_FILE="$REPO/mcp-data/.tb-completed-derived.txt"
-JOBS_DIR="$HERE/jobs" ATTEMPTS_WANTED="$ATTEMPTS_WANTED" OUT="$DONE_FILE" python - <<'PY'
+# TB_JOBS_DIR keeps the submittable arm's output separate from the local-
+# provenance history. Trials run with `-p <path>` can never contribute to a
+# leaderboard submission (see run-dg.sh's dataset note), so mixing the two in
+# one directory would make the derived completion count local trials toward a
+# registry-provenance target and under-run the arm silently.
+JOBS_DIR="${TB_JOBS_DIR:-$HERE/jobs}" ATTEMPTS_WANTED="$ATTEMPTS_WANTED" OUT="$DONE_FILE" python - <<'PY'
 import json, glob, os, collections
 jobs = os.environ['JOBS_DIR']; want = int(os.environ['ATTEMPTS_WANTED'])
 clean = collections.Counter()
