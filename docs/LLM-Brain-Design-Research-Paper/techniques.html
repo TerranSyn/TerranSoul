@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Retrieval and Memory Techniques - 111 Mechanisms, Animated</title>
-<meta name="description" content="A drill-down companion to 'The Evolution of Memory for AI Systems'. All 111 retrieval and memory techniques the article cites - lexical and dense retrieval, ANN indexes, quantisation, graph and temporal memory, agentic retrieval, rerankers, late interaction and defence - explained mechanically, 104 of them with an animated diagram of how the mechanism works and an honest statement of what it costs." />
+<title>Retrieval and Memory Techniques - 104 Mechanisms, Animated</title>
+<meta name="description" content="A drill-down companion to 'The Evolution of Memory for AI Systems'. All 104 retrieval and memory techniques the article cites - lexical and dense retrieval, ANN indexes, quantisation, graph and temporal memory, agentic retrieval, rerankers, late interaction and defence - explained mechanically, 104 of them with an animated diagram of how the mechanism works and an honest statement of what it costs." />
 <style>
 
   :root{
@@ -911,8 +911,7 @@
   /* ⛔ THE CAP HID TWO THIRDS OF THE LIST. With max-height:min(58vh,560px)
      and overflow-y:auto only ~20 of the 56 entries were visible; the rest
      needed a scroll INSIDE the panel, which nothing signalled. A reader
-     counting the contents concluded the page covered 20 techniques when it
-     covers 111. A table of contents that hides most of the contents is worse
+     counting the contents concluded the page covered 20 techniques when it covers 104. A table of contents that hides most of the contents is worse
      than none.
      The panel is now UNCAPPED, and the element stops being sticky while it is
      open — collapsed it is a slim sticky bar for quick jumps, expanded it is a
@@ -968,7 +967,7 @@
 <div class="page">
   <article>
     <div class="eyebrow"><span class="dot"></span>Drill-down companion &middot; every technique, animated</div>
-    <h1>Retrieval and memory techniques: <em>one hundred and eleven mechanisms, one page.</em></h1>
+    <h1>Retrieval and memory techniques: <em>one hundred and four mechanisms, one page.</em></h1>
     <p class="deck">The companion article tells the history &mdash; twelve stages, each one solving the documented failure of the stage before it. This page opens the machinery. Every technique that article cites gets the same three things here: the failure it exists to fix, an animation of how it actually works, and the cost it charges for the fix.</p>
 
     <div class="disclosure-card">
@@ -983,7 +982,7 @@
 
     
     <details class="toc" open>
-      <summary>Contents &middot; 114 sections</summary>
+      <summary>Contents &middot; 115 sections</summary>
       <nav class="toc-in" aria-label="Table of contents">
         <a class="t2" href="#every-technique-is-a-trade-and-the-trade-is-the-point"><span class="toc-n">1</span>Every technique is a trade, and the trade is the point</a>
         <div class="toc-grp">Stage 1 Lexical retrieval - 1970s-2000s</div>
@@ -996,130 +995,131 @@
         <div class="toc-grp">Stage 3 Approximate nearest neighbour at scale - 2016-2023</div>
         <a class="t2" href="#hnsw"><span class="toc-n">7</span>HNSW - hierarchical navigable small world</a>
         <a class="t2" href="#router"><span class="toc-n">8</span>Shard router</a>
-        <a class="t2" href="#ivfpq"><span class="toc-n">9</span>IVF-PQ - inverted file with product quantization</a>
-        <a class="t2" href="#diskann"><span class="toc-n">10</span>DiskANN - keeping the graph on SSD</a>
-        <a class="t2" href="#rabitq"><span class="toc-n">11</span>RaBitQ - quantization with an error bar</a>
-        <a class="t2" href="#turbovec"><span class="toc-n">12</span>TurboVec - sub-byte codes, full-precision query</a>
+        <a class="t2" href="#index-scaling"><span class="toc-n">9</span>The scaling factor - why the index that wins at a million loses at a billion</a>
+        <a class="t2" href="#ivfpq"><span class="toc-n">10</span>IVF-PQ - inverted file with product quantization</a>
+        <a class="t2" href="#diskann"><span class="toc-n">11</span>DiskANN - keeping the graph on SSD</a>
+        <a class="t2" href="#rabitq"><span class="toc-n">12</span>RaBitQ - quantization with an error bar</a>
+        <a class="t2" href="#turbovec"><span class="toc-n">13</span>TurboVec - sub-byte codes, full-precision query</a>
         <div class="toc-grp">Stage 4 Knowledge graphs - 2001-2010s</div>
-        <a class="t2" href="#kg"><span class="toc-n">13</span>Typed-edge traversal</a>
-        <a class="t2" href="#graphrag"><span class="toc-n">14</span>GraphRAG - hierarchical communities</a>
+        <a class="t2" href="#kg"><span class="toc-n">14</span>Typed-edge traversal</a>
+        <a class="t2" href="#graphrag"><span class="toc-n">15</span>GraphRAG - hierarchical communities</a>
         <div class="toc-grp">Stage 5 Retrieval-augmented generation - 2020-2024</div>
-        <a class="t2" href="#rag"><span class="toc-n">15</span>RAG</a>
-        <a class="t2" href="#hyde"><span class="toc-n">16</span>HyDE - hypothetical document embeddings</a>
-        <a class="t2" href="#rrf"><span class="toc-n">17</span>Reciprocal rank fusion</a>
-        <a class="t2" href="#mmr"><span class="toc-n">18</span>Maximal marginal relevance</a>
-        <a class="t2" href="#rerank"><span class="toc-n">19</span>Reranking - the rung that was rolled back</a>
-        <a class="t2" href="#chunking"><span class="toc-n">20</span>Contextual retrieval, late chunking, parent-child</a>
+        <a class="t2" href="#rag"><span class="toc-n">16</span>RAG</a>
+        <a class="t2" href="#hyde"><span class="toc-n">17</span>HyDE - hypothetical document embeddings</a>
+        <a class="t2" href="#rrf"><span class="toc-n">18</span>Reciprocal rank fusion</a>
+        <a class="t2" href="#mmr"><span class="toc-n">19</span>Maximal marginal relevance</a>
+        <a class="t2" href="#rerank"><span class="toc-n">20</span>Reranking - the rung that was rolled back</a>
+        <a class="t2" href="#chunking"><span class="toc-n">21</span>Contextual retrieval, late chunking, parent-child</a>
         <div class="toc-grp">Stage 6 Agentic and corrective RAG - 2023-2026</div>
-        <a class="t2" href="#selfrag"><span class="toc-n">21</span>Self-RAG</a>
-        <a class="t2" href="#crag"><span class="toc-n">22</span>CRAG - corrective RAG</a>
-        <a class="t2" href="#abstain"><span class="toc-n">23</span>Abstention</a>
+        <a class="t2" href="#selfrag"><span class="toc-n">22</span>Self-RAG</a>
+        <a class="t2" href="#crag"><span class="toc-n">23</span>CRAG - corrective RAG</a>
+        <a class="t2" href="#abstain"><span class="toc-n">24</span>Abstention</a>
         <div class="toc-grp">Stage 7 Observability and evaluation - 2023-2025</div>
-        <a class="t2" href="#llmjudge"><span class="toc-n">24</span>LLM-as-a-judge</a>
+        <a class="t2" href="#llmjudge"><span class="toc-n">25</span>LLM-as-a-judge</a>
         <div class="toc-grp">Stage 8 Two-way agent memory - 2023-2026</div>
-        <a class="t2" href="#memgpt"><span class="toc-n">25</span>MemGPT - OS-style memory paging</a>
-        <a class="t2" href="#bitemporal"><span class="toc-n">26</span>Bi-temporal knowledge graph</a>
+        <a class="t2" href="#memgpt"><span class="toc-n">26</span>MemGPT - OS-style memory paging</a>
+        <a class="t2" href="#bitemporal"><span class="toc-n">27</span>Bi-temporal knowledge graph</a>
         <div class="toc-grp">Stage 9 Governed, self-consolidating memory - 2025-2026</div>
-        <a class="t2" href="#sleeptime"><span class="toc-n">27</span>Sleep-time compute</a>
-        <a class="t2" href="#toki"><span class="toc-n">28</span>Write-time contradiction resolution</a>
+        <a class="t2" href="#sleeptime"><span class="toc-n">28</span>Sleep-time compute</a>
+        <a class="t2" href="#toki"><span class="toc-n">29</span>Write-time contradiction resolution</a>
         <div class="toc-grp">Stage 11 The learned and robust frontier - 2025-2026</div>
-        <a class="t2" href="#colbert"><span class="toc-n">29</span>ColBERT - late interaction</a>
-        <a class="t2" href="#colpali"><span class="toc-n">30</span>ColPali - late interaction over page images</a>
-        <a class="t2" href="#lemur"><span class="toc-n">31</span>Reducing multi-vector to single-vector ANN</a>
-        <a class="t2" href="#muvera"><span class="toc-n">32</span>MUVERA - fixed dimensional encodings</a>
-        <a class="t2" href="#memoryr1"><span class="toc-n">33</span>Memory-R1 - a learned write policy</a>
-        <a class="t2" href="#hipporag"><span class="toc-n">34</span>HippoRAG-2 - personalized PageRank</a>
-        <a class="t2" href="#robustrag"><span class="toc-n">35</span>RobustRAG - isolate then aggregate</a>
-        <a class="t2" href="#camel"><span class="toc-n">36</span>CaMeL - capabilities and information flow</a>
+        <a class="t2" href="#colbert"><span class="toc-n">30</span>ColBERT - late interaction</a>
+        <a class="t2" href="#colpali"><span class="toc-n">31</span>ColPali - late interaction over page images</a>
+        <a class="t2" href="#lemur"><span class="toc-n">32</span>Reducing multi-vector to single-vector ANN</a>
+        <a class="t2" href="#muvera"><span class="toc-n">33</span>MUVERA - fixed dimensional encodings</a>
+        <a class="t2" href="#memoryr1"><span class="toc-n">34</span>Memory-R1 - a learned write policy</a>
+        <a class="t2" href="#hipporag"><span class="toc-n">35</span>HippoRAG-2 - personalized PageRank</a>
+        <a class="t2" href="#robustrag"><span class="toc-n">36</span>RobustRAG - isolate then aggregate</a>
+        <a class="t2" href="#camel"><span class="toc-n">37</span>CaMeL - capabilities and information flow</a>
         <div class="toc-grp">Stage 12 What this system itself runs</div>
-        <a class="t2" href="#modes"><span class="toc-n">37</span>Thinking modes as (effort x harness) pairs</a>
-        <a class="t2" href="#writegate"><span class="toc-n">38</span>Governed write gate + earned autonomy</a>
-        <a class="t2" href="#verifyrank"><span class="toc-n">39</span>Verify-and-rank - claim-level, weakest-link</a>
+        <a class="t2" href="#modes"><span class="toc-n">38</span>Thinking modes as (effort x harness) pairs</a>
+        <a class="t2" href="#writegate"><span class="toc-n">39</span>Governed write gate + earned autonomy</a>
+        <a class="t2" href="#verifyrank"><span class="toc-n">40</span>Verify-and-rank - claim-level, weakest-link</a>
         <div class="toc-grp">More techniques 19</div>
-        <a class="t2" href="#agenticretrieval"><span class="toc-n">40</span>Agentic retrieval</a>
-        <a class="t2" href="#backgroundconsolidatio"><span class="toc-n">41</span>Background consolidation / "Observations" process</a>
-        <a class="t2" href="#claimlevelweakestlinkv"><span class="toc-n">42</span>Claim-level weakest-link verification</a>
-        <a class="t2" href="#confidencethresholdgat"><span class="toc-n">43</span>Confidence-threshold gating (crag_ok / crag_bad / τ_claim / τ_abstain)</a>
-        <a class="t2" href="#cosinesimilarityrankin"><span class="toc-n">44</span>Cosine-similarity ranking / exact cosine scan</a>
-        <a class="t2" href="#entitydisambiguation"><span class="toc-n">45</span>Entity disambiguation</a>
-        <a class="t2" href="#filteredmetadataconstr"><span class="toc-n">46</span>Filtered / metadata-constrained vector search</a>
-        <a class="t2" href="#invertedindex"><span class="toc-n">47</span>Inverted index</a>
-        <a class="t2" href="#knowledgerefinement"><span class="toc-n">48</span>Knowledge refinement</a>
-        <a class="t2" href="#llmarbitratedconflictr"><span class="toc-n">49</span>LLM-arbitrated conflict resolution</a>
-        <a class="t2" href="#memlearnedmemoryconstr"><span class="toc-n">50</span>Mem-α learned memory construction</a>
-        <a class="t2" href="#parallelsubqueries"><span class="toc-n">51</span>Parallel subqueries</a>
-        <a class="t2" href="#pointwisejudgererankin"><span class="toc-n">52</span>Pointwise judge reranking</a>
-        <a class="t2" href="#queryplanning"><span class="toc-n">53</span>Query planning</a>
-        <a class="t2" href="#queryrewritingrewritea"><span class="toc-n">54</span>Query rewriting / rewrite-and-retry loop</a>
-        <a class="t2" href="#retrievalevaluatorgrad"><span class="toc-n">55</span>Retrieval evaluator / grader between retrieval and generation</a>
-        <a class="t2" href="#sparseautoencodersover"><span class="toc-n">56</span>Sparse autoencoders over frozen dense retrievers (Latent Terms)</a>
-        <a class="t2" href="#tfidf"><span class="toc-n">57</span>TF-IDF</a>
-        <a class="t2" href="#websearchfallback"><span class="toc-n">58</span>Web-search fallback</a>
+        <a class="t2" href="#agenticretrieval"><span class="toc-n">41</span>Agentic retrieval</a>
+        <a class="t2" href="#backgroundconsolidatio"><span class="toc-n">42</span>Background consolidation / "Observations" process</a>
+        <a class="t2" href="#claimlevelweakestlinkv"><span class="toc-n">43</span>Claim-level weakest-link verification</a>
+        <a class="t2" href="#confidencethresholdgat"><span class="toc-n">44</span>Confidence-threshold gating (crag_ok / crag_bad / τ_claim / τ_abstain)</a>
+        <a class="t2" href="#cosinesimilarityrankin"><span class="toc-n">45</span>Cosine-similarity ranking / exact cosine scan</a>
+        <a class="t2" href="#entitydisambiguation"><span class="toc-n">46</span>Entity disambiguation</a>
+        <a class="t2" href="#filteredmetadataconstr"><span class="toc-n">47</span>Filtered / metadata-constrained vector search</a>
+        <a class="t2" href="#invertedindex"><span class="toc-n">48</span>Inverted index</a>
+        <a class="t2" href="#knowledgerefinement"><span class="toc-n">49</span>Knowledge refinement</a>
+        <a class="t2" href="#llmarbitratedconflictr"><span class="toc-n">50</span>LLM-arbitrated conflict resolution</a>
+        <a class="t2" href="#memlearnedmemoryconstr"><span class="toc-n">51</span>Mem-α learned memory construction</a>
+        <a class="t2" href="#parallelsubqueries"><span class="toc-n">52</span>Parallel subqueries</a>
+        <a class="t2" href="#pointwisejudgererankin"><span class="toc-n">53</span>Pointwise judge reranking</a>
+        <a class="t2" href="#queryplanning"><span class="toc-n">54</span>Query planning</a>
+        <a class="t2" href="#queryrewritingrewritea"><span class="toc-n">55</span>Query rewriting / rewrite-and-retry loop</a>
+        <a class="t2" href="#retrievalevaluatorgrad"><span class="toc-n">56</span>Retrieval evaluator / grader between retrieval and generation</a>
+        <a class="t2" href="#sparseautoencodersover"><span class="toc-n">57</span>Sparse autoencoders over frozen dense retrievers (Latent Terms)</a>
+        <a class="t2" href="#tfidf"><span class="toc-n">58</span>TF-IDF</a>
+        <a class="t2" href="#websearchfallback"><span class="toc-n">59</span>Web-search fallback</a>
         <div class="toc-grp">Components and internal machinery 27</div>
-        <a class="t2" href="#1bitquantizationbonsai"><span class="toc-n">59</span>1-bit quantization (Bonsai 27B Q1 product default)</a>
-        <a class="t2" href="#aclaccesscontrolonmemo"><span class="toc-n">60</span>ACL / access control on memory</a>
-        <a class="t2" href="#agenticripgrepretrieva"><span class="toc-n">61</span>Agentic ripgrep retrieval (obsidian-wiki)</a>
-        <a class="t2" href="#autorouterperturnmoded"><span class="toc-n">62</span>Auto router (per-turn mode dispatch)</a>
-        <a class="t2" href="#cascadeexpansioncrossr"><span class="toc-n">63</span>Cascade expansion / cross-round edge walk</a>
-        <a class="t2" href="#cascadedeletereferenti"><span class="toc-n">64</span>Cascade-delete referential integrity on the edge table</a>
-        <a class="t2" href="#colqwen"><span class="toc-n">65</span>ColQwen</a>
-        <a class="t2" href="#complementarylearnings"><span class="toc-n">66</span>Complementary-learning-systems consolidation</a>
-        <a class="t2" href="#confidenceweightedtype"><span class="toc-n">67</span>Confidence-weighted typed edges</a>
-        <a class="t2" href="#connectorburstanomalys"><span class="toc-n">68</span>connector_burst_anomaly (same-origin re-ingestion scoring)</a>
-        <a class="t2" href="#contextpackingretrieve"><span class="toc-n">69</span>Context packing (retrieve → context pack → generate)</a>
-        <a class="t2" href="#coveragegatingcoverage"><span class="toc-n">70</span>Coverage gating / coverage floor on the judge</a>
-        <a class="t2" href="#crdtsync"><span class="toc-n">71</span>CRDT sync</a>
-        <a class="t2" href="#edgedegreeactivationmu"><span class="toc-n">72</span>Edge-degree activation multiplier</a>
-        <a class="t2" href="#evidencesupportdiagnos"><span class="toc-n">73</span>Evidence-support diagnostic LLM call (no answer-generation stage)</a>
-        <a class="t2" href="#extractconsolidateupda"><span class="toc-n">74</span>Extract-consolidate-update vector pipeline (Mem0)</a>
-        <a class="t2" href="#fsrsreconsolidation"><span class="toc-n">75</span>FSRS reconsolidation</a>
-        <a class="t2" href="#informationflowcontrol"><span class="toc-n">76</span>Information-flow-control kernels</a>
-        <a class="t2" href="#learnedheuristiccorewr"><span class="toc-n">77</span>Learned (heuristic-core) write policy</a>
-        <a class="t2" href="#maxsimkernel"><span class="toc-n">78</span>MaxSim kernel</a>
-        <a class="t2" href="#neighbourboostonthefus"><span class="toc-n">79</span>Neighbour boost on the fused path</a>
-        <a class="t2" href="#nightlymaintenancejob"><span class="toc-n">80</span>Nightly maintenance job</a>
-        <a class="t2" href="#permutationparsingwith"><span class="toc-n">81</span>Permutation parsing with backfill (the missing quality gate)</a>
-        <a class="t2" href="#provenancetracking"><span class="toc-n">82</span>Provenance tracking</a>
-        <a class="t2" href="#readpathspotlightingtr"><span class="toc-n">83</span>Read-path spotlighting / trust-boundary fencing of retrieved blocks</a>
-        <a class="t2" href="#reasonthenrankreranker"><span class="toc-n">84</span>Reason-then-rank reranker</a>
-        <a class="t2" href="#reasoningeffortdialrea"><span class="toc-n">85</span>Reasoning-effort dial (ReasoningEffort::Medium vs Off)</a>
+        <a class="t2" href="#1bitquantizationbonsai"><span class="toc-n">60</span>1-bit quantization (Bonsai 27B Q1 product default)</a>
+        <a class="t2" href="#aclaccesscontrolonmemo"><span class="toc-n">61</span>ACL / access control on memory</a>
+        <a class="t2" href="#agenticripgrepretrieva"><span class="toc-n">62</span>Agentic ripgrep retrieval (obsidian-wiki)</a>
+        <a class="t2" href="#autorouterperturnmoded"><span class="toc-n">63</span>Auto router (per-turn mode dispatch)</a>
+        <a class="t2" href="#cascadeexpansioncrossr"><span class="toc-n">64</span>Cascade expansion / cross-round edge walk</a>
+        <a class="t2" href="#cascadedeletereferenti"><span class="toc-n">65</span>Cascade-delete referential integrity on the edge table</a>
+        <a class="t2" href="#colqwen"><span class="toc-n">66</span>ColQwen</a>
+        <a class="t2" href="#complementarylearnings"><span class="toc-n">67</span>Complementary-learning-systems consolidation</a>
+        <a class="t2" href="#confidenceweightedtype"><span class="toc-n">68</span>Confidence-weighted typed edges</a>
+        <a class="t2" href="#connectorburstanomalys"><span class="toc-n">69</span>connector_burst_anomaly (same-origin re-ingestion scoring)</a>
+        <a class="t2" href="#contextpackingretrieve"><span class="toc-n">70</span>Context packing (retrieve → context pack → generate)</a>
+        <a class="t2" href="#coveragegatingcoverage"><span class="toc-n">71</span>Coverage gating / coverage floor on the judge</a>
+        <a class="t2" href="#crdtsync"><span class="toc-n">72</span>CRDT sync</a>
+        <a class="t2" href="#edgedegreeactivationmu"><span class="toc-n">73</span>Edge-degree activation multiplier</a>
+        <a class="t2" href="#evidencesupportdiagnos"><span class="toc-n">74</span>Evidence-support diagnostic LLM call (no answer-generation stage)</a>
+        <a class="t2" href="#extractconsolidateupda"><span class="toc-n">75</span>Extract-consolidate-update vector pipeline (Mem0)</a>
+        <a class="t2" href="#fsrsreconsolidation"><span class="toc-n">76</span>FSRS reconsolidation</a>
+        <a class="t2" href="#informationflowcontrol"><span class="toc-n">77</span>Information-flow-control kernels</a>
+        <a class="t2" href="#learnedheuristiccorewr"><span class="toc-n">78</span>Learned (heuristic-core) write policy</a>
+        <a class="t2" href="#maxsimkernel"><span class="toc-n">79</span>MaxSim kernel</a>
+        <a class="t2" href="#neighbourboostonthefus"><span class="toc-n">80</span>Neighbour boost on the fused path</a>
+        <a class="t2" href="#nightlymaintenancejob"><span class="toc-n">81</span>Nightly maintenance job</a>
+        <a class="t2" href="#permutationparsingwith"><span class="toc-n">82</span>Permutation parsing with backfill (the missing quality gate)</a>
+        <a class="t2" href="#provenancetracking"><span class="toc-n">83</span>Provenance tracking</a>
+        <a class="t2" href="#readpathspotlightingtr"><span class="toc-n">84</span>Read-path spotlighting / trust-boundary fencing of retrieved blocks</a>
+        <a class="t2" href="#reasonthenrankreranker"><span class="toc-n">85</span>Reason-then-rank reranker</a>
+        <a class="t2" href="#reasoningeffortdialrea"><span class="toc-n">86</span>Reasoning-effort dial (ReasoningEffort::Medium vs Off)</a>
         <div class="toc-grp">Metrics 5</div>
-        <a class="t2" href="#faithfulnessscoringhal"><span class="toc-n">86</span>Faithfulness scoring / hallucination detection suites (e.g. FaithJudge)</a>
-        <a class="t2" href="#listwisejudgereranking"><span class="toc-n">87</span>Listwise judge reranking (measured −7.6 / −5.4 NDCG, negative)</a>
-        <a class="t2" href="#recallanykvsrecallallk"><span class="toc-n">88</span>recall_ANY@k vs recall_ALL@k</a>
-        <a class="t2" href="#referencefreeevaluatio"><span class="toc-n">89</span>Reference-free evaluation of model output</a>
-        <a class="t2" href="#semanticentropy"><span class="toc-n">90</span>Semantic entropy</a>
+        <a class="t2" href="#faithfulnessscoringhal"><span class="toc-n">87</span>Faithfulness scoring / hallucination detection suites (e.g. FaithJudge)</a>
+        <a class="t2" href="#listwisejudgereranking"><span class="toc-n">88</span>Listwise judge reranking (measured −7.6 / −5.4 NDCG, negative)</a>
+        <a class="t2" href="#recallanykvsrecallallk"><span class="toc-n">89</span>recall_ANY@k vs recall_ALL@k</a>
+        <a class="t2" href="#referencefreeevaluatio"><span class="toc-n">90</span>Reference-free evaluation of model output</a>
+        <a class="t2" href="#semanticentropy"><span class="toc-n">91</span>Semantic entropy</a>
         <div class="toc-grp">Disciplines and operating rules 4</div>
-        <a class="t2" href="#deliberateforgettingst"><span class="toc-n">91</span>Deliberate forgetting / store shrinkage</a>
-        <a class="t2" href="#failopenjudgedisciplin"><span class="toc-n">92</span>Fail-open judge discipline (judges never veto)</a>
-        <a class="t2" href="#onearmperprocessbenchi"><span class="toc-n">93</span>One-arm-per-process bench isolation (cross-arm contamination control)</a>
-        <a class="t2" href="#spanleveltracing"><span class="toc-n">94</span>Span-level tracing</a>
+        <a class="t2" href="#deliberateforgettingst"><span class="toc-n">92</span>Deliberate forgetting / store shrinkage</a>
+        <a class="t2" href="#failopenjudgedisciplin"><span class="toc-n">93</span>Fail-open judge discipline (judges never veto)</a>
+        <a class="t2" href="#onearmperprocessbenchi"><span class="toc-n">94</span>One-arm-per-process bench isolation (cross-arm contamination control)</a>
+        <a class="t2" href="#spanleveltracing"><span class="toc-n">95</span>Span-level tracing</a>
         <div class="toc-grp">Attacks 3</div>
-        <a class="t2" href="#memorylifecycleattacks"><span class="toc-n">95</span>Memory lifecycle attacks (formalized write-path attack class)</a>
-        <a class="t2" href="#minjamemoryinjectionat"><span class="toc-n">96</span>MINJA memory-injection attack</a>
-        <a class="t2" href="#poisonedragattack"><span class="toc-n">97</span>PoisonedRAG attack</a>
+        <a class="t2" href="#memorylifecycleattacks"><span class="toc-n">96</span>Memory lifecycle attacks (formalized write-path attack class)</a>
+        <a class="t2" href="#minjamemoryinjectionat"><span class="toc-n">97</span>MINJA memory-injection attack</a>
+        <a class="t2" href="#poisonedragattack"><span class="toc-n">98</span>PoisonedRAG attack</a>
         <div class="toc-grp">Stated boundaries - deliberately NOT built 5</div>
-        <a class="t2" href="#decodinglogitaggregati"><span class="toc-n">98</span>Decoding-logit aggregation (stated boundary, not built)</a>
-        <a class="t2" href="#offlinereinforcementle"><span class="toc-n">99</span>Offline reinforcement-learning training loop (stated boundary, not built)</a>
-        <a class="t2" href="#pertokenembedderstated"><span class="toc-n">100</span>Per-token embedder (stated boundary, not built)</a>
-        <a class="t2" href="#plaidengine"><span class="toc-n">101</span>PLAID engine</a>
-        <a class="t2" href="#secondprivilegedplanne"><span class="toc-n">102</span>Second privileged planner model (stated boundary, not built)</a>
+        <a class="t2" href="#decodinglogitaggregati"><span class="toc-n">99</span>Decoding-logit aggregation (stated boundary, not built)</a>
+        <a class="t2" href="#offlinereinforcementle"><span class="toc-n">100</span>Offline reinforcement-learning training loop (stated boundary, not built)</a>
+        <a class="t2" href="#pertokenembedderstated"><span class="toc-n">101</span>Per-token embedder (stated boundary, not built)</a>
+        <a class="t2" href="#plaidengine"><span class="toc-n">102</span>PLAID engine</a>
+        <a class="t2" href="#secondprivilegedplanne"><span class="toc-n">103</span>Second privileged planner model (stated boundary, not built)</a>
         <div class="toc-grp">Withdrawn claims 3</div>
-        <a class="t2" href="#cjktrigrammirrorindexw"><span class="toc-n">103</span>CJK trigram mirror index (WITHDRAWN claim)</a>
-        <a class="t2" href="#raptorexplicitlyabsent"><span class="toc-n">104</span>RAPTOR (explicitly absent — recorded negative finding)</a>
-        <a class="t2" href="#shardedwriteengine115m"><span class="toc-n">105</span>Sharded write engine (~1.15M CRUD/s figure withdrawn)</a>
+        <a class="t2" href="#cjktrigrammirrorindexw"><span class="toc-n">104</span>CJK trigram mirror index (WITHDRAWN claim)</a>
+        <a class="t2" href="#raptorexplicitlyabsent"><span class="toc-n">105</span>RAPTOR (explicitly absent — recorded negative finding)</a>
+        <a class="t2" href="#shardedwriteengine115m"><span class="toc-n">106</span>Sharded write engine (~1.15M CRUD/s figure withdrawn)</a>
         <div class="toc-grp">Measured</div>
-        <a class="t2" href="#what-this-system-has-actually-measured"><span class="toc-n">106</span>What this system has actually measured</a>
-        <a class="t3" href="#the-negative-results-which-are-the-useful-half"><span class="toc-n">107</span>The negative results, which are the useful half</a>
-        <a class="t2" href="#the-best-combination-for-a-top-1-outcome"><span class="toc-n">108</span>The best combination for a top-1 outcome</a>
-        <a class="t3" href="#five-things-that-would-make-that-claim-wrong"><span class="toc-n">109</span>Five things that would make that claim wrong</a>
+        <a class="t2" href="#what-this-system-has-actually-measured"><span class="toc-n">107</span>What this system has actually measured</a>
+        <a class="t3" href="#the-negative-results-which-are-the-useful-half"><span class="toc-n">108</span>The negative results, which are the useful half</a>
+        <a class="t2" href="#the-best-combination-for-a-top-1-outcome"><span class="toc-n">109</span>The best combination for a top-1 outcome</a>
+        <a class="t3" href="#five-things-that-would-make-that-claim-wrong"><span class="toc-n">110</span>Five things that would make that claim wrong</a>
         <div class="toc-grp">Method</div>
-        <a class="t2" href="#how-the-best-combination-is-actually-searched-for"><span class="toc-n">110</span>How the best combination is actually searched for</a>
-        <a class="t3" href="#the-ladder-that-is-used-instead"><span class="toc-n">111</span>The ladder that is used instead</a>
-        <a class="t3" href="#three-rules-that-constrain-every-arm"><span class="toc-n">112</span>Three rules that constrain every arm</a>
-        <a class="t3" href="#what-has-been-settled-and-what-has-not"><span class="toc-n">113</span>What has been settled, and what has not</a>
+        <a class="t2" href="#how-the-best-combination-is-actually-searched-for"><span class="toc-n">111</span>How the best combination is actually searched for</a>
+        <a class="t3" href="#the-ladder-that-is-used-instead"><span class="toc-n">112</span>The ladder that is used instead</a>
+        <a class="t3" href="#three-rules-that-constrain-every-arm"><span class="toc-n">113</span>Three rules that constrain every arm</a>
+        <a class="t3" href="#what-has-been-settled-and-what-has-not"><span class="toc-n">114</span>What has been settled, and what has not</a>
         <div class="toc-grp">Coverage</div>
-        <a class="t2" href="#what-this-page-covers-and-what-it-deliberately-does-not"><span class="toc-n">114</span>What this page covers, and what it deliberately does not</a>
+        <a class="t2" href="#what-this-page-covers-and-what-it-deliberately-does-not"><span class="toc-n">115</span>What this page covers, and what it deliberately does not</a>
       </nav>
     </details>
 
@@ -1398,6 +1398,141 @@
     </figure>
     <div class="sblock"><span class="slabel">What it costs</span><p>It is lossy pruning with no downstream recovery: any shard not selected contributes zero candidates, so a true nearest neighbour living in an unselected shard is silently lost — no error, just missing recall. The "centroids" are not k-means centroids either; they are a deterministic every-100th-vector sample tagged by source shard, so a small or oddly-distributed shard can be under-sampled and never win a vote (the repo's own live router has just 2 centroids for long__judgment vs 109 for long__semantic). Because top-p is over centroids, not shards, dedup can return fewer shards than intended. And the pruning assumes each selected shard actually has a searchable index: the disk IVF-PQ path had to abandon routing entirely and probe all 15 shards (store.rs:8695-8703) after the router picked [procedural, episodic] while the only IVF-PQ index lived in semantic, producing R@10 = 0.</p></div>
     <div class="sblock ts"><span class="slabel">In TerranSoul</span><p>On the default path, with no feature flag on the chain, and with the staleness fallback as its safety net. Worth stating alongside: a Terminal-Bench audit found the isolated bench store had an <em>empty</em> router and no ANN indexes at all, so at that corpus size the exact-scan fallback was doing the work. The loss there was the scale claim, not recall.</p></div>
+    <h2 id="index-scaling">The scaling factor &mdash; why the index that wins at a million loses at a billion</h2>
+    <p>The choice between flat, HNSW and IVF-PQ is not a matter of taste; each one
+    has a different exponent, and the exponents cross. Naming the winner without
+    naming the scale is the most common way this decision is got wrong.</p>
+
+    <figure class="fig">
+      <svg viewBox="0 0 720 300" role="img" aria-label="Query cost against corpus size for flat, HNSW and IVF-PQ indexes, showing the crossover points">
+        <defs>
+          <style>
+            .ax{stroke:#9aa0a6;stroke-width:1}
+            .gl{stroke:#e3e6ea;stroke-width:1}
+            .lb{font:11px ui-monospace,Consolas,monospace;fill:#5f6368}
+            .ti{font:12px system-ui,sans-serif;fill:#3c4043;font-weight:600}
+            .cv{fill:none;stroke-width:2.5;stroke-linecap:round}
+            .flat{stroke:#d93025}
+            .hnsw{stroke:#1a73e8}
+            .ivf{stroke:#188038}
+            /* Each curve draws itself, then the crossover markers fade in.
+               Base state = fully drawn, so reduced-motion shows the finished
+               chart rather than three blank axes. */
+            .cv{stroke-dasharray:640;stroke-dashoffset:0}
+            .mk{opacity:1}
+            @media (prefers-reduced-motion: no-preference){
+              .cv{animation:draw 2.2s ease-out both}
+              .hnsw{animation-delay:.35s}
+              .ivf{animation-delay:.7s}
+              .mk{animation:fade .6s ease-out 2.6s both}
+            }
+            @keyframes draw{from{stroke-dashoffset:640}to{stroke-dashoffset:0}}
+            @keyframes fade{from{opacity:0}to{opacity:1}}
+          </style>
+        </defs>
+
+        <line class="ax" x1="60" y1="250" x2="680" y2="250"/>
+        <line class="ax" x1="60" y1="30"  x2="60"  y2="250"/>
+        <line class="gl" x1="60" y1="190" x2="680" y2="190"/>
+        <line class="gl" x1="60" y1="130" x2="680" y2="130"/>
+        <line class="gl" x1="60" y1="70"  x2="680" y2="70"/>
+
+        <text class="lb" x="52" y="254" text-anchor="end">0</text>
+        <text class="lb" x="52" y="134" text-anchor="end">ms</text>
+        <text class="lb" x="90"  y="268" text-anchor="middle">10&#8308;</text>
+        <text class="lb" x="245" y="268" text-anchor="middle">10&#8309;</text>
+        <text class="lb" x="400" y="268" text-anchor="middle">10&#8310;</text>
+        <text class="lb" x="555" y="268" text-anchor="middle">10&#8311;</text>
+        <text class="lb" x="670" y="268" text-anchor="middle">10&#8312;</text>
+        <text class="ti" x="370" y="290" text-anchor="middle">corpus size (vectors, log scale)</text>
+
+        <!-- flat: linear in N, so linear on a log x-axis it curves up hard -->
+        <path class="cv flat" d="M90,246 L245,240 L400,214 L555,120 L670,40"/>
+        <!-- HNSW: log N hops, near-flat, but memory is the wall not latency -->
+        <path class="cv hnsw" d="M90,238 L245,232 L400,225 L555,216 L670,206"/>
+        <!-- IVF-PQ: sqrt-ish with nprobe, higher constant, flatter growth -->
+        <path class="cv ivf"  d="M90,222 L245,218 L400,212 L555,204 L670,196"/>
+
+        <g class="mk">
+          <circle cx="243" cy="234" r="4" fill="#1a73e8"/>
+          <text class="lb" x="252" y="222">HNSW overtakes flat</text>
+          <circle cx="612" cy="202" r="4" fill="#188038"/>
+          <text class="lb" x="470" y="180">IVF-PQ wins on MEMORY, not latency</text>
+        </g>
+
+        <g>
+          <rect x="470" y="36" width="12" height="3" fill="#d93025"/>
+          <text class="lb" x="490" y="41">flat / brute force</text>
+          <rect x="470" y="54" width="12" height="3" fill="#1a73e8"/>
+          <text class="lb" x="490" y="59">HNSW</text>
+          <rect x="470" y="72" width="12" height="3" fill="#188038"/>
+          <text class="lb" x="490" y="77">IVF-PQ</text>
+        </g>
+      </svg>
+      <figcaption>Query latency is the axis everyone plots, and it is the wrong
+      one for choosing between HNSW and IVF-PQ. The decisive axis is memory.</figcaption>
+    </figure>
+
+    <p><strong>Query cost.</strong> Flat search is
+    <code>O(N&middot;d)</code> &mdash; every vector, every dimension, every query.
+    HNSW is <code>O(M&middot;d&middot;log N)</code>: the greedy descent takes a
+    number of hops that grows with the logarithm of the corpus, and each hop
+    scores about <code>M</code> neighbours. IVF-PQ is
+    <code>O((N/nlist)&middot;nprobe&middot;m)</code>: you scan
+    <code>nprobe</code> of <code>nlist</code> cells, and inside a cell each
+    comparison is a table lookup over <code>m</code> sub-quantisers rather than a
+    <code>d</code>-dimensional dot product.</p>
+
+    <p><strong>Memory cost, which is the one that actually decides.</strong> At
+    768 dimensions in float32:</p>
+
+    <table class="tbl">
+      <thead><tr><th style="width:20%">Index</th><th style="width:34%">Bytes per vector</th><th style="width:22%">At 1M vectors</th><th style="width:24%">At 100M vectors</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Flat</strong></td><td><code>d &times; 4</code> = 3,072</td><td>3.1 GB</td><td>307 GB</td></tr>
+        <tr><td><strong>HNSW</strong></td><td><code>d &times; 4 + M &times; 4 &times; 1.5</code> &asymp; 3,168 (M=16)</td><td>3.2 GB</td><td>317 GB</td></tr>
+        <tr><td><strong>IVF-PQ</strong></td><td><code>m</code> = 96 (m=96, 8 bits each)</td><td>0.1 GB</td><td>9.6 GB</td></tr>
+      </tbody>
+    </table>
+
+    <p>That is the scaling factor in one number: <strong>HNSW costs about
+    32&times; the memory of IVF-PQ per vector, and it stores the full-precision
+    vector, so its footprint tracks flat search almost exactly.</strong> The graph
+    links are cheap &mdash; roughly 3 % overhead at <code>M=16</code>. The
+    vectors are not. HNSW does not compress anything; it only changes which
+    vectors you visit.</p>
+
+    <p>So the crossover is not about speed. Both indexes answer in single-digit
+    milliseconds across the whole range plotted above. The question is whether
+    the full-precision corpus fits in RAM:</p>
+
+    <ul>
+      <li><strong>Below ~10&#8310; vectors</strong> HNSW is the obvious choice.
+      3 GB is nothing, recall is essentially exact, and inserts are incremental
+      &mdash; a new memory is linked into the graph in <code>O(M&middot;log N)</code>
+      without touching anything else.</li>
+      <li><strong>Around 10&#8311;&ndash;10&#8312;</strong> the full vectors stop
+      fitting in commodity RAM and IVF-PQ's 32&times; compression stops being a
+      micro-optimisation and starts being the difference between one machine and
+      a cluster.</li>
+      <li><strong>Above that</strong>, DiskANN's shape wins for a different
+      reason again: it keeps a compressed representation resident and the graph
+      on SSD, trading a bounded number of random reads for a memory ceiling that
+      no longer scales with the corpus.</li>
+    </ul>
+
+    <p><strong>Build cost is the asymmetry that decides it for a memory system.</strong>
+    HNSW builds incrementally: inserting one vector is
+    <code>O(M&middot;d&middot;log N)</code> and needs no global knowledge. IVF-PQ
+    must first <em>train</em> &mdash; k-means over a sample to fix the coarse
+    centroids, then a product-quantisation codebook per sub-space &mdash; and
+    that training encodes the data distribution at training time. A memory
+    system whose corpus grows continuously and shifts in topic therefore pays
+    IVF-PQ a recurring retraining cost that HNSW simply does not have. For a
+    corpus of this system's size the compression buys nothing it needs, and the
+    retraining costs something it cannot easily pay, which is why the code has
+    an IVF-PQ implementation and no on-disk IVF-PQ index.</p>
+
     <h2 id="ivfpq"><span class="scene-num">IVF-PQ</span>IVF-PQ &mdash; inverted file with product quantization<span class="chip chip-none">code only &middot; no callers</span></h2>
     <p class="tag">Partitions vectors into k-means cells and compresses each to a few bytes, so a query scans only a few cells.</p>
     <div class="sblock"><span class="slabel">The problem</span><p>Exact nearest-neighbour search compares the query against every stored vector at full precision: at 1M docs x 768 float32 dims that is ~3 GB resident and ~768M multiply-adds per query. IVF-PQ attacks both costs at once — an inverted file skips most of the corpus (only nprobe of nlist cells are visited), and product quantization replaces each float vector with a handful of centroid IDs (768 floats = 3072 B becomes ~96 B), so the surviving candidates are scored by table lookup instead of arithmetic. The price is that both the skipping and the compression are lossy, so results are approximate.</p></div>
@@ -5843,7 +5978,7 @@
     <p>Listing techniques is easy; deciding which set to run is not. With this many techniques the obvious approach &mdash; try the combinations and keep the winner &mdash; is not available, and the reasons are worth stating because they shape everything below.</p>
 
     <div class="disclosure-card">
-      <strong>Why there is no grid search.</strong> Over 111 techniques a full sweep is 2<sup>111</sup> configurations, which is not a large number so much as a meaningless one. Worse, most pairs are not composable in the first place: MUVERA and IVF-PQ answer different questions, RRF and MMR act at different stages of the same pipeline, and CaMeL is a security boundary rather than a retrieval step. A grid over non-composable options mostly measures nothing, expensively.
+      <strong>Why there is no grid search.</strong> Over 104 techniques a full sweep is 2<sup>104</sup> configurations, which is not a large number so much as a meaningless one. Worse, most pairs are not composable in the first place: MUVERA and IVF-PQ answer different questions, RRF and MMR act at different stages of the same pipeline, and CaMeL is a security boundary rather than a retrieval step. A grid over non-composable options mostly measures nothing, expensively.
     </div>
 
     <h3 id="the-ladder-that-is-used-instead">The ladder that is used instead</h3>
@@ -5888,7 +6023,7 @@
 
     <p class="stage-head">Coverage</p>
     <h2 id="what-this-page-covers-and-what-it-deliberately-does-not"><span class="scene-num">Note</span>What this page covers, and what it deliberately does not</h2>
-    <p>A full-text audit of the parent article found <strong>111 distinct named techniques</strong>, and this page covers <strong>all of them</strong> &mdash; <strong>104 of the 111 have their own mechanism and animated diagram</strong>, chosen as those with real weight in the article, plus every technique this system implements or measured. The remaining seven are named and placed here rather than animated, because they are one-mention items (entity disambiguation, web-search fallback, knowledge refinement, semantic entropy, FSRS reconsolidation), stated boundaries rather than built things (per-token embedder, offline RL loop, second privileged planner), or named products and benchmarks rather than methods.</p>
+    <p>A full-text audit of the parent article found <strong>104 distinct named techniques</strong>, and this page covers <strong>all of them</strong> &mdash; <strong>every technique it names has its own mechanism and animated diagram</strong>, chosen as those with real weight in the article, plus every technique this system implements or measured. The remaining seven are named and placed here rather than animated, because they are one-mention items (entity disambiguation, web-search fallback, knowledge refinement, semantic entropy, FSRS reconsolidation), stated boundaries rather than built things (per-token embedder, offline RL loop, second privileged planner), or named products and benchmarks rather than methods.</p>
     <p>Two entries in the parent that this page corrects rather than repeats: the Stage&nbsp;12 coverage row lists TurboVec among shipped indexes when it has no callers, and the seeded HNSW <code>expansion_*</code> configuration rows are documented as tuning the live index but are never read — every production call site passes the compiled defaults.</p>
   </article>
 </div>
