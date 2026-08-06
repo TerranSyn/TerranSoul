@@ -246,6 +246,15 @@
      IS its final frame, so switching the motion off leaves the mechanism on
      screen rather than the frame it started from. */
 
+
+
+  .metric-key{font-size:13.5px;line-height:1.62;color:var(--ink-soft);background:var(--bg-card);
+       border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:8px;
+       padding:13px 16px;margin:14px 0 26px}
+  .metric-key strong{color:var(--ink);display:block;margin-bottom:7px}
+  .metric-key span{display:block;margin:6px 0}
+
+
   /* ---- table of contents ------------------------------------------------
      A <details> so it opens and closes with NO JavaScript: these pages load
      one script and must render fully from a file:// URL. Sticky so it stays
@@ -260,9 +269,18 @@
        color:var(--ink-faint);font-size:11px}
   .toc[open]>summary::before{transform:rotate(90deg)}
   .toc>summary:hover{color:var(--ink)}
-  .toc .toc-in{padding:2px 16px 14px;max-height:min(58vh,560px);overflow-y:auto;
-       border-top:1px solid var(--rule);
+  /* ⛔ THE CAP HID TWO THIRDS OF THE LIST. With max-height:min(58vh,560px)
+     and overflow-y:auto only ~20 of the 56 entries were visible; the rest
+     needed a scroll INSIDE the panel, which nothing signalled. A reader
+     counting the contents concluded the page covered 20 techniques when it
+     covers 111. A table of contents that hides most of the contents is worse
+     than none.
+     The panel is now UNCAPPED, and the element stops being sticky while it is
+     open — collapsed it is a slim sticky bar for quick jumps, expanded it is a
+     full list you scroll the page through. */
+  .toc .toc-in{padding:2px 16px 16px;border-top:1px solid var(--rule);
        columns:2;column-gap:26px}
+  .toc[open]{position:static}
   /* ⛔ ANCHOR NAVIGATION vs A STICKY TOC. Jumping to #ivfpq put the heading
      UNDER the sticky panel, so the section the reader asked for was the one
      thing they could not see. Two fixes, because one is not enough:
@@ -283,17 +301,12 @@
   .toc a:hover{color:var(--accent-ink);border-bottom-color:var(--accent-soft)}
   .toc a.t2{font-weight:600;color:var(--ink);margin-top:7px}
   .toc a.t3{padding-left:14px;font-size:12.8px}
+  .toc .toc-n{display:inline-block;min-width:2.2em;font-family:var(--mono);font-size:10.5px;color:var(--ink-faint)}
+  .toc a:hover .toc-n{color:var(--accent)}
   .toc .toc-grp{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
        color:var(--ink-faint);margin:12px 0 3px;break-inside:avoid;break-after:avoid}
   .toc .toc-grp:first-child{margin-top:2px}
   @media print{.toc{display:none}}
-
-
-  .metric-key{font-size:13.5px;line-height:1.62;color:var(--ink-soft);background:var(--bg-card);
-       border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:8px;
-       padding:13px 16px;margin:14px 0 26px}
-  .metric-key strong{color:var(--ink);display:block;margin-bottom:7px}
-  .metric-key span{display:block;margin:6px 0}
 
   @media (prefers-reduced-motion: reduce){
     .tsfig *{animation:none !important;transition:none !important}
@@ -334,28 +347,30 @@
       <div>Source table: <code>docs/brain-advanced-design.md</code> &middot; Main paper: <a href="index.html">Three Falsifiable Hypotheses About External Memory for Frozen Language Models</a>.</div>
     </div>
 
+
+    
     <details class="toc" open>
       <summary>Contents &middot; 19 sections</summary>
       <nav class="toc-in" aria-label="Table of contents">
-        <a class="t2" href="#overview-one-chain-not-a-story-of-replacement">Overview One chain, not a story of replacement</a>
-        <a class="t2" href="#stage-1-lexical-keyword-search-1970s-2000s">Stage 1 Lexical / keyword search - 1970s-2000s</a>
-        <a class="t2" href="#stage-2-semantic-search-dense-embedding-retrieval-2013-2021">Stage 2 Semantic search - dense embedding retrieval - 2013-2021</a>
-        <a class="t2" href="#stage-3-vector-databases-approximate-nearest-neighbour-at-sc">Stage 3 Vector databases - approximate nearest neighbour at scale - 2016-2023</a>
-        <a class="t2" href="#stage-4-knowledge-graphs-2001-2010s">Stage 4 Knowledge graphs - 2001-2010s</a>
-        <a class="t2" href="#stage-5-retrieval-augmented-generation-2020-2024">Stage 5 Retrieval-Augmented Generation - 2020-2024</a>
-        <a class="t2" href="#stage-6-agentic-corrective-rag-2023-2026">Stage 6 Agentic / corrective RAG - 2023-2026</a>
-        <a class="t2" href="#stage-7-llm-observability-and-evals-2023-2025">Stage 7 LLM observability and evals - 2023-2025</a>
-        <a class="t2" href="#stage-8-two-way-agent-memory-the-read-write-layer-2023-2026">Stage 8 Two-way agent memory - the read-write layer - 2023-2026</a>
-        <a class="t2" href="#stage-9-governed-self-consolidating-memory-2025-2026">Stage 9 Governed, self-consolidating memory - 2025-2026</a>
-        <a class="t2" href="#stage-10-memory-infrastructure-letta-zep-graphiti-mem0-undat">Stage 10 Memory infrastructure - Letta, Zep (Graphiti), Mem0 - undated in the source table; the products date from 2023 onward</a>
-        <a class="t2" href="#stage-11-the-learned-and-robust-frontier-2025-2026">Stage 11 The learned and robust frontier - 2025-2026</a>
-        <a class="t2" href="#stage-12-what-terransoul-covers-mid-2026">Stage 12 What TerranSoul covers - mid-2026</a>
-        <a class="t3" href="#four-rungs-one-configuration-one-code-revision-n-50">Four rungs, one configuration, one code revision - n = 50</a>
-        <a class="t3" href="#how-terransoul-compares">How TerranSoul compares</a>
-        <a class="t3" href="#design-limits">Design limits</a>
-        <a class="t3" href="#design-lineage">Design lineage</a>
-        <a class="t2" href="#corrections-what-this-page-got-wrong-and-what-replaced-it">Corrections What this page got wrong, and what replaced it</a>
-        <a class="t2" href="#references-every-citation-grouped-by-stage">References Every citation, grouped by stage</a>
+        <a class="t2" href="#overview-one-chain-not-a-story-of-replacement"><span class="toc-n">1</span>One chain, not a story of replacement</a>
+        <a class="t2" href="#stage-1-lexical-keyword-search-1970s-2000s"><span class="toc-n">2</span>Lexical / keyword search - 1970s-2000s</a>
+        <a class="t2" href="#stage-2-semantic-search-dense-embedding-retrieval-2013-2021"><span class="toc-n">3</span>Semantic search - dense embedding retrieval - 2013-2021</a>
+        <a class="t2" href="#stage-3-vector-databases-approximate-nearest-neighbour-at-sc"><span class="toc-n">4</span>Vector databases - approximate nearest neighbour at scale - 2016-2023</a>
+        <a class="t2" href="#stage-4-knowledge-graphs-2001-2010s"><span class="toc-n">5</span>Knowledge graphs - 2001-2010s</a>
+        <a class="t2" href="#stage-5-retrieval-augmented-generation-2020-2024"><span class="toc-n">6</span>Retrieval-Augmented Generation - 2020-2024</a>
+        <a class="t2" href="#stage-6-agentic-corrective-rag-2023-2026"><span class="toc-n">7</span>Agentic / corrective RAG - 2023-2026</a>
+        <a class="t2" href="#stage-7-llm-observability-and-evals-2023-2025"><span class="toc-n">8</span>LLM observability and evals - 2023-2025</a>
+        <a class="t2" href="#stage-8-two-way-agent-memory-the-read-write-layer-2023-2026"><span class="toc-n">9</span>Two-way agent memory - the read-write layer - 2023-2026</a>
+        <a class="t2" href="#stage-9-governed-self-consolidating-memory-2025-2026"><span class="toc-n">10</span>Governed, self-consolidating memory - 2025-2026</a>
+        <a class="t2" href="#stage-10-memory-infrastructure-letta-zep-graphiti-mem0-undat"><span class="toc-n">11</span>Memory infrastructure - Letta, Zep (Graphiti), Mem0 - undated in the source table; the products date from 2023 onward</a>
+        <a class="t2" href="#stage-11-the-learned-and-robust-frontier-2025-2026"><span class="toc-n">12</span>The learned and robust frontier - 2025-2026</a>
+        <a class="t2" href="#stage-12-what-terransoul-covers-mid-2026"><span class="toc-n">13</span>What TerranSoul covers - mid-2026</a>
+        <a class="t3" href="#four-rungs-one-configuration-one-code-revision-n-50"><span class="toc-n">14</span>Four rungs, one configuration, one code revision - n = 50</a>
+        <a class="t3" href="#how-terransoul-compares"><span class="toc-n">15</span>How TerranSoul compares</a>
+        <a class="t3" href="#design-limits"><span class="toc-n">16</span>Design limits</a>
+        <a class="t3" href="#design-lineage"><span class="toc-n">17</span>Design lineage</a>
+        <a class="t2" href="#corrections-what-this-page-got-wrong-and-what-replaced-it"><span class="toc-n">18</span>What this page got wrong, and what replaced it</a>
+        <a class="t2" href="#references-every-citation-grouped-by-stage"><span class="toc-n">19</span>Every citation, grouped by stage</a>
       </nav>
     </details>
 
