@@ -245,6 +245,42 @@
   /* The whole guarantee, in four lines: every figure's resting style already
      IS its final frame, so switching the motion off leaves the mechanism on
      screen rather than the frame it started from. */
+
+  /* ---- table of contents ------------------------------------------------
+     A <details> so it opens and closes with NO JavaScript: these pages load
+     one script and must render fully from a file:// URL. Sticky so it stays
+     reachable down a long page without occupying layout when closed. */
+  .toc{position:sticky;top:8px;z-index:40;margin:22px 0 26px;border:1px solid var(--rule);
+       border-radius:10px;background:var(--bg-card);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .toc>summary{cursor:pointer;padding:11px 16px;font-family:var(--mono);font-size:10px;
+       letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);list-style:none;
+       display:flex;align-items:center;gap:10px;user-select:none}
+  .toc>summary::-webkit-details-marker{display:none}
+  .toc>summary::before{content:"\25B8";display:inline-block;transition:transform .15s ease;
+       color:var(--ink-faint);font-size:11px}
+  .toc[open]>summary::before{transform:rotate(90deg)}
+  .toc>summary:hover{color:var(--ink)}
+  .toc .toc-in{padding:2px 16px 14px;max-height:min(58vh,560px);overflow-y:auto;
+       border-top:1px solid var(--rule);
+       columns:2;column-gap:26px}
+  @media (max-width:820px){.toc .toc-in{columns:1;max-height:50vh}}
+  .toc a{display:block;break-inside:avoid;text-decoration:none;color:var(--ink-soft);
+       font-size:13.5px;line-height:1.45;padding:3px 0;border-bottom:1px solid transparent}
+  .toc a:hover{color:var(--accent-ink);border-bottom-color:var(--accent-soft)}
+  .toc a.t2{font-weight:600;color:var(--ink);margin-top:7px}
+  .toc a.t3{padding-left:14px;font-size:12.8px}
+  .toc .toc-grp{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+       color:var(--ink-faint);margin:12px 0 3px;break-inside:avoid;break-after:avoid}
+  .toc .toc-grp:first-child{margin-top:2px}
+  @media print{.toc{display:none}}
+
+
+  .metric-key{font-size:13.5px;line-height:1.62;color:var(--ink-soft);background:var(--bg-card);
+       border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:8px;
+       padding:13px 16px;margin:14px 0 26px}
+  .metric-key strong{color:var(--ink);display:block;margin-bottom:7px}
+  .metric-key span{display:block;margin:6px 0}
+
   @media (prefers-reduced-motion: reduce){
     .tsfig *{animation:none !important;transition:none !important}
   }
@@ -284,14 +320,39 @@
       <div>Source table: <code>docs/brain-advanced-design.md</code> &middot; Main paper: <a href="index.html">Three Falsifiable Hypotheses About External Memory for Frozen Language Models</a>.</div>
     </div>
 
-    <h2><span class="scene-num">Overview</span>One chain, not a story of replacement</h2>
+    <details class="toc" open>
+      <summary>Contents &middot; 19 sections</summary>
+      <nav class="toc-in" aria-label="Table of contents">
+        <a class="t2" href="#overview-one-chain-not-a-story-of-replacement">Overview One chain, not a story of replacement</a>
+        <a class="t2" href="#stage-1-lexical-keyword-search-1970s-2000s">Stage 1 Lexical / keyword search - 1970s-2000s</a>
+        <a class="t2" href="#stage-2-semantic-search-dense-embedding-retrieval-2013-2021">Stage 2 Semantic search - dense embedding retrieval - 2013-2021</a>
+        <a class="t2" href="#stage-3-vector-databases-approximate-nearest-neighbour-at-sc">Stage 3 Vector databases - approximate nearest neighbour at scale - 2016-2023</a>
+        <a class="t2" href="#stage-4-knowledge-graphs-2001-2010s">Stage 4 Knowledge graphs - 2001-2010s</a>
+        <a class="t2" href="#stage-5-retrieval-augmented-generation-2020-2024">Stage 5 Retrieval-Augmented Generation - 2020-2024</a>
+        <a class="t2" href="#stage-6-agentic-corrective-rag-2023-2026">Stage 6 Agentic / corrective RAG - 2023-2026</a>
+        <a class="t2" href="#stage-7-llm-observability-and-evals-2023-2025">Stage 7 LLM observability and evals - 2023-2025</a>
+        <a class="t2" href="#stage-8-two-way-agent-memory-the-read-write-layer-2023-2026">Stage 8 Two-way agent memory - the read-write layer - 2023-2026</a>
+        <a class="t2" href="#stage-9-governed-self-consolidating-memory-2025-2026">Stage 9 Governed, self-consolidating memory - 2025-2026</a>
+        <a class="t2" href="#stage-10-memory-infrastructure-letta-zep-graphiti-mem0-undat">Stage 10 Memory infrastructure - Letta, Zep (Graphiti), Mem0 - undated in the source table; the products date from 2023 onward</a>
+        <a class="t2" href="#stage-11-the-learned-and-robust-frontier-2025-2026">Stage 11 The learned and robust frontier - 2025-2026</a>
+        <a class="t2" href="#stage-12-what-terransoul-covers-mid-2026">Stage 12 What TerranSoul covers - mid-2026</a>
+        <a class="t3" href="#four-rungs-one-configuration-one-code-revision-n-50">Four rungs, one configuration, one code revision - n = 50</a>
+        <a class="t3" href="#how-terransoul-compares">How TerranSoul compares</a>
+        <a class="t3" href="#design-limits">Design limits</a>
+        <a class="t3" href="#design-lineage">Design lineage</a>
+        <a class="t2" href="#corrections-what-this-page-got-wrong-and-what-replaced-it">Corrections What this page got wrong, and what replaced it</a>
+        <a class="t2" href="#references-every-citation-grouped-by-stage">References Every citation, grouped by stage</a>
+      </nav>
+    </details>
+
+    <h2 id="overview-one-chain-not-a-story-of-replacement"><span class="scene-num">Overview</span>One chain, not a story of replacement</h2>
     <p>The history is usually told as a sequence of replacements: keywords gave way to embeddings, embeddings to vector databases, retrieval to graphs, graphs to agents. It is nothing of the sort. Every earlier substrate is still load-bearing inside its successor &mdash; BM25 inside hybrid retrievers, approximate-nearest-neighbour indexes inside every product that calls itself semantic, knowledge graphs inside 2026's agent-memory startups.</p>
     <p>What moves forward is the <em>failure mode</em>. Each stage solved the documented limitation of the stage before it and, at production scale, exposed a new one. That is the argument of this article, and it is falsifiable: if a transition has no failure behind it, the link is not real. Two of the eleven transitions below do not have one, and both are marked as such rather than papered over.</p>
     <p>Each stage is written the same way &mdash; <em>what it is</em>, <em>pros</em>, <em>cons</em>, and <em>why the next stage</em>. The cons are the load-bearing part.</p>
     <p>This article names the techniques; it does not open them. A companion page, <a href="techniques.html"><em>Retrieval and memory techniques</em></a>, takes the twenty-nine mechanisms cited below &mdash; BM25, dense retrieval, Matryoshka, HNSW, IVF-PQ, DiskANN, RaBitQ, TurboVec, typed-edge traversal, GraphRAG, RAG, HyDE, RRF, MMR, Self-RAG, CRAG, MemGPT paging, bi-temporal graphs, sleep-time compute, write-time contradiction resolution, ColBERT, ColPali, MUVERA, Memory-R1, HippoRAG-2, RobustRAG and CaMeL &mdash; and gives each one an animated diagram of how it works, the failure it exists to fix, and what it charges for the fix.</p>
     <p class="small">Scope note: this article covers <em>memory and retrieval</em> for AI systems &mdash; how a language model recalls facts, conversations, and documents. It does not cover code-intelligence tooling (AST-level code graphs, symbol indexes, or coding-assistant token-saving techniques), which is a separate subsystem with its own design questions and is out of scope here.</p>
 
-    <h2><span class="scene-num">Stage 1</span>Lexical / keyword search &mdash; 1970s&ndash;2000s</h2>
+    <h2 id="stage-1-lexical-keyword-search-1970s-2000s"><span class="scene-num">Stage 1</span>Lexical / keyword search &mdash; 1970s&ndash;2000s</h2>
     <div class="sblock"><span class="slabel">What it is</span><p>An inverted index maps every term to the documents that contain it, so a query touches only the documents that share a word with it. A statistical ranking function then orders those documents by how unusual the matched terms are &mdash; TF-IDF first, then Okapi BM25 at TREC-3 in 1994 [<a href="#cref-1">1</a>]. Matching is on the literal token; nothing is interpreted.</p></div>
     <div class="sblock"><span class="slabel">Pros</span><p>Fast, cheap, and inspectable: no training, no accelerator, and a human can read why a document ranked where it did. It is still a 2026 production default rather than a legacy tier &mdash; a benchmark of 23,088 queries over 7,318 financial documents put plain BM25 above <code>text-embedding-3-large</code> on most metrics, because exact identifiers reward exact-term matching [<a href="#cref-2">2</a>]. The machinery also keeps resurfacing inside its successors: sparse autoencoders over frozen dense retrievers extract Zipfian vocabularies that can be scored by BM25 over an inverted index, matching the dense model's own accuracy [<a href="#cref-4">4</a>].</p></div>
     <div class="sblock"><span class="slabel">Cons</span><p>Vocabulary mismatch. Two people pick the same term for the same concept less than 20&nbsp;% of the time (Furnas et al., CACM 1987 [<a href="#cref-3">3</a>]), so synonyms are missed and polysemous words are confused. Worse than the miss is the silence: a query phrased differently from the document returns nothing, and the system cannot distinguish &ldquo;no match&rdquo; from &ldquo;no such document&rdquo;.</p></div>
@@ -337,7 +398,7 @@
       <figcaption id="figcap-vocab">Two words for the same thing share no token, so a lexical index never scores the second document and the miss is silent; a learned encoder puts the paraphrase beside its source in one vector space, and the match survives the rewording.</figcaption>
     </figure>
 
-    <h2><span class="scene-num">Stage 2</span>Semantic search &mdash; dense embedding retrieval &mdash; 2013&ndash;2021</h2>
+    <h2 id="stage-2-semantic-search-dense-embedding-retrieval-2013-2021"><span class="scene-num">Stage 2</span>Semantic search &mdash; dense embedding retrieval &mdash; 2013&ndash;2021</h2>
     <div class="sblock"><span class="slabel">What it is</span><p>A learned encoder maps queries and documents into one vector space, and relevance becomes cosine similarity between two points in it. Nothing is matched literally: a paraphrase lands near its source because the encoder was trained to put it there.</p></div>
     <div class="sblock"><span class="slabel">Pros</span><p>It closes the vocabulary gap the previous stage could not. Dense Passage Retrieval (Karpukhin et al., EMNLP 2020) scored 9&ndash;19&nbsp;% higher top-20 accuracy than BM25 [<a href="#cref-5">5</a>]. One index then serves paraphrase, cross-language, and cross-modal queries with no extra machinery, and the same recipe scales to instruction-tuned and multimodal encoders [<a href="#cref-6">6</a>].</p></div>
     <div class="sblock"><span class="slabel">Cons</span><p>A capacity ceiling that is proven rather than empirical. For any fixed embedding dimension <em>d</em> there exist combinations of relevant documents that no single-vector embedder can return as a top-k result &mdash; a sign-rank argument, confirmed by the LIMIT benchmark where state-of-the-art embedders fall below 20&nbsp;% recall@100 [<a href="#cref-7">7</a>]. Dense retrieval also throws away exactly what Stage&nbsp;1 was good at: an identifier, a version string, or a part number has no useful neighbourhood in embedding space. This is why 2026 practice is hybrid <em>fusion</em> of both channels rather than replacement of one by the other.</p></div>
@@ -386,7 +447,7 @@
       <figcaption id="figcap-ann">An exact scan compares the query against every vector, so its cost rises with the corpus; a navigable small-world graph reaches the same neighbourhood in a handful of hops and leaves most of the index untouched, buying sub-linear search with an answer that is near-certain rather than certain.</figcaption>
     </figure>
 
-    <h2><span class="scene-num">Stage 3</span>Vector databases &mdash; approximate nearest neighbour at scale &mdash; 2016&ndash;2023</h2>
+    <h2 id="stage-3-vector-databases-approximate-nearest-neighbour-at-sc"><span class="scene-num">Stage 3</span>Vector databases &mdash; approximate nearest neighbour at scale &mdash; 2016&ndash;2023</h2>
     <div class="sblock"><span class="slabel">What it is</span><p>Approximate-nearest-neighbour indexes trade an exact answer for a sub-linear one. FAISS [<a href="#cref-10">10</a>] and Hierarchical Navigable Small World graphs [<a href="#cref-11">11</a>] provided the index; Milvus, Pinecone, Weaviate and pgvector wrapped it in a real database with persistence, filtering and metadata [<a href="#cref-12">12</a>].</p></div>
     <div class="sblock"><span class="slabel">Pros</span><p>Billion-scale similarity search became ordinary infrastructure rather than a research result, and by 2025&ndash;2026 the category commoditized entirely: SQL Server 2025 ships native vector indexes and Amazon S3 Vectors ingested more than 40 billion vectors in preview [<a href="#cref-12">12</a>]. RAM-residency, the early blocker, is largely gone &mdash; SSD-resident designs, 2-billion-vector indexes, a 50-billion-vector benchmark in 2026 [<a href="#cref-12">12</a>].</p></div>
     <div class="sblock"><span class="slabel">Cons</span><p>Two practical and one structural. Disk-resident graph indexes remain immature at &le;15&nbsp;% I/O utilization [<a href="#cref-13">13</a>], and filtered search still degrades both recall and latency, so &ldquo;semantic search, but only in this tenant&rsquo;s documents&rdquo; is harder than either half alone. The structural limit is the one that mattered: <em>similarity is not structure</em>. An index can say two texts are alike; it cannot represent that a person works at a company that was acquired by another.</p></div>
@@ -431,13 +492,13 @@
       <figcaption id="figcap-graph">Nearest-by-similarity returns things that resemble the query, which cannot answer a question whose answer is two relations away; typed edges let the same question be walked one relation at a time, and the walk that finds the answer is also its derivation.</figcaption>
     </figure>
 
-    <h2><span class="scene-num">Stage 4</span>Knowledge graphs &mdash; 2001&ndash;2010s</h2>
+    <h2 id="stage-4-knowledge-graphs-2001-2010s"><span class="scene-num">Stage 4</span>Knowledge graphs &mdash; 2001&ndash;2010s</h2>
     <div class="sblock"><span class="slabel">What it is</span><p>Facts stored as typed triples &mdash; entity, relation, entity &mdash; and answered by traversal instead of by scoring. RDF and SPARQL gave the standard, Freebase and DBpedia the public corpora, Neo4j the property-graph engine; Google's Knowledge Graph (2012; 500M entities, 3.5B facts) put entity-centric answers into mainstream search [<a href="#cref-15">15</a>].</p></div>
     <div class="sblock"><span class="slabel">Pros</span><p>Entity disambiguation and multi-hop relational answers become exact rather than probabilistic, and the answer carries its own derivation. The structure argument has numbers: a 2023 data.world benchmark reports GPT-4 at 16.7&nbsp;% execution accuracy over raw SQL against 54.2&nbsp;% over a knowledge-graph representation of the same 43 insurance-domain questions &mdash; and 0&nbsp;% against non-zero in the highest-complexity quadrant [<a href="#cref-16">16</a>].</p></div>
     <div class="sblock"><span class="slabel">Cons</span><p>Graphs are chronically incomplete and expensive to keep alive. Knowledge Vault found 71&nbsp;% of Freebase persons had no recorded place of birth [<a href="#cref-17">17</a>]; Google shut Freebase down in 2015. Automatic construction from text does not remove the problem, it changes its shape &mdash; from missing edges to fragmented and inconsistent ones &mdash; and the curation cost never amortizes, because the world keeps changing under the schema.</p></div>
     <div class="sblock next"><span class="slabel">Why Stage 5</span><p>Hand-curating a graph does not scale to open-domain text, and by 2020 a language model could synthesize an answer directly from retrieved passages with no schema at all. The partial swing back came later, with language models as the curators rather than the consumers &mdash; bitemporal knowledge-graph agent memory reports DMR 94.8&nbsp;% beside MemGPT's 93.4&nbsp;%, +18.5&nbsp;% on LongMemEval, at about 90&nbsp;% lower latency [<a href="#cref-18">18</a>] &mdash; and that is Stage&nbsp;10, not a return to this one.</p></div>
 
-    <h2><span class="scene-num">Stage 5</span>Retrieval-Augmented Generation &mdash; 2020&ndash;2024</h2>
+    <h2 id="stage-5-retrieval-augmented-generation-2020-2024"><span class="scene-num">Stage 5</span>Retrieval-Augmented Generation &mdash; 2020&ndash;2024</h2>
     <div class="sblock"><span class="slabel">What it is</span><p>Retrieve documents at query time and place them in the prompt, so a frozen model <em>reads</em> a fact instead of recalling it (Lewis et al., NeurIPS 2020 [<a href="#cref-19">19</a>]). The model's weights stay fixed; the knowledge lives outside them.</p></div>
     <div class="sblock"><span class="slabel">Pros</span><p>It fixes three failures of frozen parametric knowledge at once and without retraining: hallucination, staleness, and the absence of provenance. Updating knowledge becomes a write to a store rather than a fine-tune, and every answer can cite. By 2026 the pattern had hardened into managed infrastructure with query planning, parallel subqueries and reranking &mdash; Azure AI Search's agentic retrieval reached general availability in April 2026 [<a href="#cref-20">20</a>].</p></div>
     <div class="sblock"><span class="slabel">Cons</span><p>Most production failures are <em>retrieval</em> failures, not generation failures, and the pipeline emits no signal about which one happened: the output is fluent either way. A 2026 matched-control study found that &ldquo;Lost in the Middle&rdquo; reader errors come mainly from semantic competition among the retrieved passages rather than from context length &mdash; swapping in less-competitive passages recovered up to +6.0 exact match, so a longer window relocates the problem instead of solving it [<a href="#cref-21">21</a>].</p></div>
@@ -487,19 +548,19 @@
       <figcaption id="figcap-crag">A grader sits between retrieval and generation and reads the retrieved set: the grade routes the query to grounding, to a rewrite-and-retry loop, or to an abstention, so a retrieval failure has somewhere to go other than a confident answer built on it.</figcaption>
     </figure>
 
-    <h2><span class="scene-num">Stage 6</span>Agentic / corrective RAG &mdash; 2023&ndash;2026</h2>
+    <h2 id="stage-6-agentic-corrective-rag-2023-2026"><span class="scene-num">Stage 6</span>Agentic / corrective RAG &mdash; 2023&ndash;2026</h2>
     <div class="sblock"><span class="slabel">What it is</span><p>The pipeline grades its own retrieval and acts on the grade. Self-RAG trains one model to emit reflection tokens that decide when to retrieve and then critique its own output for factuality and citation quality [<a href="#cref-24">24</a>]. CRAG adds a lightweight retrieval evaluator that labels retrieved documents Correct, Incorrect or Ambiguous and triggers knowledge refinement, a web-search fallback with query rewriting, or both [<a href="#cref-25">25</a>].</p></div>
     <div class="sblock"><span class="slabel">Pros</span><p>It attacks the previous stage's documented failure at the place the failure occurs. It also reached quantified production form quickly: by June 2026 a published pipeline tuned explicit thresholds (<code>crag_ok</code>&nbsp;=&nbsp;0.7 / <code>crag_bad</code>&nbsp;=&nbsp;0.4; &tau;_claim&nbsp;=&nbsp;0.3 / &tau;_abstain&nbsp;=&nbsp;0.3) around a verifier benchmarked on HaluBench, landing on an operating point of 2&nbsp;% hallucination at 0.908 faithfulness [<a href="#cref-26">26</a>,<a href="#cref-27">27</a>].</p></div>
     <div class="sblock"><span class="slabel">Cons</span><p>The loop is only as trustworthy as its own grader, and the grader is weak. That verifier's AUROC is 0.702 where 0.5 is chance, so grade-then-correct inherits a large share of the judge's error at any threshold &mdash; and the same operating point reports 0.46 coverage, which is how the low hallucination rate is actually reached: by abstaining or rerouting more than half of all queries [<a href="#cref-26">26</a>,<a href="#cref-27">27</a>]. Both 2024 originals also grade at document or answer level, so an answer with five correct statements and one fabrication still clears a document-relevance check &mdash; a gap the field only began closing in 2025 [<a href="#cref-28">28</a>,<a href="#cref-29">29</a>].</p></div>
     <div class="sblock next"><span class="slabel">Why Stage 7</span><p>The bottleneck moved into the critic. Deciding whether a correction loop helps at all &mdash; or merely abstains its way to a good-looking number &mdash; requires a standard way to measure the critic itself.</p></div>
 
-    <h2><span class="scene-num">Stage 7</span>LLM observability &amp; evals &mdash; 2023&ndash;2025</h2>
+    <h2 id="stage-7-llm-observability-and-evals-2023-2025"><span class="scene-num">Stage 7</span>LLM observability &amp; evals &mdash; 2023&ndash;2025</h2>
     <div class="sblock"><span class="slabel">What it is</span><p>Reference-free measurement of model output, and tracing of the pipeline that produced it: RAGAS, TruLens span-level tracing, and LangSmith [<a href="#cref-22">22</a>,<a href="#cref-30">30</a>]; MT-Bench's LLM-as-a-judge protocol [<a href="#cref-31">31</a>]; faithfulness suites such as FaithJudge [<a href="#cref-23">23</a>]. By 2025&ndash;2026 the layer standardized onto OpenTelemetry GenAI semantic conventions [<a href="#cref-32">32</a>].</p></div>
     <div class="sblock"><span class="slabel">Pros</span><p>For the first time a team could detect hallucination and catch regressions without gold labels, at continuous-integration speed, and localize a failure to a span rather than to a pipeline. It made the previous two stages debuggable at all.</p></div>
     <div class="sblock"><span class="slabel">Cons</span><p>The judge is unreliable in a specific and uncomfortable way. Across 21 judges and roughly 541,000 judgments, judges with test-retest reliability above 0.95 also carried severe position bias (above 0.10) and rankings that shifted by up to 14 positions between benchmarks [<a href="#cref-33">33</a>] &mdash; reliable and invalid at the same time, which is worse than noisy, because it looks trustworthy. The layer is also passive: it mines traces for humans and writes nothing back.</p></div>
     <div class="sblock next"><span class="slabel">Why Stage 8</span><p>Traces accumulate while the agent restarts stateless every session. Nothing in an observability stack converts a measured experience into a future capability &mdash; EvoAgentBench benchmarks exactly that conversion, finding that transfer works but that no method yet sustains gains across all settings [<a href="#cref-34">34</a>].</p></div>
 
-    <h2><span class="scene-num">Stage 8</span>Two-way agent memory &mdash; the read-write layer &mdash; 2023&ndash;2026</h2>
+    <h2 id="stage-8-two-way-agent-memory-the-read-write-layer-2023-2026"><span class="scene-num">Stage 8</span>Two-way agent memory &mdash; the read-write layer &mdash; 2023&ndash;2026</h2>
     <div class="sblock"><span class="slabel">What it is</span><p>The agent reads memory and also writes it. MemGPT introduced operating-system-inspired virtual context management &mdash; the model pages its own working set in and out [<a href="#cref-35">35</a>] &mdash; and the idea mainstreamed as Letta, Zep, Mem0 and ChatGPT Memory [<a href="#cref-36">36</a>]. By March 2026 it was table stakes: Anthropic made Claude memory free for all users and added cross-assistant memory import [<a href="#cref-36">36</a>].</p></div>
     <div class="sblock"><span class="slabel">Pros</span><p>Sessions stop being independent. Preferences, corrections and prior conclusions survive, and the agent can compress its own context deliberately instead of being truncated by a window it cannot see.</p></div>
     <div class="sblock"><span class="slabel">Cons</span><p>The write path is an attack surface with no defence in the base design &mdash; MINJA reports over 95&nbsp;% injection success against unguarded stores [<a href="#cref-37">37</a>], and an injected memory is permanent and retrievable rather than confined to one turn. Measurement is unresolved as well: the same LoCoMo benchmark was reported at 84&nbsp;%, then 58.44&nbsp;%, then 75.14&nbsp;% in a public dispute [<a href="#cref-38">38</a>], and MemoryArena shows systems that score near-perfectly on LoCoMo collapsing to 40&ndash;60&nbsp;% on interdependent multi-session tasks [<a href="#cref-39">39</a>].</p></div>
@@ -550,25 +611,25 @@
       <figcaption id="figcap-gate">Every autonomous durable write is graded before it lands: an allowed write reaches the store, an unverified one is held in quarantine, and a blocked one turns back before the store is touched, so a poisoned write is never there to be retrieved later.</figcaption>
     </figure>
 
-    <h2><span class="scene-num">Stage 9</span>Governed, self-consolidating memory &mdash; 2025&ndash;2026</h2>
+    <h2 id="stage-9-governed-self-consolidating-memory-2025-2026"><span class="scene-num">Stage 9</span>Governed, self-consolidating memory &mdash; 2025&ndash;2026</h2>
     <div class="sblock"><span class="slabel">What it is</span><p>A governed write path plus background consolidation. Letta's sleep-time compute replaces in-conversation self-editing with a separate agent that curates memory during idle time [<a href="#cref-41">41</a>]; Hindsight's &ldquo;Observations&rdquo; process, which does the same job, took first place on BEAM at 73.9&nbsp;% over 1M-token corpora [<a href="#cref-42">42</a>].</p></div>
     <div class="sblock"><span class="slabel">Pros</span><p>Writes are reviewed rather than accepted, contradictions are resolved off the hot path where there is time to resolve them properly, and the store can get <em>smaller and better</em> rather than only larger. It is the first stage that treats forgetting as a feature.</p></div>
     <div class="sblock"><span class="slabel">Cons</span><p>GateMem finds that no current method achieves utility, access control and reliable forgetting at the same time [<a href="#cref-43">43</a>] &mdash; a trilemma, not a backlog. Lifecycle attacks against the write path are separately formalized [<a href="#cref-44">44</a>], so governance is now a named target rather than an assumed defence. BEAM shows roughly a 25&nbsp;% accuracy drop from 1M to 10M tokens [<a href="#cref-42">42</a>], and the category still has no consensus name, which is itself evidence that it has not settled.</p></div>
     <div class="sblock next"><span class="slabel">Why Stage 10 &mdash; no forcing failure</span><p>This transition is not real, and saying so is more useful than inventing a link. Stage&nbsp;9's trilemma is still open; nothing about it produced Stage&nbsp;10. What produced Stage&nbsp;10 is packaging &mdash; teams wanted the Stage&nbsp;8 and&nbsp;9 machinery as a component instead of as a research result &mdash; and several of its products predate the Stage&nbsp;9 literature outright. It is a deployment shape, not a capability.</p></div>
 
-    <h2><span class="scene-num">Stage 10</span>Memory infrastructure &mdash; Letta, Zep (Graphiti), Mem0 &mdash; undated in the source table; the products date from 2023 onward</h2>
+    <h2 id="stage-10-memory-infrastructure-letta-zep-graphiti-mem0-undat"><span class="scene-num">Stage 10</span>Memory infrastructure &mdash; Letta, Zep (Graphiti), Mem0 &mdash; undated in the source table; the products date from 2023 onward</h2>
     <div class="sblock"><span class="slabel">What it is</span><p>The memory layer sold as a component. Mem0's extract-consolidate-update vector pipeline, Zep/Graphiti's bitemporal knowledge graph for facts that change over time, and Letta's operating-system-style runtime where the model pages its own memory via sleep-time curation [<a href="#cref-45">45</a>]. Adjacent, same problem class in a different deployment shape: ApeRAG, an agentic GraphRAG platform built as a deeply modified fork of LightRAG [<a href="#cref-46">46</a>] with five backing services, Kubernetes and Helm deployment, and optional MinerU document parsing [<a href="#cref-47">47</a>].</p></div>
     <div class="sblock"><span class="slabel">Pros</span><p>A team gets typed memory, consolidation and temporal validity without building any of it. The bitemporal design in particular answers a question a flat store cannot express at all &mdash; what did we believe last March, as opposed to what is true now [<a href="#cref-18">18</a>].</p></div>
     <div class="sblock"><span class="slabel">Cons</span><p>It is developer infrastructure, not a product, and the trade between shapes is measurable: Mem0's vector-first design scores 49.0&nbsp;% beside Zep's 63.8&nbsp;% on LongMemEval temporal reasoning [<a href="#cref-45">45</a>], while Letta remains a runtime somebody still has to build a product on. Comparability is uneven too &mdash; ApeRAG publishes no quantitative benchmark suite, so it can only be compared by architecture [<a href="#cref-48">48</a>]. And nothing in this layer answers Stage&nbsp;9's trilemma; it packages the open problem rather than closing it.</p></div>
     <div class="sblock next"><span class="slabel">Why Stage 11 &mdash; not from this stage's failure</span><p>The pressure comes from two older limitations resurfacing at production scale, neither of which packaging touches: Stage&nbsp;2's proven single-vector ceiling, and Stage&nbsp;8's unguarded write path. Stage&nbsp;11 is the response to those, not to Stage&nbsp;10.</p></div>
 
-    <h2><span class="scene-num">Stage 11</span>The learned &amp; robust frontier &mdash; 2025&ndash;2026</h2>
+    <h2 id="stage-11-the-learned-and-robust-frontier-2025-2026"><span class="scene-num">Stage 11</span>The learned &amp; robust frontier &mdash; 2025&ndash;2026</h2>
     <div class="sblock"><span class="slabel">What it is</span><p>Three shifts arriving together. <em>Retrieval goes multi-vector:</em> ColBERT-style late interaction [<a href="#cref-61">61</a>] becomes deployable through PLAID and MUVERA's fixed-dimensional encodings [<a href="#cref-62">62</a>] and extends to page images with ColPali [<a href="#cref-63">63</a>], recovering the token-level matching a single pooled vector discards. <em>Memory management becomes learned:</em> Memory-R1 trains a reinforcement-learning policy over add / update / delete / noop from downstream reward [<a href="#cref-64">64</a>], and HippoRAG-2 runs personalized PageRank over a passage graph for single-shot multi-hop recall [<a href="#cref-65">65</a>]. <em>RAG gains provable robustness:</em> RobustRAG's isolate-then-aggregate [<a href="#cref-66">66</a>] and CaMeL's capability and information-flow control [<a href="#cref-67">67</a>] give certified resistance to injected passages, while extended RaBitQ pushes quantization past the previous accuracy/compression frontier with a per-vector error bound [<a href="#cref-68">68</a>].</p></div>
     <div class="sblock"><span class="slabel">Pros</span><p>Each item addresses a limitation the chain had left standing &mdash; the single-vector ceiling, hand-tuned write heuristics, and the total absence of any guarantee against a poisoned passage &mdash; and the robustness half does it with a stated bound rather than a benchmark delta, which is a different and stronger kind of claim.</p></div>
     <div class="sblock"><span class="slabel">Cons</span><p>Every one of them is bought with a resource a sovereign, local, single-frozen-model deployment does not have. Late interaction needs a <em>per-token</em> embedder, and a local Ollama-style server returns one mean-pooled vector per text. Reinforcement-learned memory management needs an <em>offline training loop</em>, which a frozen model by definition excludes. RobustRAG's stronger aggregator needs <em>decoding logits</em> the local server does not expose. Full CaMeL needs a <em>second, privileged planner model</em>, which doubles the resident footprint. On a hosted stack these are line items; on a local one they are boundaries.</p></div>
     <div class="sblock next"><span class="slabel">Why Stage 12</span><p>Nothing about the frontier is wrong &mdash; it is priced in a currency a local deployment cannot spend. That forces an explicit choice: ship the tractable core, and state the rest as a boundary rather than as a backlog. The last stage is one system's record against that choice.</p></div>
 
-    <h2><span class="scene-num">Stage 12</span>What TerranSoul covers &mdash; mid-2026</h2>
+    <h2 id="stage-12-what-terransoul-covers-mid-2026"><span class="scene-num">Stage 12</span>What TerranSoul covers &mdash; mid-2026</h2>
     <p>This is the only section about TerranSoul. Each row names what is implemented for a stage and the measured number with its qualifier. Where something is implemented but never measured, the row says <em>built, not benchmarked</em> &mdash; that is an honest entry; a blank or an implied number is not.</p>
 
     <figure class="tsfig fig-recall">
@@ -689,7 +750,7 @@
       </tr>
     </table></div>
 
-    <h3>Four rungs, one configuration, one code revision &mdash; n&nbsp;=&nbsp;50</h3>
+    <h3 id="four-rungs-one-configuration-one-code-revision-n-50">Four rungs, one configuration, one code revision &mdash; n&nbsp;=&nbsp;50</h3>
     <p>Every retrieval number in the table above was measured on its own day, and two of them on code
     that has since changed. The four thinking modes had never been run as a <em>set</em>:
     <code>chat</code> and <code>think</code> came from one campaign, <code>research</code> from
@@ -707,7 +768,15 @@
       <tr><td><code>think</code></td><td>98.0&nbsp;%</td><td>100.0&nbsp;%</td><td>100.0&nbsp;%</td><td>93.5</td><td>91.4</td><td>547.54&nbsp;ms</td></tr>
       <tr><td><code>research</code></td><td>98.0&nbsp;%</td><td>100.0&nbsp;%</td><td>100.0&nbsp;%</td><td>95.7</td><td>94.4</td><td>5,024.74&nbsp;ms</td></tr>
       <tr><td><code>max</code></td><td>100.0&nbsp;%</td><td>100.0&nbsp;%</td><td>100.0&nbsp;%</td><td>98.5</td><td>98.0</td><td>65,986.43&nbsp;ms</td></tr>
-    </table></div>
+    </table>
+    <div class="metric-key">
+      <strong>What the columns mean.</strong>
+      <span><code>Rung</code> &mdash; the thinking mode being measured: <code>chat</code>, <code>think</code>, <code>research</code>, <code>max</code>.</span>
+      <span><code>R@5</code> / <code>R@10</code> / <code>R@20</code> &mdash; <em>recall_ANY@k</em>: the fraction of questions for which <strong>at least one</strong> gold session appears in the top&nbsp;k. &#9888; It is satisfied by a single hit, so on a multi-gold question it says nothing about whether the other golds were found &mdash; 324 of the 500 questions have more than one gold, and <em>recall_ALL@k</em>, which requires every one of them inside the top&nbsp;k, scores markedly lower on exactly those.</span>
+      <span><code>NDCG@10</code> &mdash; normalised discounted cumulative gain over the top&nbsp;10. Unlike recall it is <em>rank-weighted</em>: a gold at position&nbsp;1 counts for more than the same gold at position&nbsp;9, and the score is normalised so 1.0 is the best achievable ordering. It is the metric most sensitive to reordering, which is why the reranking experiments are all reported against it.</span>
+      <span><code>MRR@20</code> &mdash; mean reciprocal rank: the average of 1/<em>rank</em> of the <strong>first</strong> gold found within the top&nbsp;20 (0 if none). It is the closest thing here to a top-1 measure &mdash; rank&nbsp;1 scores 1.00, rank&nbsp;2 scores 0.50, rank&nbsp;4 scores 0.25 &mdash; but it still only looks at the first gold, so it is rank-1 <em>sensitive</em> rather than a true precision@1.</span>
+      <span><code>Mean latency</code> &mdash; wall-clock per query for that rung, which is what makes an accuracy gain affordable or not.</span>
+    </div></div>
 
     <p>Five caveats travel with that table. Publishing any of these numbers without them is a defect,
     not a shortening.</p>
@@ -817,7 +886,7 @@
     sample size changes that. A full-500 <code>think</code> arm would confirm the paths really are
     identical; it could not give the gap a way back.</p>
 
-    <h3>How TerranSoul compares</h3>
+    <h3 id="how-terransoul-compares">How TerranSoul compares</h3>
     <p>Eight figures, one per measurement axis. They are separate charts rather than one because
     the numbers are not on a shared axis: this page&rsquo;s rungs are LongMemEval-S retrieval, the
     92&nbsp;% peer cluster is a different corpus on a shared embedder, Mem0/Letta/Zep publish LoCoMo
@@ -1778,7 +1847,7 @@
 </svg>
 </div>
 
-    <h3>Design limits</h3>
+    <h3 id="design-limits">Design limits</h3>
     <p>Four limits of this design, stated as limits rather than as a roadmap. Three are shared with the field; one is specific to us.</p>
     <ul>
       <li><strong>Write governance is described structurally, not quantified.</strong> The gate is implemented and regression-tested, and this page publishes no attack-success number for it. A quantified security claim was published here once, unmeasured, and withdrawn &mdash; see the Corrections trail. It is not restated in any form until an adversarial run exists to restate it from.</li>
@@ -1789,10 +1858,10 @@
     </ul>
     <p><strong>There is no Stage 13 yet.</strong> A thirteenth stage would need a failure of Stage&nbsp;11 that somebody has documented and that a new mechanism answers. The open items above are Stage&nbsp;9's and Stage&nbsp;11's own unfinished business, not a new limit, so the chain stops here rather than being extended for symmetry.</p>
 
-    <h3>Design lineage</h3>
+    <h3 id="design-lineage">Design lineage</h3>
     <p>Credits the source table records for the mechanisms above: reciprocal-rank fusion with <em>k</em>&nbsp;=&nbsp;60 follows Cormack, Clarke &amp; B&uuml;ttcher (2009) [<a href="#cref-49">49</a>]; HyDE follows Gao et al. [<a href="#cref-50">50</a>]; the temporal-edge supersession pattern follows Zep/Graphiti [<a href="#cref-18">18</a>]; Matryoshka two-stage search follows Kusupati et al. (2022) [<a href="#cref-53">53</a>]; the retrieval evaluator adopts CRAG's grading [<a href="#cref-25">25</a>]; community detection follows microsoft/graphrag's hierarchy [<a href="#cref-54">54</a>] with LightRAG-style community summaries [<a href="#cref-46">46</a>]; conflict resolution adopts Mem0's LLM-arbitrated approach [<a href="#cref-55">55</a>]. The self-improvement boundary &mdash; harness and memory evolve, weights never &mdash; is argued against SIA [<a href="#cref-56">56</a>] and the A-Evolve line [<a href="#cref-57">57</a>,<a href="#cref-58">58</a>,<a href="#cref-59">59</a>,<a href="#cref-60">60</a>]. Benchmarks hold a frozen <code>gemma4:12b-it-qat</code> actor fixed even though the shipped product default is a 1-bit Bonsai 27B, so a measured change is attributable to memory and harness rather than to a model swap.</p>
 
-    <h2><span class="scene-num">Corrections</span>What this page got wrong, and what replaced it</h2>
+    <h2 id="corrections-what-this-page-got-wrong-and-what-replaced-it"><span class="scene-num">Corrections</span>What this page got wrong, and what replaced it</h2>
     <p class="small">Consolidated from the running notes that used to interrupt the argument. Each entry is a claim this page published, why it was wrong, and what it says now. Nothing is deleted from this trail.</p>
     <ol class="refs">
       <li><strong>2026-07-27 &mdash; <code>chat</code> was called byte-identical to the validated retrieval path.</strong> It is not: chat NDCG@10 93.8 against the <code>rrf</code> arm's 95.04, with 140 of 500 retrieval orderings different. The identity assertion was false in kind, not off by digits, so it was deleted rather than re-numbered and the mode's own measured value published instead.</li>
@@ -1813,7 +1882,7 @@
       <li><strong>2026-08-03 &mdash; the four thinking modes had never been measured as a set, and the page presented them as if they had.</strong> The rungs came from three separate campaigns on three different days, two of them on code that has since changed, so every gap between them mixed a rung difference with a run difference. The page said so about individual rows and never about the comparison as a whole. Four arms on one configuration on the current code now exist at n&nbsp;=&nbsp;50, in their own frame, and they are deliberately not merged into the full-500 coverage table: the fix for mixing sample sizes is a second frame, not a footnote.</li>
     </ol>
 
-    <h2><span class="scene-num">References</span>Every citation, grouped by stage</h2>
+    <h2 id="references-every-citation-grouped-by-stage"><span class="scene-num">References</span>Every citation, grouped by stage</h2>
     <p class="small">Citation strings follow the source table in <code>docs/brain-advanced-design.md</code> [<a href="#cref-51">51</a>] and its linked comparison records; tools and products without papers are cited by name as the source table cites them. One negative finding recorded for auditability: RAPTOR appears nowhere in the source document and is therefore deliberately absent from this list rather than attributed to it; HippoRAG likewise enters the main paper via its own related-work references, not via the source table.</p>
     <div class="refgroup">Stage 1 &mdash; lexical / keyword</div>
     <ol class="refs">
