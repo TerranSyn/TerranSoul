@@ -55,23 +55,82 @@ for acc in "$REPO"/mcp-data/.tb-par*-accepted.txt; do
   done < "$acc"
 done
 
+# ⛔ THE HOLE THIS CLOSES. The loop above only inspects tasks in $ACCEPTED —
+# tasks the sweep gave up on and recorded as 0.0. But a credential expiry
+# usually kills ONE trial inside a task that otherwise completes normally: the
+# task never reaches $ACCEPTED, so the audit above reported "none" while
+# configure-git-webserver sat on disk with 1 of 5 trials dead of
+# UnknownApiError and a 0.0 it did not earn. Measured 2026-08-07.
+#
+# That 0.0 matters twice over: the leaderboard requires n_errored_trials == 0,
+# and an errored trial still contributes to `mean`, so the headline number is
+# wrong in whichever direction the dead trial happened to score.
+echo "── errored trials inside otherwise-complete tasks ──"
+err=$(python - "$JOBS" <<'PY'
+import json, glob, os, sys
+jobs = sys.argv[1]
+n = 0
+for f in sorted(glob.glob(os.path.join(jobs, '*', 'result.json'))):
+    try:
+        r = json.load(open(f))
+    except Exception:
+        continue
+    s = r.get('stats', {})
+    for ev in (s.get('evals') or {}).values():
+        ex = ev.get('exception_stats') or {}
+        if not ex and not (s.get('n_errored_trials') or 0):
+            continue
+        names = []
+        for score, ns in (ev.get('reward_stats', {}).get('reward', {}) or {}).items():
+            names += [(x, score) for x in ns]
+        task = names[0][0].rsplit('__', 1)[0] if names else '?'
+        print('  !! %-38s %s of %s trial(s) errored: %s'
+              % (task, s.get('n_errored_trials'), ev.get('n_trials'),
+                 ','.join(ex.keys())))
+        print('     job: %s' % os.path.dirname(f))
+        print('     re-run with: bash redo-task.sh %s' % task)
+        n += 1
+print('__COUNT__%d' % n)
+PY
+)
+printf '%s\n' "$err" | grep -v '^__COUNT__'
+ecount=$(printf '%s' "$err" | grep -oE '^__COUNT__[0-9]+' | grep -oE '[0-9]+$')
+[ -z "$ecount" ] && ecount=0
+[ "$ecount" = "0" ] && echo "  none"
+found=$((found + ecount))
+
 echo
+# The two shapes need DIFFERENT remedies, so they are reported separately.
+# Conflating them was the first version's bug: it offered ledger-surgery for a
+# task whose ledgers are fine and whose problem is one dead trial.
+acc_only=$((found - ecount))
+
 if [ "$found" -eq 0 ]; then
-  echo "  none — every accepted 0.0 looks like a genuine failure, not an outage."
+  echo "  none — no outage-attributable zeros, no errored trials."
   echo "  (If an outage happened but produced NO result.json at all, this cannot"
   echo "   see it — cross-check sweep-status.sh and the worker logs by hand.)"
 else
-  echo "  $found task(s) were accepted as 0.0 with an outage signature."
-  echo
-  echo "  These zeros are artifacts, not results. To re-run one, remove it from"
-  echo "  BOTH ledgers and relaunch per RESUME.md:"
-  echo
-  echo "    t=<task-name>; w=<worker>"
-  echo "    grep -vx \"\$t\" mcp-data/.tb-par\${w}-state.txt    > /tmp/s && mv /tmp/s mcp-data/.tb-par\${w}-state.txt"
-  echo "    grep -vx \"\$t\" mcp-data/.tb-par\${w}-accepted.txt > /tmp/a && mv /tmp/a mcp-data/.tb-par\${w}-accepted.txt"
-  echo
-  echo "  NOTE: do NOT chain those with && — grep -v exits 1 when it outputs"
-  echo "  nothing, which silently skips the file that would become empty."
+  if [ "$ecount" -gt 0 ]; then
+    echo "  $ecount task(s) have an ERRORED TRIAL inside an otherwise-complete task."
+    echo "  The task is NOT in \$ACCEPTED and its ledgers are correct — the problem"
+    echo "  is one dead trial carrying a reward it did not earn. A submission"
+    echo "  requires n_errored_trials == 0, so re-run just that task:"
+    echo
+    echo "    bash redo-task.sh <task-name>"
+    echo
+  fi
+  if [ "$acc_only" -gt 0 ]; then
+    echo "  $acc_only task(s) were ACCEPTED AS 0.0 with an outage signature."
+    echo "  Those zeros are artifacts. To re-run one, remove it from BOTH ledgers"
+    echo "  and relaunch per RESUME.md:"
+    echo
+    echo "    t=<task-name>; w=<worker>"
+    echo "    grep -vx \"\$t\" mcp-data/.tb-par\${w}-state.txt    > /tmp/s; mv /tmp/s mcp-data/.tb-par\${w}-state.txt"
+    echo "    grep -vx \"\$t\" mcp-data/.tb-par\${w}-accepted.txt > /tmp/a; mv /tmp/a mcp-data/.tb-par\${w}-accepted.txt"
+    echo
+    echo "  NOTE: do NOT chain those with && — grep -v exits 1 when it outputs"
+    echo "  nothing, which silently skips the file that would become empty."
+  fi
 fi
 echo
 [ "$found" -eq 0 ]
