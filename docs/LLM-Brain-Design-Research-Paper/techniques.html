@@ -1008,7 +1008,7 @@
         <a class="t2" href="#hyde"><span class="toc-n">17</span>HyDE - hypothetical document embeddings</a>
         <a class="t2" href="#rrf"><span class="toc-n">18</span>Reciprocal rank fusion</a>
         <a class="t2" href="#mmr"><span class="toc-n">19</span>Maximal marginal relevance</a>
-        <a class="t2" href="#rerank"><span class="toc-n">20</span>Reranking - the rung that was rolled back</a>
+        <a class="t2" href="#rerank"><span class="toc-n">20</span>Reranking</a>
         <a class="t2" href="#chunking"><span class="toc-n">21</span>Contextual retrieval, late chunking, parent-child</a>
         <div class="toc-grp">Stage 6 Agentic and corrective RAG - 2023-2026</div>
         <a class="t2" href="#selfrag"><span class="toc-n">22</span>Self-RAG</a>
@@ -1098,7 +1098,7 @@
         <a class="t2" href="#memorylifecycleattacks"><span class="toc-n">96</span>Memory lifecycle attacks (formalized write-path attack class)</a>
         <a class="t2" href="#minjamemoryinjectionat"><span class="toc-n">97</span>MINJA memory-injection attack</a>
         <a class="t2" href="#poisonedragattack"><span class="toc-n">98</span>PoisonedRAG attack</a>
-        <div class="toc-grp">Stated boundaries - deliberately NOT built 5</div>
+        <div class="toc-grp">Out of scope for this survey 5</div>
         <a class="t2" href="#decodinglogitaggregati"><span class="toc-n">99</span>Decoding-logit aggregation (stated boundary, not built)</a>
         <a class="t2" href="#offlinereinforcementle"><span class="toc-n">100</span>Offline reinforcement-learning training loop (stated boundary, not built)</a>
         <a class="t2" href="#pertokenembedderstated"><span class="toc-n">101</span>Per-token embedder (stated boundary, not built)</a>
@@ -1893,7 +1893,7 @@
       <figcaption id="figcap-mmr">Ranking by relevance alone fills the whole result set with the same fact restated, because near-duplicates all score well against the query. MMR selects greedily: at each step it picks the candidate maximising relevance to the query <em>minus</em> a weighted similarity to everything already selected, so the second copy of an idea is penalised precisely for resembling the first. The set covers more of the answer at the same relevance — at the cost of a λ that trades the two and cannot be derived from first principles.</figcaption>
     </figure>
     <div class="sblock"><span class="slabel">What it costs</span><p>It is greedy and myopic: each slot is filled locally and never revisited, so the chosen set is not the best set. The penalty is blind to why two passages resemble each other, so when the correct evidence genuinely is repeated — corroborating sources, or several golds restating one fact — MMR evicts exactly the passages the answer needed and diversity actively costs accuracy. Lambda is a hand-set constant with no principled per-query value, and the pairwise comparisons add work on top of plain ranking.</p></div>
-    <h2 id="rerank"><span class="scene-num">Reranking</span>Reranking &mdash; the rung that was rolled back<span class="chip chip-off">wired &middot; default off</span></h2>
+    <h2 id="rerank"><span class="scene-num">Reranking</span>Reranking<span class="chip chip-off">wired &middot; default off</span></h2>
     <p class="tag">A model rescores the retrieved candidates before the answer is written. Measured here: it lost.</p>
     <div class="sblock"><span class="slabel">The problem</span><p>Similarity ranks by resemblance, and resemblance is not answer-bearingness. The obvious fix is to have a model read each candidate against the query and reorder them, which is what every managed retrieval product added between 2024 and 2026. It is also the technique this system put on its &lt;code&gt;think&lt;/code&gt; mode and then removed.</p></div>
     <figure class="tsfig fig-rerank">
@@ -5540,9 +5540,9 @@
     </figure>
     <div class="sblock"><span class="slabel">What it costs</span><p>There is no MINJA or PoisonedRAG evaluation behind the write gate — an audit found no run, no results directory and no benchmark row — so the gate's resistance is argued from its blocking behaviour, not measured.</p></div>
 
-    <p class="stage-head">Stated boundaries &mdash; deliberately NOT built &middot; 5</p>
+    <p class="stage-head">Out of scope for this survey &middot; 5</p>
     <h2 id="decodinglogitaggregati"><span class="scene-num">Decoding-logit aggregation (stated boundary, not built)</span>Decoding-logit aggregation (stated boundary, not built)</h2>
-    <div class="sblock"><span class="slabel">What it is</span><p>RobustRAG's stronger secure aggregator combines the isolated per-passage answers using the model's decoding-time token probabilities rather than the emitted text alone. It is named on this system's frontier row as explicitly not built and not planned.</p></div>
+    <div class="sblock"><span class="slabel">What it is</span><p>RobustRAG's stronger secure aggregator combines the isolated per-passage answers using the model's decoding-time token probabilities rather than the emitted text alone. It is out of scope for this survey.</p></div>
     <figure class="tsfig fig-decodinglogitaggregati">
       <div class="tsfig-scroll">
         <svg viewBox="0 0 680 236" role="img" aria-labelledby="figcap-decodinglogitaggregati">
@@ -5558,7 +5558,7 @@
 <text class="f-key" x="236" y="72" text-anchor="middle">STRING VOTE</text>
 <text class="f-key" x="236" y="86" text-anchor="middle">TEXT ONLY</text>
 <text class="f-key" x="16" y="148">A TIE HAS NOTHING LEFT TO BREAK IT</text>
-<text class="f-key" x="348" y="18">NOT BUILT &#183; NOT PLANNED &#183; DECODING LOGITS</text>
+<text class="f-key" x="348" y="18">DECODING LOGITS &#183; OUT OF SCOPE</text>
 <rect class="f-panel" x="348" y="26" width="316" height="104" rx="8" />
 <text class="f-key" x="364" y="55">ANS 1</text>
 <rect class="f-hot dl-b1" x="404" y="42" width="70" height="8" rx="2" />
@@ -5581,7 +5581,7 @@
 <line class="f-wire-d" x1="334" y1="175" x2="366" y2="175" />
 <rect class="f-hot dl-wall" x="370" y="164" width="186" height="22" rx="3" /><text class="f-key" x="463" y="179" text-anchor="middle">LOCAL SERVER RETURNS TEXT</text>
 <text class="f-key" x="32" y="200">HOSTED STACK &#8594; A LINE ITEM &#183; SOVEREIGN LOCAL STACK &#8594; A HARD BOUNDARY</text>
-<text x="16" y="224">the stronger aggregator is named on the frontier row as not built and not planned</text>
+<text x="16" y="224">the stronger aggregator is out of scope here</text>
         </svg>
       </div>
       <figcaption id="figcap-decodinglogitaggregati">The secure aggregator that ships combines the isolated per-passage answers by voting over the emitted strings alone, so two candidates that produce the same token carry the same weight and a tie has nothing left to break it. The stronger variant weights each isolated answer by the model's decoding-time token probabilities, which separates candidates the text cannot. That variant needs next-token probabilities from the decoder, and the local Ollama-style inference server returns text only &mdash; a line item on a hosted stack, a hard boundary on a sovereign local one.</figcaption>
@@ -5770,10 +5770,10 @@
 <text x="32" y="192">On a hosted stack this is a line item; on a</text>
 <text x="32" y="210">local frozen-model deployment it doubles the footprint.</text>
 <rect class="f-wire-d sp-not" x="470" y="182" width="176" height="26" rx="4" />
-<text class="f-key" x="558" y="199" text-anchor="middle">NOT BUILT, NOT PLANNED</text>
+<text class="f-key" x="558" y="199" text-anchor="middle">OUT OF SCOPE</text>
         </svg>
       </div>
-      <figcaption id="figcap-secondprivilegedplanne">The CaMeL arrangement needs two models with different privileges: a planner that sees only trusted input and emits the plan and the capabilities it authorises, and an answering model that reads untrusted retrieved text but whose tool calls and writes must pass the gate the plan defined. The separation is the security property — one model cannot both read attacker-controlled text and decide what may be called. This deployment has one resident model, so the second slot stays empty. Filling it doubles the local footprint, which is why it is recorded as not built and not planned rather than as a backlog item.</figcaption>
+      <figcaption id="figcap-secondprivilegedplanne">The CaMeL arrangement needs two models with different privileges: a planner that sees only trusted input and emits the plan and the capabilities it authorises, and an answering model that reads untrusted retrieved text but whose tool calls and writes must pass the gate the plan defined. The separation is the security property — one model cannot both read attacker-controlled text and decide what may be called. This deployment has one resident model, so the second slot stays empty. Filling it doubles the local footprint, which is why it is recorded as out of scope.</figcaption>
     </figure>
     <div class="sblock"><span class="slabel">What it costs</span><p>It needs a second resident model, which doubles the local footprint — on a hosted stack a line item, on a local frozen-model deployment a hard boundary.</p></div>
 

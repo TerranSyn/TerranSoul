@@ -2,7 +2,7 @@
 
 > **A first-class external memory you can plug into any AI.** Private, local, **$0** — it remembers across sessions, and shares one brain with your other AI tools over MCP.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![License: read and verify](https://img.shields.io/badge/license-read%20%26%20verify-4a5568.svg)](LICENSE)
 [![Paper: From Memo to Memory](https://img.shields.io/badge/paper-From%20Memo%20to%20Memory-8A2BE2)](https://terranimus.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/)
 [![Benchmarks](https://img.shields.io/badge/benchmarks-COMPARISON.md-2ea44f)](benchmark/COMPARISON.md)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?logo=discord&logoColor=white)](https://discord.gg/RzXcvsabKD)
