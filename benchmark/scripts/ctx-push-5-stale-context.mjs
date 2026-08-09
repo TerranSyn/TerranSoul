@@ -29,7 +29,7 @@ function option(name, fallback) {
 const CLI_BIN = option(
   'cli-bin',
   process.env.TERRANSOUL_CLI_BIN ||
-    resolve(REPO_ROOT, 'src-tauri', 'target', 'release', 'cli', 'terransoul.exe'),
+    resolve(REPO_ROOT, 'the application repository', 'target', 'release', 'cli', 'terransoul.exe'),
 );
 if (!existsSync(CLI_BIN)) {
   console.error(`[ctx-push-5] CLI binary not found at ${CLI_BIN}. Build it: npm run build:cli`);

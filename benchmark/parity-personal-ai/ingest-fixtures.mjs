@@ -27,9 +27,9 @@
  *     TERRANSOUL_MCP_DATA_DIR="$PWD/benchmark/parity-personal-ai/.brain-isolated" \
  *     TERRANSOUL_MCP_PORT=7431 npm run mcp
  *
- *   The backend reads TERRANSOUL_MCP_DATA_DIR (src-tauri/src/lib.rs) and keeps
+ *   The backend reads TERRANSOUL_MCP_DATA_DIR (internal module) and keeps
  *   ALL state — SQLite store, embeddings, and the bearer token
- *   (<data_dir>/mcp-token.txt, see ai_integrations/mcp/auth.rs) — under that dir.
+ *   (<data_dir>/mcp-token.txt, see ai_integrations/mcp/internal module) — under that dir.
  *   A distinct port (7431, NOT 7421/7423/7422) guarantees we never touch the
  *   real brain. Start it fresh/empty so retrieval only sees this bench corpus.
  *

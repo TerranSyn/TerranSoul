@@ -21,7 +21,7 @@ import sys, os, json, time, re, subprocess, statistics
 HERE = os.path.dirname(os.path.abspath(__file__))
 # Repo root = two levels up from benchmark/results/genesis-agi-retrieval
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
-FIXTURE = os.path.join(ROOT, "src-tauri", "benches", "memory_quality_fixture.json")
+FIXTURE = os.path.join(ROOT, "the application repository", "benches", "memory_quality_fixture.json")
 CORPUS_DIR = os.path.join(HERE, "corpus")
 RANKINGS_PATH = os.path.join(HERE, "rankings.json")
 RESULT_PATH = os.path.join(ROOT, "benchmark", "results", "external-systems", "genesis_agi.json")

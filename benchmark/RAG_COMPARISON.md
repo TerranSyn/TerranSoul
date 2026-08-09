@@ -106,7 +106,7 @@ This is the part worth being unflinching about, because the owner's
 "fragmented" concern turns out to be **confirmed at the code level, not just
 a feeling**.
 
-**Storage:** `crates/memory/src/store.rs`'s `MemoryStore` is the one
+**Storage:** `internal module`'s `MemoryStore` is the one
 canonical persistence object (SQLite by default; Postgres/SQL
 Server/CassandraDB behind a `StorageBackend` trait for other deployments),
 holding `memories`, `memory_edges`, `memory_communities`, `memories_fts` /
@@ -118,7 +118,7 @@ engine for scale.
 **Fusion:** `MemoryStore::hybrid_search_rrf_bounded` builds up to four peer
 rankings (vector cosine, keyword/lexical, a CJK trigram channel, a
 freshness fallback) and fuses them with the same primitive the external
-repo uses — reciprocal rank fusion, `crates/memory/src/fusion.rs` — then
+repo uses — reciprocal rank fusion, `internal module` — then
 applies post-fusion adjustments (freshness/importance boost, a graph-edge
 boost, a contested-claim penalty, activation weighting, echo-collapse,
 session diversification). On paper, richer than either of the external
@@ -127,11 +127,11 @@ repo's stacks.
 **The fragmentation, confirmed by grep, not assumed:**
 
 1. **The real GraphRAG module is never called by retrieval.**
-   `crates/memory/src/graph_rag.rs` is a genuine, more sophisticated system
+   `internal module` is a genuine, more sophisticated system
    than the external repo's Stack 3 — greedy-modularity community detection
    (Louvain/Leiden-style, hierarchical, 5 levels), LLM-generated community
    summaries, dual-level (entity + community) search, its own internal RRF
-   fusion. **Grep confirms `graph_rag` has zero occurrences in `store.rs`.**
+   fusion. **Grep confirms `graph_rag` has zero occurrences in `internal module`.**
    None of `hybrid_search_rrf_bounded`, `hybrid_search_rrf`,
    `hybrid_search_rrf_with_intent`, `hybrid_search_rrf_diversified`,
    `hybrid_search_rrf_filtered`, or `search()` ever call it. Its only callers
@@ -149,17 +149,17 @@ repo's stacks.
    Desktop chat + CLI share `commands::chat::process_message` (the "ONE
    REASONING CORE" fix already landed there), which calls
    `hybrid_search_rrf_filtered` → `hybrid_search_rrf_bounded`. But
-   `commands/streaming.rs` has its OWN `retrieve_chat_rag_memories` (sync
+   `commands/internal module` has its OWN `retrieve_chat_rag_memories` (sync
    path) and a third, `retrieve_chat_rag_memories_reranked` (async path,
    with its own doc comment saying it exists specifically "to match"
    `commands::chat`'s function — i.e. a parallel reimplementation patched
    toward parity after the fact, not a shared call). The MCP gateway
    dispatches to yet another pair
    (`hybrid_search_rrf_diversified`/`hybrid_search_iterative`). The
-   LongMemEval bench binary (`longmemeval_ipc.rs`) reimplements retrieval
+   LongMemEval bench binary (`internal module`) reimplements retrieval
    directly against `MemoryStore` with its own 10+-mode dispatch, entirely
-   bypassing `process_message`. Comment tags like `BENCH-MCP-PARITY-2/3` and
-   `BENCH-CHAT-PARITY-1` scattered through the codebase are the visible scar
+   bypassing `process_message`. Comment tags like `BENCH-MCP-an internal work item/3` and
+   `BENCH-an internal work item` scattered through the codebase are the visible scar
    tissue of keeping these five paths in sync by hand rather than by
    sharing one function.
 
@@ -172,7 +172,7 @@ repo's stacks.
    extraction passes (`auto_extract_edges`, default ON; `graph_extract_enabled`,
    default OFF, for the richer typed-entity extraction), both running
    **after** the primary save with the code comment *"Failures are
-   swallowed — primary save succeeded"* (`commands/memory.rs:811`). The
+   swallowed — primary save succeeded"* (`commands/internal module:811`). The
    external repo's single-process, rebuild-every-run design sidesteps this
    entire class of problem by having no persistence to drift from; TerranSoul
    has the opposite, harder problem (a live, mutating store) and today
@@ -208,7 +208,7 @@ Three concrete, checkable ideas, in order of cost:
    needed to check whether the bug exists**: it's a code inspection plus a
    small unit test constructing a synthetic hub node, same shape as this
    session's other "reproduce first" fixes.
-2. **Fuse `graph_rag.rs`'s community-level signal as a genuine channel in
+2. **Fuse `internal module`'s community-level signal as a genuine channel in
    `hybrid_search_rrf_bounded`, not a side door.** This is the concrete fix
    for the "fragmented" complaint: today the more sophisticated graph engine
    is strictly worse for the user than the shallow one, because it's
@@ -252,7 +252,7 @@ capable on the TerranSoul side. Any vendored snippet must be credited in
 
 ## 6. Action items filed to `rules/milestones.md`
 
-See the new `RAG-FRAGMENT-1` row: fuse `graph_rag.rs`'s community signal
+See the new `RAG-FRAGMENT-1` row: fuse `internal module`'s community signal
 into the main RRF ranking as a flagged, default-off channel, plus check
 `graph_neighbor_boosts`/`edge_degrees` for the same unnormalized hub-boost
 failure mode this comparison found in the external repo, before any bench

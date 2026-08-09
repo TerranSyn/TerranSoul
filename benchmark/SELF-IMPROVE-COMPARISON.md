@@ -72,7 +72,7 @@ The frozen actor is **swappable** — re-running the *same* loop (memory + itera
 
 ## Why frozen, not weight-edited
 
-TerranSoul keeps the base model frozen by design — self-improvement runs through **memory consolidation + skill synthesis**, not gradient retraining. SIA's harness/code self-revision maps to a brain faculty we **adopt** (we vendored + ported its generation-bookkeeping into `memory/self_improve_log.rs`); its **weight-editing has no human-brain analog** — the brain learns via Complementary-Learning-Systems consolidation + plasticity, not benchmark-gradient-descent — so we **exclude** it. Full rationale: [`docs/brain-advanced-design.md` §1.5](../docs/brain-advanced-design.md).
+TerranSoul keeps the base model frozen by design — self-improvement runs through **memory consolidation + skill synthesis**, not gradient retraining. SIA's harness/code self-revision maps to a brain faculty we **adopt** (we vendored + ported its generation-bookkeeping into `memory/internal module`); its **weight-editing has no human-brain analog** — the brain learns via Complementary-Learning-Systems consolidation + plasticity, not benchmark-gradient-descent — so we **exclude** it. Full rationale: [`docs/brain-advanced-design.md` §1.5](../docs/brain-advanced-design.md).
 
 ---
 *SIA = [hexo-ai/sia](https://github.com/hexo-ai/sia) (arXiv:2605.27276v2, Hexo Labs, MIT). † SIA's LoRA/RL weight path is paper-reported; only the harness/scaffold-editing path is visible in the public source. Full cross-system retrieval matrix: [COMPARISON.md](COMPARISON.md). Reviewed 2026-06-30.*

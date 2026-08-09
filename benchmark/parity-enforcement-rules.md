@@ -89,10 +89,10 @@ After merge, any benchmark with parity drift > ±1.0 pp on CI fails the build (P
 
 ## Status as of 2026-05-27
 
-Validated and enforced: agentmemory-quality (BENCH-MCP-PARITY-1), longmemeval-s (BENCH-MCP-PARITY-3), locomo-mteb (BENCH-MCP-PARITY-4).
+Validated and enforced: agentmemory-quality (BENCH-MCP-an internal work item), longmemeval-s (BENCH-MCP-an internal work item), locomo-mteb (BENCH-MCP-an internal work item).
 
-In progress: locomo-at-scale (BENCH-MCP-PARITY-5) — validating at 100k docs + 100 queries.
+In progress: locomo-at-scale (BENCH-MCP-an internal work item) — validating at 100k docs + 100 queries.
 
-Pending: phase closure matrix (BENCH-MCP-PARITY-7) — will document parity coverage for all benches.
+Pending: phase closure matrix (BENCH-MCP-an internal work item) — will document parity coverage for all benches.
 
 **Rule enforcement begins immediately:** All new benchmarks MUST include dual-run parity validation. All existing benchmarks will be retrofitted during the next opportunity.

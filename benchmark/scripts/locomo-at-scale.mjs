@@ -1,20 +1,20 @@
 #!/usr/bin/env node
-// BENCH-SCALE-1: quality-at-scale LoCoMo bench.
+// an internal work item: quality-at-scale LoCoMo bench.
 //
 // Loads the LoCoMo adversarial corpus + qrels (the hardest published task),
 // augments with cross-task LoCoMo chunks as natural distractors, then
 // generates deterministic entity-swap synthetic distractors to reach a
 // configurable target corpus size (default 1,000,000), ingests through the
 // existing longmemeval-ipc binary with mxbai-embed-large embeddings + HNSW,
-// and runs the LCM-8 `rrf_rerank` pipeline against the buried corpus.
+// and runs the an internal work item `rrf_rerank` pipeline against the buried corpus.
 //
 // Reports R@10 / NDCG@10 / MRR + p50/p95/p99 retrieval latency per task.
 //
 // Usage:
 //   node scripts/locomo-at-scale.mjs run --scale=1000000 --task=adversarial --systems=rrf_rerank --limit=100
 //
-// Acceptance per rules/milestones.md (BENCH-SCALE-1):
-//   R@10 within 10pp of LCM-8 5k baseline (overall 68.3 % -> >= 58 %)
+// Acceptance per rules/milestones.md (an internal work item):
+//   R@10 within 10pp of an internal work item 5k baseline (overall 68.3 % -> >= 58 %)
 //   p99 retrieval latency <= 200ms
 
 import { spawn } from 'node:child_process';
@@ -30,10 +30,10 @@ const REPO_ROOT = resolve(__dirname, '..', '..');
 const DEFAULT_DATA_DIR = resolve(REPO_ROOT, 'target-copilot-bench', 'locomo-mteb');
 const DEFAULT_OUT_DIR = resolve(REPO_ROOT, 'target-copilot-bench', 'bench-results');
 const DEFAULT_TARGET_DIR = resolve(REPO_ROOT, 'target-copilot-bench');
-// BENCH-SCALE-3 (2026-05-15): on-disk MemoryStore root for the IVF-PQ arm.
+// an internal work item (2026-05-15): on-disk MemoryStore root for the IVF-PQ arm.
 const DEFAULT_STORE_DIR = resolve(REPO_ROOT, 'target-copilot-bench', 'scale-store');
 const ALL_TASKS = ['single_hop', 'multi_hop', 'temporal_reasoning', 'open_domain', 'adversarial'];
-// BENCH-SCALE-3 (2026-05-15): `ivfpq` is a pure vector-only retrieval path
+// an internal work item (2026-05-15): `ivfpq` is a pure vector-only retrieval path
 // (disk-backed IVF-PQ + ADC). Requires `LONGMEM_DATA_DIR` so the store can
 // persist the IVF-PQ index files, and a post-ingest `build_ivf_pq` IPC op.
 // `--systems=ivfpq` flips both on for the IVF-PQ arm; the `rrf` / `rrf_rerank`
@@ -41,7 +41,7 @@ const ALL_TASKS = ['single_hop', 'multi_hop', 'temporal_reasoning', 'open_domain
 const ALL_SYSTEMS = new Set(['rrf', 'rrf_rerank', 'ivfpq']);
 const RERANK_SYSTEMS = new Set(['rrf_rerank']);
 const IVFPQ_SYSTEMS = new Set(['ivfpq']);
-// BENCH-SCALE-2 (2026-05-14): valid `--shard-mode` values. Plumbed into
+// an internal work item (2026-05-14): valid `--shard-mode` values. Plumbed into
 // the spawned `longmemeval-ipc` process via `LONGMEM_SHARD_MODE` to compare
 // router-routed (production default) vs all-shards probe at 1M+ docs.
 const ALL_SHARD_MODES = new Set(['routed', 'all']);
@@ -77,7 +77,7 @@ function listOption(name, fallback) {
 }
 
 function printHelp() {
-  console.log(`TerranSoul LoCoMo-at-scale bench (BENCH-SCALE-1)
+  console.log(`TerranSoul LoCoMo-at-scale bench (an internal work item)
 
 Usage:
   node scripts/locomo-at-scale.mjs run [options]
@@ -90,16 +90,16 @@ Options:
   --top-k=<n>           Retrieval depth requested (default: 100)
   --shard-mode=<m>      Shard policy: routed (production default, coarse router → top-p shards)
                         or all (bypass router, probe every shard — single-index-style baseline
-                        for BENCH-SCALE-2). Plumbed via LONGMEM_SHARD_MODE. (default: routed)
+                        for an internal work item). Plumbed via LONGMEM_SHARD_MODE. (default: routed)
   --data-dir=<path>     LoCoMo parquet dir (default: target-copilot-bench/locomo-mteb)
   --out-dir=<path>      Report dir (default: benchmark/results)
-  --store-dir=<path>    BENCH-SCALE-3: on-disk MemoryStore root (default:
+  --store-dir=<path>    an internal work item: on-disk MemoryStore root (default:
                         target-copilot-bench/scale-store). Required when --systems includes
                         ivfpq; plumbed via LONGMEM_DATA_DIR. Wiped on every run for determinism.
-  --nlist=<n>           BENCH-SCALE-3 IVF-PQ coarse quantizer cells (default: 4096)
-  --pq-m=<n>            BENCH-SCALE-3 IVF-PQ subquantizers; must divide embed dim 1024 (default: 128)
-  --pq-nbits=<n>        BENCH-SCALE-3 IVF-PQ bits per PQ code (default: 8 → 256 centroids/subspace)
-  --nprobe=<n>          BENCH-SCALE-3 IVF-PQ cells probed per query (default: 32; higher = recall, slower)
+  --nlist=<n>           an internal work item IVF-PQ coarse quantizer cells (default: 4096)
+  --pq-m=<n>            an internal work item IVF-PQ subquantizers; must divide embed dim 1024 (default: 128)
+  --pq-nbits=<n>        an internal work item IVF-PQ bits per PQ code (default: 8 → 256 centroids/subspace)
+  --nprobe=<n>          an internal work item IVF-PQ cells probed per query (default: 32; higher = recall, slower)
 
 The harness ingests in batches of ${INGEST_BATCH_SIZE}. mxbai-embed-large is the assumed
 embedder (set LONGMEM_EMBED_MODEL=mxbai-embed-large in the environment).
@@ -300,11 +300,11 @@ class JsonlClient {
       ...process.env,
       ...(embed ? { LONGMEM_EMBED: '1' } : {}),
       ...(rerank ? { LONGMEM_RERANK: '1' } : {}),
-      // BENCH-SCALE-2 (2026-05-14): plumb the shard-routing policy into
+      // an internal work item (2026-05-14): plumb the shard-routing policy into
       // the spawned `longmemeval-ipc` process. The bench bin maps this to
       // `MemoryStore::set_shard_mode` via `IndexState::shard_mode_from_env`.
       LONGMEM_SHARD_MODE: shardMode,
-      // BENCH-SCALE-3 (2026-05-15): point the spawned IPC at a disk-backed
+      // an internal work item (2026-05-15): point the spawned IPC at a disk-backed
       // MemoryStore so IVF-PQ has a `data_dir` to persist sidecars/indexes.
       // Without this the store is in-memory and `build_ivf_pq` returns built=0.
       ...(storeDir ? { LONGMEM_DATA_DIR: storeDir } : {}),
@@ -321,7 +321,7 @@ class JsonlClient {
           'run',
           '--quiet',
           '--manifest-path',
-          resolve(REPO_ROOT, 'src-tauri', 'Cargo.toml'),
+          resolve(REPO_ROOT, 'the application repository', 'Cargo.toml'),
           '--features', 'bench-million',
           '--bin', 'longmemeval-ipc',
           '--target-dir', DEFAULT_TARGET_DIR,
@@ -468,7 +468,7 @@ function ms(v) { return `${v.toFixed(2)}ms`; }
 async function searchQuery(client, system, query, topK, ivfPqOpts = null) {
   const start = performance.now();
   const payload = { op: 'search', query, mode: system, limit: topK };
-  // BENCH-SCALE-3 (2026-05-15): the `ivfpq` IPC mode reads `nprobe` from the
+  // an internal work item (2026-05-15): the `ivfpq` IPC mode reads `nprobe` from the
   // request payload (defaults to 32 inside the binary when absent).
   if (IVFPQ_SYSTEMS.has(system) && ivfPqOpts && Number.isInteger(ivfPqOpts.nprobe)) {
     payload.nprobe = ivfPqOpts.nprobe;
@@ -511,7 +511,7 @@ async function run(opts) {
 
   const rerank = opts.systems.some(s => RERANK_SYSTEMS.has(s));
   const wantsIvfPq = opts.systems.some(s => IVFPQ_SYSTEMS.has(s));
-  // BENCH-SCALE-3 (2026-05-15): the IVF-PQ arm needs `LONGMEM_DATA_DIR` so the
+  // an internal work item (2026-05-15): the IVF-PQ arm needs `LONGMEM_DATA_DIR` so the
   // store persists shard sidecars + IVF-PQ index files. Wipe + recreate the
   // store dir on every run so corpus state never leaks between scales/tasks.
   if (wantsIvfPq) {
@@ -535,7 +535,7 @@ async function run(opts) {
     const ingestSecs = (performance.now() - ingestStart) / 1000;
     console.log(`[scale] ingest done: inserted=${ing.inserted} embedded=${ing.embedded} took=${ingestSecs.toFixed(1)}s`);
 
-    // BENCH-SCALE-3 (2026-05-15): build IVF-PQ indexes per populated shard
+    // an internal work item (2026-05-15): build IVF-PQ indexes per populated shard
     // before any `ivfpq` query runs. Uses the IPC `build_ivf_pq` op which
     // calls MemoryStore::build_ivf_pq_indexes_with_params. Defaults are
     // tuned for 1024-dim mxbai-embed-large.
@@ -607,19 +607,19 @@ async function run(opts) {
     }
 
     report = {
-      benchmark: 'TerranSoul LoCoMo-at-scale (BENCH-SCALE-1)',
+      benchmark: 'TerranSoul LoCoMo-at-scale (an internal work item)',
       generated_at: new Date().toISOString(),
       task: opts.task,
       scale: built.corpus.length,
       systems: opts.systems,
-      // BENCH-SCALE-2 (2026-05-14): record the shard-routing policy used
+      // an internal work item (2026-05-14): record the shard-routing policy used
       // for this run so JSON consumers and the markdown report can
       // distinguish router-routed vs all-shards baselines without
       // re-parsing filenames.
       shard_mode: opts.shardMode,
       ingest_seconds: ingestSecs,
       embedded_total: ing.embedded,
-      // BENCH-SCALE-3 (2026-05-15): record IVF-PQ build cost + params so
+      // an internal work item (2026-05-15): record IVF-PQ build cost + params so
       // downstream readers can attribute the wall-clock overhead correctly.
       ivf_pq_build_seconds: ivfPqBuildSecs,
       ivf_pq_params: wantsIvfPq
@@ -633,10 +633,10 @@ async function run(opts) {
   }
 
   mkdirSync(opts.outDir, { recursive: true });
-  // BENCH-SCALE-2 (2026-05-14): include shard-mode in the filename so a
+  // an internal work item (2026-05-14): include shard-mode in the filename so a
   // back-to-back router-routed vs all-shards comparison run does not
   // overwrite the earlier report (SCALE-1b hit this overwrite footgun).
-  // BENCH-SCALE-3 (2026-05-15): also include a systems suffix when ivfpq
+  // an internal work item (2026-05-15): also include a systems suffix when ivfpq
   // is in the mix, so HNSW (`rrf`) and IVF-PQ runs never overwrite.
   const systemsTag = opts.systems.some(s => IVFPQ_SYSTEMS.has(s))
     ? `_${opts.systems.join('-')}`
@@ -652,7 +652,7 @@ async function run(opts) {
 
 function markdownReport(report) {
   const L = [];
-  L.push('# TerranSoul LoCoMo-at-Scale Report (BENCH-SCALE-1)');
+  L.push('# TerranSoul LoCoMo-at-Scale Report (an internal work item)');
   L.push('');
   L.push(`Date: ${report.generated_at}`);
   L.push(`Task: ${report.task}`);
@@ -675,7 +675,7 @@ function markdownReport(report) {
   L.push('- Augments with cross-task LoCoMo prose as natural distractors, then deterministic entity-swap paraphrases of gold chunks, then synthetic template prose to reach `--scale`.');
   L.push('- Ingests in batches of ' + INGEST_BATCH_SIZE + ' through `longmemeval-ipc` with `LONGMEM_EMBED=1` (mxbai-embed-large via Ollama, HNSW ANN).');
   L.push('- Runs each `--systems` mode against the buried corpus, records per-query latency.');
-  L.push('- Acceptance (BENCH-SCALE-1): R@10 within 10pp of LCM-8 5k baseline AND p99 <= 200ms.');
+  L.push('- Acceptance (an internal work item): R@10 within 10pp of an internal work item 5k baseline AND p99 <= 200ms.');
   return `${L.join('\n')}\n`;
 }
 

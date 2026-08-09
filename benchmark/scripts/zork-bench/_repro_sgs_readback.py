@@ -15,7 +15,7 @@ LESSON-BIND block (variables in scope) and is verified by inspection.
 """
 import sys
 
-sys.path.insert(0, r"D:\Git\TerranSoulApp\benchmark\scripts\zork-bench")
+sys.path.insert(0, r"benchmark\scripts\zork-bench")
 from terransoul_brain_bridge import _lesson_directives, _lesson_promotions  # noqa: E402
 
 fails: list[str] = []

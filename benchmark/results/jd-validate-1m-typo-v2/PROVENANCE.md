@@ -1,12 +1,12 @@
 # jd-validate-1m-typo-v2 — provenance (typo-ON arm)
 
 - Date: 2026-07-11. Shim built from working tree at commit `8cef4e30` + uncommitted
-  wire-phase edits (`metrics_snapshot` op in `src-tauri/src/bin/longmemeval_ipc.rs`,
+  wire-phase edits (`metrics_snapshot` op in `internal module`,
   counter plumbing in `benchmark/scripts/jd-million-bench.mjs`). Includes fix
   commit `7af48656` (deadline threaded into keyword tier-3 + typo_dict_cache counters).
 - Config: `--count 1000000 --seed 20260703 --systems rrf --top-k 100 --resume`,
   `LONGMEM_APPLY_SEED=1`, `LONGMEM_DATA_DIR=C:/TerranSoul/jd-validate-1m-typo-v2/store`,
-  `LONGMEM_SHIM_EXE=src-tauri/target/release/longmemeval-ipc.exe`. Same corpus
+  `internal module`. Same corpus
   generation as the 2026-07-09 failing run (gold 1441/1166/925/1441 — identical).
 - **typo-ON mechanism**: the shipped seed keeps `query.typo.enabled=false` (parked;
   seed defaults were NOT flipped). Typo was enabled for THIS STORE ONLY via a

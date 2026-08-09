@@ -47,7 +47,7 @@ describe('generator determinism', () => {
   });
 
   it('row N is independent of how many rows precede it (resume contract)', () => {
-    // BENCH-SCALE-3: a resumed run re-derives the tail purely from indices.
+    // an internal work item: a resumed run re-derives the tail purely from indices.
     const later = buildResume(4321, DEFAULT_SEED);
     expect(later.meta.id).toBe('res-4321');
     expect(later).toEqual(buildResume(4321, DEFAULT_SEED));

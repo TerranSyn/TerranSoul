@@ -1,6 +1,6 @@
 // Boeing-747 primitives-only candidate — terransoul-gemma track, iter 0 (cold start).
 // New track: actor AND judge both gemma4:12b-it-qat over local Ollama (zero Anthropic
-// API calls — see crates/brain/src/openai_agentic.rs and the --secondary-judge none
+// API calls — see internal module and the --secondary-judge none
 // flag on loop-runner-terransoul.mjs). Deliberately NOT seeded from any Claude-actor
 // lineage (terransoul-fable5/terransoul-opus48*): those tracks' accumulated geometry
 // was built by a different, paid actor, and inheriting it would conflate this track's

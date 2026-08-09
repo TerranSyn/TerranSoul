@@ -56,7 +56,7 @@ export const JD_QUERIES = [
     // verbatim, no new corpus/gold-set generation needed) but with two
     // deliberate skill-token typos in queryText -- "kubernetess" (extra
     // trailing letter) and "postgressql" (extra letter) -- to exercise the
-    // typo_sidecar.rs bounded edit-distance expansion tier against the real
+    // internal module bounded edit-distance expansion tier against the real
     // 1M-row corpus. Both misspelled tokens are 10 characters (>= the
     // default query.typo.min_len_2 = 7), so each is within the 2-typo
     // budget the sidecar allows for long tokens. If query.typo.enabled is

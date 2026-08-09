@@ -1,4 +1,4 @@
-# TerranSoul LoCoMo-at-Scale IVF-PQ Report (BENCH-SCALE-3)
+# TerranSoul LoCoMo-at-Scale IVF-PQ Report (an internal work item)
 
 Date: 2026-05-17T17:50:15.718Z
 Task: adversarial
@@ -15,7 +15,7 @@ Ingest time: 59.2s (50000 embedded)
 
 ## Methodology
 
-- Identical corpus build pipeline to BENCH-SCALE-2 (same mulberry32 seed 0x5ca1e1 → byte-for-byte identical corpora at matching `--scale`).
+- Identical corpus build pipeline to an internal work item (same mulberry32 seed 0x5ca1e1 → byte-for-byte identical corpora at matching `--scale`).
 - Ingests in batches of 5000 through `longmemeval-ipc` with `LONGMEM_DATA_DIR` set so the MemoryStore opens an on-disk SQLite + persists HNSW per shard.
 - After ingest, sends `op: build_ivf_pq` which calls `MemoryStore::build_ivf_pq_indexes_with_params` — writes per-shard sidecars with custom `IvfPqParams { nlist, pq_m, pq_nbits }`, then trains coarse k-means + PQ codebooks + writes IVF-PQ binary indexes.
 - Query path: `op: search`, `mode: ivfpq` → `MemoryStore::vector_search_ivf_pq` → per-shard ADC search via `IvfPqIndex::search(query, k, nprobe)` → RRF merge across shards → SQLite hydrate.

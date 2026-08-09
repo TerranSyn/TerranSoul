@@ -2,7 +2,7 @@
 
 Runs LangChain's default retriever (OllamaEmbeddings `nomic-embed-text` + an
 InMemoryVectorStore, top-k cosine) over the SAME corpus (240 observations /
-20 queries) and the SAME recall@k formula as src-tauri/benches/memory_quality.rs:
+20 queries) and the SAME recall@k formula as internal module:
     recall@k = |relevant ∩ top_k| / |relevant|
 
 This is the plain vector retrieval that LangChain / LlamaIndex / Haystack / RAGFlow
@@ -15,8 +15,8 @@ if langchain isn't importable.
 """
 import json, sys, math, urllib.request
 
-FIX = "D:/Git/TerranSoulApp/src-tauri/benches/memory_quality_fixture.json"
-OUT = "D:/Git/TerranSoulApp/benchmark/results/rag_vector_baseline.json"
+FIX = "internal module.json"
+OUT = "benchmark/results/rag_vector_baseline.json"
 OLLAMA = "http://127.0.0.1:11434"
 EMB = "nomic-embed-text"
 
@@ -75,7 +75,7 @@ def main():
         "system": "vector RAG (LangChain default, nomic-embed-text)",
         "via": via, "embedder": EMB, "observations": len(obs), "queries": n,
         "avg_recall_at_5": r5 / n, "avg_recall_at_10": r10 / n, "avg_recall_at_20": r20 / n,
-        "note": "Plain vector top-k retrieval (LangChain OllamaEmbeddings + InMemoryVectorStore default). Same recall formula + corpus as memory_quality.rs. Represents the default vector retrieval shared by LangChain/LlamaIndex/Haystack/RAGFlow; GraphRAG's graph retrieval is a different paradigm not on this metric.",
+        "note": "Plain vector top-k retrieval (LangChain OllamaEmbeddings + InMemoryVectorStore default). Same recall formula + corpus as internal module. Represents the default vector retrieval shared by LangChain/LlamaIndex/Haystack/RAGFlow; GraphRAG's graph retrieval is a different paradigm not on this metric.",
     }
     print(json.dumps(out, indent=2))
     json.dump(out, open(OUT, "w"), indent=2)

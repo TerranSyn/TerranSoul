@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// BENCH-SCALE-3 progress poller — appends a timestamped progress line to
+// an internal work item progress poller — appends a timestamped progress line to
 // `benchmark/progress.md` every 5 minutes by parsing the latest
 // `target-copilot-bench/bench-scale-3-*.log` file.
 //
@@ -112,7 +112,7 @@ async function appendEntry(line) {
   try {
     md = await fs.readFile(PROGRESS_MD, 'utf8');
   } catch {
-    md = '# BENCH-SCALE-3 — Progress Tracker\n\n## Live log\n';
+    md = '# an internal work item — Progress Tracker\n\n## Live log\n';
   }
   if (!md.includes(LIVE_LOG_HEADER)) {
     md += `\n${LIVE_LOG_HEADER}\n`;

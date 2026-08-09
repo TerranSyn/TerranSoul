@@ -85,4 +85,4 @@ Hits = languages of gold resumes found in the top-100 (last run).
 
 - Local-only bench per rules/ci-vs-local-testing.md — never wire into .github/workflows.
 - Corpus row N is a pure function of (seed, N); `--resume` slices the corpus at the
-  store's `count` (BENCH-SCALE-3 resume pattern).
+  store's `count` (an internal work item resume pattern).

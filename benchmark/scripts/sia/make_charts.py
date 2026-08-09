@@ -123,7 +123,7 @@ def chart_answer_quality():
         "22 everyday-assistant prompts · same model · same judge",
         "quality score (0–10, higher = better)", 11)
     # TerranSoul + OpenJarvis: 2026-07-03 deterministic-protocol canonical
-    # (results/parity_headtohead.json) — PARITY-FLOOR-2: the production
+    # (results/parity_headtohead.json) — an internal work item: the production
     # companion-prompt fix (recall completeness + capability affordance)
     # restored the 9.82 record under the deterministic protocol (user
     # directive: never publish below the record; loop record in
@@ -181,10 +181,10 @@ def chart_lawbench():
 def chart_memory_recall():
     # The retrieval axis SIA has no analog for; all three bars are TerranSoul's
     # LongMemEval-S recall, so each is labelled TerranSoul.
-    # EmbeddingGemma vector arm (rrf_emb), BENCH-AM-6.3 (2026-07-01):
+    # EmbeddingGemma vector arm (rrf_emb), an internal work item.3 (2026-07-01):
     # R@5 99.4 / R@10 100.0 / R@20 100.0 (NDCG@10 94.4 · MRR 95.2), ahead of
-    # the mxbai BENCH-AM-6.1 canonical on every metric. The old 98.6/99.8 pair
-    # was the mis-reported BENCH-AM-6.2 headline (a lexical-search row).
+    # the mxbai an internal work item.1 canonical on every metric. The old 98.6/99.8 pair
+    # was the mis-reported an internal work item.2 headline (a lexical-search row).
     fig, ax = base_fig(
         "TerranSoul memory recall — LongMemEval-S",
         "(SIA ships no memory/retrieval — no comparable number) · NDCG@10 94.4 · MRR 95.2",

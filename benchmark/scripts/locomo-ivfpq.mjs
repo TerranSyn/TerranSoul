@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// BENCH-SCALE-3 (2026-05-15): disk-backed IVF-PQ at 10M+ scale.
+// an internal work item (2026-05-15): disk-backed IVF-PQ at 10M+ scale.
 //
 // Mirrors scripts/locomo-at-scale.mjs (which uses in-memory HNSW via
 // `longmemeval-ipc`), but:
@@ -19,8 +19,8 @@
 //        --pq-m=128 --nlist=4096 --nprobe=32 --limit=100 --top-k=100 \
 //        --data-dir-bench=target-copilot-bench/locomo-ivfpq-store
 //
-// Acceptance per rules/milestones.md (BENCH-SCALE-3):
-//   IVF-PQ R@10 within ~5pp of BENCH-SCALE-2 routed HNSW (60.5 % @ 1M);
+// Acceptance per rules/milestones.md (an internal work item):
+//   IVF-PQ R@10 within ~5pp of an internal work item routed HNSW (60.5 % @ 1M);
 //   retrieval p99 <= 200ms post-embed at 10M scale.
 
 import { spawn } from 'node:child_process';
@@ -48,13 +48,13 @@ const ALL_TASKS = ['single_hop', 'multi_hop', 'temporal_reasoning', 'open_domain
 const ALL_SHARD_MODES = new Set(['routed', 'all']);
 const METRIC_KS = [1, 5, 10, 20, 100];
 const INGEST_BATCH_SIZE = 5000;
-// BENCH-SCALE-6 (2026-05-18): synthetic-tail batches go through the
+// an internal work item (2026-05-18): synthetic-tail batches go through the
 // server-side `add_synth_distractors` opcode (no per-row JSON payload)
 // so they can run at the spool-ring ceiling. Larger batch ⇒ fewer
-// round-trips ⇒ throughput closer to the BENCH-SCALE-4 micro-bench
+// round-trips ⇒ throughput closer to the an internal work item micro-bench
 // (1.38 M docs/s push). 50 k keeps a single batch at ~40 ms server-side
 // and ~200 batches for a 10 M run (good progress-bar cadence).
-// BENCH-SCALE-6: 500 k batches keep BenchSpool warm and reduce JSON
+// an internal work item: 500 k batches keep BenchSpool warm and reduce JSON
 // IPC round-trips to ~20 per 10 M ingest. Per-batch synth encode is
 // rayon-parallel (a few ms) and pushes 672 MB through chunked 1 MiB
 // BufWriter writes, sustaining 1.5–2 M docs/s peaks.
@@ -106,7 +106,7 @@ function writeProgressSnapshot() {
   const startedAt = progressState.started_at;
   const elapsedS = startedAt ? (now - startedAt) / 1000 : 0;
   const L = [];
-  L.push('TerranSoul BENCH-SCALE-3 IVF-PQ run progress');
+  L.push('TerranSoul an internal work item IVF-PQ run progress');
   L.push(`updated_at:    ${new Date(now).toISOString()}`);
   L.push(`elapsed:       ${fmtDuration(elapsedS)}`);
   L.push(`phase:         ${progressState.phase}`);
@@ -234,7 +234,7 @@ function flagOption(name) {
 }
 
 function printHelp() {
-  console.log(`TerranSoul LoCoMo-at-scale IVF-PQ bench (BENCH-SCALE-3)
+  console.log(`TerranSoul LoCoMo-at-scale IVF-PQ bench (an internal work item)
 
 Usage:
   node scripts/locomo-ivfpq.mjs run [options]
@@ -246,7 +246,7 @@ Options:
                            scale5-fast — sets LONGMEM_USE_SPOOL=1,
                              LONGMEM_SYNTH_EMBED=1, LONGMEM_DROP_FTS=2,
                              LONGMEM_STORAGE=sqlite, LONGMEM_EMBED_DIM=1024
-                             (BENCH-SCALE-5 spool fast-path baseline).
+                             (an internal work item spool fast-path baseline).
   --scale=<n>            Total corpus size (default: 10000000)
   --limit=<n>            Queries to score; 0 means all (default: 100)
   --top-k=<n>            Retrieval depth requested (default: 100)
@@ -340,7 +340,7 @@ async function loadTaskFull(task, dataDir) {
 // --- distractor generation (verbatim from locomo-at-scale.mjs) ------------
 //
 // Identical mulberry32 seed (0x5ca1e1) and template lists keep the corpus
-// byte-for-byte identical to BENCH-SCALE-2's 1M HNSW arm so quality
+// byte-for-byte identical to an internal work item's 1M HNSW arm so quality
 // numbers are directly comparable. The builder now lives in the sibling
 // module ./locomo-ivfpq-corpus.mjs (extracted unchanged to keep this driver
 // under the ESLint max-lines budget); `buildScaleCorpus` is imported above.
@@ -356,22 +356,22 @@ class JsonlClient {
     const env = {
       ...process.env,
       LONGMEM_EMBED: '1',
-      // BENCH-SCALE-3: match BENCH-SCALE-2's embedder so quality is
+      // an internal work item: match an internal work item's embedder so quality is
       // directly comparable. `mxbai-embed-large` produces 1024-dim
       // embeddings; the `--pq-m=128` default cleanly divides 1024.
       LONGMEM_EMBED_MODEL: process.env.LONGMEM_EMBED_MODEL ?? 'mxbai-embed-large',
       LONGMEM_SHARD_MODE: shardMode,
-      // BENCH-SCALE-3 turbo: synthetic embeddings for distractors.
+      // an internal work item turbo: synthetic embeddings for distractors.
       // Set LONGMEM_SYNTH_EMBED=1 to skip Ollama for 99.94% of corpus.
       LONGMEM_SYNTH_EMBED: process.env.LONGMEM_SYNTH_EMBED ?? '1',
-      // BENCH-SCALE-3 turbo: drop FTS5 trigger + virtual table before ingest.
+      // an internal work item turbo: drop FTS5 trigger + virtual table before ingest.
       // IVF-PQ eval only uses the vector path; per-row FTS5 tokenization is
       // pure waste (~400M index writes at 10M scale). 2 = drop triggers + table.
       LONGMEM_DROP_FTS: process.env.LONGMEM_DROP_FTS ?? '2',
-      // BENCH-SCALE-3: on-disk store is mandatory for IVF-PQ.
+      // an internal work item: on-disk store is mandatory for IVF-PQ.
       LONGMEM_DATA_DIR: dataDir,
     };
-    // BENCH-SCALE-3 (2026-05-17): build with `storage-fjall` so the
+    // an internal work item (2026-05-17): build with `storage-fjall` so the
     // optional pure-Rust LSM cold tier is linked in. The Rust binary
     // only activates it when `LONGMEM_STORAGE=fjall` is also set in
     // the env (default = SQLite path), so adding the feature here is
@@ -381,7 +381,7 @@ class JsonlClient {
       '--quiet',
       '--release',
       '--manifest-path',
-      resolve(REPO_ROOT, 'src-tauri', 'Cargo.toml'),
+      resolve(REPO_ROOT, 'the application repository', 'Cargo.toml'),
       '--features', 'bench-million,storage-fjall',
       '--bin', 'longmemeval-ipc',
       '--target-dir', DEFAULT_TARGET_DIR,
@@ -449,7 +449,7 @@ function corpusToSessions(corpus) {
   }));
 }
 
-// BENCH-SCALE-3 (2026-05-17): the `longmemeval-ipc` subprocess sometimes
+// an internal work item (2026-05-17): the `longmemeval-ipc` subprocess sometimes
 // crashes mid-ingest with Windows STATUS_STACK_BUFFER_OVERRUN (0xC0000409 =
 // exit code 3221226505) — typically from a Rust panic-with-abort deep inside
 // the embedding/SQLite path after hours of work. Because the on-disk
@@ -490,7 +490,7 @@ async function ingestBatched(clientRef, corpus, opts = {}) {
   let totalRestarts = 0;
   let restartsWithoutProgress = 0;
   let lastSeenDone = offset;
-  // BENCH-SCALE-6 (2026-05-18): when synth-embed + spool are both on,
+  // an internal work item (2026-05-18): when synth-embed + spool are both on,
   // the contiguous `syn-*` tail of the corpus skips the JSON-IPC payload
   // and uses the server-side `add_synth_distractors` opcode (tiny request,
   // 1.3 M docs/s push). The corpus is built head-then-tail (gold + natural
@@ -525,7 +525,7 @@ async function ingestBatched(clientRef, corpus, opts = {}) {
           count: slice.length,
         });
       } else {
-        // BENCH-SCALE-7 (2026-05-18): partition the slice client-side so
+        // an internal work item (2026-05-18): partition the slice client-side so
         // pure-distractor sub-slices (`nat-`/`swap-` IDs) trigger the
         // server's `all_distractors=true` fast-path (spool + deterministic
         // synth embeddings) instead of the per-row Ollama embed path.
@@ -688,7 +688,7 @@ async function run(opts) {
   console.log(`[ivfpq] shard-mode=${opts.shardMode}`);
   console.log(`[ivfpq] bench store dir: ${opts.benchStoreDir}`);
 
-  // BENCH-SCALE-5D: explicit phase timers for end-to-end budget tracking.
+  // an internal work item: explicit phase timers for end-to-end budget tracking.
   const phaseTimings = {
     preflight_s: 0,
     gold_embed_s: 0,
@@ -766,7 +766,7 @@ async function run(opts) {
         setPhase('ingest', 'starting reset+ingest');
         await clientRef.client.send({ op: 'reset' });
       }
-      // BENCH-SCALE-7 v7d (2026-05-18): pre-compute gold embeddings
+      // an internal work item v7d (2026-05-18): pre-compute gold embeddings
       // BEFORE the ingest timer starts. Real Ollama on 5882 gold rows
       // takes ~9 s wall-time on a single-GPU host; including it in the
       // `[ivfpq] ingest done` headline made 1 M+ docs/s impossible at
@@ -783,7 +783,7 @@ async function run(opts) {
           && !r.id.startsWith('syn-'),
         );
         if (goldRows.length > 0) {
-          // BENCH-SCALE-7 v7d (2026-05-18): cache lives in a STABLE
+          // an internal work item v7d (2026-05-18): cache lives in a STABLE
           // global location (keyed by embed model + dim) so it survives
           // bench-dir wipes between runs. The bench dir gets `rmSync`'d
           // at run start, so keeping the cache there would force a
@@ -841,7 +841,7 @@ async function run(opts) {
       writeProgressSnapshot();
     }
 
-    // BENCH-SCALE-5B: if the spool fast-path was enabled, drain the on-disk
+    // an internal work item: if the spool fast-path was enabled, drain the on-disk
     // spool into SQLite before building IVF-PQ indexes. No-op when
     // LONGMEM_USE_SPOOL is unset (drain_spool returns drained=0).
     let drainStats = null;
@@ -897,7 +897,7 @@ async function run(opts) {
     const filteredQueries = target.queries.filter(q => target.qrels.has(q.id));
     const limited = opts.limit > 0 ? filteredQueries.slice(0, opts.limit) : filteredQueries;
 
-    // MEMORY-CFG-AUDIT-5 (2026-05-18): build the list of "runs" to execute
+    // MEMORY-CFG-an internal work item (2026-05-18): build the list of "runs" to execute
     // against the same ingested corpus. Default is a single run honoring
     // `--search-mode` and `--weights`. When `--sweep-weights=<path>` is
     // set, load `[{label, weights:[6]}, ...]` and run one batch per tuple,
@@ -999,7 +999,7 @@ async function run(opts) {
     phaseTimings.queries_s = (performance.now() - _queriesStart) / 1000;
 
     report = {
-      benchmark: 'TerranSoul LoCoMo-at-scale IVF-PQ (BENCH-SCALE-3)',
+      benchmark: 'TerranSoul LoCoMo-at-scale IVF-PQ (an internal work item)',
       generated_at: new Date().toISOString(),
       task: opts.task,
       scale: built.corpus.length,
@@ -1031,7 +1031,7 @@ async function run(opts) {
   writeFileSync(mdPath, markdownReport(report), 'utf8');
   phaseTimings.write_results_s = (performance.now() - _writeStart) / 1000;
   phaseTimings.total_s = (performance.now() - _runStart) / 1000;
-  // BENCH-SCALE-5D: also write a compact phase-timing JSON beside the
+  // an internal work item: also write a compact phase-timing JSON beside the
   // full report so dashboards can plot phase budgets without parsing the
   // whole report.
   const timingPath = resolve(opts.outDir, `bench-scale-5-timing_${tag}.json`);
@@ -1056,7 +1056,7 @@ async function run(opts) {
 
 function markdownReport(report) {
   const L = [];
-  L.push('# TerranSoul LoCoMo-at-Scale IVF-PQ Report (BENCH-SCALE-3)');
+  L.push('# TerranSoul LoCoMo-at-Scale IVF-PQ Report (an internal work item)');
   L.push('');
   L.push(`Date: ${report.generated_at}`);
   L.push(`Task: ${report.task}`);
@@ -1075,7 +1075,7 @@ function markdownReport(report) {
   L.push('');
   L.push('## Methodology');
   L.push('');
-  L.push('- Identical corpus build pipeline to BENCH-SCALE-2 (same mulberry32 seed 0x5ca1e1 → byte-for-byte identical corpora at matching `--scale`).');
+  L.push('- Identical corpus build pipeline to an internal work item (same mulberry32 seed 0x5ca1e1 → byte-for-byte identical corpora at matching `--scale`).');
   L.push('- Ingests in batches of ' + INGEST_BATCH_SIZE + ' through `longmemeval-ipc` with `LONGMEM_DATA_DIR` set so the MemoryStore opens an on-disk SQLite + persists HNSW per shard.');
   L.push('- After ingest, sends `op: build_ivf_pq` which calls `MemoryStore::build_ivf_pq_indexes_with_params` — writes per-shard sidecars with custom `IvfPqParams { nlist, pq_m, pq_nbits }`, then trains coarse k-means + PQ codebooks + writes IVF-PQ binary indexes.');
   L.push('- Query path: `op: search`, `mode: ivfpq` → `MemoryStore::vector_search_ivf_pq` → per-shard ADC search via `IvfPqIndex::search(query, k, nprobe)` → RRF merge across shards → SQLite hydrate.');
@@ -1095,7 +1095,7 @@ async function main() {
   if (cmd === 'help' || cmd === '--help') { printHelp(); return; }
   if (cmd !== 'run') { console.error(`unknown command ${cmd}`); printHelp(); process.exit(1); }
 
-  // BENCH-SCALE-5D: --preset=scale5-fast wires the spool fast-path env
+  // an internal work item: --preset=scale5-fast wires the spool fast-path env
   // contract in one flag so callers don't need to remember the matrix.
   // Individual env vars still override the preset.
   const preset = option('preset', null);
@@ -1125,7 +1125,7 @@ async function main() {
     throw new Error(`unknown --shard-mode '${shardMode}'; use routed or all`);
   }
   const pqM = numberOption('pq-m', 128);
-  // BENCH-SCALE-3 landmine: 1024-dim mxbai-embed-large requires
+  // an internal work item landmine: 1024-dim mxbai-embed-large requires
   // (dim % pq_m) === 0. Validate up-front so we don't burn 6+ hours
   // ingesting before the build_ivf_pq op fails.
   if (1024 % pqM !== 0) {
@@ -1152,7 +1152,7 @@ async function main() {
     synthOnly: flagOption('synth-only'),
     progressFile: option('progress-file', DEFAULT_PROGRESS_FILE),
     progressIntervalMs: numberOption('progress-interval-ms', DEFAULT_PROGRESS_INTERVAL_MS),
-    // MEMORY-CFG-AUDIT-5 (2026-05-18): weighted-hybrid A/B sweep
+    // MEMORY-CFG-an internal work item (2026-05-18): weighted-hybrid A/B sweep
     // controls. `--search-mode` switches the IPC `search` op between
     // `ivfpq` (vector-only) and `hybrid` (weighted 6-signal scoring).
     // `--weights=v,k,r,i,d,t` overrides the store's HybridWeights for a
@@ -1196,7 +1196,7 @@ main().catch(err => {
   process.exit(1);
 });
 
-// BENCH-SCALE-3 resume (2026-05-16): on Ctrl-C / kill, flush a final
+// an internal work item resume (2026-05-16): on Ctrl-C / kill, flush a final
 // progress snapshot, mark the phase as `interrupted`, and exit with code
 // 130 (SIGINT) / 143 (SIGTERM). The on-disk MemoryStore is WAL-safe so
 // the SQLite + IVF-PQ state on disk remains valid; the next launch with

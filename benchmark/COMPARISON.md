@@ -5,15 +5,15 @@
 > **Historical iteration logs** (Round 1–7 of BENCH-AM, Phase TOP1
 > Round 1, BENCH-MCP-PARITY, BENCH-MCP-LATENCY-1, BENCH-LCM-KG-HYDE-1,
 > BENCH-ZORK-iter12, BENCH-ZORK-RERUN-1, and the superseded
-> BENCH-ZORK-1.5 300-turn placeholder) were condensed out of this file by
+> an internal work item.5 300-turn placeholder) were condensed out of this file by
 > COMPARISON-CONDENSE-1 on 2026-05-28; the archive file was not committed,
 > so that trail is not currently published in this repo.
 
 > Folder layout mirrors the convention from <https://github.com/rohitg00/agentmemory/tree/main/benchmark> (`benchmark/COMPARISON.md`).
 > Reference fixture pinned commit: `ae8f061cd66093d7be1539c24da6d3e595531dd2`
-> Last bench run: 2026-06-21 (BENCH-ZORK self-improve campaign — `gemma4:12b-it-qat` per-run cross-episode ~15, campaign peak 50 via across-run accumulation, honestly de-confounded; reliable serving drives `gemma4:e4b` to a deterministic 350/350; AGI-pure 4B arm 10–20 vs 0 controls; 0 MCP errors). Earlier: BENCH-ZORK-1.5 closed 2026-05-28 (spec 002–006, SC4 PASS, 0/1682 MCP errors). Write-up: [docs/LLM-Brain-Design-Research-Paper/](../docs/LLM-Brain-Design-Research-Paper/index.html).
-> LongMemEval-S adapter: 2026-05-12 (BENCH-AM-5), full result verified 2026-05-11, gateway parity verified 2026-05-26 (BENCH-MCP-PARITY-3).
-> Feature-matrix parity sweep: 2026-05-11 (BENCH-AM-7).
+> Last bench run: 2026-06-21 (BENCH-ZORK self-improve campaign — `gemma4:12b-it-qat` per-run cross-episode ~15, campaign peak 50 via across-run accumulation, honestly de-confounded; reliable serving drives `gemma4:e4b` to a deterministic 350/350; AGI-pure 4B arm 10–20 vs 0 controls; 0 MCP errors). Earlier: an internal work item.5 closed 2026-05-28 (spec 002–006, SC4 PASS, 0/1682 MCP errors). Write-up: [docs/LLM-Brain-Design-Research-Paper/](../docs/LLM-Brain-Design-Research-Paper/index.html).
+> LongMemEval-S adapter: 2026-05-12 (an internal work item), full result verified 2026-05-11, gateway parity verified 2026-05-26 (BENCH-MCP-an internal work item).
+> Feature-matrix parity sweep: 2026-05-11 (an internal work item).
 
 This page is TerranSoul's apples-to-apples retrieval-quality comparison against
 multiple top-tier memory systems — not against any single project. It collects
@@ -22,7 +22,7 @@ results across four reproducible benchmarks:
 1. **Concept-tagged corpus** (240 observations / 20 queries, MIT-licensed dataset originally published by rohitg00/agentmemory and pinned to the commit above). Used as one of many references.
 2. **LongMemEval-S** (xiaowu0162/longmemeval-cleaned).
 3. **LoCoMo / MTEB-style retrieval** (mteb/LoCoMo).
-4. **ZorkGPT long-horizon task bench** (BENCH-ZORK-1.5, the 2-ep × 100-turn `gemma4:e4b` canonical that closed 2026-05-28; supersedes the BENCH-ZORK-iter12 `gemma3:4b` baseline).
+4. **ZorkGPT long-horizon task bench** (an internal work item.5, the 2-ep × 100-turn `gemma4:e4b` canonical that closed 2026-05-28; supersedes the BENCH-ZORK-iter12 `gemma3:4b` baseline).
 
 Results were tracked through Phase BENCH-AM, long since closed and archived to [rules/completion-log.md](../rules/completion-log.md) (milestones.md contains only open work). The latest canonical for each benchmark is below; the iteration trail is in the archive.
 
@@ -43,7 +43,7 @@ Results were tracked through Phase BENCH-AM, long since closed and archived to [
 | OpenViking (volcengine / ByteDance) | Context database | — | — | — | — | — | — | — | — | — | 27.7k★, created 2026-01. **Publishes third-party LoCoMo numbers for THREE of our own rows:** OpenClaw 24.20 % native → **82.08 %** with OpenViking; Hermes 33.38 % → **82.86 %**; Claude Code 57.21 % → **80.32 %**. ⚠️ These are **host+memory composite** scores, not standalone retrieval — they need their own axis, never a bar beside a standalone R@k |
 | hindsight (vectorize-io) | Agent memory | — | — | — | — | — | — | — | — | — | 19k★. Publishes **LongMemEval-S 94.6 %** and claims *"the most accurate agent memory system ever tested"*, with independent reproduction asserted by Virginia Tech's Sanghani Center and The Washington Post. ⚠️ **Metric definition, question count and judge are NOT stated publicly** (the comparison lives inside an embedded PNG) — cite the 94.6 and say the metric is undefined; do not assume it matches ours |
 | MemOS (MemTensor) | Memory OS | — | — | — | — | — | — | — | — | — | 10.5k★. **LongMemEval 89.20**, **LoCoMo 88.83** (plus 8 capability benchmarks — PersonaMem, HaluMem, BEAM-10M, SWE-Bench etc. that are NOT retrieval and must not share the axis). Attribution is one line, *"Evaluated via OmniMemEval"*; no sample sizes, metric definitions, judges or baselines in the README |
-| code-review-graph (tirth8205) | Code-intelligence graph | — | — | — | — | — | — | — | — | $0 | **The strongest miss in the code-graph area** — local-first, MCP, tree-sitter → persistent SQLite graph, zero telemetry: nearly feature-for-feature our `symbol_index.rs` side. 28k★ in ~5 months. Publishes **~82× median token reduction** (range 38–528×, 6 OSS repos, 5 questions each). ⚠️ Its 0.71 impact-F1 is **NOT chartable as accuracy — the author states it is circular by construction** (ground truth derives from the same graph edges the predictor walks). Repeating it uncritically would be a self-inflicted wound |
+| code-review-graph (tirth8205) | Code-intelligence graph | — | — | — | — | — | — | — | — | $0 | **The strongest miss in the code-graph area** — local-first, MCP, tree-sitter → persistent SQLite graph, zero telemetry: nearly feature-for-feature our `internal module` side. 28k★ in ~5 months. Publishes **~82× median token reduction** (range 38–528×, 6 OSS repos, 5 questions each). ⚠️ Its 0.71 impact-F1 is **NOT chartable as accuracy — the author states it is circular by construction** (ground truth derives from the same graph edges the predictor walks). Repeating it uncritically would be a self-inflicted wound |
 | *— Memory systems —* | | | | | | | | | | | |
 | agentmemory | Memory | 95.2 % | 98.6 % | 99.4 % | 87.9 % | 88.2 % | — | — | — | — | LongMemEval-S |
 | MemPalace | Memory | ~96.6 % | ~97.6 % | — | — | — | — | — | — | — | LongMemEval-S |
@@ -68,7 +68,7 @@ Results were tracked through Phase BENCH-AM, long since closed and archived to [
 **Honesty notes** (full methodology + sources are in the detailed sections below):
 
 - A "—" marks a metric the system does not publish or was not run on — an honest blank, not a zero or a failure.
-- TerranSoul's `rrf`/`rrf_emb` LongMemEval-S numbers: a 2026-07-01 lower reproduction was root-caused on 2026-07-02 to the re-run harness omitting `LONGMEM_EMBED=1` — those re-runs measured the lexical-only path, not a code change. The correctly-configured, run-invariant re-run **landed 2026-07-03** (`benchmark/results/longmemeval_s_terransoul.md`, commit `4eea9e45` — "baseline reproduced to the decimal": rrf R@5 99.4 % / NDCG@10 95.1 % / MRR 95.9 %; rrf_emb 99.4 % / R@10 100.0 % / 94.5 % / 95.3 %); the tables below carry those resolved numbers, matching the pitch deck's BENCH-AM-6.3 chart.
+- TerranSoul's `rrf`/`rrf_emb` LongMemEval-S numbers: a 2026-07-01 lower reproduction was root-caused on 2026-07-02 to the re-run harness omitting `LONGMEM_EMBED=1` — those re-runs measured the lexical-only path, not a code change. The correctly-configured, run-invariant re-run **landed 2026-07-03** (`benchmark/results/longmemeval_s_terransoul.md`, commit `4eea9e45` — "baseline reproduced to the decimal": rrf R@5 99.4 % / NDCG@10 95.1 % / MRR 95.9 %; rrf_emb 99.4 % / R@10 100.0 % / 94.5 % / 95.3 %); the tables below carry those resolved numbers, matching the pitch deck's an internal work item.3 chart.
 - The "LoCoMo QA" figures in the Benchmark column are end-to-end answer accuracy (J-score), not retrieval recall, shown for context only.
 - The agentmemory-corpus rows share one nomic-embed-text embedder, so the pure-vector memory systems and RAG frameworks cluster around 41 / 61 / 74 / 88 / 92 % — the embedder sets that recall, independent of framework.
 - The graph systems (GraphRAG, Memary, HippoRAG) return entity subgraphs rather than ranked passages, so their low recall is a metric-shape mismatch on this single-doc corpus, not a like-for-like loss.
@@ -108,9 +108,9 @@ Results were tracked through Phase BENCH-AM, long since closed and archived to [
 
 | Benchmark | Latest run | TerranSoul headline | Date | Section |
 |---|---|---|---|---|
-| **LongMemEval-S** retrieval-only (500 questions, all types) | BENCH-AM-6.2 (embeddinggemma) | `search`: **R@5 98.6 % / R@10 99.8 % / R@20 100.0 % / NDCG@10 88.8 % / MRR 89.1 %** — verified top-1 vs agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5); re-measured 2026-06-28 on the embeddinggemma embedder (recall flat at ceiling, NDCG/MRR softened ~2–3 pp vs the prior mxbai run — see the Embedder audit section) | 2026-06-28 | [§ LongMemEval-S](#longmemeval-s-verified-top-1-bench-am-66-1) |
+| **LongMemEval-S** retrieval-only (500 questions, all types) | an internal work item.2 (embeddinggemma) | `search`: **R@5 98.6 % / R@10 99.8 % / R@20 100.0 % / NDCG@10 88.8 % / MRR 89.1 %** — verified top-1 vs agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5); re-measured 2026-06-28 on the embeddinggemma embedder (recall flat at ceiling, NDCG/MRR softened ~2–3 pp vs the prior mxbai run — see the Embedder audit section) | 2026-06-28 | [§ LongMemEval-S](#longmemeval-s-verified-top-1-bench-am-66-1) |
 | **agentmemory bench:quality** (concept-tagged, 240 obs / 20 queries) | regenerated 2026-06-25 | keyword-only `search`: **R@10 67.1 % / NDCG@10 98.2 % / MRR 100.0 %** (quality leader); `hybrid_search_rrf` no-vector: **R@10 66.8 % / NDCG@10 95.0 % / MRR 95.0 %** (production default, restored after the RRF regression fix `c560514e`) | 2026-06-25 | [§ Feature matrix](#feature-matrix-vs-agentmemory) |
-| **MTEB LoCoMo retrieval** (full 1976 queries across 5 tasks) | BENCH-LCM-1 | `rrf` (lexical): **R@10 57.2 % / R@100 76.9 %** → with EmbeddingGemma vector (`rrf_emb`): **R@10 64.5 % / R@100 85.8 % / NDCG@10 49.9 % / MRR 48.3 %** — temporal-reasoning strong; multi-hop and open-domain remain documented gaps — LLM query-decomposition was implemented + benched here and **removed** (it *regressed* multi_hop recall: R@10 47.3 %→30.1 %, n=40), so the plain `rrf` path is retained | 2026-06-28 | [§ MTEB LoCoMo](#mteb-locomo-retrieval-adapter-bench-lcm-1) |
+| **MTEB LoCoMo retrieval** (full 1976 queries across 5 tasks) | an internal work item | `rrf` (lexical): **R@10 57.2 % / R@100 76.9 %** → with EmbeddingGemma vector (`rrf_emb`): **R@10 64.5 % / R@100 85.8 % / NDCG@10 49.9 % / MRR 48.3 %** — temporal-reasoning strong; multi-hop and open-domain remain documented gaps — LLM query-decomposition was implemented + benched here and **removed** (it *regressed* multi_hop recall: R@10 47.3 %→30.1 %, n=40), so the plain `rrf` path is retained | 2026-06-28 | [§ MTEB LoCoMo](#mteb-locomo-retrieval-adapter-bench-lcm-1) |
 | **ZorkGPT long-horizon** (`gemma4:e4b` 4B) | BENCH-ZORK (spec 002–014 + K-series → reliability fork) | **AGI-pure:** the brain lifts the same 4B from **0** (both controls) to **10–20** and stops its fixation loops; cross-episode behavioural change verified (new room *Up a Tree* via reflection hydration); **0/1682 MCP errors**. **Self-improve campaign (12B, 2026-06-21):** per-run cross-episode **~15** (10/20/15 on a fresh task-naïve brain), with a **peak 45** single episode via across-run accumulation — honestly de-confounded (the 45 required accumulating a one-time discovery; supersedes the earlier r4 10→20); cross-game (Detective, 12B) shows a consistent **+20 memory-lift** (n=2). **Reliability demonstration (taught solution):** serving the brain's move on *every* turn via an exception-safe orchestrator fork drives the 4B to a deterministic **350/350** (396/396 moves, 0 errors), vs a non-deterministic 73/177 under intermittent serving — isolating *delivery reliability* from model size | 2026-06-21 | [§ ZorkGPT bench](#zorkgpt--terransoul--long-horizon-task-bench-bench-zork-15-2026-05-28--pass) |
 
 *Plain English: the single best result for each of our four benchmarks (see the glossary above for R@5 / NDCG@10 / MRR). Two test search quality (LongMemEval-S, agentmemory), one tests harder multi-document search (LoCoMo), and ZorkGPT tests whether the memory helps a small 4B model finish a long text-adventure game.*
@@ -119,7 +119,7 @@ The research write-up — silent ingest, room-scoped reflection, prompt-as-snaps
 
 ## Embedder audit — which embedding model to use (2026-06-28)
 
-> **What this is.** A real, local head-to-head of **18 embedder configurations** on the canonical 240-observation / 20-query fixture (`src-tauri/benches/memory_quality_fixture.json`), scored **pure-vector** (L2-normalize → cosine top-k) so the number reflects the *embedder alone*, not the hybrid scorer. Metric formulas are copied verbatim from `src-tauri/benches/memory_quality.rs`. Harness: [`benchmark/results/embedder-sweep/embedder_sweep.py`](results/embedder-sweep/embedder_sweep.py); per-model JSON + `summary.json` committed alongside. **Every model is run with its correct, documented query/document prompt prefix** — a fairness fix over the earlier prefix-free sweep (see findings). `ms/text` is wall-clock embed time on this host with `gemma4:12b-it-qat` resident.
+> **What this is.** A real, local head-to-head of **18 embedder configurations** on the canonical 240-observation / 20-query fixture (`internal module`), scored **pure-vector** (L2-normalize → cosine top-k) so the number reflects the *embedder alone*, not the hybrid scorer. Metric formulas are copied verbatim from `internal module`. Harness: [`benchmark/results/embedder-sweep/embedder_sweep.py`](results/embedder-sweep/embedder_sweep.py); per-model JSON + `summary.json` committed alongside. **Every model is run with its correct, documented query/document prompt prefix** — a fairness fix over the earlier prefix-free sweep (see findings). `ms/text` is wall-clock embed time on this host with `gemma4:12b-it-qat` resident.
 
 | Embedder | dim | backend | R@5 | R@10 | R@20 | NDCG@10 | MRR | ms/text | prefix | license |
 |---|--:|---|--:|--:|--:|--:|--:|--:|---|---|
@@ -198,12 +198,12 @@ Algorithmic note: TerranSoul mirrors the reference deterministic hash embedding 
 | Cross-agent | ✅ MCP + REST | ✅ MCP on three ports (`7421`/`7422`/`7423`) + AI gateway | Same shape. |
 | Audit trail | ✅ All mutations logged | ✅ Per-mutation audit log | Same. |
 | Language SDKs | Any (REST + MCP) | Any (MCP) + native Rust + Vue store APIs | TerranSoul does not ship a separate Python/TS SDK yet. |
-| Token-efficiency calculator | ✅ `npx … status` | ✅ `npm run brain:tokens` + per-query bench report | Shipped in BENCH-AM-4. |
+| Token-efficiency calculator | ✅ `npx … status` | ✅ `npm run brain:tokens` + per-query bench report | Shipped in an internal work item. |
 | **Self-healing local LLM provider probe** | ❌ | ✅ `brain_health.llm_provider_state` (live `/api/tags` Ollama probe, 2s timeout, healthy/degraded/unreachable) + PowerShell watchdog auto-restarts tray + `docker restart ollama` on outage (spec 005, 2026-05-28) | Tray watchdog covers the OS-level recovery path. |
 
 ### Intentional scope boundaries
 
-BENCH-AM-7 originally flagged two rows where TerranSoul was not a one-for-one clone of agentmemory. **Both have since shipped:**
+an internal work item originally flagged two rows where TerranSoul was not a one-for-one clone of agentmemory. **Both have since shipped:**
 
 - **Leases / signals / mesh (now ✅):** TerranSoul ships an **advisory lease mesh** (`hive::leases`) built ON TOP of the Hive relay / Soul Link layer rather than as a new transport. `LeaseManager` grants soft, time-boxed `Lease{key,owner_id,ttl_ms,…}` claims (acquire / renew / release), a background sweep reclaims timed-out leases, and state changes (`Acquired/Renewed/Released/Expired`) broadcast over Soul Link so peers see who holds what. It is exposed as Tauri commands (`lease_acquire/renew/release/status`) and a `with_lease` critical-section primitive the MCP gateway can call. The layer is strictly advisory and **fails open**: it never touches the memory mutation hot path, and an unreachable peer can never wedge or block local work.
 - **Language SDKs (now ✅):** TerranSoul ships **Rust + Python + TypeScript SDK packages** under `sdk/` — typed clients over the brain MCP API (Streamable HTTP + bearer, auto port/token discovery), each with tests — alongside the existing MCP, Tauri IPC, native Rust APIs, and Vue stores.
@@ -238,9 +238,9 @@ Baseline context cost on the pinned fixture:
 
 **Verdict:** TerranSoul has a standalone token-savings CLI and a per-query token report, closing the agentmemory comparison gap. After the 2026-06-25 RRF regression fix, no-vector RRF is the production default: it lands at R@10 66.8% / NDCG@10 95.0% — within 0.3 pp Recall@10 of the keyword-only quality leader (67.1%) — while cutting retrieved context from 8,245 to 2,748 tokens/query (vs the keyword path's full-token cost). The gateway path (`AppStateGateway::search` rrf) recovered to 63.9% in the same fix.
 
-## LongMemEval-S verified top-1 (BENCH-AM-6/6.1)
+## LongMemEval-S verified top-1 (an internal work item/6.1)
 
-BENCH-AM-6 ran the full 500-question LongMemEval-S cleaned set and BENCH-AM-6.1 closed the remaining rank-order gaps. The final improvement came from corpus-aware lexical weighting so that rare anchors (names, objects, domain terms) rank above generic filler words. The numbers below were re-measured 2026-06-28 on the embeddinggemma embedder (BENCH-AM-6.2; recall flat at ceiling, NDCG/MRR softened ~2–3 pp vs the prior mxbai run — see the Embedder audit section).
+an internal work item ran the full 500-question LongMemEval-S cleaned set and an internal work item.1 closed the remaining rank-order gaps. The final improvement came from corpus-aware lexical weighting so that rare anchors (names, objects, domain terms) rank above generic filler words. The numbers below were re-measured 2026-06-28 on the embeddinggemma embedder (an internal work item.2; recall flat at ceiling, NDCG/MRR softened ~2–3 pp vs the prior mxbai run — see the Embedder audit section).
 
 This is the same retrieval-only shape used by agentmemory's LongMemEval-S script: each question builds a fresh in-memory index from its haystack sessions, searches with the raw question, and checks `answer_session_ids`. It is not official end-to-end LongMemEval QA accuracy.
 
@@ -321,7 +321,7 @@ run --systems=chat,think,research,max`.
 > `embed_num_gpu()` defaults to **0**, and `/api/embed` honours that verbatim — i.e. the
 > embedder is *deliberately* CPU-pinned in normal operation, so the whole GPU stays free for
 > the 12B chat model (which alone takes 7.6 GB of a 12 GB card). That default is right for the
-> product and wrong for a bench, where embed throughput dominates: `ollama_agent.rs` records
+> product and wrong for a bench, where embed throughput dominates: `internal module` records
 > the measured gap as **0.15 s warm GPU vs 21.6 s CPU (144×)**, and a `think` full-500 arm at
 > ~1 embed/minute (~7 h) instead of ~48 min. Measured again 2026-08-01 on a 50q `chat` arm: the
 > first questions ran 47.1 s/q while the embedder happened to be GPU-resident, then degraded to
@@ -333,7 +333,7 @@ run --systems=chat,think,research,max`.
 > `/api/ps` → `size_vram` must be non-zero for the embed model; **an external warm-up pin does
 > not survive**, because the app's own explicit `num_gpu: 0` reloads the model out of VRAM.
 >
-> **Use `99`, NOT `-1` — corrected 2026-08-01 after measuring both.** `ollama_agent.rs`'s own
+> **Use `99`, NOT `-1` — corrected 2026-08-01 after measuring both.** `internal module`'s own
 > comment claims omitting the key (which is what a negative value does) makes Ollama auto-fit
 > the 0.68 GB model onto the GPU. That did **not** reproduce here: with `-1`, a full-500 `chat`
 > arm started at 2.7 s/q and then degraded through 4.6 → 8.2 → 10.4 s/q as `/api/ps` went back
@@ -349,9 +349,9 @@ run --systems=chat,think,research,max`.
 
 Adapter runbook: [docs/longmemeval-s-adapter.md](longmemeval-s-adapter.md).
 
-## MTEB LoCoMo retrieval adapter (BENCH-LCM-1)
+## MTEB LoCoMo retrieval adapter (an internal work item)
 
-BENCH-LCM-1 adds a direct MTEB LoCoMo retrieval runner so TerranSoul has an apples-to-apples qrel table instead of only citing mixed LoCoMo QA numbers from other systems. The adapter reads the pinned `mteb/LoCoMo` parquet configs (`single_hop`, `multi_hop`, `temporal_reasoning`, `open_domain`, `adversarial`), inserts each task corpus into a fresh in-memory store, and computes retrieval-only IR metrics over `*-qrels`.
+an internal work item adds a direct MTEB LoCoMo retrieval runner so TerranSoul has an apples-to-apples qrel table instead of only citing mixed LoCoMo QA numbers from other systems. The adapter reads the pinned `mteb/LoCoMo` parquet configs (`single_hop`, `multi_hop`, `temporal_reasoning`, `open_domain`, `adversarial`), inserts each task corpus into a fresh in-memory store, and computes retrieval-only IR metrics over `*-qrels`.
 
 Runbook: [docs/locomo-mteb-adapter.md](locomo-mteb-adapter.md).
 
@@ -377,14 +377,14 @@ Graphify (Graphify-Labs) also publishes its own LOCOMO numbers — recall@10 ~49
 
 | System | Benchmark | Recall@K / Score | NDCG@10 | MRR | Source | Directly run? |
 |---|---|---|---|---|---|---|
-| **TerranSoul `search`** | LongMemEval-S retrieval-only | **R@5 98.6 % / R@10 99.8 % / R@20 100.0 %** | **88.8 %** | **89.1 %** | this repo, BENCH-AM-6.2 (embeddinggemma) | ✅ this repo |
-| TerranSoul `rrf` | LongMemEval-S retrieval-only | R@5 99.4 % / R@10 99.8 % / R@20 100.0 % | 95.1 % | 95.9 % | this repo, BENCH-AM-6.3 resolved re-run 2026-07-03 (`results/longmemeval_s_terransoul.md`, embeddinggemma) | ✅ this repo |
+| **TerranSoul `search`** | LongMemEval-S retrieval-only | **R@5 98.6 % / R@10 99.8 % / R@20 100.0 %** | **88.8 %** | **89.1 %** | this repo, an internal work item.2 (embeddinggemma) | ✅ this repo |
+| TerranSoul `rrf` | LongMemEval-S retrieval-only | R@5 99.4 % / R@10 99.8 % / R@20 100.0 % | 95.1 % | 95.9 % | this repo, an internal work item.3 resolved re-run 2026-07-03 (`results/longmemeval_s_terransoul.md`, embeddinggemma) | ✅ this repo |
 | **TerranSoul keyword-only `search` (regenerated 2026-06-25)** | agentmemory bench:quality | **R@10 67.1 %** | **98.2 %** | **100.0 %** | this doc | ✅ this repo |
 | **TerranSoul `hybrid_search_rrf` no-vector (regenerated 2026-06-25, post RRF-fix)** | agentmemory bench:quality | **R@10 66.8 %** | **95.0 %** | **95.0 %** | this doc | ✅ this repo |
 | **TerranSoul `rrf_emb`** (EmbeddingGemma vector) | MTEB LoCoMo retrieval-only, full 1976 queries | **R@10 64.5 % / R@100 85.8 %** | **49.9 %** | **48.3 %** | [docs/locomo-mteb-adapter.md](locomo-mteb-adapter.md) | ✅ this repo |
 | TerranSoul `rrf` (lexical) | MTEB LoCoMo retrieval-only, full 1976 queries | R@10 57.2 % / R@100 76.9 % | 45.0 % | 43.7 % | [docs/locomo-mteb-adapter.md](locomo-mteb-adapter.md) | ✅ this repo |
 | TerranSoul `search` (lexical) | MTEB LoCoMo retrieval-only, full 1976 queries | R@10 56.5 % / R@100 76.1 % | 44.9 % | 43.9 % | [docs/locomo-mteb-adapter.md](locomo-mteb-adapter.md) | ✅ this repo |
-| **TerranSoul brain (ZorkGPT bridge)** | ZorkGPT long-horizon, `gemma4:e4b`, 2-ep × 100-turn | **SC4 PASS** — cross-episode behavioural change (new room *Up a Tree* reached in ep2 via reflection hydration); 0/1682 MCP errors | n/a (long-horizon, not IR) | n/a | this repo, BENCH-ZORK-1.5 (spec series 002–006) | ✅ this repo |
+| **TerranSoul brain (ZorkGPT bridge)** | ZorkGPT long-horizon, `gemma4:e4b`, 2-ep × 100-turn | **SC4 PASS** — cross-episode behavioural change (new room *Up a Tree* reached in ep2 via reflection hydration); 0/1682 MCP errors | n/a (long-horizon, not IR) | n/a | this repo, an internal work item.5 (spec series 002–006) | ✅ this repo |
 | agentmemory dual-stream | agentmemory bench:quality | R@10 58.6 % | 84.7 % | 95.4 % | upstream `QUALITY.md` | port pending |
 | agentmemory built-in (CLAUDE.md / grep) | agentmemory bench:quality | R@10 55.8 % | 80.3 % | 82.5 % | upstream `QUALITY.md` | ✅ mirrored in this repo |
 | agentmemory built-in (200-line MEMORY.md cap) | agentmemory bench:quality | R@10 37.8 % | 56.4 % | 65.5 % | upstream `QUALITY.md` | ✅ mirrored in this repo |
@@ -406,7 +406,7 @@ Caveats:
 *Plain English: this gathers each system's published score, but on **different tests** (the "Benchmark" column says which) — so a number in one row is not directly comparable to a number in another row on a different benchmark. The one fair overlap is LongMemEval-S retrieval, where TerranSoul, agentmemory and MemPalace are all measured the same way. "Directly run?" = whether we ran it here (✅) vs cited the authors' published number.*
 
 - **Cross-benchmark numbers are not directly comparable.** LongMemEval-S, MTEB LoCoMo retrieval, LoCoMo QA, MuSiQue, and the ZorkGPT long-horizon harness have completely different corpora, ground-truth shapes, and judge models. They are listed here so a reader who knows those benchmarks can place each system on a familiar yardstick.
-- TerranSoul cannot self-run Mem0 / Letta / MemPalace / HippoRAG / Zep without their codebases. BENCH-AM-6/6.1 provides a verified TerranSoul number on the same LongMemEval-S retrieval-only table used by agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5).
+- TerranSoul cannot self-run Mem0 / Letta / MemPalace / HippoRAG / Zep without their codebases. an internal work item/6.1 provides a verified TerranSoul number on the same LongMemEval-S retrieval-only table used by agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5).
 - claude-mem, Khoj, and A-Mem publish capability descriptions but not IR-style retrieval numbers. They appear in the feature matrix below; they cannot appear in the numeric table.
 - **Mem0 / Letta / Zep / Cognee "LoCoMo" numbers are end-to-end QA accuracy (J score)** — not retrieval recall. Treating them as comparable to TerranSoul's retrieval rows would either falsely flatter TerranSoul (retrieval ≫ end-to-end on Mem0 paper numbers) or falsely punish it. The honest comparison shape is LongMemEval-S retrieval (where TerranSoul, agentmemory, and MemPalace all overlap).
 - **Graphify's LOCOMO/LongMemEval-S rows are QA-coverage accuracy graded by Kimi K2.6 (Moonshot)** against its own gold key-fact set — not TerranSoul's IR recall@k — and the source is Graphify's own harness (not vendored in this repo), so these are cited the same way as the Mem0/Letta/Zep/Cognee LoCoMo QA rows: useful context, not a head-to-head with TerranSoul's retrieval numbers on this page. Full published-numbers table and every caveat: [§ Graphify](#graphify-graphify-labs-a-code-graph-and-doc-media-mapping-tool-with-its-own-published-memory-benchmarks).
@@ -436,7 +436,7 @@ Legend: ✅ ships, ◐ partial, ❌ missing, n/a not applicable.
 | Token-savings CLI calculator | ✅ `npm run brain:tokens` | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | Self-healing local LLM provider probe | ✅ `brain_health.llm_provider_state` + PowerShell watchdog | ❌ | n/a (cloud) | ❌ | ❌ | n/a | ❌ | ❌ |
 | LongMemEval-S verified number | ✅ R@5 98.6 %, R@10 99.8 %, R@20 100.0 %, NDCG@10 88.8 %, MRR 89.1 % | ✅ 95.2 % R@5 | ❌ | ❌ | ✅ ~96.6 % R@5 | ❌ | ❌ | ❌ |
-| ZorkGPT long-horizon verified | ✅ SC4 PASS (BENCH-ZORK-1.5, spec series 002–006, `gemma4:e4b`) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| ZorkGPT long-horizon verified | ✅ SC4 PASS (an internal work item.5, spec series 002–006, `gemma4:e4b`) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
 TerranSoul is the only system on this matrix that ships all of {HyDE, LLM-as-judge rerank, Contextual Retrieval, CRDT device sync, four production storage backends, typed-KG write tool, self-healing local LLM provider probe, ZorkGPT long-horizon verified bench}. Both former scope-boundary rows now ship — the multi-agent lease mesh (LEASE-MESH-1, advisory lease layer on the Hive relay) and the language SDKs (Rust + Python + TypeScript under `sdk/`) — so no BENCH-AM feature-matrix blocker remains.
 
@@ -599,7 +599,7 @@ publishes four; this is where TerranSoul stands against each, and the gaps are r
 |---|---|---|---|
 | **LOCOMO** (n=300) | QA accuracy **and** recall@10 | MTEB LoCoMo retrieval-only, full n=1976 (R@10 64.5 %, NDCG@10 49.9 %) — larger sample, but **retrieval only** | **No end-to-end QA-accuracy number on LoCoMo.** Already acknowledged in this doc's caveats; Graphify (and Mem0/Letta/Zep) all report that axis and TerranSoul does not |
 | **LongMemEval-S** (n=50 English) | QA accuracy **and** recall@10 | Full 500-question retrieval (R@5 99.2 / NDCG@10 94.1 / MRR@20 94.6, 2026-08-01) — 10× the sample | **No QA-accuracy number.** Retrieval is measured far more thoroughly; answer quality is not measured at all on this set |
-| **Code intelligence** (ERPNext ~1M LOC, n=6) | key-fact coverage 70.8 % → 82.0 % with one graph tool | `crates/coding/src/symbol_index.rs` ships tree-sitter AST indexing + a PageRank repo-map MCP tool, and `resolve_repo_edges()` landed 2026-07-30 | **No published code-intelligence benchmark at all.** The capability exists and is untested against a graded question set |
+| **Code intelligence** (ERPNext ~1M LOC, n=6) | key-fact coverage 70.8 % → 82.0 % with one graph tool | `internal module` ships tree-sitter AST indexing + a PageRank repo-map MCP tool, and `resolve_repo_edges()` landed 2026-07-30 | **No published code-intelligence benchmark at all.** The capability exists and is untested against a graded question set |
 | **Temporal / scale-over-time** (689 weekly AST checkpoints, 15 years) | graph growth series | JD-million (1M rows) measures scale at a point in time | **No time-series scaling bench.** Different question: "does the index hold up as a repo evolves" vs "does it hold at 1M rows" |
 | **Judge validation** | inter-judge agreement **90.6 %**, Cohen's κ **0.81**, blind-validated against a second judge | TerranSoul uses an LLM judge in several places (rerank, domain judge, parity head-to-head) | **No published judge-validation statistic.** Graphify's own doc notes "most published memory benchmarks disclose no judge validation at all" — that criticism currently lands on this document too |
 | **Cost in USD** | ~$1.40 LOCOMO ingest; $0 graph build | Every TerranSoul row is $0 (local Ollama) | **No gap** — and the comparison favours TerranSoul, which is why the $ column is already carried in the tables above |
@@ -616,10 +616,10 @@ do you trust your own grader?" — so they are tracked as real work, not dismiss
 `pip install -e .` (Windows note: the console-script `.exe` link can fail with
 `[WinError 2] ... graphify.exe -> graphify.exe.deleteme` even though the package installs
 fine — invoke as `python -m graphify` instead of the bare `graphify` command). Ran its
-deterministic, no-LLM extractor against this repo's own `src-tauri/` Rust source tree:
+deterministic, no-LLM extractor against this repo's own `internal module` Rust source tree:
 
 ```
-python -m graphify extract src-tauri --code-only
+python -m graphify extract the application repository --code-only
 → 11,044 nodes / 30,170 edges / 321 files
 ```
 
@@ -628,7 +628,7 @@ citations, e.g.:
 
 ```
 python -m graphify query "what calls process_message"
-→ process_message() [src=src/commands/chat.rs loc=L1756]  (+ real caller/callee edges)
+→ process_message() [src=src/commands/internal module loc=L1756]  (+ real caller/callee edges)
 ```
 
 No LLM in the loop for either step — pure tree-sitter parsing + BFS graph traversal. This
@@ -644,7 +644,7 @@ against this repo's own production brain (1,840 memories, 100 % embedded, verifi
 brain_search("process_message chat command handler")
 → top hit: LESSON (reasoning-effort-impl-shipped, 2026-07-23) — a semantically
   related engineering lesson about the reasoning-effort ladder that touches
-  streaming.rs/chat.rs, NOT the literal process_message() call site or its
+  internal module/internal module, NOT the literal process_message() call site or its
   call graph.
 ```
 
@@ -692,7 +692,7 @@ Sources: [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) · 
 
 ### Architectural comparison vs adopted reference architectures (Hermes-Agent · GENesis-AGI · OpenClaw)
 
-These three are *reference architectures TerranSoul studied and adopted patterns from* — see [CREDITS.md](https://github.com/TerranSyn/TerranSoulApp/blob/main/CREDITS.md) and `docs/{hermes-agent-adoption,genesis-agi-brain-adoption,hermes-vs-openclaw-analysis}.md` — **not** memory engines we can self-run. As with the Mem0 / Letta / MemPalace rows above, this matrix is a **capability comparison** sourced from each project's public docs + our adoption studies; **measured head-to-head scores are in the table below** — OpenClaw and Hermes-Agent on the local model, and Claude Code + GENesis-AGI as a different-model *frontier reference*. We publish **no invented scores**. TerranSoul cells mark shipped capabilities ✅; adoption deltas that are *speced but not yet shipped* are marked ◐ and detailed in the adoption docs.
+These three are *reference architectures TerranSoul studied and adopted patterns from* — see [CREDITS.md](https://github.com/TerranSyn/TerranSoul/blob/main/CREDITS.md) and `docs/{hermes-agent-adoption,genesis-agi-brain-adoption,hermes-vs-openclaw-analysis}.md` — **not** memory engines we can self-run. As with the Mem0 / Letta / MemPalace rows above, this matrix is a **capability comparison** sourced from each project's public docs + our adoption studies; **measured head-to-head scores are in the table below** — OpenClaw and Hermes-Agent on the local model, and Claude Code + GENesis-AGI as a different-model *frontier reference*. We publish **no invented scores**. TerranSoul cells mark shipped capabilities ✅; adoption deltas that are *speced but not yet shipped* are marked ◐ and detailed in the adoption docs.
 
 Legend: ✅ ships · ◐ partial / planned · ❌ missing or not-a-goal · — unclear from public docs.
 
@@ -735,7 +735,7 @@ Every system's **real CLI** answers the **same 22 prompts** (7 archetypes) with 
 | **Hermes-Agent** (`-z` one-shot) | **6.90** | 21/22³ | 10.9 s² | 19.2 s² | $0 | `gemma4:12b-it-qat` |
 | **Claude Code + GENesis-AGI** | 8.24⁴ | 21/22 | 17.5 s² | 29.1 s² | $5.94 | `claude-haiku-4-5` *(cloud)* |
 
-*Plain English: all five answered the same 22 everyday-assistant questions; an independent AI grader scored each reply 0–10 (higher = better), and we logged speed (seconds per answer) and cost. TerranSoul scores 9.82 at ~1.1 s, for $0 — the top score and the lowest latency in this table. The 9.82 is the PARITY-FLOOR-2 restoration (the production companion prompt now enforces complete recall and capability offers; the deterministic protocol reproduced the per-prompt scores across four independent runs — loop record in `results/parity_floor2_loop.md`). The bottom row is a paid cloud model shown only as a frontier reference (footnote ⁴); it scores 8.24, below the free local systems.*
+*Plain English: all five answered the same 22 everyday-assistant questions; an independent AI grader scored each reply 0–10 (higher = better), and we logged speed (seconds per answer) and cost. TerranSoul scores 9.82 at ~1.1 s, for $0 — the top score and the lowest latency in this table. The 9.82 is the an internal work item restoration (the production companion prompt now enforces complete recall and capability offers; the deterministic protocol reproduced the per-prompt scores across four independent runs — loop record in `results/parity_floor2_loop.md`). The bottom row is a paid cloud model shown only as a frontier reference (footnote ⁴); it scores 8.24, below the free local systems.*
 
 **Quality by task archetype** (judge 0–10) — the per-task head-to-head:
 
@@ -756,15 +756,15 @@ Every system's **real CLI** answers the **same 22 prompts** (7 archetypes) with 
 
 **Provenance.** TerranSoul + OpenJarvis are the **2026-07-03 deterministic-protocol canonical run** (`results/parity_headtohead.json`); OpenClaw, Hermes, and Claude Code were measured **2026-06-27** under the earlier single-call-judge protocol — same harness, prompts, and judge model. Each runs its *real* pipeline at equal injected context (OpenClaw runs its agent; the rest single-pass). Raw per-prompt data — including every per-repeat judge score — is committed alongside our internal harness; reproducible from the committed result files.
 
-**Protocol resolution note (2026-07-03).** The earlier canonical (2026-06-07, TerranSoul 9.82 / OpenJarvis 9.55) was measured with unseeded temperature-0.7 generation and a single judge call per answer. Per-prompt forensics across the 2026-06-07 / 07-01 / 07-03 runs (dated artifacts `parity_headtohead_rerank_latency_check_20260701.json`, `parity_headtohead_rebench_20260703.json`, `parity_headtohead_judgefix_v1..v4_20260703.json`) showed both layers were nondeterministic: generation draws randomly dropped context facts, and the judge scored materially equivalent answers 8 vs 6 vs 5 across runs. The MCP-RERANK-1 `brain_search` rerank bound was investigated and exonerated (the 07-01 run had all 22 retrieval calls pinned at ~4.2 s — budget exhausted with fallback — with no quality effect distinguishable from a rerank-off run). Under the deterministic protocol the **2026-06-07 canonical answers themselves re-score 9.68 — identical to the fresh 2026-07-03 run's 9.68** — i.e. TerranSoul answer quality did not regress; the 9.82 → 9.68 headline delta is the retired protocol's measurement noise, and OpenJarvis reproduces its 9.55 exactly. 9.68 on this protocol is therefore the same answer-quality class as the retired 9.82 — and it was the never-regress floor for part of that day only: **PARITY-FLOOR-2 (later on 2026-07-03, commit `77ec9feb`) restored 9.82 on the deterministic protocol via a production prompt fix (complete-recall + capability-offer enforcement), reproduced across four independent runs — the deterministic-protocol floor is 9.82** (see the head-to-head table above and `results/parity_floor2_loop.md`; beat-attempts ≥ 9.83 continue from that floor).
+**Protocol resolution note (2026-07-03).** The earlier canonical (2026-06-07, TerranSoul 9.82 / OpenJarvis 9.55) was measured with unseeded temperature-0.7 generation and a single judge call per answer. Per-prompt forensics across the 2026-06-07 / 07-01 / 07-03 runs (dated artifacts `parity_headtohead_rerank_latency_check_20260701.json`, `parity_headtohead_rebench_20260703.json`, `parity_headtohead_judgefix_v1..v4_20260703.json`) showed both layers were nondeterministic: generation draws randomly dropped context facts, and the judge scored materially equivalent answers 8 vs 6 vs 5 across runs. The MCP-RERANK-1 `brain_search` rerank bound was investigated and exonerated (the 07-01 run had all 22 retrieval calls pinned at ~4.2 s — budget exhausted with fallback — with no quality effect distinguishable from a rerank-off run). Under the deterministic protocol the **2026-06-07 canonical answers themselves re-score 9.68 — identical to the fresh 2026-07-03 run's 9.68** — i.e. TerranSoul answer quality did not regress; the 9.82 → 9.68 headline delta is the retired protocol's measurement noise, and OpenJarvis reproduces its 9.55 exactly. 9.68 on this protocol is therefore the same answer-quality class as the retired 9.82 — and it was the never-regress floor for part of that day only: **an internal work item (later on 2026-07-03, commit `77ec9feb`) restored 9.82 on the deterministic protocol via a production prompt fix (complete-recall + capability-offer enforcement), reproduced across four independent runs — the deterministic-protocol floor is 9.82** (see the head-to-head table above and `results/parity_floor2_loop.md`; beat-attempts ≥ 9.83 continue from that floor).
 
 Sources: [openclaw/openclaw](https://github.com/openclaw/openclaw) (MIT) · [NousResearch/hermes-agent](https://github.com/nousresearch/hermes-agent) (MIT) · [WingedGuardian/GENesis-AGI](https://github.com/WingedGuardian/GENesis-AGI) · plus the in-repo adoption studies cited above.
 
-## ZorkGPT × TerranSoul — long-horizon task bench (BENCH-ZORK-1.5, 2026-05-28) — **PASS**
+## ZorkGPT × TerranSoul — long-horizon task bench (an internal work item.5, 2026-05-28) — **PASS**
 
 Long-horizon task harness where the *same* agent stack (Agent/Critic/Extractor LMs + Jericho + Map) runs against *the same game* (Zork 1, `zork1.z5`) — and **only the memory/knowledge substrate is swapped**. Full setup, methodology, threats to validity, pass criteria, raw transcripts, and the iter1–iter17 history in [terransoul/zorkgpt/README.md](terransoul/zorkgpt/README.md). Paper write-up at [*From Memo to Memory*](../docs/LLM-Brain-Design-Research-Paper/index.html).
 
-### Latest canonical (BENCH-ZORK-1.5, gemma4:e4b)
+### Latest canonical (an internal work item.5, gemma4:e4b)
 
 Two 2-ep × 100-turn canonical runs (spec 005 + spec 006) on `gemma4:e4b` (q4_k_m via Ollama, 2048-token context, 4B effective parameters). All four episodes through the same `terransoul-brain` arm. Distinct from iter12 (which used `gemma3:4b` and a smaller 3-ep × 25-turn budget).
 
@@ -794,7 +794,7 @@ All five lessons seeded into the shared memory seed and documented in [`rules/co
 
 Receipts: committed result files for the spec 005 and spec 006 canonical runs.
 
-### BENCH-ZORK-1.6 (2026-05-29, K7 deepfix) — generic brain contract gap closed, score floor confirmed
+### an internal work item.6 (2026-05-29, K7 deepfix) — generic brain contract gap closed, score floor confirmed
 
 Follow-up canonical (2-ep × 30-turn, same `gemma4:e4b`) after discovering a generic MCP contract gap during a 5-probe diagnostic: `brain_search`'s `cognitive_kind` parameter is a hard column filter, but runtime-ingested rows (`brain_ingest_lesson` / `brain_append`) leave the column NULL — every prior bench iter had silently dropped all runtime reflections from retrieval. Fix is task-agnostic (per `rules/bench-agi-purity.md` Rule 1.1): drop `cognitive_kind` from `brain_search`, fold tag tokens into the query string so lexical FTS5 fires. Documented in `docs/brain-advanced-design.md` §3.5.7.1.
 
@@ -803,9 +803,9 @@ Follow-up canonical (2-ep × 30-turn, same `gemma4:e4b`) after discovering a gen
 | K7 | ep1 | 0 | 30 | 189 | **0** | 4 | **2** (was 0 in K6) |
 | K7 | ep2 | 0 | 30 | 214 | **0** | 4 | **1** (was 0 in K6) |
 
-Cross-episode behavioural change held: ep2 reached Forest Path on **turn 3** (vs ep1 turn 17) and North House on turn 4 (vs turn 18) — 4–5× navigation efficiency improvement from cross-episode reflection hydration, confirming the BENCH-ZORK-1.5 SC4 finding at a smaller budget. Score 0/350 holds at the `gemma4:e4b` reasoning ceiling. The discovered contract gap and bridge workaround now apply generically to any agent (TerranSoul desktop, coding assistants, future benches) using MCP `brain_search`.
+Cross-episode behavioural change held: ep2 reached Forest Path on **turn 3** (vs ep1 turn 17) and North House on turn 4 (vs turn 18) — 4–5× navigation efficiency improvement from cross-episode reflection hydration, confirming the an internal work item.5 SC4 finding at a smaller budget. Score 0/350 holds at the `gemma4:e4b` reasoning ceiling. The discovered contract gap and bridge workaround now apply generically to any agent (TerranSoul desktop, coding assistants, future benches) using MCP `brain_search`.
 
-### BENCH-ZORK-1.6 spec-014 (2026-05-30, K8→K14) — brain-driven action planner wired, model-capacity wall confirmed
+### an internal work item.6 spec-014 (2026-05-30, K8→K14) — brain-driven action planner wired, model-capacity wall confirmed
 
 Seven-iteration sweep (K8 → K14) implementing spec-014's eight gaps: a brain-driven affordance shortlist, cross-episode tried-actions memory, dead-end avoidance, generic observation-to-affordance extractors. All affordance priorities live in brain memory only (`universal-text-affordance` tag) — zero verb constants in source code per `rules/brain-driven-self-improvement.md` Rules 3/4.
 
@@ -831,7 +831,7 @@ Artifacts: committed result files for the K8…K14 archive. Memory id 8934 (cons
 
 ### Earlier canonical (BENCH-ZORK-iter12, 2026-05-25) — gemma3:4b reference baseline
 
-For provenance: the 2026-05-25 iter12 run with `gemma3:4b` and a 3-ep × 25-turn budget cleared all 5 original pass criteria with `terransoul-brain` ep3 scoring **35** vs `zorkgpt-default` ep3 = 0. Pass criteria: ep3 > ep1 strict (35 > 0); brain ep3 ≥ default ep3 (35 ≥ 0); unique locations 8 ≥ 3; wasted-action rate ~16 % ≤ ~84 %; `memory_calls_err / total` = 2 / 69 = 2.9 % ≤ 5 %. BENCH-ZORK-1.5 (gemma4:e4b, 100-turn) replaced iter12 as the canonical row because the more demanding model + longer-horizon budget is the better stress test of the architecture; iter12 numbers are retained in [terransoul/zorkgpt/README.md](terransoul/zorkgpt/README.md) as a reference baseline.
+For provenance: the 2026-05-25 iter12 run with `gemma3:4b` and a 3-ep × 25-turn budget cleared all 5 original pass criteria with `terransoul-brain` ep3 scoring **35** vs `zorkgpt-default` ep3 = 0. Pass criteria: ep3 > ep1 strict (35 > 0); brain ep3 ≥ default ep3 (35 ≥ 0); unique locations 8 ≥ 3; wasted-action rate ~16 % ≤ ~84 %; `memory_calls_err / total` = 2 / 69 = 2.9 % ≤ 5 %. an internal work item.5 (gemma4:e4b, 100-turn) replaced iter12 as the canonical row because the more demanding model + longer-horizon budget is the better stress test of the architecture; iter12 numbers are retained in [terransoul/zorkgpt/README.md](terransoul/zorkgpt/README.md) as a reference baseline.
 
 ## How TerranSoul compares
 
@@ -859,7 +859,7 @@ A short, honest narrative summarising where the system leads, where it ties, and
 
 ### Where TerranSoul leads
 
-- **LongMemEval-S retrieval-only** — TerranSoul `search` is **top-1 in this table** (R@5 98.6 %, R@10 99.8 %, R@20 100.0 %, NDCG@10 88.8 %, MRR 89.1 %; re-measured 2026-06-28 on the embeddinggemma embedder — recall flat at ceiling, NDCG/MRR softened ~2–3 pp vs the prior mxbai run, see the Embedder audit section), ahead of agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5). The advantage comes from corpus-aware lexical weighting + per-cognitive-kind decay + the hybrid lexical/vector/graph scorer with reranking. BENCH-AM-6/6.1 verified the full 500-question table; BENCH-AM-7 confirmed no quality regression after the low-signal cap landed.
+- **LongMemEval-S retrieval-only** — TerranSoul `search` is **top-1 in this table** (R@5 98.6 %, R@10 99.8 %, R@20 100.0 %, NDCG@10 88.8 %, MRR 89.1 %; re-measured 2026-06-28 on the embeddinggemma embedder — recall flat at ceiling, NDCG/MRR softened ~2–3 pp vs the prior mxbai run, see the Embedder audit section), ahead of agentmemory (95.2 % R@5) and MemPalace (~96.6 % R@5). The advantage comes from corpus-aware lexical weighting + per-cognitive-kind decay + the hybrid lexical/vector/graph scorer with reranking. an internal work item/6.1 verified the full 500-question table; an internal work item confirmed no quality regression after the low-signal cap landed.
 - **agentmemory bench:quality** — on the upstream's own pinned fixture, TerranSoul keyword-only `search` leads on raw quality (R@10 67.1 %, NDCG@10 98.2 %, MRR 100.0 %), while the production-default `hybrid_search_rrf` no-vector lands within 0.3 pp R@10 (66.8 %, NDCG@10 95.0 %, MRR 95.0 %) at roughly a third of the retrieved-token budget. RRF was regressed (R@10 22.9 %) by a ranking penalty dominating the small rank gaps and was restored in the 2026-06-25 fix (`c560514e`) that bounds that penalty to a light tiebreaker; for context, agentmemory v0.6 dual-stream reference is R@10 58.6 %.
 - **Architectural affordances not in the peer set** — HyDE retrieval, LLM-as-judge cross-encoder rerank, Contextual Retrieval (Anthropic 2024), CRDT device sync, the typed-KG write tool (`brain_add_edge`, spec 003), and the live LLM-provider self-healing probe (`brain_health.llm_provider_state` + watchdog, spec 005). Each one is verified to ship and tested — see the feature matrix above and `rules/completion-log.md` entries.
 - **ZorkGPT long-horizon, real local LLM** — BENCH-ZORK exposes its full call log (**0 MCP errors across 1682 brain calls**, 5 reflections retrievable per episode, ep2 reached a new room via cross-episode reflection hydration), and adds two results we have not seen published elsewhere on Zork I: with no task seeds the brain lifts the same 4B from **0 → 10–20** while both controls stay at 0; and the delivery-reliability demonstration (see the ZorkGPT row above) isolates delivery reliability from model size. Research write-up: [*From Memo to Memory*](../docs/LLM-Brain-Design-Research-Paper/index.html).
@@ -887,6 +887,6 @@ The case is not "TerranSoul scored X on Zork." The case is **"these five classes
 
 ## What ships next
 
-The chunks that produced this file — README-AUDIT-2 and COMPARISON-CONDENSE-1 (this rewrite) — closed 2026-05-28 and live in [rules/completion-log.md](../rules/completion-log.md), as does the closed Phase BENCH-AM (milestones.md contains only open work, and none of these appear there). New benchmark, source system, or implementation target → open a new chunk in `rules/milestones.md`.
+The chunks that produced this file — README-an internal work item and COMPARISON-CONDENSE-1 (this rewrite) — closed 2026-05-28 and live in [rules/completion-log.md](../rules/completion-log.md), as does the closed Phase BENCH-AM (milestones.md contains only open work, and none of these appear there). New benchmark, source system, or implementation target → open a new chunk in `rules/milestones.md`.
 
-The deeper iteration narrative (Round 1 baseline through Round 7 parity sweep, Phase TOP1 Round 1 cross-system matrix, BENCH-MCP-PARITY / BENCH-MCP-LATENCY-1 / BENCH-LCM-KG-HYDE-1 / BENCH-ZORK-iter12 / BENCH-ZORK-RERUN-1, and the superseded BENCH-ZORK-1.5 300-turn placeholder) was condensed out of this file by COMPARISON-CONDENSE-1 (2026-05-28) and the archive file was not committed — see the git history around that commit if you need it.
+The deeper iteration narrative (Round 1 baseline through Round 7 parity sweep, Phase TOP1 Round 1 cross-system matrix, BENCH-MCP-PARITY / BENCH-MCP-LATENCY-1 / BENCH-LCM-KG-HYDE-1 / BENCH-ZORK-iter12 / BENCH-ZORK-RERUN-1, and the superseded an internal work item.5 300-turn placeholder) was condensed out of this file by COMPARISON-CONDENSE-1 (2026-05-28) and the archive file was not committed — see the git history around that commit if you need it.

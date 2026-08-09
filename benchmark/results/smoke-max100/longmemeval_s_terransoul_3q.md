@@ -1,7 +1,7 @@
 # TerranSoul LongMemEval-S Retrieval Report
 
 Date: 2026-07-25T13:18:08.168Z
-Dataset: D:\Git\TerranSoulApp\target-copilot-bench\longmemeval\longmemeval_s_cleaned.json
+Dataset: target-copilot-bench\longmemeval\longmemeval_s_cleaned.json
 Questions: 3 (0 abstention rows excluded)
 Methodology: retrieval-only recall_any@K, matching agentmemory benchmark/longmemeval-bench.ts
 Env: LONGMEM_EMBED=1 | effective embed model: mxbai-embed-large (harness default)

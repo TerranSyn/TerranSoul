@@ -4,7 +4,7 @@
 #
 # WHY EVERY CASE FAILS ON THE PRE-CHANGE TREE: the proxy forwarded the request
 # body verbatim apart from the learn-mode category rewrite. `brain_search`
-# defaults to `chat` (tools.rs:53), so every sweep measured TerranSoul's
+# defaults to `chat` (internal module:53), so every sweep measured TerranSoul's
 # CHEAPEST rung — no reason-then-rank judge, no KG-edge expansion, no
 # claim-level verification — while publishing under its name. On the pre-change
 # tree `pins_max_when_absent` finds no thinking_mode in the forwarded body at

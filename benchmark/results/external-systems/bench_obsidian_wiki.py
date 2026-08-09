@@ -49,7 +49,7 @@ Usage:
 import sys, os, json, time, math, hashlib, shutil, subprocess, threading, argparse, statistics
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FIXTURE = r"D:/Git/TerranSoulApp/src-tauri/benches/memory_quality_fixture.json"
+FIXTURE = r"internal module.json"
 WORK = os.path.join(HERE, ".obsidian_wiki_vaults")
 OUT = os.path.join(HERE, "..", "obsidian_wiki_scaling.json")
 

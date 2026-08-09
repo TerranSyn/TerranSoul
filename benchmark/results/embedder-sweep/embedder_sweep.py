@@ -7,7 +7,7 @@ TerranSoul's vector/hybrid retrieval. Pure-vector isolates the embedder:
   L2-normalize embeddings -> cosine top-k -> recall@5/10/20, NDCG@10, MRR.
 
 Metric formulas are copied EXACTLY from
-  src-tauri/benches/memory_quality.rs  (recall/ndcg_at_k/mrr).
+  internal module  (recall/ndcg_at_k/mrr).
 
 obs text (per task spec):
   title + " " + subtitle + " " + facts.join(" ") + " " + (narrative||"")
@@ -28,7 +28,7 @@ Outputs (this dir):
 import sys, os, json, time, math, urllib.request, urllib.error
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FIXTURE = r"D:/Git/TerranSoulApp/src-tauri/benches/memory_quality_fixture.json"
+FIXTURE = r"internal module.json"
 OLLAMA = "http://127.0.0.1:11434"
 
 # ── Fixture / text construction ──────────────────────────────────────────────
@@ -52,7 +52,7 @@ def load_corpus():
     q_rel = [set(q["relevantObsIds"]) for q in queries]
     return obs_ids, obs_texts, q_texts, q_rel, len(obs), len(queries)
 
-# ── IR metrics (mirror memory_quality.rs exactly) ────────────────────────────
+# ── IR metrics (mirror internal module exactly) ────────────────────────────
 
 def recall(retrieved, relevant, k):
     if not relevant:
@@ -280,7 +280,7 @@ def summarize():
     rows.sort(key=lambda r: r["R@10"], reverse=True)
     summary = {
         "metric": "pure-vector retrieval (L2-normalize -> cosine top-k); averaged over 20 queries",
-        "formulas_source": "src-tauri/benches/memory_quality.rs",
+        "formulas_source": "internal module",
         "corpus": "memory_quality_fixture.json (240 obs, 20 queries; ~48 distinct contents x5 sessions)",
         "lexical_baseline_cited": {"R@5": 0.45, "R@10": 0.67, "R@20": 0.80,
                                     "note": "TerranSoul lexical keyword baseline, embedder-independent (provided)"},

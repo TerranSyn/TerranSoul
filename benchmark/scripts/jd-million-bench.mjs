@@ -27,7 +27,7 @@
 // When the op is missing (older shim), the driver falls back to piped
 // `add_sessions` batches of 2000.
 //
-// Resume support (BENCH-SCALE-3): `--resume` asks the shim for its
+// Resume support (an internal work item): `--resume` asks the shim for its
 // `count`, keeps the on-disk store, and slices the deterministic corpus
 // at that offset — row N is a pure function of (seed, N), so skipping
 // the first `count` rows reproduces exactly the missing tail.
@@ -72,7 +72,7 @@ const JSONL_SLICE = 100000; // per-call slice for add_sessions_jsonl -> per-100K
 // --real-pdf (2026-07-29): ingest the ALREADY-BUILT 1,000-file real
 // selectable-text PDF corpus through the production `terransoul --ingest`
 // CLI path (real DocParser text-layer extraction, not the JSONL shim) —
-// see rules/completion-log.md for the ingest.rs/cli.rs fixes this depends
+// see rules/completion-log.md for the internal module/internal module fixes this depends
 // on (bulk-ingest LLM suppression, embed-drain-loop). Schema compatibility
 // between `terransoul-console`'s `TERRANSOUL_HEADLESS_DATA_DIR` and this
 // script's `LONGMEM_DATA_DIR` (same MemoryStore, different env var names for
@@ -80,7 +80,7 @@ const JSONL_SLICE = 100000; // per-call slice for add_sessions_jsonl -> per-100K
 // against a real `--ingest`-populated store.
 const REAL_PDF_CORPUS_DIR = process.env.JD_REAL_PDF_CORPUS || 'D:/TerranSoul/jd-1000-text';
 const REAL_PDF_CORPUS_SIZE = 1000; // the corpus on disk today — see JD_REAL_PDF_CORPUS to point elsewhere
-const TERRANSOUL_CONSOLE_EXE = resolve(REPO_ROOT, 'src-tauri', 'target', 'debug', 'terransoul-console.exe');
+const TERRANSOUL_CONSOLE_EXE = resolve(REPO_ROOT, 'the application repository', 'target', 'debug', 'terransoul-console.exe');
 const BENCH_CACHE_ROOT_NAME = 'ts-bench-cache'; // sibling of ts-build-cache, own namespace on the chosen drive
 
 // ---------------------------------------------------------------------------
@@ -202,7 +202,7 @@ Options for run:
   --hybrid-weights=v,k,r,i,d,t
                          Send set_hybrid_weights (vector, keyword, recency,
                          importance, decay, tier_priority) before the query
-                         phase — affects the \`hybrid\` system (MEMORY-CFG-AUDIT-5)
+                         phase — affects the \`hybrid\` system (MEMORY-CFG-an internal work item)
   --real-pdf             Ingest the real ${REAL_PDF_CORPUS_SIZE}-file selectable-text PDF corpus
                          (${REAL_PDF_CORPUS_DIR}) through the production
                          \`terransoul --ingest\` CLI (real DocParser text-layer
@@ -390,14 +390,14 @@ async function ingest(client, { resumesPath, startIndex, count, questionId }) {
  *
  * Deliberately NOT passing `--no-embed`: the demo must measure what a real
  * user actually gets, and speed is the production ingest path's own job to
- * get right (see ingest.rs's batched-embed fix), not something a caller
+ * get right (see internal module's batched-embed fix), not something a caller
  * opts into per invocation.
  */
 async function ingestRealPdf({ storeDir }) {
   if (!existsSync(TERRANSOUL_CONSOLE_EXE)) {
     throw new Error(
       `--real-pdf needs ${TERRANSOUL_CONSOLE_EXE}, which does not exist. Build it first: ` +
-        'cd src-tauri && cargo build --bin terransoul-console',
+        'cd the application repository && cargo build --bin terransoul-console',
     );
   }
   if (!existsSync(REAL_PDF_CORPUS_DIR)) {
@@ -758,7 +758,7 @@ function markdownReport(report) {
   w('');
   w('- Local-only bench per rules/ci-vs-local-testing.md — never wire into .github/workflows.');
   w('- Corpus row N is a pure function of (seed, N); `--resume` slices the corpus at the');
-  w('  store\'s `count` (BENCH-SCALE-3 resume pattern).');
+  w('  store\'s `count` (an internal work item resume pattern).');
   return `${lines.join('\n')}\n`;
 }
 
@@ -794,7 +794,7 @@ async function run(options) {
   // The shim persists rows when LONGMEM_DATA_DIR points at an on-disk
   // store; its `reset` op reopens the SAME directory, so a clean run must
   // delete the store dir BEFORE spawning cargo. `--resume` keeps it
-  // (BENCH-SCALE-3: corpus row N is deterministic, so the tail can be
+  // (an internal work item: corpus row N is deterministic, so the tail can be
   // re-derived from the shim's `count`).
   const storeDir = process.env.LONGMEM_DATA_DIR || resolveDefaultStoreDir();
   if (!resume) {
@@ -824,7 +824,7 @@ async function run(options) {
   try {
     let startIndex = 0;
     if (resume) {
-      // BENCH-SCALE-3 resume pattern: the shim's `count` op returns the
+      // an internal work item resume pattern: the shim's `count` op returns the
       // number of rows already in the `memories` table; because corpus
       // row N is deterministic, that count IS the offset into the corpus.
       const data = await client.send({ op: 'count' });
@@ -852,7 +852,7 @@ async function run(options) {
       console.log(`[jd-bench] write_engine_finalize ${JSON.stringify(writeEngineFinalize)}`);
     }
 
-    // MEMORY-CFG-AUDIT-5 mechanism: persist HybridWeights on the store's
+    // MEMORY-CFG-an internal work item mechanism: persist HybridWeights on the store's
     // Cell before the query phase. Order: vector, keyword, recency,
     // importance, decay, tier_priority. Affects the `hybrid` system only
     // (rrf's fusion is rank-based and does not read HybridWeights).

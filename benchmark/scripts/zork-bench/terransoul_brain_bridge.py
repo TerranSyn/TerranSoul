@@ -6766,8 +6766,8 @@ def _classify_outcome(
 class ZorkHarness:
     """Spec 007 — tool-use + reasoning-gates harness for the bench.
 
-    Ports the singing-feature `CHAT-HARNESS-3/5` pattern
-    (`src-tauri/src/commands/streaming.rs`) to the Zork bench: sanitise
+    Ports the singing-feature `an internal work item/5` pattern
+    (`internal module`) to the Zork bench: sanitise
     actions before Jericho sees them, reject off-vocab verbs, break
     2-cycle loops, and inject `[HARNESS]` typed errors back into the
     agent's reasoning history via the on-disk knowledge file.

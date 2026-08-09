@@ -19,7 +19,7 @@ is untouched; the learning is distilled at runtime from the agent's own play.
 """
 import sys
 
-sys.path.insert(0, r"D:\Git\TerranSoulApp\benchmark\scripts\zork-bench")
+sys.path.insert(0, r"benchmark\scripts\zork-bench")
 from terransoul_brain_bridge import (  # noqa: E402
     _build_progress_facts,
     _build_failure_mode_reflection_prompt,

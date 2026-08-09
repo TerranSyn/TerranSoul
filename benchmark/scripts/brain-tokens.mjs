@@ -19,7 +19,7 @@ const DEFAULT_REPORT = resolve(
 );
 const FIXTURE_PATH = resolve(
   REPO_ROOT,
-  'src-tauri',
+  'the application repository',
   'benches',
   'memory_quality_fixture.json',
 );
@@ -100,7 +100,7 @@ function main() {
   }
   if (!existsSync(reportPath)) {
     throw new Error(
-      `Missing benchmark report: ${reportPath}\nRun: cd src-tauri && cargo bench --bench memory_quality --target-dir ../target-copilot-bench`,
+      `Missing benchmark report: ${reportPath}\nRun: run the benchmark task in the application repository --target-dir ../target-copilot-bench`,
     );
   }
 
@@ -118,7 +118,7 @@ function main() {
     const avgRetrieved = system.avg_retrieved_context_tokens;
     if (!Number.isFinite(avgRetrieved)) {
       throw new Error(
-        `Report ${reportPath} does not include BENCH-AM-4 token metrics; rerun the benchmark.`,
+        `Report ${reportPath} does not include an internal work item token metrics; rerun the benchmark.`,
       );
     }
     const retrievedYear = avgRetrieved * annualQueries;

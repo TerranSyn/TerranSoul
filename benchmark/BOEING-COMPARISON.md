@@ -1,7 +1,7 @@
 # Boeing 747 primitives vision benchmark — model comparison
 
 > **Naming note (2026-07-27).** The CLI is now `terransoul`, installed by
-> `npm run build:cli` into `src-tauri/target/<profile>/cli/`. Every
+> `npm run build:cli` into `internal module`. Every
 > `terransoul-cli` below is left as written: it is the name the binary actually
 > had during those runs, and this file records what happened, not what to type
 > today. The recorded `actor_error` strings under `results/` are captured
@@ -361,7 +361,7 @@ cargo touched, all 8 frozen artifacts (`rubric.json`, `lib/cameras.mjs`,
    `stall`, while a genuinely broken CLI still can't spin the loop forever.
 3. **Streaming observability** (`lib/actor-stream.mjs` new, `actor/actor-claude.mjs`) —
    switched from `--output-format json` to `--output-format stream-json
-   --verbose` (mirroring `crates/brain/src/claude_cli.rs`'s `chat_stream`);
+   --verbose` (mirroring `internal module`'s `chat_stream`);
    partial stdout from a timeout-killed call now yields a real tool-call
    tally / event summary instead of a black box.
 4. **Cross-iteration self-learning** (`lib/mcp-client.mjs`, `lib/self-learning.mjs`
@@ -425,10 +425,10 @@ safety/observability mechanism the shipped TerranSoul product actually has
 (no `action_trust` gating, no product telemetry, no config isolation). This
 pass closes that gap. A new, generic agentic-edit capability was shipped in
 the product itself — `terransoul-cli --agent-task <prompt> --grant-dir
-<dir>...` (`crates/brain/src/agentic_cli.rs`'s `AgenticCliClient`,
-`src-tauri/src/cli.rs`) — gated end-to-end through the **same**
-`action_trust` earned-autonomy ledger `WIRE-CLI-PARITY-GAP-3` already wired
-for `SelfImproveEngine`'s own apply/test actions (`ActionCategory::
+<dir>...` (`internal module`'s `AgenticCliClient`,
+`internal module`) — gated end-to-end through the **same**
+`action_trust` earned-autonomy ledger `WIRE-CLI-an internal work item` already wired
+for `the self-improvement engine`'s own apply/test actions (`ActionCategory::
 CodeExecute`; a deny returns before the subprocess is even constructed). The
 Boeing-747 actor (`actor/actor-claude.mjs`) was then rewired to call this
 new CLI subcommand instead of shelling out to `claude` itself, plus a
@@ -473,15 +473,15 @@ verify results: `rules/completion-log.md` →
     launched the desktop app since the table was added), confirming true
     cold start, not merely low confidence; (b) a full-repo grep of every
     `record_outcome(ActionCategory::CodeExecute, …)` call site shows all
-    production sites (`engine.rs` apply/test, `cli.rs` agent-task) sit
+    production sites (`internal module` apply/test, `internal module` agent-task) sit
     strictly after their own gate check in the same function — a deny
     short-circuits before the outcome is ever recorded, so the ledger can
     never receive its first success through any autonomous path. This
     means `terransoul-cli --self-improve` is equally affected on a fresh
     install — this is not a Boeing-747 quirk, it's the self-improve
-    feature's cold-start usability. Filed as **`WIRE-CLI-PARITY-GAP-6`**
+    feature's cold-start usability. Filed as **`WIRE-CLI-an internal work item`**
     in `rules/milestones.md`, explicitly owner-gated per the
-    `WIRE-CLI-PARITY-GAP-3` precedent (an unauthorized bypass of a
+    `WIRE-CLI-an internal work item` precedent (an unauthorized bypass of a
     deliberate safety gate was correctly reverted earlier this session; no
     bypass has been implemented here either). **Empirically reproduced,
     not just statically inferred:** once `terransoul-cli` finished building
@@ -495,7 +495,7 @@ verify results: `rules/completion-log.md` →
 **CLOSED (2026-07-11) — the corrected re-run completed through this exact
 path.** Every item on the former "what remains" list landed, in order:
 (1) `terransoul-cli` built and the cold-start deny reproduced live
-(`d2e63c11` + the smoke test above); (2) `WIRE-CLI-PARITY-GAP-6` owner
+(`d2e63c11` + the smoke test above); (2) `WIRE-CLI-an internal work item` owner
 decision recorded (`ee4161c0`) and implemented (`088c9849`) — with `Bypass`
 the explicit default, the trust gate opens for the bench's isolated data
 dir; a second smoke test confirmed both directions on the rebuilt binary
@@ -623,7 +623,7 @@ their tracks' floors, scoped to this regime: **69.63** (transplant2 —
 transplant-seeded, provenance above), **55.49** (taught-v4), **63.71**
 (taught-v5).
 
-**Evidence:** `results/PARITY-INDEX-20260717.md` · `results/PROGRESS.md`
+**Evidence:** `results/an internal work item.md` · `results/PROGRESS.md`
 (final table) · per-track `gate-state.json` + `iter-*.json` · candidate
 `PROVENANCE.md` files · knowledge packs in `benchmark/boeing747/knowledge/`
 (their inline source URLs and arXiv ids are citable).

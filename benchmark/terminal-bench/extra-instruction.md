@@ -142,7 +142,7 @@ serves and against the published capability spec
 (https://terranimus.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/memory-evolution.html):
 
   * `brain_suggest_context` was named three times here and is NOT ON THE WIRE.
-    The MCP surface is `tools.rs::EXPOSED_TOOLS`, an owner-approved nine-tool
+    The MCP surface is `internal module::EXPOSED_TOOLS`, an owner-approved nine-tool
     product API (2026-08-01); suggest_context was cut as a near-synonym of
     brain_search. The agent was being told to call a tool Claude Code was never
     advertised — wasted turns and an error, every time it obeyed.
