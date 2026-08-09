@@ -20,7 +20,7 @@ See [../terransoul/agentmemory-quality/README.md](../terransoul/agentmemory-qual
 
 ## LongMemEval-S — agentmemory's published numbers
 
-| Metric | agentmemory | TerranSoul (BENCH-AM-6/6.1) |
+| Metric | agentmemory | TerranSoul (an internal work item/6.1) |
 |---|---|---|
 | R@5 | 95.2 % | **99.2 %** |
 | R@10 | 98.6 % | **99.6 %** |

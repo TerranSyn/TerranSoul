@@ -1,12 +1,12 @@
 # LongMemEval-S retrieval
 
 **Task:** xiaowu0162/longmemeval-cleaned (LongMemEval-S, cleaned 500-question retrieval slice).
-**Adapter shipped:** BENCH-AM-5 (2026-05-12).
-**Canonical TerranSoul result:** BENCH-AM-6/6.1 (2026-05-11) — R@5 99.2% vs agentmemory 95.2% / MemPalace ~96.6% (both published); NDCG@10 91.3% vs agentmemory 87.9%.
+**Adapter shipped:** an internal work item (2026-05-12).
+**Canonical TerranSoul result:** an internal work item/6.1 (2026-05-11) — R@5 99.2% vs agentmemory 95.2% / MemPalace ~96.6% (both published); NDCG@10 91.3% vs agentmemory 87.9%.
 
-> **MCP Gateway Parity: ✅ PASS** — 0/50 per-question mismatches between gateway and direct-store paths on the sampled subset (BENCH-MCP-PARITY-3). The apples-to-apples per-query test is exact parity. See [parity-enforcement-rules.md](../../parity-enforcement-rules.md).
+> **MCP Gateway Parity: ✅ PASS** — 0/50 per-question mismatches between gateway and direct-store paths on the sampled subset (BENCH-MCP-an internal work item). The apples-to-apples per-query test is exact parity. See [parity-enforcement-rules.md](../../parity-enforcement-rules.md).
 
-## Headline numbers (BENCH-AM-6/6.1, 500-question cleaned set)
+## Headline numbers (an internal work item/6.1, 500-question cleaned set)
 
 | Metric | TerranSoul | agentmemory (published) | MemPalace (published) |
 |---|---|---|---|
@@ -20,10 +20,10 @@
 
 | Round | Date | Config | R@5 / R@10 / R@20 / NDCG@10 / MRR | Notes |
 |---|---|---|---|---|
-| BENCH-AM-5 | 2026-05-12 | First adapter run, default config | sample fixture | Plumbing verification, not a leadership claim |
-| BENCH-AM-6 | 2026-05-11 | corpus-aware lexical weighting + light query variants | 99.0 / 99.4 / 99.8 / 91.0 / 92.4 | First full retrieval-only run |
-| BENCH-AM-6.1 | 2026-05-11 | Tuned rare-anchor weights | **99.2 / 99.6 / 100.0 / 91.3 / 92.6** | Canonical result |
-| BENCH-AM-7 | 2026-05-11 | Regression guard after broad-term cap | unchanged | LongMemEval-S preserved while agentmemory bench improved |
+| an internal work item | 2026-05-12 | First adapter run, default config | sample fixture | Plumbing verification, not a leadership claim |
+| an internal work item | 2026-05-11 | corpus-aware lexical weighting + light query variants | 99.0 / 99.4 / 99.8 / 91.0 / 92.4 | First full retrieval-only run |
+| an internal work item.1 | 2026-05-11 | Tuned rare-anchor weights | **99.2 / 99.6 / 100.0 / 91.3 / 92.6** | Canonical result |
+| an internal work item | 2026-05-11 | Regression guard after broad-term cap | unchanged | LongMemEval-S preserved while agentmemory bench improved |
 
 ## Artefacts
 
@@ -51,7 +51,7 @@ LongMemEval-S targets long-horizon retrieval over multi-session conversations. T
 
 ## Direct-store vs MCP gateway path
 
-Since BENCH-MCP-PARITY-2, the adapter supports routing `rrf` and `hybrid`
+Since BENCH-MCP-an internal work item, the adapter supports routing `rrf` and `hybrid`
 search modes through `AppStateGateway::search` — the same code path the
 running Tauri app and MCP server use. Set `LONGMEM_VIA_GATEWAY=1`:
 
@@ -68,7 +68,7 @@ Bench-specific modes (`rrf_rerank`, `rrf_kg`, `rrf_temporal`, `rrf_hyde`,
 canonical direct-store numbers. Any drift beyond that indicates a gateway
 regression.
 
-### Results (BENCH-MCP-PARITY-3, 2026-05-26)
+### Results (BENCH-MCP-an internal work item, 2026-05-26)
 
 | Path | N | R@5 | R@10 | R@20 | NDCG@10 | MRR | Avg Lat |
 |------|---|-----|------|------|---------|-----|---------|

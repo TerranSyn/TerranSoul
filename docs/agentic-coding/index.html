@@ -50,7 +50,7 @@
 
 <main>
   <h1>Agentic coding inside TerranSoul</h1>
-  <p class="sub">TerranSoul carries a full agentic-coding subsystem under <code>src-tauri/src/coding/</code> — roughly 70 modules covering sandboxed execution, checkpointed rollback, isolated worktrees, multi-agent workflows, and repo-aware search. <code>brain_execute_code</code> is the one MCP-visible entry point; most of the depth here sits below that single tool.</p>
+  <p class="sub">TerranSoul carries a full agentic-coding subsystem under <code>internal module/</code> — roughly 70 modules covering sandboxed execution, checkpointed rollback, isolated worktrees, multi-agent workflows, and repo-aware search. <code>brain_execute_code</code> is the one MCP-visible entry point; most of the depth here sits below that single tool.</p>
 
   <h2>Sandboxed execution</h2>
   <p><code>brain_execute_code</code> runs an agent-authored script (Python, Node, shell, or PowerShell) in an isolated child process, in its own process group, under a hard wall-clock timeout, and returns only a bounded, context-budget-safe tail of stdout — bulk intermediate output never re-enters the model's context window. It's a direct architectural analog of hermes-agent's <code>execute_code</code> tool, reimplemented in Rust against TerranSoul's own sandboxing primitives rather than vendored. Every execution is logged into the same procedural ledger the rest of the brain uses (content-hash deduped, success/failure counted), so a script that keeps succeeding accumulates evidence toward becoming a synthesized skill automatically. It's gated behind the earned-autonomy action-trust ladder — deny-by-default until that capability category has earned enough trust to run unsupervised.</p>
@@ -76,7 +76,7 @@
 
 <footer>
   <a href="../">← TerranSoul home</a>
-  <a href="https://github.com/Terranimus/TerranSoulApp/tree/main/src-tauri/src/coding">Source (coding/)</a>
+  <a href="https://github.com/Terranimus/TerranSoul/tree/main/internal module">Source (coding/)</a>
   <span class="spacer"></span><span>CP-4 brain_execute_code · coding/{execute_code,checkpoint_manager,worktree,multi_agent,repo_map_pagerank}.rs</span>
 </footer>
 <script src="../assets/site-nav.js" defer></script>

@@ -70,14 +70,14 @@
   <p>A related but distinct faculty, <code>brain_commitments</code>, handles a different case: not a goal you explicitly asked to be pursued, but an inferred open-loop a conversation leaves dangling ("I'll let you know once the build finishes"). An LLM mentalizing pass supplies the inferred commitment; this faculty persists it and, on a periodic heartbeat, surfaces the due ones through the same attention/salience gate everything else in working memory competes through — governed by seeded quiet-hours and busy-skip policy so it doesn't nag.</p>
 
   <h2>Is there a cron-style scheduler too?</h2>
-  <p>Yes, and it's worth being precise about which faculty is which. Underneath goal-pursuit there's a separate module (<code>memory/automation.rs</code>) that unifies a parameterized skill + a schedule into one typed "blueprint," and runs a <b>consent-first suggestion queue</b>: the brain can notice a routine you keep doing and propose scheduling it, but a suggestion only becomes a real <code>scheduled_agents</code> cron row when you explicitly accept it — nothing auto-schedules itself. This is real, shipped code with tests, but as of this writing it has no MCP tool or Tauri command exposing it directly the way <code>brain_pursue_goal</code> exposes goal-pursuit — it's currently an internal faculty the brain's own scheduling logic calls into, not something you invoke by name yet.</p>
+  <p>Yes, and it's worth being precise about which faculty is which. Underneath goal-pursuit there's a separate module (<code>memory/internal module</code>) that unifies a parameterized skill + a schedule into one typed "blueprint," and runs a <b>consent-first suggestion queue</b>: the brain can notice a routine you keep doing and propose scheduling it, but a suggestion only becomes a real <code>scheduled_agents</code> cron row when you explicitly accept it — nothing auto-schedules itself. This is real, shipped code with tests, but as of this writing it has no MCP tool or Tauri command exposing it directly the way <code>brain_pursue_goal</code> exposes goal-pursuit — it's currently an internal faculty the brain's own scheduling logic calls into, not something you invoke by name yet.</p>
   <div class="note">In short: <b>brain_pursue_goal</b> is the thing to reach for today if you want to hand the brain a standing objective and have it keep working the problem. The cron-suggestion queue is real but not yet a user-facing surface — check back here as that changes.</div>
 </main>
 
 <footer>
   <a href="../">← TerranSoul home</a>
-  <a href="https://github.com/Terranimus/TerranSoulApp/blob/main/src-tauri/src/memory/goal_pursuit.rs">Source (goal_pursuit.rs)</a>
-  <a href="https://github.com/Terranimus/TerranSoulApp/blob/main/src-tauri/src/memory/automation.rs">Source (automation.rs)</a>
+  <a href="https://github.com/Terranimus/TerranSoul/blob/main/internal module">Source (internal module)</a>
+  <a href="https://github.com/Terranimus/TerranSoul/blob/main/internal module">Source (internal module)</a>
   <span class="spacer"></span><span>CP-5 · BCF-03 · CA-3 · CA-6</span>
 </footer>
 <script src="../assets/site-nav.js" defer></script>

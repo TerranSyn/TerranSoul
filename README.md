@@ -3,7 +3,7 @@
 > **A first-class external memory you can plug into any AI.** Private, local, **$0** — it remembers across sessions, and shares one brain with your other AI tools over MCP.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Paper: From Memo to Memory](https://img.shields.io/badge/paper-From%20Memo%20to%20Memory-8A2BE2)](https://terransyn.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/)
+[![Paper: From Memo to Memory](https://img.shields.io/badge/paper-From%20Memo%20to%20Memory-8A2BE2)](https://terranimus.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/)
 [![Benchmarks](https://img.shields.io/badge/benchmarks-COMPARISON.md-2ea44f)](benchmark/COMPARISON.md)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?logo=discord&logoColor=white)](https://discord.gg/RzXcvsabKD)
 
@@ -13,7 +13,7 @@
 
 TerranSoul keeps your language model **frozen** and makes the **memory around it** smarter — so a small local model behaves above its weight class, every change is auditable, and your knowledge stays **portable data, not opaque weights**. One brain, shared over MCP with your other AI tools.
 
-**[📖 TerranSoul in Six Scenes](https://terransyn.github.io/TerranSoul/)** — a non-technical primer · **[📄 Research — *From Memo to Memory*](https://terransyn.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/)** — the thesis, with receipts.
+**[📖 TerranSoul in Six Scenes](https://terranimus.github.io/TerranSoul/)** — a non-technical primer · **[📄 Research — *From Memo to Memory*](https://terranimus.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/)** — the thesis, with receipts.
 
 ---
 
@@ -66,7 +66,7 @@ That makes TerranSoul a different kind of tool than Claude Code, OpenClaw, or SI
 
 TerranSoul's thesis — *memory, not weights* — is defended in a research report, with receipts:
 
-**[📄 From Memo to Memory: A First-Class External-Memory Architecture for Frozen Language Models](https://terransyn.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/)** — a combined position-and-measurement paper. It accepts the *memo-vs-memory* charge in the recent literature and contests the dichotomy: five behavioural criteria separate a memo from a memory, and a structured external substrate can satisfy them with the model's weights frozen — shown on a controlled Zork I study (ZorkGPT × external-memory bench) and four public benchmarks. ([per-turn runs](https://terransyn.github.io/TerranSoul/zorkgpt/))
+**[📄 From Memo to Memory: A First-Class External-Memory Architecture for Frozen Language Models](https://terranimus.github.io/TerranSoul/LLM-Brain-Design-Research-Paper/)** — a combined position-and-measurement paper. It accepts the *memo-vs-memory* charge in the recent literature and contests the dichotomy: five behavioural criteria separate a memo from a memory, and a structured external substrate can satisfy them with the model's weights frozen — shown on a controlled Zork I study (ZorkGPT × external-memory bench) and four public benchmarks. ([per-turn runs](https://terranimus.github.io/TerranSoul/zorkgpt/))
 
 ---
 

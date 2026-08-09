@@ -14,10 +14,10 @@ benchmark/
 │   └── README.md
 ├── terransoul/                     — every TerranSoul round we have run
 │   ├── README.md                   — round index across all tasks
-│   ├── longmemeval-s/              — BENCH-AM-5 / -6 / -6.1 / -7
-│   ├── locomo-mteb/                — BENCH-LCM-1 … LCM-11
-│   ├── locomo-at-scale/            — BENCH-SCALE-1 / SCALE-1b / SCALE-2 (harness)
-│   └── agentmemory-quality/        — BENCH-AM-1 … AM-7
+│   ├── longmemeval-s/              — an internal work item / -6 / -6.1 / -7
+│   ├── locomo-mteb/                — an internal work item … an internal work item
+│   ├── locomo-at-scale/            — an internal work item / SCALE-1b / SCALE-2 (harness)
+│   └── agentmemory-quality/        — an internal work item … AM-7
 ├── scripts/
 │   └── README.md                   — pointers to runner scripts in scripts/
 └── fixtures/
@@ -32,10 +32,10 @@ benchmark/
 
 | Benchmark | Best round | Headline | Index |
 |---|---|---|---|
-| LongMemEval-S retrieval | BENCH-AM-6/6.1 (2026-05-11) | R@5 **99.2 %**, R@10 **99.6 %**, R@20 **100.0 %**, NDCG@10 **91.3 %**, MRR **92.6 %** | [terransoul/longmemeval-s/](terransoul/longmemeval-s/README.md) |
+| LongMemEval-S retrieval | an internal work item/6.1 (2026-05-11) | R@5 **99.2 %**, R@10 **99.6 %**, R@20 **100.0 %**, NDCG@10 **91.3 %**, MRR **92.6 %** | [terransoul/longmemeval-s/](terransoul/longmemeval-s/README.md) |
 | agentmemory quality bench | regenerated 2026-06-25 (RRF-fix `c560514e`) | keyword `search` R@10 **67.1 %** / NDCG@10 **98.2 %** / MRR **100.0 %**; `hybrid_search_rrf` no-vec R@10 **66.8 %** / NDCG@10 **95.0 %** (restored from a regressed 22.9 %) | [terransoul/agentmemory-quality/](terransoul/agentmemory-quality/README.md) |
-| LoCoMo MTEB retrieval | BENCH-LCM-8 (2026-05-12, canonical) | R@10 **68.3 %** (rrf_rerank, full 1976-q) | [terransoul/locomo-mteb/](terransoul/locomo-mteb/README.md) |
-| LoCoMo-at-scale | BENCH-SCALE-1b (2026-05-13) | 100k corpus, R@10 **64.0 %**, NDCG@10 **46.7 %** | [terransoul/locomo-at-scale/](terransoul/locomo-at-scale/README.md) |
+| LoCoMo MTEB retrieval | an internal work item (2026-05-12, canonical) | R@10 **68.3 %** (rrf_rerank, full 1976-q) | [terransoul/locomo-mteb/](terransoul/locomo-mteb/README.md) |
+| LoCoMo-at-scale | an internal work item (2026-05-13) | 100k corpus, R@10 **64.0 %**, NDCG@10 **46.7 %** | [terransoul/locomo-at-scale/](terransoul/locomo-at-scale/README.md) |
 | Token efficiency | regenerated 2026-06-25 | **91.6 %** savings vs full-context paste at R@10 66.8 % (no-vec RRF, post RRF-fix) | [COMPARISON.md](COMPARISON.md) |
 
 ## How to reproduce
@@ -70,6 +70,6 @@ All four retrieval benchmarks (LongMemEval-S, agentmemory quality, LoCoMo MTEB, 
 ## See also
 
 - [docs/agentmemory-comparison.md](../docs/agentmemory-comparison.md) — long-form discussion of the agentmemory bench numbers.
-- [docs/billion-scale-retrieval-design.md](../docs/billion-scale-retrieval-design.md) — Phase 1–5 retrieval architecture; § Phase 2 documents the BENCH-SCALE-2 `ShardMode` toggle.
+- [docs/billion-scale-retrieval-design.md](../docs/billion-scale-retrieval-design.md) — Phase 1–5 retrieval architecture; § Phase 2 documents the an internal work item `ShardMode` toggle.
 - [docs/brain-advanced-design.md](../docs/brain-advanced-design.md) — the RAG pipeline design (hybrid lexical/vector/graph retrieval with reranking and a KG cascade).
 - [rules/milestones.md](../rules/milestones.md) and [rules/completion-log.md](../rules/completion-log.md) — round-by-round narrative.
