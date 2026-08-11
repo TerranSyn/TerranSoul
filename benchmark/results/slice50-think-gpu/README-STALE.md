@@ -19,7 +19,7 @@ This arm ran `think` with the pointwise LLM-judge reranker enabled. Owner decisi
 removed it, because the reranker measured **net-negative**: full-500 NDCG@10 93.26 against
 `chat`'s 93.78 at 4,765 ms against 675 ms.
 
-The mechanism is recorded in `internal module` (~:3163) and is not a tuning
+The mechanism is recorded in `src-tauri/src/bin/longmemeval_ipc.rs` (~:3163) and is not a tuning
 miss: *the judge scores topical relatedness rather than answer-bearingness, so on multi-gold
 questions it demotes secondary golds that the plain hybrid+RRF pass had already ranked
 correctly.* 324 of LongMemEval-S's 500 questions are multi-gold.

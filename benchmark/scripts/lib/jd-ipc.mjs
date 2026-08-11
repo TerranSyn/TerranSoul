@@ -14,7 +14,7 @@ import { spawn } from 'node:child_process';
 export class JsonlClient {
   /**
    * @param {object} opts
-   * @param {string} opts.repoRoot  repo root containing internal module.toml
+   * @param {string} opts.repoRoot  repo root containing src-tauri/Cargo.toml
    * @param {string} opts.targetDir cargo target dir for the shim build
    */
   constructor({ repoRoot, targetDir }) {
@@ -33,7 +33,7 @@ export class JsonlClient {
         'run',
         '--quiet',
         '--manifest-path',
-        resolve(repoRoot, 'the application repository', 'Cargo.toml'),
+        resolve(repoRoot, 'src-tauri', 'Cargo.toml'),
         '--bin',
         'longmemeval-ipc',
         '--target-dir',

@@ -4,16 +4,16 @@
 // between loop-runner-claude.mjs invocations; see benchmark/BOEING-COMPARISON.md's
 // 2026-07-05 ACTOR-FIDELITY CORRECTION note).
 //
-// WIRE-CLI-an internal work item REWIRE (2026-07-10): this module used to spawn the
+// WIRE-CLI-PARITY-GAP-3 REWIRE (2026-07-10): this module used to spawn the
 // bare `claude` binary directly (`--allowedTools "Read Edit" --add-dir ...`).
 // It now spawns TerranSoul's OWN generic agentic-edit CLI capability instead
 // — `terransoul --agent-task <prompt> --grant-dir <dir> [--grant-dir
-// <dir> ...] [--model <m>] [--effort <e>]` (internal module) — which:
+// <dir> ...] [--model <m>] [--effort <e>]` (src-tauri/src/cli.rs) — which:
 //   - gates the call through the SAME `action_trust` earned-autonomy ledger
-//     `the self-improvement engine`'s own DAG uses (a DENY returns before `claude` is
+//     `SelfImproveEngine`'s own DAG uses (a DENY returns before `claude` is
 //     ever spawned — no second gating mechanism, no bypass);
 //   - internally drives the exact same Read+Edit-scoped `claude` invocation
-//     via `internal module` — production
+//     via `crates/brain/src/agentic_cli.rs::AgenticCliClient` — production
 //     infrastructure, not a bench-only shell-out;
 //   - reports its outcome as ONE line of JSON on stdout on success
 //     (`result_text`/`cost_usd`/`duration_ms`/`tool_calls`, already tallied
@@ -27,7 +27,7 @@
 // passed `--strict-mcp-config --mcp-config '{"mcpServers":{}}'` to prevent
 // the actor's `claude` session from auto-loading any ambient project
 // `.mcp.json`. `AgenticCliClient::build_command` (Rust) does not set this —
-// confirmed by reading internal module in full before this
+// confirmed by reading crates/brain/src/agentic_cli.rs in full before this
 // rewire. Fixing it requires a Rust change, out of scope for this phase;
 // flagged here (and in the task report) as a real, un-silenced regression
 // for a future Rust-touching pass, not swept under the rug.
@@ -98,9 +98,9 @@ const DEFAULT_MODEL = 'claude-fable-5';
 // no invented flag is used in its place.
 const DEFAULT_EFFORT = 'max';
 // `terransoul`'s own build output — mirrors `.cargo/config.toml`'s
-// `internal module` pin; this is not a new build-output
+// `target-dir = "src-tauri/target"` pin; this is not a new build-output
 // convention, just where cargo already puts every workspace binary.
-const DEFAULT_CARGO_TARGET_DIR = path.join(REPO_ROOT, 'the application repository', 'target');
+const DEFAULT_CARGO_TARGET_DIR = path.join(REPO_ROOT, 'src-tauri', 'target');
 
 /**
  * Extract the FORBIDDEN_PATTERNS reasons VERBATIM from the frozen
@@ -362,16 +362,16 @@ function buildActorPrompt({
 
 /**
  * Resolve the built `terransoul` binary this actor drives
- * (WIRE-CLI-an internal work item rewire — replaces the old bespoke direct `claude`
+ * (WIRE-CLI-PARITY-GAP-3 rewire — replaces the old bespoke direct `claude`
  * spawn). Resolution order:
  *   1. An explicit `TERRANSOUL_CLI_BIN` env var (absolute path, or a name
  *      resolvable on `$PATH`) wins outright.
  *   2. `<target>/<profile>/cli/terransoul` — `npm run build:cli`'s installed
  *      copy — then `<target>/<profile>/terransoul-console`, cargo's own
- *      output, under `CARGO_TARGET_DIR` (or the default `internal module`).
+ *      output, under `CARGO_TARGET_DIR` (or the default `src-tauri/target`).
  *      Release profile checked before debug.
  * `<target>/<profile>/terransoul` is deliberately NOT a candidate: that name
- * belongs to the DESKTOP APP / MCP host (`src/internal module`), a console-less GUI
+ * belongs to the DESKTOP APP / MCP host (`src/main.rs`), a console-less GUI
  * binary that would hang this actor rather than answer it. See
  * scripts/build-cli.mjs for why the two are separate artifacts.
  * Never invokes cargo itself (this is a Node-only phase); throws a clear,
@@ -396,7 +396,7 @@ export function resolveTerranSoulCliBinary({ env = process.env, existsSyncFn = e
 }
 
 /**
- * ONE `terransoul --agent-task` call (WIRE-CLI-an internal work item rewire —
+ * ONE `terransoul --agent-task` call (WIRE-CLI-PARITY-GAP-3 rewire —
  * replaces the OLD bespoke direct `claude --allowedTools "Read Edit" ...`
  * spawn). Contract:
  *   - exit 0: stdout is ONE line of JSON (`AgenticTaskOutcome`: result_text/
@@ -636,7 +636,7 @@ export async function runActorEdit({
     timeout_ms: useTimeoutMs,
     observability,
     timed_out: timedOut,
-    // NEW (WIRE-CLI-an internal work item rewire): whether this failure was an
+    // NEW (WIRE-CLI-PARITY-GAP-3 rewire): whether this failure was an
     // `action_trust` ledger DENIAL rather than a timeout/crash — a longer
     // retry timeout can never change a trust decision, so callers (lib/
     // actor-retry.mjs's shouldRetryActor) use this to stop retrying

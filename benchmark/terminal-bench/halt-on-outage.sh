@@ -26,7 +26,7 @@ INTERVAL="${TB_WATCHDOG_INTERVAL_S:-60}"
 # Deliberately broad. A false positive costs one halt and a manual restart; a
 # false negative bakes unearned zeros into a public leaderboard submission.
 # "RateLimit" alone — what the in-sweep guard checks — is far too narrow.
-OUTAGE_RE='[Cc]redit balance|[Uu]sage limit|usage_limit|insufficient_quota|quota exceeded|billing|Authentication.?[Ee]rror|Unauthorized|invalid_api_key|OAuth.*(expired|failed)|status.?(401|403)'
+OUTAGE_RE='UnknownApiError|min left . EXPIRED|[Cc]redit balance|[Uu]sage limit|usage_limit|insufficient_quota|quota exceeded|billing|Authentication.?[Ee]rror|Unauthorized|invalid_api_key|OAuth.*(expired|failed)|status.?(401|403)'
 
 _alive_pids() {
   for w in 0 1 2 3 4; do
@@ -64,6 +64,21 @@ while true; do
     for p in $pids; do kill "$p" 2>/dev/null || true; done
     sleep 5
     for p in $pids; do kill -9 "$p" 2>/dev/null || true; done
+
+    # ⛔ REAP THE PROXIES TOO. Killing only the sweep pids leaves each worker's
+    # mcp-auth-proxy node process ORPHANED and still listening. Every relaunch
+    # then dies instantly with "port 7425 is already in use — a previous proxy
+    # is still alive", and because that message is all the worker ever writes,
+    # the sweep looks like it started and silently did nothing. Cost an hour on
+    # 2026-08-07: two relaunches were diagnosed as a shard-guard bug before
+    # anyone read the 160-byte worker log.
+    for port in 7425 7426 7427 7428 7429; do
+      pp="$(netstat -ano 2>/dev/null | grep LISTENING | grep ":$port " | awk '{print $NF}' | head -1)"
+      if [ -n "$pp" ]; then
+        taskkill //PID "$pp" //F >/dev/null 2>&1 || kill -9 "$pp" 2>/dev/null || true
+        echo "[watchdog] reaped proxy pid $pp on port $port"
+      fi
+    done
     echo "[watchdog]"
     echo "[watchdog] Workers stopped. NOTHING is corrupted: \$STATE is written"
     echo "[watchdog] per task after the job completes, so only the in-flight"

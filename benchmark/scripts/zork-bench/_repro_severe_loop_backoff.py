@@ -20,7 +20,7 @@ unchanged below the severe threshold).
 import re
 import sys
 
-sys.path.insert(0, r"benchmark\scripts\zork-bench")
+sys.path.insert(0, r"D:\Git\TerranSoulApp\benchmark\scripts\zork-bench")
 from terransoul_brain_bridge import _lesson_promotions, _lesson_directives  # noqa: E402
 
 fails: list[str] = []

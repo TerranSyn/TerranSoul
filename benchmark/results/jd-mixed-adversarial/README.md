@@ -236,16 +236,16 @@ the ids), all-text and all-scanned, so the arms differ only in which pages have 
 
 **The production router was not exercised.** The routing rule under test above is
 `Real-E2E/jd/pdf-text-layer.mjs`, a per-page JS mirror of production's accept-rule
-(`internal module:513-520` — trim + NFC, then reject empty or `looks_like_garbage`). Rust's own
+(`docparse.rs:513-520` — trim + NFC, then reject empty or `looks_like_garbage`). Rust's own
 `pages_needing_ocr` did not run, for two independent reasons:
 
 1. **No binary contains it.** `pages_needing_ocr` exists only in the working tree; the newest
-   real `terransoul-console` build is `2026-07-26T14:53:31Z` and `internal module` is
+   real `terransoul-console` build is `2026-07-26T14:53:31Z` and `docparse.rs` is
    `2026-07-27T23:53:05Z`, so every build on this machine predates the per-page router and would
    "prove" the document-level gate it replaced. The check that establishes this is
    `productionRouterStatus()` in `Real-E2E/jd/routing-proof.mjs`, imported here rather than
    reimplemented, and it reports **PENDING** in `summary.json`.
-2. **No binary exposes it either.** `internal module` returns
+2. **No binary exposes it either.** `grep -rn "DocParser\|docparse::" src-tauri/src/bin/` returns
    nothing: none of the five CLI targets reaches `DocParser`. So even a fresh build could not run
    this corpus without new Rust — a subcommand or a Rust-side harness. **A rebuild alone will not
    close this item**, which the earlier PENDING wording implied and this run does not.
@@ -256,16 +256,16 @@ distorted by a concurrent compile), so nothing above was verified against Rust.
 ## Real Rust router (2026-07-28/29, PDF-2/JD-CLI-3 — CLOSED)
 
 `DocParser::route_pdf_pages` (the real `pages_needing_ocr` decision, no OCR performed) and
-`terransoul --docparse-route <pdf-or-dir>` / `--docparse-parse <file>` now exist in `internal module` —
+`terransoul --docparse-route <pdf-or-dir>` / `--docparse-parse <file>` now exist in `cli.rs` —
 the two-part gap above (no fresh binary AND no CLI surface) is closed. Reproduce:
 
 ```bash
-cd the application repository && cargo build --bin terransoul-console
+cd src-tauri && cargo build --bin terransoul-console
 node Real-E2E/jd/docparse-route-proof.mjs --adversarial
 ```
 
 **Result, 525 pages, real Pdfium-backed production `model_root`
-(`%APPDATA%/the application data directory/dev/docparse`, matching what a real install resolves):**
+(`%APPDATA%/com.terransoul/dev/docparse`, matching what a real install resolves):**
 
 | | measured (real Rust router) | manifest declares |
 |---|---:|---:|
@@ -285,10 +285,10 @@ all as a routing outcome for anything but well-formed-but-encrypted PDFs.
 with no ToUnicode and no font program — "the glyph ids are NOT recoverable") came back from
 `--docparse-parse` as `"U+0001 U+0002 U+0003 ..."` — literal
 control-character soup — and was routed to `text`, not `ocr`. This is owed item 2 below, and it was
-not a theoretical gap: it reproduced on the first real run. Fixed in `internal module`'s
+not a theoretical gap: it reproduced on the first real run. Fixed in `docparse.rs`'s
 `looks_like_garbage` (added C0 controls U+0000..U+001F and DEL U+007F to the bad set) and ported to
 `pdf-text-layer.mjs` in the same commit (the file's own "DRIFT PIN" test predicted exactly this: "the
-fix is owed in internal module; when it lands, this test fails and tells whoever lands it that the port
+fix is owed in docparse.rs; when it lands, this test fails and tells whoever lands it that the port
 needs the same change" — it did). Re-measured after the fix: the fixture now routes to `ocr`, and the
 corpus-wide `scanToText` misroute count dropped from 2 to 1. `cargo test --workspace --lib --features
 postgres`: 2991/2992 passed pre-existing-flake aside (see below); `node --test
@@ -331,7 +331,7 @@ one-line fix like the C0 gap was.
 under the full 2992-test workspace suite ("fixture never delivered its canned inbound message in
 time") and passed cleanly in isolation (8.2 s). Same class of contention-sensitive channel/sidecar
 flake as `CHANNELS-FLAKE-ROOT-CAUSE` (`rules/completion-log.md`), not investigated further here —
-unrelated to `internal module`.
+unrelated to `docparse.rs`.
 
 Artifacts: `Real-E2E/jd/output/docparse-route-proof-adversarial-*.json` (gitignored — local
 measurement; this section is the published copy).

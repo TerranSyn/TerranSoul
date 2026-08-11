@@ -8,7 +8,7 @@
 // non-stdio server as exactly `{"type": transport, "url": server.url}` — a
 // `headers` block in --mcp-config is silently dropped, and the stdio branch
 // carries no `env` either. TerranSoul's MCP router accepts only
-// `Authorization: Bearer <token>` (internal module::validate_auth), so the task
+// `Authorization: Bearer <token>` (router.rs::validate_auth), so the task
 // container could reach the brain but never authenticate: the trial reported
 // `"mcp_servers":[{"name":"terransoul","status":"failed"}]` and would have
 // scored plain Claude Code while carrying TerranSoul's name.
@@ -19,7 +19,7 @@
 // READ-ONLY BY DEFAULT, deliberately. TB-3's acceptance criterion is
 // literally "0 brain writes during a 5-task run", and rules/bench-agi-purity.md
 // forbids a benchmark contaminating the brain it is being measured against.
-// The allowlist below mirrors internal module::is_public_tool_name exactly. Set
+// The allowlist below mirrors router.rs::is_public_tool_name exactly. Set
 // TB_PROXY_ALLOW_WRITES=1 to lift it (and then do NOT publish the run as a
 // clean measurement).
 import http from 'node:http'
@@ -32,14 +32,14 @@ const UPSTREAM_PORT = Number(process.env.TB_PROXY_UPSTREAM_PORT || 7423)
 const ALLOW_WRITES = process.env.TB_PROXY_ALLOW_WRITES === '1'
 const LOG_PATH = process.env.TB_PROXY_LOG || ''
 
-// Mirrors internal module::is_public_tool_name.
+// Mirrors src-tauri/src/ai_integrations/mcp/router.rs::is_public_tool_name.
 // Kept as an explicit copy rather than imported: this is a bench-scoped guard,
 // and if the server's list ever changes we want the divergence to be visible
 // here rather than silently inherited.
 //
 // ⚠️ MEASURED 2026-08-04: this list is a SUPERSET of what the server actually
 // serves. `is_public_tool_name` is the LAN-anonymous READ POLICY; the tools on
-// the wire are `internal module::EXPOSED_TOOLS`, an owner-approved 9-tool product API
+// the wire are `tools.rs::EXPOSED_TOOLS`, an owner-approved 9-tool product API
 // (2026-08-01, "one coherent CRUD+RAG API", down from 84). Five names below —
 // brain_suggest_context, brain_summarize, brain_list_recent, brain_failover_status
 // and every brain_wiki_* — are allowlisted here but are NOT advertised by the
@@ -61,7 +61,7 @@ const READ_ONLY_TOOLS = new Set([
   'brain_wiki_revisit',
 ])
 
-// The brain tools genuinely ON THE WIRE — mirrors internal module::EXPOSED_TOOLS.
+// The brain tools genuinely ON THE WIRE — mirrors tools.rs::EXPOSED_TOOLS.
 // Used only to tell a refused caller what it CAN call, so the proxy never
 // advertises a tool the server does not serve.
 const EXPOSED_BRAIN_TOOLS = [
@@ -247,7 +247,7 @@ function gate(bodyBuf) {
   // tool". Measured 2026-08-04: the server advertises 47 tools and this
   // allowlist refuses 43 of them, of which 21 (code_*, repo_*, obs_*,
   // canvas_snapshot, cross_source_search) are classified SafeRead by
-  // internal module — so the message was simply false, and an agent that
+  // action_trust.rs — so the message was simply false, and an agent that
   // believed it would draw the wrong conclusion about what the brain is.
   //
   // They stay BLOCKED, deliberately and for a different reason than writes:
@@ -278,7 +278,7 @@ function gate(bodyBuf) {
  * In learn mode, force every ingested lesson to category `self-improve-attempt`.
  *
  * WHY — this is the product's OWN purity control, not a workaround.
- * internal module::ingest_lesson does:
+ * gateway.rs::ingest_lesson does:
  *
  *     let sync_to_shared_seed = req.category != "self-improve-attempt";
  *
@@ -305,7 +305,7 @@ function gate(bodyBuf) {
  *
  * OWNER INSTRUCTION 2026-08-04: "thinking is max". `brain_search` exposes a
  * `thinking_mode` dial — chat | think | research | max — and it DEFAULTS TO
- * CHAT (internal module:53). extra-instruction.md described the ladder and left
+ * CHAT (tools.rs:53). extra-instruction.md described the ladder and left
  * escalation to the agent's judgement, so every sweep so far measured
  * TerranSoul at its cheapest rung while carrying its name. The four rungs are
  * cumulative, not stylistic: chat = plain recall; think = + the reason-then-rank
@@ -321,7 +321,7 @@ function gate(bodyBuf) {
  * four rung names pins that rung instead.
  *
  * Applied ONLY to tools whose schema actually declares the argument —
- * verified against internal module, where `brain_search` has it and
+ * verified against tools.rs, where `brain_search` has it and
  * `brain_suggest_context` / `brain_kg_neighbors` / `brain_get_entry` do not.
  * Sending it to a tool that does not accept it would be a silent no-op that
  * reads, in the log, exactly like a mode that took effect.
@@ -459,7 +459,7 @@ let lastRepairedMarkup
  * threshold (TRUST-BOOTSTRAP-1), every learn-mode write came back
  * `isError:true` and nothing counted it.
  *
- * An MCP error arrives as HTTP 200 with `result.isError:true` (internal module:190-196),
+ * An MCP error arrives as HTTP 200 with `result.isError:true` (router.rs:190-196),
  * so the status code is no help — the body has to be read. The response is teed,
  * never buffered-then-forwarded, so SSE streaming is unaffected.
  *
@@ -534,7 +534,7 @@ function noteOutcome(reqBuf, responseText) {
   }
   if (rpc.result?.isError) {
     const detail = String(rpc.result?.content?.[0]?.text ?? '').slice(0, 160)
-    // The earned-autonomy gate has a stable prefix (internal module::
+    // The earned-autonomy gate has a stable prefix (action_trust.rs::
     // GATE_DENY_PREFIX). Calling it out by name is the difference between
     // "the brain said no" and "the brain said no BECAUSE it does not trust
     // this agent yet", which is the one a sweep must never ignore.

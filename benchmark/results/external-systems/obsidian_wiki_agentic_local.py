@@ -45,7 +45,7 @@ import requests
 HERE = os.path.dirname(os.path.abspath(__file__))
 # Repo root = three levels up from benchmark/results/external-systems
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
-FIXTURE = os.path.join(ROOT, "the application repository", "benches", "memory_quality_fixture.json")
+FIXTURE = os.path.join(ROOT, "src-tauri", "benches", "memory_quality_fixture.json")
 VAULT = os.path.join(HERE, ".obsidian_wiki_agentic_local_vault")
 RANKINGS_PATH = os.path.join(HERE, "obsidian_wiki_agentic_local_rankings.json")
 RESULT_PATH = os.path.join(HERE, "obsidian_wiki_agentic.json")

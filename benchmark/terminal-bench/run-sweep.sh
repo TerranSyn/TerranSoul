@@ -217,6 +217,23 @@ refresh_token() {
 # failure turned a blip into a stop, and the message sent the operator looking
 # for an auth problem that did not exist.
 _refresh_token_once() {
+  # A LONG-LIVED TOKEN OPTS OUT OF REFRESHING. `claude setup-token` mints a
+  # token that lasts ~a year, which is what this bench actually wants: the
+  # 7-hour OAuth access token forces a stop every few hours, and on 2026-08-07
+  # the host CLI stopped rotating it at all — `claude -p` kept working while
+  # ~/.claude/.credentials.json sat unchanged for hours, so the sweep starved
+  # on a file nothing was updating.
+  #
+  # With TB_TOKEN_STATIC=1 the sweep trusts $TOKEN_FILE and never overwrites it
+  # from .credentials.json. Without this guard the refresh CLOBBERS the
+  # long-lived token with a short-lived one on the very next cycle.
+  if [ "${TB_TOKEN_STATIC:-0}" = "1" ]; then
+    if [ -s "${TB_TOKEN_FILE:-$REPO/mcp-data/.tb-token.env}" ]; then
+      return 0
+    fi
+    echo "[sweep] TB_TOKEN_STATIC=1 but the token file is empty — refusing to guess" >&2
+    return 1
+  fi
   node -e '
 const fs=require("fs"),os=require("os"),path=require("path");
 const p=path.join(os.homedir(),".claude",".credentials.json");
@@ -230,7 +247,7 @@ try{
   process.exit(2);
 }
 const mins=(o.expiresAt-Date.now())/60000;
-if(mins<10){
+if(mins<40){
   console.error("[sweep] token has "+mins.toFixed(0)+" min left — EXPIRED, re-authenticate with: claude setup-token");
   process.exit(1);
 }

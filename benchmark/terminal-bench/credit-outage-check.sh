@@ -67,29 +67,48 @@ done
 # wrong in whichever direction the dead trial happened to score.
 echo "── errored trials inside otherwise-complete tasks ──"
 err=$(python - "$JOBS" <<'PY'
+# ⛔ JUDGE ONLY THE LATEST JOB PER TASK. The first version scanned every
+# result.json on disk, so a task that FAILED and was then re-run cleanly was
+# still reported as broken forever — the corrupted job stays on disk beside its
+# replacement. Measured 2026-08-07: it flagged caffe-cifar-10, circuit-fibsqrt
+# and configure-git-webserver, all three of which the sweep had already re-run
+# to errored=0 / n_trials=5. Acting on that would have burned ~$16 and an hour
+# re-running clean work.
+#
+# The sweep's own derived-completion counts CLEAN trials, so it re-runs these
+# without help. This audit only needs to report what is still broken NOW.
 import json, glob, os, sys
 jobs = sys.argv[1]
-n = 0
+
+latest = {}   # task -> (started_at, n_errored, n_trials, exceptions, jobdir)
 for f in sorted(glob.glob(os.path.join(jobs, '*', 'result.json'))):
     try:
         r = json.load(open(f))
     except Exception:
         continue
     s = r.get('stats', {})
+    started = r.get('started_at') or ''
     for ev in (s.get('evals') or {}).values():
-        ex = ev.get('exception_stats') or {}
-        if not ex and not (s.get('n_errored_trials') or 0):
-            continue
         names = []
         for score, ns in (ev.get('reward_stats', {}).get('reward', {}) or {}).items():
-            names += [(x, score) for x in ns]
-        task = names[0][0].rsplit('__', 1)[0] if names else '?'
-        print('  !! %-38s %s of %s trial(s) errored: %s'
-              % (task, s.get('n_errored_trials'), ev.get('n_trials'),
-                 ','.join(ex.keys())))
-        print('     job: %s' % os.path.dirname(f))
-        print('     re-run with: bash redo-task.sh %s' % task)
-        n += 1
+            names += [x for x in ns]
+        if not names:
+            continue
+        task = names[0].rsplit('__', 1)[0]
+        cur = (started, s.get('n_errored_trials') or 0, ev.get('n_trials'),
+               list((ev.get('exception_stats') or {}).keys()), os.path.dirname(f))
+        if task not in latest or cur[0] > latest[task][0]:
+            latest[task] = cur
+
+n = 0
+for task, (started, nerr, ntr, ex, jd) in sorted(latest.items()):
+    if not nerr and not ex:
+        continue
+    print('  !! %-38s %s of %s trial(s) errored: %s'
+          % (task, nerr, ntr, ','.join(ex) or 'n_errored_trials>0'))
+    print('     job: %s  (started %s)' % (os.path.basename(jd), started[:19]))
+    print('     re-run with: bash redo-task.sh %s' % task)
+    n += 1
 print('__COUNT__%d' % n)
 PY
 )

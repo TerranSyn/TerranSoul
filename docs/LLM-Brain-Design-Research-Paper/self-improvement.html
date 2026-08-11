@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Self-Improvement, Measured - what a memory system actually earns on Terminal-Bench</title>
+<meta name="description" content="Companion page to 'Memory as a first-class layer'. What TerranSoul's hypothesis-experiment-evaluate-improve-repeat loop was measured to do on Terminal-Bench 2.1, the three measurement defects that made it look absent, and the limits the measurement cannot cross. Every figure measured from artifacts on disk; the in-flight campaign's section stays empty until it completes." />
+<style>
+  :root{
+    --bg: oklch(0.985 0.008 80);
+    --bg-card: oklch(0.97 0.01 80);
+    --bg-deep: oklch(0.93 0.012 75);
+    --ink: oklch(0.22 0.015 60);
+    --ink-soft: oklch(0.42 0.012 65);
+    --ink-faint: oklch(0.62 0.01 70);
+    --rule: oklch(0.88 0.012 75);
+    --accent: oklch(0.62 0.14 45);
+    --accent-soft: oklch(0.92 0.04 55);
+    --accent-ink: oklch(0.38 0.10 45);
+    --sans: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --serif: Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --maxw: 1280px;
+    --col: 720px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:400;line-height:1.55;-webkit-font-smoothing:antialiased}
+  ::selection{background:var(--accent-soft);color:var(--accent-ink)}
+  a{color:var(--accent-ink);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;text-decoration-color:color-mix(in oklch, var(--accent-ink) 35%, transparent)}
+  a:hover{text-decoration-color:var(--accent-ink)}
+  .topbar{position:sticky;top:0;z-index:50;background:color-mix(in oklch, var(--bg) 88%, transparent);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--rule)}
+  .topbar-in{max-width:var(--maxw);margin:0 auto;padding:12px 32px;display:flex;align-items:center;gap:20px;font-size:13px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:600;font-size:17px;letter-spacing:-0.01em}
+  .brand-mark{width:18px;height:18px;border-radius:50%;background:var(--accent);position:relative}
+  .brand-mark::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bg)}
+  .crumbs{color:var(--ink-faint);display:flex;gap:10px;align-items:center}
+  .crumbs span{color:var(--ink-soft)}
+  .crumbs em{font-style:normal;color:var(--ink)}
+  .topbar .spacer{flex:1}
+  .topbar a.lnk{color:var(--ink-soft);text-decoration:none}
+  .topbar a.lnk:hover{color:var(--ink)}
+  .topbar .meta{color:var(--ink-faint);font-family:var(--mono);font-size:11px;letter-spacing:0.05em;text-transform:uppercase}
+  @media (max-width:780px){.crumbs,.topbar .meta{display:none}.topbar-in{gap:12px;padding:10px 18px;flex-wrap:wrap}.topbar a.lnk{display:inline-flex;align-items:center;min-height:44px;padding:6px 0}}
+  .page{max-width:var(--maxw);margin:0 auto;padding:0 32px;display:grid;grid-template-columns:1fr;gap:48px}
+  article{padding:64px 0 96px;max-width:var(--col);margin:0 auto}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:24px}
+  .eyebrow .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);vertical-align:middle;margin:0 10px 2px 0}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(34px, 4.4vw, 48px);line-height:1.08;letter-spacing:-0.02em;margin:0 0 24px;color:var(--ink);text-wrap:balance}
+  h1 em{font-style:italic;color:var(--accent-ink);font-weight:500}
+  .deck{font-family:var(--serif);font-size:22px;line-height:1.45;color:var(--ink-soft);font-weight:400;font-style:italic;margin:0 0 40px;text-wrap:pretty}
+  .byline{display:flex;gap:16px;align-items:center;padding:16px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font-size:13px;color:var(--ink-soft);margin-bottom:48px;flex-wrap:wrap}
+  .byline .who{display:flex;gap:10px;align-items:center}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;font-family:var(--serif);font-weight:600;color:var(--accent-ink);font-size:13px}
+  .byline strong{color:var(--ink);font-weight:500}
+  .byline .sep{color:var(--ink-faint)}
+  article h2{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.18;letter-spacing:-0.01em;margin:60px 0 6px;color:var(--ink);text-wrap:balance}
+  article h2 .scene-num{display:block;font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-ink);font-weight:500;margin-bottom:10px}
+  article h3{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.3;margin:36px 0 8px;color:var(--ink)}
+  article p{font-size:18px;line-height:1.65;margin:0 0 20px;color:var(--ink);text-wrap:pretty}
+  article ul, article ol{font-size:18px;line-height:1.65;padding-left:24px;margin:0 0 24px}
+  article ul li, article ol li{margin-bottom:10px}
+  article code, article kbd{font-family:var(--mono);font-size:0.86em;background:var(--bg-deep);padding:1px 6px;border-radius:3px;color:var(--accent-ink);overflow-wrap:anywhere}
+  .small{font-size:14px;color:var(--ink-soft)}
+  ol.refs{font-size:14px;line-height:1.5;color:var(--ink-soft)}
+  ol.refs li{margin-bottom:7px}
+  ol.refs cite{font-style:italic;color:var(--ink)}
+  .refgroup{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent-ink);margin:28px 0 6px}
+  /* Stage blocks: the four-part shape every stage is written in. */
+  .sblock{margin:0 0 18px}
+  .sblock .slabel{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:4px}
+  .sblock p{margin:0;font-size:17px}
+  .sblock.next{border-left:3px solid var(--accent-soft);padding-left:16px}
+  table.compare{width:100%;border-collapse:collapse;font-size:14.5px;margin:16px 0 24px}
+  table.compare th, table.compare td{padding:12px 14px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+  table.compare th{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:500}
+  table.compare td{color:var(--ink)}
+  table.compare td:first-child{white-space:nowrap;font-weight:500}
+  table.compare tr:last-child td{border-bottom:0}
+  .tablewrap{overflow-x:auto}
+  .disclosure-card{background:oklch(0.96 0.015 55);border:1px solid oklch(0.85 0.03 50);border-radius:8px;padding:16px 20px;margin:0 0 40px;font-size:14px;color:var(--ink-soft);line-height:1.55}
+  .disclosure-card strong{color:var(--ink);font-weight:600}
+  footer.page-foot{border-top:1px solid var(--rule);padding:48px 32px;max-width:var(--maxw);margin:48px auto 0;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;font-size:13px;color:var(--ink-soft)}
+  footer.page-foot .links{display:flex;gap:20px;flex-wrap:wrap}
+  footer.page-foot a{color:var(--ink)}
+  .endmark{display:flex;align-items:center;gap:14px;color:var(--ink-faint);font-family:var(--mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;margin:40px 0 0}
+  .endmark::before,.endmark::after{content:"";flex:1;height:1px;background:var(--rule)}
+  @media (max-width:640px){
+    .page{grid-template-columns:minmax(0,1fr);padding:0 18px}
+    article{min-width:0;max-width:100%}
+    table.compare td:first-child{white-space:normal}
+    footer.page-foot{grid-template-columns:1fr}
+  }
+
+  /* ------------------------------------------------------------------ *
+   * FIGURES — inline animated SVG, driven by CSS keyframes only.
+   *
+   * NO <script> AND NO SMIL (<animate>, <animateTransform>). SMIL cannot be
+   * switched off by a media query, so one SMIL element would break the
+   * reduced-motion guarantee for the whole set. Nothing is fetched either:
+   * every figure renders identically from a file:// URL with no network.
+   *
+   * REDUCED MOTION IS THE FINAL FRAME, NOT A DEGRADED ONE. Each figure is
+   * authored so that its UNANIMATED rendering is the last and most
+   * informative state; the keyframes only travel toward that state and then
+   * hold there for the rest of the cycle. A reader with motion disabled sees
+   * the finished mechanism — never a blank frame, and never a first frame
+   * that shows only the problem.
+   *
+   * ONE COPY OF EVERY WORD. Every figure carries a visible <figcaption> and
+   * its <svg> is role="img" aria-labelledby="<that caption's id>". No <desc>,
+   * no aria-label prose, no alt text restating the caption: sighted and
+   * screen-reader readers get the identical string, and there is exactly one
+   * string to keep true. The corrections trail below records what the other
+   * arrangement cost when a figure description drifted out of sync.
+   *
+   * COLOUR comes only from the tokens declared at the top of this sheet, so
+   * no figure can vanish against a theme it was not written for.
+   * ------------------------------------------------------------------ */
+  figure.tsfig{margin:30px 0 34px}
+  .tsfig-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;border:1px solid var(--rule);border-radius:8px;background:var(--bg-card)}
+  .tsfig svg{display:block;width:100%;min-width:520px;height:auto}
+  figure.tsfig figcaption{font-size:14.5px;line-height:1.55;color:var(--ink-soft);margin:10px 2px 0}
+  .tsfig .f-panel{fill:var(--bg-deep);stroke:var(--rule);stroke-width:1}
+  .tsfig .f-box{fill:var(--bg);stroke:var(--rule);stroke-width:1}
+  .tsfig .f-hot{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+  .tsfig .f-wire{fill:none;stroke:var(--ink-faint);stroke-width:1.4}
+  .tsfig .f-wire-d{fill:none;stroke:var(--ink-faint);stroke-width:1.4;stroke-dasharray:4 4}
+  .tsfig .f-live{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round}
+  .tsfig .f-node{fill:var(--bg);stroke:var(--ink-faint);stroke-width:1.3}
+  .tsfig .f-node-on{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.8}
+  .tsfig .f-dot{fill:var(--ink-faint)}
+  .tsfig .f-dot-on{fill:var(--accent)}
+  .tsfig .f-arrow{fill:var(--ink-faint);stroke:none}
+  /* pathLength="100" normalises every stroke, so one dash rule draws any path. */
+  .tsfig .f-draw{stroke-dasharray:100;stroke-dashoffset:0}
+  .tsfig text{font-family:var(--sans);font-size:12px;fill:var(--ink-soft)}
+  .tsfig .f-key{font-family:var(--mono);font-size:9px;letter-spacing:0.14em;fill:var(--ink-faint)}
+  .tsfig .f-edge{font-family:var(--mono);font-size:9px;letter-spacing:0.03em;fill:var(--ink-faint)}
+  .tsfig .f-strong{fill:var(--ink);font-weight:600}
+  .tsfig .f-mono{font-family:var(--mono);font-size:11px;fill:var(--accent-ink)}
+
+  /* Figure 1 — vocabulary mismatch, and the space that closes it. */
+  .fig-vocab .v-reach{animation:fv-reach 13s ease-in-out infinite}
+  .fig-vocab .v-stop{animation:fv-stop 13s ease-in-out infinite}
+  .fig-vocab .v-a{animation:fv-a 13s ease-in-out infinite}
+  .fig-vocab .v-b{animation:fv-b 13s ease-in-out infinite}
+  .fig-vocab .v-link{animation:fv-link 13s ease-in-out infinite}
+  @keyframes fv-reach{0%,6%{stroke-dashoffset:100}24%,100%{stroke-dashoffset:0}}
+  @keyframes fv-stop{0%,26%{opacity:0}34%,100%{opacity:1}}
+  @keyframes fv-a{0%,40%{transform:translate(-74px,0);opacity:.3}62%,100%{transform:translate(0,0);opacity:1}}
+  @keyframes fv-b{0%,40%{transform:translate(74px,0);opacity:.3}62%,100%{transform:translate(0,0);opacity:1}}
+  @keyframes fv-link{0%,64%{opacity:0}76%,100%{opacity:1}}
+
+  /* Figure 2 — exact scan against an approximate-nearest-neighbour walk. */
+  .fig-ann .s-col{animation:fs-lit 14s ease-in-out infinite}
+  .fig-ann .s-col:nth-of-type(2){animation-delay:.3s}
+  .fig-ann .s-col:nth-of-type(3){animation-delay:.6s}
+  .fig-ann .s-col:nth-of-type(4){animation-delay:.9s}
+  .fig-ann .s-col:nth-of-type(5){animation-delay:1.2s}
+  .fig-ann .s-col:nth-of-type(6){animation-delay:1.5s}
+  .fig-ann .s-col:nth-of-type(7){animation-delay:1.8s}
+  .fig-ann .s-col:nth-of-type(8){animation-delay:2.1s}
+  .fig-ann .s-sweep{opacity:0;transform:translate(288px,0);animation:fs-sweep 14s linear infinite}
+  .fig-ann .a-h1{animation:fa-h1 14s ease-in-out infinite}
+  .fig-ann .a-h2{animation:fa-h2 14s ease-in-out infinite}
+  .fig-ann .a-h3{animation:fa-h3 14s ease-in-out infinite}
+  .fig-ann .a-n2{animation:fa-n2 14s ease-in-out infinite}
+  .fig-ann .a-n3{animation:fa-n3 14s ease-in-out infinite}
+  .fig-ann .a-n4{animation:fa-n4 14s ease-in-out infinite}
+  @keyframes fs-lit{0%,8%{opacity:.16}24%,100%{opacity:1}}
+  @keyframes fs-sweep{0%,6%{transform:translate(0,0);opacity:0}10%{opacity:.8}40%{transform:translate(288px,0);opacity:.8}46%,100%{transform:translate(288px,0);opacity:0}}
+  @keyframes fa-h1{0%,12%{stroke-dashoffset:100}26%,100%{stroke-dashoffset:0}}
+  @keyframes fa-h2{0%,28%{stroke-dashoffset:100}40%,100%{stroke-dashoffset:0}}
+  @keyframes fa-h3{0%,42%{stroke-dashoffset:100}54%,100%{stroke-dashoffset:0}}
+  @keyframes fa-n2{0%,24%{opacity:0}32%,100%{opacity:1}}
+  @keyframes fa-n3{0%,38%{opacity:0}46%,100%{opacity:1}}
+  @keyframes fa-n4{0%,52%{opacity:0}62%,100%{opacity:1}}
+
+  /* Figure 3 — similarity has no relations to walk; typed edges do. */
+  .fig-graph .g-cloud circle{animation:fg-nb 14s ease-in-out infinite}
+  .fig-graph .g-cloud circle:nth-of-type(2){animation-delay:.5s}
+  .fig-graph .g-cloud circle:nth-of-type(3){animation-delay:1s}
+  .fig-graph .g-cloud circle:nth-of-type(4){animation-delay:1.5s}
+  .fig-graph .g-cloud circle:nth-of-type(5){animation-delay:2s}
+  .fig-graph .g-e1{animation:fg-e1 14s ease-in-out infinite}
+  .fig-graph .g-e2{animation:fg-e2 14s ease-in-out infinite}
+  .fig-graph .g-n2{animation:fg-n2 14s ease-in-out infinite}
+  .fig-graph .g-n3{animation:fg-n3 14s ease-in-out infinite}
+  .fig-graph .g-ring{animation:fg-ring 14s ease-in-out infinite}
+  /* An edge LABEL cannot be drawn by a dash offset, so it fades on the beat its
+     edge finishes drawing rather than borrowing the edge's own keyframes. */
+  .fig-graph .g-l1{animation:fg-n2 14s ease-in-out infinite}
+  .fig-graph .g-l2{animation:fg-n3 14s ease-in-out infinite}
+  @keyframes fg-nb{0%,100%{opacity:1}6%{opacity:.35}14%{opacity:1}}
+  @keyframes fg-e1{0%,14%{stroke-dashoffset:100}28%,100%{stroke-dashoffset:0}}
+  @keyframes fg-n2{0%,26%{opacity:0}34%,100%{opacity:1}}
+  @keyframes fg-e2{0%,34%{stroke-dashoffset:100}48%,100%{stroke-dashoffset:0}}
+  @keyframes fg-n3{0%,46%{opacity:0}54%,100%{opacity:1}}
+  @keyframes fg-ring{0%,56%{opacity:0}68%,100%{opacity:1}}
+
+  /* Figure 4 — the grader between retrieval and generation, and its loop. */
+  .fig-crag .c-token{transform:translate(442px,0);animation:fc-token 17s ease-in-out infinite}
+  .fig-crag .c-warn{opacity:0;animation:fc-warn 17s ease-in-out infinite}
+  .fig-crag .c-ok{animation:fc-ok 17s ease-in-out infinite}
+  @keyframes fc-token{
+    0%,4%{transform:translate(0,0)}
+    10%,15%{transform:translate(110px,0)}
+    21%,27%{transform:translate(242px,0)}
+    32%{transform:translate(242px,-66px)}
+    37%,42%{transform:translate(176px,-66px)}
+    46%{transform:translate(110px,-66px)}
+    50%,55%{transform:translate(110px,0)}
+    61%,67%{transform:translate(242px,0)}
+    75%,100%{transform:translate(442px,0)}
+  }
+  @keyframes fc-warn{0%,23%{opacity:0}27%,44%{opacity:1}48%,100%{opacity:0}}
+  @keyframes fc-ok{0%,64%{opacity:0}70%,100%{opacity:1}}
+
+  /* Figure 5 — the write gate, and what never reaches the store. */
+  .fig-gate .w-allow{transform:translate(388px,18px);animation:fw-allow 16s ease-in-out infinite}
+  .fig-gate .w-block{transform:translate(92px,12px);animation:fw-block 16s ease-in-out infinite}
+  .fig-gate .w-quar{transform:translate(388px,6px);animation:fw-quar 16s ease-in-out infinite}
+  .fig-gate .w-c1{animation:fw-c1 16s ease-in-out infinite}
+  .fig-gate .w-c2{animation:fw-c2 16s ease-in-out infinite}
+  .fig-gate .w-c3{animation:fw-c3 16s ease-in-out infinite}
+  @keyframes fw-allow{0%,6%{transform:translate(0,0)}20%,30%{transform:translate(136px,0)}44%,100%{transform:translate(388px,18px)}}
+  @keyframes fw-block{0%,14%{transform:translate(0,0)}28%,40%{transform:translate(136px,0)}54%,100%{transform:translate(92px,12px)}}
+  @keyframes fw-quar{0%,22%{transform:translate(0,0)}36%,48%{transform:translate(136px,0)}62%,100%{transform:translate(388px,6px)}}
+  @keyframes fw-c1{0%,26%{opacity:0}32%,100%{opacity:1}}
+  @keyframes fw-c2{0%,36%{opacity:0}42%,100%{opacity:1}}
+  @keyframes fw-c3{0%,46%{opacity:0}52%,100%{opacity:1}}
+
+  /* Figure 6 — one gold inside k, or every gold inside k. */
+  .fig-recall .r-strip{animation:fr-strip 15s ease-in-out infinite}
+  .fig-recall .r-gold-a{animation:fr-ga 15s ease-in-out infinite}
+  .fig-recall .r-v1{animation:fr-v1 15s ease-in-out infinite}
+  .fig-recall .r-gold-b{animation:fr-gb 15s ease-in-out infinite}
+  .fig-recall .r-v2{animation:fr-v2 15s ease-in-out infinite}
+  @keyframes fr-strip{0%,4%{opacity:0}14%,100%{opacity:1}}
+  @keyframes fr-ga{0%,18%{opacity:0}28%,100%{opacity:1}}
+  @keyframes fr-v1{0%,30%{opacity:0}40%,100%{opacity:1}}
+  @keyframes fr-gb{0%,44%{opacity:0}54%,100%{opacity:1}}
+  @keyframes fr-v2{0%,56%{opacity:0}68%,100%{opacity:1}}
+
+  /* The whole guarantee, in four lines: every figure's resting style already
+     IS its final frame, so switching the motion off leaves the mechanism on
+     screen rather than the frame it started from. */
+
+
+
+  .metric-key{font-size:13.5px;line-height:1.62;color:var(--ink-soft);background:var(--bg-card);
+       border:1px solid var(--rule);border-left:3px solid var(--accent);border-radius:8px;
+       padding:13px 16px;margin:14px 0 26px}
+  .metric-key strong{color:var(--ink);display:block;margin-bottom:7px}
+  .metric-key span{display:block;margin:6px 0}
+
+
+  /* ---- table of contents ------------------------------------------------
+     A <details> so it opens and closes with NO JavaScript: these pages load
+     one script and must render fully from a file:// URL. Sticky so it stays
+     reachable down a long page without occupying layout when closed. */
+  .toc{position:sticky;top:8px;z-index:40;margin:22px 0 26px;border:1px solid var(--rule);
+       border-radius:10px;background:var(--bg-card);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .toc>summary{cursor:pointer;padding:11px 16px;font-family:var(--mono);font-size:10px;
+       letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);list-style:none;
+       display:flex;align-items:center;gap:10px;user-select:none}
+  .toc>summary::-webkit-details-marker{display:none}
+  .toc>summary::before{content:"\25B8";display:inline-block;transition:transform .15s ease;
+       color:var(--ink-faint);font-size:11px}
+  .toc[open]>summary::before{transform:rotate(90deg)}
+  .toc>summary:hover{color:var(--ink)}
+  /* ⛔ THE CAP HID TWO THIRDS OF THE LIST. With max-height:min(58vh,560px)
+     and overflow-y:auto only ~20 of the 56 entries were visible; the rest
+     needed a scroll INSIDE the panel, which nothing signalled. A reader
+     counting the contents concluded the page covered 20 techniques when it
+     covers 111. A table of contents that hides most of the contents is worse
+     than none.
+     The panel is now UNCAPPED, and the element stops being sticky while it is
+     open — collapsed it is a slim sticky bar for quick jumps, expanded it is a
+     full list you scroll the page through. */
+  .toc .toc-in{padding:2px 16px 16px;border-top:1px solid var(--rule);
+       columns:2;column-gap:26px}
+  .toc[open]{position:static}
+  /* ⛔ ANCHOR NAVIGATION vs A STICKY TOC. Jumping to #ivfpq put the heading
+     UNDER the sticky panel, so the section the reader asked for was the one
+     thing they could not see. Two fixes, because one is not enough:
+       1. scroll-margin-top on every heading, so an anchor jump leaves room for
+          the collapsed bar instead of landing flush against the viewport top;
+       2. on narrow screens the TOC stops being sticky altogether. An open
+          panel capped at 50vh was covering half a phone screen permanently —
+          there is no offset that makes that usable, so it scrolls away
+          instead. */
+  h2[id],h3[id]{scroll-margin-top:72px}
+  @media (max-width:820px){
+    .toc{position:static}
+    .toc .toc-in{columns:1;max-height:none}
+    h2[id],h3[id]{scroll-margin-top:12px}
+  }
+  .toc a{display:block;break-inside:avoid;text-decoration:none;color:var(--ink-soft);
+       font-size:13.5px;line-height:1.45;padding:3px 0;border-bottom:1px solid transparent}
+  .toc a:hover{color:var(--accent-ink);border-bottom-color:var(--accent-soft)}
+  .toc a.t2{font-weight:600;color:var(--ink);margin-top:7px}
+  .toc a.t3{padding-left:14px;font-size:12.8px}
+  .toc .toc-n{display:inline-block;min-width:2.2em;font-family:var(--mono);font-size:10.5px;color:var(--ink-faint)}
+  .toc a:hover .toc-n{color:var(--accent)}
+  .toc .toc-grp{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+       color:var(--ink-faint);margin:12px 0 3px;break-inside:avoid;break-after:avoid}
+  .toc .toc-grp:first-child{margin-top:2px}
+  @media print{.toc{display:none}}
+
+  @media (prefers-reduced-motion: reduce){
+    .tsfig *{animation:none !important;transition:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="brand-mark"></span> <a href="../" style="color:var(--ink);text-decoration:none">TerranSoul</a></div>
+    <div class="crumbs">
+      <span>Papers</span> <span>/</span> <em>Self-Improvement, Measured</em>
+    </div>
+    <div class="spacer"></div>
+    <a class="lnk" href="index.html">&larr; Main paper</a>
+    <div class="meta">2026-08</div>
+  </div>
+</div>
+
+<div class="page">
+  <article>
+    <div class="eyebrow"><span class="dot"></span>Research companion &middot; measurement, not architecture</div>
+    <h1>Self-Improvement, Measured: <em>what a memory system actually earns on Terminal-Bench.</em></h1>
+
+    <p class="deck">This page is about <strong>measurement</strong>. It records what TerranSoul&rsquo;s self-improvement loop was measured to do on Terminal-Bench 2.1, how three separate defects in the measurement made that loop look like it was doing nothing at all, and what survives once they are corrected. The most useful result here is not a number &mdash; it is that the headline negative result was an <em>artifact</em>, and that the honest state is <em>unresolved on this sample</em>.</p>
+
+    <div class="disclosure-card">
+      <strong>Status: partial.</strong> The Claude&nbsp;Opus&nbsp;5 figures below are final and measured. The Claude&nbsp;Sonnet&nbsp;5 campaign referenced in &sect;7 is in flight; that section stays empty until it completes, and no number will be written into it that has not been measured.
+    </div>
+
+    <h2 id="the-loop"><span class="scene-num">1</span>The loop under test</h2>
+    <p>The claim is not &ldquo;the system has memory&rdquo;. It is that the system runs a closed loop and gets better inside it:</p>
+    <p style="text-align:center;font-family:var(--mono);font-size:15px;padding:14px 0"><strong>hypothesis &rarr; run experiment &rarr; evaluate results &rarr; self-improve &rarr; repeat</strong></p>
+    <p>Two of those five steps live in the agent and three in the memory. Terminal-Bench is a useful place to test them: each task is a fresh container with a verifier returning a hard 0 or 1, and a task can be attempted <em>k</em> times in sequence &mdash; so the first attempt is a control and the later ones are treated.</p>
+
+    <div class="sblock"><span class="slabel">The loop was not instructed until 2026-08-07</span><p>Auditing the harness for this page found that the agent instruction said <em>consult memory &rarr; solve &rarr; record</em>. That is a memory loop. There was no hypothesis to falsify, no requirement that a command discriminate between competing explanations, and no explicit confirm/refute step whose outcome could be recorded. &ldquo;Record what you learn&rdquo; presupposes a process that produces learnings; none was specified.</p></div>
+
+    <p>The instruction now states the cycle explicitly: state a falsifiable hypothesis with a predicted observation; run the smallest command that <strong>discriminates</strong> between it and the next likely explanation, changing one thing at a time; say plainly whether the result confirmed or refuted it; update the model and write generalising findings to memory immediately; repeat with the corrected model.</p>
+    <p>It names no task, tool, command, or domain vocabulary &mdash; it would read identically for a benchmark of any subject. That is the test the project&rsquo;s AGI-purity rule applies, and it is what separates reasoning <em>wiring</em> from a <em>seed</em>.</p>
+
+    <h3 id="instruction-proves-nothing">1a. Why an instruction proves nothing</h3>
+    <p>This project&rsquo;s own doctrine is that <strong>an instruction the agent may decline is not a configuration</strong>. It was learned expensively: across 46 recorded <code>brain_search</code> calls, <em>zero</em> carried the <code>thinking_mode</code> argument the instruction asked for &mdash; so a benchmark believed it was measuring a reasoning ladder it never invoked.</p>
+    <p>The instruction is therefore step one, and the measurement is step two. &sect;7 reports what the trajectories actually contain, from an analyzer that scores the loop from <em>tool-call structure</em> rather than from vocabulary &mdash; because the agent has now been told the vocabulary, and any metric it can satisfy by saying the right words is worthless.</p>
+
+    <h2 id="three-defects"><span class="scene-num">2</span>Three defects that made self-improvement look absent</h2>
+    <p class="small">Every figure in this section is from the Opus&nbsp;5 corpus: 89 tasks, k=5, one harbor job per task with attempts run strictly sequentially.</p>
+
+    <h3 id="defect-errors">2a. Harness errors were counted as memory failures</h3>
+    <p>The attribution script scored an errored trial &mdash; <code>ApiRateLimitError</code>, <code>NetworkConnectionError</code>, a credential that died mid-task &mdash; as a failure of the treatment arm. That is only sound if errors fall evenly across attempts. They did not: <strong>3 in attempt&nbsp;1 against 17 in attempts&nbsp;2&ndash;5</strong>.</p>
+    <div class="disclosure-card">
+      <p style="margin:0"><strong>Resist the tempting mechanism.</strong> &ldquo;Later attempts have burned more quota, so they get rate-limited more&rdquo; is true of <em>one error class only</em>. An independent re-derivation over a 260-trial extraction found total errors essentially flat by within-job position (12&nbsp;/&nbsp;11&nbsp;/&nbsp;10&nbsp;/&nbsp;9&nbsp;/&nbsp;15), while <code>ApiRateLimitError</code> alone <em>was</em> graded (2&nbsp;/&nbsp;5&nbsp;/&nbsp;4&nbsp;/&nbsp;5&nbsp;/&nbsp;9). Quota drain across a job&rsquo;s five back-to-back attempts is real; it is not the whole trend.</p>
+    </div>
+
+    <h3 id="defect-indexing">2b. Attempts were indexed per task, and the unit is the job</h3>
+    <p>The sweep runs <strong>one harbor job per task carrying all k attempts back to back</strong>. So &ldquo;no lesson for this task can exist yet&rdquo; &mdash; the property that makes attempt&nbsp;1 a control &mdash; belongs to a <em>job</em>. A task that gets re-run receives a <em>second</em> job with its own fresh attempt&nbsp;1, and keying by task pools the two, filing every re-run&rsquo;s attempt&nbsp;1 into the treated bucket.</p>
+    <p>The re-run tasks were the two pathological ones (30 trials each), so the treatment arm was absorbing the hardest task&rsquo;s every restart.</p>
+
+    <h3 id="defect-saturation">2c. The sample is saturated, so a pooled uplift is arithmetically capped</h3>
+    <p>Attempt&nbsp;1 passes 94.3&nbsp;% of the time on the tasks measured. A task that already passes on attempt&nbsp;1 gives memory <em>no headroom</em> &mdash; the only thing later attempts can do there is regress through retry variance. Reporting one pooled uplift over a saturated stratum and a small hard stratum is a Simpson-shaped error. The metric now reports both strata separately and prints the arithmetic ceiling beside the result, so a near-zero pooled figure reads as <em>forced</em> rather than as evidence.</p>
+
+    <h3 id="defect-headline">2d. What the corrections do to the headline</h3>
+    <figure class="tsfig">
+      <div class="tsfig-scroll">
+        <table>
+          <thead><tr><th>reading</th><th>uplift</th></tr></thead>
+          <tbody>
+            <tr><td>as originally reported</td><td><strong>&minus;9.6&nbsp;pp</strong></td></tr>
+            <tr><td>errored trials excluded, still keyed by task</td><td>&minus;6.2&nbsp;pp</td></tr>
+            <tr><td>errored excluded <strong>and</strong> keyed by job</td><td><strong>+9.7&nbsp;pp</strong> <span class="small">(bound +5.4&nbsp;pp)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figcaption>Both defects pushed the same direction. That is how &ldquo;memory does not help&rdquo; survived as long as it did.</figcaption>
+    </figure>
+    <p><strong>Neither figure is significant</strong>, and this page does not claim otherwise: the standard error is &plusmn;5.9&nbsp;pp and trials within a task are strongly correlated. The finding is not &ldquo;memory helps by 9.7&nbsp;pp&rdquo;. It is that <strong>the negative result was an artifact</strong>.</p>
+
+    <h2 id="where-it-landed"><span class="scene-num">3</span>Where the improvement actually landed</h2>
+    <p>The within-task uplift is null, and chasing it was looking in the wrong place. <strong>Across campaigns, attempt&nbsp;1 itself got dramatically faster.</strong> For the 29 tasks present in both corpora, median attempt-1 <code>agent_execution</code>:</p>
+    <p style="text-align:center;font-family:var(--mono);font-size:17px;padding:10px 0"><strong>209&nbsp;s &rarr; 138&nbsp;s &mdash; a 47.3&nbsp;% reduction.</strong></p>
+    <p>This is the loop&rsquo;s &ldquo;repeat&rdquo; step working at the scale it actually operates on. By the time the later campaign ran, <strong>32 of 37 tasks&rsquo; anchor lesson already existed</strong> (median 3 prior revisions), and <strong>75&nbsp;% of attempt-1 trials retrieved a pre-campaign lesson</strong>.</p>
+    <p>Which also explains the null within-task result: <strong>the control arm is pre-treated</strong>. The experiment compares a warm agent against a warm agent. A design that assumes &ldquo;no lesson for this task exists at attempt&nbsp;1&rdquo; is valid only on a fresh brain.</p>
+
+    <h3 id="retrieval-not-bottleneck">3a. Retrieval is not the bottleneck</h3>
+    <p>Measured over 207 <code>brain_search</code> calls in 260 trials:</p>
+    <ul>
+      <li><strong>80.5&nbsp;%</strong> of attempt-2+ searches returned text written verbatim by an earlier attempt of the same task (67.8&nbsp;% at id level). 34 of 37 tasks had at least one cross-attempt hit; 23 scored 100&nbsp;%.</li>
+      <li><code>brain_search</code> median <strong>0.76&nbsp;s</strong>, p90 1.74&nbsp;s, max 3.99&nbsp;s. <em>All</em> brain tools together blocked <strong>238&nbsp;s across the entire 260-trial corpus.</strong></li>
+    </ul>
+    <p>The memory is called, it returns the right thing four times in five, and it is not the runtime cost.</p>
+
+    <h3 id="truncation">3b. A defect that is real but did not cost accuracy</h3>
+    <p>15.0&nbsp;% of search responses exceeded the MCP client&rsquo;s tool-result ceiling &mdash; 22 replaced by a 2&nbsp;KB preview of a 50&ndash;59&nbsp;KB payload, 9 rejected outright. The cause is an append path that grew an entry without bound.</p>
+    <p>An adversarial re-derivation refused the obvious conclusion, and was right to: <strong>all 13 trials whose reply never arrived in full still passed</strong> (100&nbsp;%, against 84.9&nbsp;% for every other search trial), because the agent self-rescues by fetching the entry by an id visible in the preview. The per-attempt truncation rates (13.3&nbsp;/&nbsp;12.1&nbsp;/&nbsp;17.1&nbsp;%) have fully overlapping confidence intervals and track task composition, not attempt depth.</p>
+    <p>So it is a <strong>cost and hygiene defect</strong> &mdash; a 30&nbsp;KB median retrieval payload is tokens paid on every search &mdash; and it is recorded here as one. It is <em>not</em> the cause of a missing uplift and should not be cited as one.</p>
+
+    <h2 id="ceiling"><span class="scene-num">4</span>The ceiling on what memory can move</h2>
+    <p>A perfect memory that made agent execution instantaneous would cut trial wall-clock by at most <strong>60&nbsp;%</strong>, and campaign elapsed time by about <strong>30&nbsp;%</strong>. Measured phase medians over 260 trials:</p>
+    <figure class="tsfig">
+      <div class="tsfig-scroll">
+        <table>
+          <thead><tr><th>phase</th><th>median</th></tr></thead>
+          <tbody>
+            <tr><td>environment setup</td><td>2&nbsp;s</td></tr>
+            <tr><td><strong>agent setup</strong></td><td><strong>101&nbsp;s</strong></td></tr>
+            <tr><td>agent execution</td><td>148&nbsp;s</td></tr>
+            <tr><td>verifier</td><td>13&nbsp;s</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figcaption>The measured attempt-2+ effect is &minus;4.2&nbsp;% on agent execution &mdash; worth &minus;2.5&nbsp;% of trial wall-clock, which is why the total delta reads as nothing.</figcaption>
+    </figure>
+    <p><strong>Speed claims must be reported against <code>agent_execution</code>, not against trial wall-clock</strong>, or the denominator hides the effect.</p>
+
+    <h2 id="limits"><span class="scene-num">5</span>What this measurement cannot establish</h2>
+    <p>Stated up front rather than in a footnote.</p>
+    <ol>
+      <li><strong>No cold-start control.</strong> Attempt&nbsp;1 is memory-warm, so within-task uplift measures the marginal value of one more lesson on a mature corpus, not learning from scratch.</li>
+      <li><strong>No no-memory arm.</strong> 45 trials made zero brain calls, but 42 of them errored; 3 usable trials cannot be a control. Independent testing of other memory systems found a plain LLM with <em>no</em> memory beating most dedicated ones on LongMemEval &mdash; any claim here needs that control before it is worth much.</li>
+      <li><strong>Attempts are not independent.</strong> Attempt&nbsp;1 teaches attempts&nbsp;2&ndash;5 of the same task by design, so pass@k is not comparable to agents that start each attempt blank. Cross-<em>task</em> learning is the separate and uncontested claim.</li>
+      <li><strong>Correlated trials.</strong> Within-task ICC &asymp; 0.70, so a naive binomial standard error understates uncertainty by roughly 1.8&times;.</li>
+      <li><strong>Sample selection.</strong> The tasks measured are ~11&nbsp;pp easier than those not yet run, because harder tasks error out before producing clean attempts.</li>
+    </ol>
+
+    <h2 id="token-savings"><span class="scene-num">6</span>Why the 90&nbsp;% token-saving figures do not apply</h2>
+    <p>Published memory systems advertise 90&ndash;99&nbsp;% token savings. Those measure <strong>context substitution</strong> &mdash; replaying a prior conversation into each prompt versus retrieving from memory &mdash; against a full-context baseline. A Terminal-Bench container is fresh with no prior conversation, so that denominator is <em>zero</em>. It is 90&nbsp;% of a cost never paid, and it excludes the cost of <em>writing</em> memories, which is paid.</p>
+    <p>The applicable mechanism is <strong>exploration reduction</strong>, whose honest published range is 14&ndash;79&nbsp;%. Against the best comparable published result:</p>
+    <figure class="tsfig">
+      <div class="tsfig-scroll">
+        <table>
+          <thead><tr><th></th><th>output tokens</th><th>runtime</th></tr></thead>
+          <tbody>
+            <tr><td>this system, attempt&nbsp;1 &rarr; 2+</td><td>&minus;39.2&nbsp;%</td><td>&minus;42.5&nbsp;%</td></tr>
+            <tr><td>GenericAgent, R1 &rarr; R2 (Opus&nbsp;4.6)</td><td>&minus;36.4&nbsp;%</td><td>&minus;42.4&nbsp;%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figcaption>Parity on the two axes that measure &ldquo;the agent explored less&rdquo;.</figcaption>
+    </figure>
+
+    <h2 id="sonnet-campaign"><span class="scene-num">7</span>Can we tell whether the agent follows the loop? Mostly not &mdash; and that is the finding</h2>
+    <p>Three independent measurement designs were built for this section and <strong>all three were killed</strong> under adversarial review before any number was published. The reasons are structural, and they are more useful than the number would have been.</p>
+
+    <h3 id="artifact-ceiling">7a. The artifact ceiling: steps 1 and 3 are not recorded</h3>
+    <p>Extended thinking is <strong>redacted in every transcript</strong>: 0 of 1,936 thinking blocks in the Opus&nbsp;5 corpus and 0 of 226 in the Sonnet&nbsp;5 corpus carry any text.</p>
+    <p><em>Hypothesis</em> (step&nbsp;1) and <em>evaluate</em> (step&nbsp;3) happen there. <strong>No instrument reading these artifacts can observe them.</strong> What survives is the token <em>volume</em> of that hidden reasoning &mdash; median 1,676 tokens/trial on Opus&nbsp;5, 1,906 on Sonnet&nbsp;5 &mdash; and volume is not content. A trial with 20k hidden tokens may have run twenty cycles or one long ramble.</p>
+
+    <h3 id="substitutes-fail">7b. Why the obvious substitutes fail</h3>
+    <div class="sblock"><span class="slabel">Reading the narration</span><p>The intuition &mdash; &ldquo;text written before a tool call is a prediction&rdquo; &mdash; is empirically false. Measured over 1,373 pre-tool text blocks: <strong>89.7&nbsp;% of anchors sit in the <em>retrospective</em> clause</strong>, only 10.1&nbsp;% in the forward one. The idiom is <em>report the last result, then announce the next action</em>, in one block. Position does not establish priority.</p></div>
+    <div class="sblock"><span class="slabel">Counting cycles from tool structure</span><p>51.7&nbsp;% of candidate verification events have a trivial head &mdash; <code>ls</code>, <code>tail</code>, <code>echo</code>, <code>cat</code>. <code>echo</code> run twice is a closed cycle. And the instruction just added asks the agent to <em>state what it believes</em> and <em>say plainly whether it confirmed or refuted</em>, which produces exactly more narration and re-orientation calls. The metric would rise for the wrong reason and could not distinguish that from real work.</p></div>
+    <div class="sblock"><span class="slabel">Keyword matching</span><p>Never on the table, and the redaction settles it: the agent has now been taught the vocabulary, so any metric it can satisfy by saying &ldquo;I hypothesise&rdquo; measures nothing.</p></div>
+
+    <h3 id="not-a-control">7c. The accidental cohort is not a control</h3>
+    <p>When the loop instruction landed twenty minutes into the campaign it created two cohorts. An earlier draft of this page called that &ldquo;a same-model A/B obtained for free&rdquo;. <strong>That was wrong.</strong> Measured from the prompt each trial actually received:</p>
+    <figure class="tsfig">
+      <div class="tsfig-scroll">
+        <table>
+          <thead><tr><th>cohort</th><th>wall-clock budget (minutes)</th><th>reward = 1.0</th></tr></thead>
+          <tbody>
+            <tr><td>OLD (pre-instruction)</td><td>15&times;13, 20&times;5, 60&times;2</td><td>17/17 (100&nbsp;%)</td></tr>
+            <tr><td>NEW (post-instruction)</td><td>15&times;5, 60&times;5, 200&times;2</td><td>11/11 (100&nbsp;%)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figcaption>Two independent kills, either sufficient.</figcaption>
+    </figure>
+    <p><strong>Budget varies 4&times; inside each arm</strong> &mdash; and wall-clock budget is the direct determinant of trial length, which is the direct determinant of every cycle-rate the instruction targets. And <strong>both arms are at ceiling</strong>: an improvement is arithmetically undetectable. Restricted to matched (model&nbsp;&times;&nbsp;task&nbsp;&times;&nbsp;budget) cells the comparison is OLD n=3 against NEW n=10, whose minimum detectable effect is <strong>not reachable at any effect size</strong>.</p>
+
+    <h3 id="machine-checkable">7d. What is machine-checkable, and is reported</h3>
+    <p>Step&nbsp;4 &mdash; <em>improve: write it to memory now</em> &mdash; is the one step that leaves a receipt: a tool call returning an integer <code>memory_id</code>. That is structural, not prose.</p>
+    <ul>
+      <li><strong>80&nbsp;% of trials wrote at least one lesson</strong> (16/20, pre-instruction cohort).</li>
+      <li>Median write payload 2,145 characters; median <code>version_count</code> after append 8 &mdash; entries being revised, not merely accumulated.</li>
+      <li>The artifact <strong>cannot</strong> say whether a revision <em>corrected</em> an entry or merely re-confirmed it. That needs the prose, which &sect;7b disqualifies.</li>
+    </ul>
+
+    <h3 id="control-leakage">7e. Attempt 1 is not a clean control even within one corpus</h3>
+    <p><strong>34.5&nbsp;% of attempt-1 trials (19/55) retrieved a memory id written earlier in the same corpus.</strong> The measurement therefore reports an uncontaminated-groups-only stratum alongside the full one, rather than treating attempt&nbsp;1 as naive.</p>
+
+    <div class="disclosure-card">
+      <p style="margin:0"><strong>The honest summary of this section.</strong> The loop is now <em>instructed</em>, and the instruction is purity-clean. Whether the agent <em>follows</em> it is not answerable from these artifacts, because the two steps that would prove it are redacted and every available proxy is either inflatable or confounded. Establishing it would need reasoning traces retained at capture time and a budget-matched design with failing trials in it &mdash; neither of which this campaign has.</p>
+    </div>
+
+    <h2 id="provenance"><span class="scene-num">&sect;</span>Provenance</h2>
+    <p>Every figure on this page is measured, not estimated, and comes from artifacts on disk: <code>benchmark/terminal-bench/jobs-opus5/</code> (89 tasks, Claude&nbsp;Opus&nbsp;5, k=5) and the in-flight <code>jobs-sonnet5/</code> (Claude&nbsp;Sonnet&nbsp;5). Analysis tooling: <code>attempt-uplift.sh</code>, <code>sweep-timing.py</code>, <code>brain-latency.py</code>, <code>scientific-loop.py</code>.</p>
+    <p>Model provenance is carried in each trial&rsquo;s own <code>config.json</code>, and the two corpora are kept in separate directories because the merge takes the best trial per task &mdash; a mixed directory would yield a score attributable to neither model.</p>
+
+  </article>
+</div>
+
+<footer class="page-foot">
+  <div class="links">
+    <a href="../">&larr; TerranSoul home</a>
+    <a href="index.html">Main paper</a>
+    <a href="memory-evolution.html">Memory-evolution companion</a>
+    <a href="techniques.html">Techniques, animated</a>
+    <a href="https://github.com/Terranimus/TerranSoul">GitHub</a>
+  </div>
+  <div>Authoritative source (markdown, source of truth): <code>docs/LLM-Brain-Design-Research-Paper-self-improvement.md</code> &middot; 2026-08.</div>
+</footer>
+<script src="../assets/site-nav.js" defer></script>
+</body>
+</html>

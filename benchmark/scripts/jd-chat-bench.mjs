@@ -15,7 +15,7 @@
 //                             recall. (MAX is the separate jd-max-bench.mjs.)
 //
 // This launcher pins the PREBUILT shim binary (never `cargo run`, so it can't
-// collide with a concurrent the application repository build), sets the store/env, self-guards
+// collide with a concurrent src-tauri build), sets the store/env, self-guards
 // to a clean SKIP when the store dir or Ollama is absent, then runs the
 // pipeline in million (query-only) mode. LOCAL-ONLY per
 // rules/ci-vs-local-testing.md.

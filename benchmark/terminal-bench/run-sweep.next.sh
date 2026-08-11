@@ -178,12 +178,29 @@ refresh_token() {
 }
 
 _refresh_token_once() {
+  # A LONG-LIVED TOKEN OPTS OUT OF REFRESHING. `claude setup-token` mints a
+  # token that lasts ~a year, which is what this bench actually wants: the
+  # 7-hour OAuth access token forces a stop every few hours, and on 2026-08-07
+  # the host CLI stopped rotating it at all — `claude -p` kept working while
+  # ~/.claude/.credentials.json sat unchanged for hours, so the sweep starved
+  # on a file nothing was updating.
+  #
+  # With TB_TOKEN_STATIC=1 the sweep trusts $TOKEN_FILE and never overwrites it
+  # from .credentials.json. Without this guard the refresh CLOBBERS the
+  # long-lived token with a short-lived one on the very next cycle.
+  if [ "${TB_TOKEN_STATIC:-0}" = "1" ]; then
+    if [ -s "${TB_TOKEN_FILE:-$REPO/mcp-data/.tb-token.env}" ]; then
+      return 0
+    fi
+    echo "[sweep] TB_TOKEN_STATIC=1 but the token file is empty — refusing to guess" >&2
+    return 1
+  fi
   node -e '
 const fs=require("fs"),os=require("os"),path=require("path");
 const p=path.join(os.homedir(),".claude",".credentials.json");
 const o=JSON.parse(fs.readFileSync(p,"utf8")).claudeAiOauth;
 const mins=(o.expiresAt-Date.now())/60000;
-if(mins<10){console.error("token has "+mins.toFixed(0)+" min left — refusing to start a batch");process.exit(1)}
+if(mins<40){console.error("token has "+mins.toFixed(0)+" min left — refusing to start a batch");process.exit(1)}
 fs.writeFileSync(process.argv[1],"CLAUDE_CODE_OAUTH_TOKEN="+o.accessToken+"\n");
 console.log("[sweep] token refreshed, "+mins.toFixed(0)+" min of headroom");
 ' "$REPO/mcp-data/.tb-token.env"

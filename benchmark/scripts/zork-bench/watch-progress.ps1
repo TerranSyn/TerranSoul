@@ -1,6 +1,6 @@
 # benchmark/scripts/zork-bench/watch-progress.ps1
 #
-# Standalone an internal work item.5 progress watcher. Survives the parent shell
+# Standalone BENCH-ZORK-1.5 progress watcher. Survives the parent shell
 # closing (unlike the Start-Job watcher inside run-canonical.ps1) by
 # reading state from disk and refreshing benchmark/progress.md +
 # .canonical-status.json on a fixed cadence.
@@ -20,7 +20,7 @@ param(
     [string[]]$Arms       = @('none', 'zorkgpt-default', 'terransoul-brain'),
     [string]$OutDir       = '',
     [int]$MaxTurns        = 300,
-    [string]$ChunkLabel   = 'an internal work item.5',
+    [string]$ChunkLabel   = 'BENCH-ZORK-1.5',
     [switch]$Once
 )
 

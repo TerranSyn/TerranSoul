@@ -307,7 +307,7 @@
       + '<defs><linearGradient id="gradTSg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFC000"/><stop offset="100%" stop-color="#F4C77E"/></linearGradient></defs>'
       + legend + s + '</svg>'
       + '<div class="mem-note">MemPalace publishes R@5 / R@10 only on this benchmark.</div>'
-      + '<div class="mem-note mem-caveat">TerranSoul bars are the committed an internal work item.3 baseline, independently '
+      + '<div class="mem-note mem-caveat">TerranSoul bars are the committed BENCH-AM-6.3 baseline, independently '
       + 'reproduced in full on 2026-07-03 (rrf_emb R@5 99.4% / NDCG@10 94.5% / MRR 95.3% with the documented '
       + 'EmbeddingGemma embedder). The briefly-tracked "RRF regression" was an embedder-config mismatch between '
       + 'runs, not a code change — resolution recorded in benchmark/results/longmemeval_s_terransoul.md.</div>';

@@ -30,7 +30,7 @@ const DEFAULT_TIMEOUT_MS = 120000;
 /** Default location of the built CLI binary (mirrors actor-claude.mjs's own resolver). */
 export function resolveTerranSoulCliBinary() {
   const ext = process.platform === 'win32' ? '.exe' : '';
-  return path.join(REPO_ROOT, 'the application repository', 'target', 'release', `terransoul${ext}`);
+  return path.join(REPO_ROOT, 'src-tauri', 'target', 'release', `terransoul${ext}`);
 }
 
 /**

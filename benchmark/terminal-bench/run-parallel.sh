@@ -152,6 +152,78 @@ echo "[par] remaining     : ${#TODO[@]}"
 echo "[par] workers       : $WORKERS"
 [ "${#TODO[@]}" -eq 0 ] && { echo "[par] nothing to do"; exit 0; }
 
+# ⚑ SHARD BY MEASURED COST, NOT ALPHABETICALLY.
+#
+# The shard loop below deals tasks round-robin out of $TODO, and $TODO is
+# alphabetical (run-sweep.par.sh:117 walks the filesystem with `find | sort`).
+# Task cost is wildly uneven — measured medians in this corpus run from ~2 min
+# to over 20 min PER ATTEMPT, and every task runs k of them — so an alphabetical
+# deal is effectively a random one. A sweep finishes at max(worker), so one
+# worker drawing the heavy tail decides the whole wall-clock.
+#
+# Observed live on 2026-08-07: 83 minutes in, worker 0 had finished 3 tasks and
+# worker 1 exactly 1, because `install-windows-3.11` alone was taking ~20 min
+# per attempt (~100 min for its five). Neither worker was unhealthy; the split
+# was.
+#
+# Fix: order $TODO by DESCENDING measured cost before dealing it. Round-robin
+# over a descending list is the standard cheap approximation of longest-
+# processing-time-first, and it needs no change to the deal itself — which
+# matters, because the deal is what `.shard` and the shard-verification guard
+# below both depend on.
+#
+# Cost comes from trial durations already on disk (both jobs dirs), so it is
+# MEASURED, not guessed, and it improves as the corpus grows. A task with no
+# history sorts FIRST: an unknown task is more likely to be one of the heavy
+# ones nobody has finished yet, and starting early is the safe error.
+#
+# ⚠️ THIS BALANCES THE DEAL, IT DOES NOT SET THE RUN ORDER. `run-sweep.par.sh`
+# rebuilds its own TODO from `$STATE` — a MEMBERSHIP filter — and walks tasks
+# alphabetically off the filesystem, so a worker still executes its shard in
+# alphabetical order whatever order it was dealt in. That is fine, and it is the
+# balance that fixes max(worker): each worker ends up with a comparable share of
+# the heavy tail instead of one drawing all of it. It is the same trap RESUME.md
+# already records for shard FILES ("the shard is a MEMBERSHIP filter, not an
+# order") — do not expect the heavy tasks to start first.
+if [ "${TB_COST_SHARD:-1}" = "1" ] && [ "${#TODO[@]}" -gt 1 ]; then
+  _ordered="$(JOBS_A="${TB_JOBS_DIR:-$HERE/jobs}" JOBS_B="$HERE/jobs" \
+    TODO_LIST="$(printf '%s\n' "${TODO[@]}")" python - <<'PY'
+import json, os, glob, statistics, collections
+todo = [t for t in os.environ["TODO_LIST"].splitlines() if t.strip()]
+durs = collections.defaultdict(list)
+for jobs in {os.environ.get("JOBS_A", ""), os.environ.get("JOBS_B", "")}:
+    if not jobs or not os.path.isdir(jobs):
+        continue
+    for rj in glob.glob(os.path.join(jobs, "*", "result.json")):
+        job = os.path.dirname(rj)
+        for d in os.listdir(job):
+            full = os.path.join(job, d)
+            if "__" not in d or not os.path.isdir(full):
+                continue
+            lo = hi = None
+            for root, _dirs, files in os.walk(full):
+                for f in files:
+                    try:
+                        t = os.path.getmtime(os.path.join(root, f))
+                    except OSError:
+                        continue
+                    lo = t if lo is None or t < lo else lo
+                    hi = t if hi is None or t > hi else hi
+            if lo is not None and hi is not None and hi > lo:
+                durs[d.rsplit("__", 1)[0]].append(hi - lo)
+known = {t: statistics.median(v) for t, v in durs.items() if v}
+# Unknown -> +inf so it sorts first; ties keep alphabetical order for
+# reproducibility (two runs over the same corpus must shard identically).
+ranked = sorted(todo, key=lambda t: (-known.get(t, float("inf")), t))
+print("\n".join(ranked))
+PY
+)"
+  if [ -n "$_ordered" ]; then
+    mapfile -t TODO <<<"$_ordered"
+    echo "[par] sharding by measured task cost (heaviest first); TB_COST_SHARD=0 restores alphabetical"
+  fi
+fi
+
 STAMP="$(date +%m%d%H%M)"
 for ((w=0; w<WORKERS; w++)); do
   wstate="$REPO/mcp-data/.tb-par${w}-state.txt"
@@ -215,17 +287,63 @@ for ((w=0; w<WORKERS; w++)); do
   # shard-exclusion seeded a second earlier -- every worker then computes
   # TODO = all 89 tasks, and four workers run the ENTIRE suite in parallel.
   # Observed on the first launch: three workers on build-cython-ext at once.
-  nohup env \
-    TB_RESUME=1 \
-    TB_ATTEMPTS="${TB_ATTEMPTS:-2}" TB_DEFER_WRITES=0 TB_ONE_JOB_PER_TASK=1 TB_CONCURRENCY=1 \
-    TB_PROXY_MODE=learn PYTHONIOENCODING=utf-8 PYTHONUTF8=1 \
-    TB_JOB_PREFIX="par${w}${STAMP}" \
-    TB_PROXY_PORT="$((7425+w))" \
-    TB_STATE="$wstate" \
-    TB_RETRIES="$REPO/mcp-data/.tb-par${w}-retries.txt" \
-    TB_ACCEPTED="$REPO/mcp-data/.tb-par${w}-accepted.txt" \
-    TB_LOCK="$REPO/mcp-data/.tb-par${w}.lock" \
-    bash "$HERE/run-sweep.par.sh" \
+  # RECORD THE LAUNCH so a supervisor can bring this ONE worker back without
+  # restarting the sweep. adaptive-workers.sh scales concurrency by killing and
+  # replaying individual workers — each owns its own shard, so the others keep
+  # running. Duplicating this env in the supervisor would guarantee the two
+  # drift apart, and a worker relaunched with the wrong TB_STATE re-runs tasks
+  # that are already done.
+  # ⛔ ONE LIST, BOTH USES. This block used to compose the environment TWICE —
+  # an explicit 15-variable list written into .launch, and a SHORTER 10-variable
+  # list for the live `nohup env`, which silently relied on the operator's shell
+  # exporting the other five. The two drifted, exactly as the comment above
+  # feared, and the drift had teeth:
+  #
+  #   TB_TOKEN_STATIC=1 was in NEITHER list.
+  #
+  # RESUME.md tells the operator to `export TB_TOKEN_STATIC=1` so the sweep
+  # trusts the long-lived `claude setup-token` credential instead of the 8-hour
+  # OAuth token that the host CLI had stopped rotating. Inheritance carried it
+  # into the FIRST launch, so it appeared to work — but adaptive-workers.sh
+  # relaunches a worker by replaying .launch, and .launch never carried it. A
+  # scaled or restarted worker therefore silently reverted to reading
+  # ~/.claude/.credentials.json and starved on it, which is how the 2026-08-07
+  # run died at 35/89 with "credential EXPIRED and not rotated after 10 min".
+  #
+  # Building the list once removes the drift by construction: whatever the live
+  # worker gets, the replay record gets, because they are the same array.
+  worker_env=(
+    TB_RESUME=1
+    "TB_ATTEMPTS=${TB_ATTEMPTS:-2}" TB_DEFER_WRITES=0 TB_ONE_JOB_PER_TASK=1 TB_CONCURRENCY=1
+    TB_PROXY_MODE=learn PYTHONIOENCODING=utf-8 PYTHONUTF8=1
+    "TB_JOB_PREFIX=par${w}${STAMP}"
+    "TB_PROXY_PORT=$((7425+w))"
+    "TB_STATE=$wstate"
+    "TB_RETRIES=$REPO/mcp-data/.tb-par${w}-retries.txt"
+    "TB_ACCEPTED=$REPO/mcp-data/.tb-par${w}-accepted.txt"
+    "TB_LOCK=$REPO/mcp-data/.tb-par${w}.lock"
+    "TB_JOBS_DIR=${TB_JOBS_DIR:-$HERE/jobs}"
+    "TB_AGENT=${TB_AGENT:-claude-code}"
+    "TB_TARGET_ATTEMPTS=${TB_TARGET_ATTEMPTS:-${TB_ATTEMPTS:-2}}"
+    "TB_DATASET=${TB_DATASET:-}"
+    "TB_RATE_LIMIT_PAUSE_S=${TB_RATE_LIMIT_PAUSE_S:-600}"
+    "TB_TOKEN_STATIC=${TB_TOKEN_STATIC:-0}"
+    "TB_TOKEN_FILE=${TB_TOKEN_FILE:-$REPO/mcp-data/.tb-token.env}"
+    # The MODEL is the provenance of the number. It must ride in the launch
+    # record, or adaptive-workers.sh replays a worker under whatever run-dg.sh
+    # defaults to and silently changes models mid-campaign — producing a jobs
+    # dir attributable to neither model.
+    "TB_MODEL=${TB_MODEL:-claude-opus-5}"
+  )
+
+  launch_file="$REPO/mcp-data/.tb-par${w}.launch"
+  {
+    printf 'env'
+    printf ' %q' "${worker_env[@]}"
+    printf ' bash %q\n' "$HERE/run-sweep.par.sh"
+  } > "$launch_file"
+
+  nohup env "${worker_env[@]}" bash "$HERE/run-sweep.par.sh" \
     >> "$REPO/mcp-data/logs/tbench-par${w}.log" 2>&1 &
   disown 2>/dev/null || true
   sleep 3   # stagger, so proxies bind and job-name seconds differ
@@ -238,32 +356,55 @@ done
 if [ "$DRY" != "1" ]; then
   echo
   echo "[par] verifying shards (each worker must run ONLY its own share)..."
-  sleep 12
-  bad=0
+  # ⛔ POLL, DO NOT SLEEP-ONCE. A flat `sleep 12` then read means a worker that
+  # has not yet bound its proxy and computed its TODO reports '?', and '?' was
+  # treated as a mismatch — so the guard killed three correctly-sharded workers
+  # for the crime of being slow. Observed twice on 2026-08-07 while resuming.
+  # Waiting costs seconds; killing a healthy relaunch costs the whole run.
+  deadline=$(( SECONDS + ${TB_SHARD_VERIFY_S:-150} ))
+  bad=0; unverified=0
   for ((w=0; w<WORKERS; w++)); do
     L="$REPO/mcp-data/logs/tbench-par${w}.log"
     # The count the SEEDING loop actually computed (shard minus already-done),
     # never `wc -l` on the shard file — see the note where .expected is written.
     want=$(cat "$REPO/mcp-data/.tb-par${w}-state.txt.expected" 2>/dev/null || echo 0)
-    # `tail -1`, NOT `grep -m1`. These logs are APPENDED across launches, so the
-    # first "N to run" is whatever the OLDEST run reported. Reading it made the
-    # check fail against a correctly-sharded relaunch and kill four healthy
-    # workers — the guard doing exactly the damage it was written to prevent.
-    got=$(grep -oE '[0-9]+ to run' "$L" 2>/dev/null | tail -1 | grep -oE '^[0-9]+' || echo '?')
+    got='?'
+    while [ "$SECONDS" -lt "$deadline" ]; do
+      # `tail -1`, NOT `grep -m1`. These logs are APPENDED across launches, so
+      # the first "N to run" is whatever the OLDEST run reported. Reading it
+      # made the check fail against a correctly-sharded relaunch and kill four
+      # healthy workers — the guard doing the damage it exists to prevent.
+      got=$(grep -oE '[0-9]+ to run' "$L" 2>/dev/null | tail -1 | grep -oE '^[0-9]+' || echo '?')
+      [ "$got" != '?' ] && break
+      sleep 5
+    done
     if [ "$got" = "$want" ]; then
       echo "  worker $w: $got to run  OK"
+    elif [ "$got" = '?' ]; then
+      # NOT a mismatch — we simply never saw the line. Killing on this is how
+      # the guard previously destroyed healthy relaunches.
+      echo "  worker $w: no 'N to run' line after ${TB_SHARD_VERIFY_S:-150}s — UNVERIFIED" >&2
+      unverified=1
     else
       echo "  worker $w: '$got' to run, expected $want  -- SHARD IGNORED" >&2
       bad=1
     fi
   done
   if [ "$bad" = "1" ]; then
+    # A WRONG number is proven duplication: every worker would run the whole
+    # suite. That is worth killing for.
     echo "[par] STOPPING the workers — they would duplicate each other's tasks." >&2
     for ((w=0; w<WORKERS; w++)); do
       pid="$(cat "$REPO/mcp-data/.tb-par${w}.lock" 2>/dev/null)"
       [ -n "$pid" ] && kill -9 "$pid" 2>/dev/null
     done
     exit 4
+  fi
+  if [ "$unverified" = "1" ]; then
+    echo "[par] shards COULD NOT BE VERIFIED, workers left RUNNING deliberately." >&2
+    echo "[par] Unverified is not the same as wrong: the workers may simply be" >&2
+    echo "[par] slow to start. Confirm with sweep-status.sh — if two workers show" >&2
+    echo "[par] the same task, stop them by hand." >&2
   fi
 fi
 

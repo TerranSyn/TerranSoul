@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // benchmark/scripts/zork-bench/aggregate-canonical.mjs
 //
-// Aggregates an internal work item.5 canonical JSONL artifacts into a summary table.
+// Aggregates BENCH-ZORK-1.5 canonical JSONL artifacts into a summary table.
 // Finds the newest complete 3-episode set per arm in the output directory,
 // computes scores, unique locations, wasted-action rates, and memory stats.
 //
@@ -139,7 +139,7 @@ function main() {
   }
 
   // Generate markdown table
-  console.log('\n## Canonical Results — an internal work item.5 (3 arms × 3 episodes × 300 turns)\n');
+  console.log('\n## Canonical Results — BENCH-ZORK-1.5 (3 arms × 3 episodes × 300 turns)\n');
   console.log('| Arm | ep1 score | ep2 score | ep3 score | Total turns | Memory calls | Mem errors | Elapsed (h) |');
   console.log('|---|---:|---:|---:|---:|---:|---:|---:|');
 
@@ -200,7 +200,7 @@ function main() {
 
   // Write JSON summary
   const summary = {
-    bench: 'an internal work item.5',
+    bench: 'BENCH-ZORK-1.5',
     model: 'gemma4:e4b',
     episodes_per_arm: 3,
     max_turns: 300,

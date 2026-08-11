@@ -142,7 +142,7 @@ non-issue on the rear/top views for the same geometry. **Labeled explicitly: thi
 proxy from free text, not a re-derivation of the doc's specific "7.5 vs 2.5" score claim**, which remains
 unverifiable from the recorded ledger.
 
-Full per-pair table: `(local path removed)`
+Full per-pair table: `C:\Users\DevStar\AppData\Local\Temp\claude\D--Git-TerranSoulApp\97414a8d-39bb-4eda-9f4a-8d22de8e449c\scratchpad\m2-report.json`
 (session scratchpad — not committed; regenerate from the sources listed above if needed).
 
 ---

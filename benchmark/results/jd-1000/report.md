@@ -26,7 +26,7 @@ Systems: rrf | top-k: 100
 | Variable | Value |
 |---|---|
 | LONGMEM_DATA_DIR | C:\TerranSoul\jd-1000\store |
-| LONGMEM_SHIM_EXE | target-copilot-bench\debug\longmemeval-ipc.exe |
+| LONGMEM_SHIM_EXE | D:\Git\TerranSoulApp\target-copilot-bench\debug\longmemeval-ipc.exe |
 | LONGMEM_DATA_DIR (effective) | C:\TerranSoul\jd-1000\store |
 | node | v24.3.0 |
 | platform | win32 x64 |
@@ -90,4 +90,4 @@ Hits = languages of gold resumes found in the top-100 (last run).
 
 - Local-only bench per rules/ci-vs-local-testing.md — never wire into .github/workflows.
 - Corpus row N is a pure function of (seed, N); `--resume` slices the corpus at the
-  store's `count` (an internal work item resume pattern).
+  store's `count` (BENCH-SCALE-3 resume pattern).

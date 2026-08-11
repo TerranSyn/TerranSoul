@@ -79,11 +79,11 @@
 | Vector store | Qdrant (external service) | `usearch` HNSW + IVF-PQ, embedded in-process, sharded at scale (`docs/brain-advanced-design.md` chronology, Chunks 16.10, 48.1–48.3) |
 | Full-text store | Elasticsearch (external service) | SQLite FTS5, embedded in-process |
 | Graph store | Neo4j (external service) | `memory_edges` table in the same SQLite file — no separate graph database |
-| Graph RAG lineage | Modified LightRAG fork (arXiv:2410.05779) | `microsoft/graphrag`-derived hierarchical community detection (own implementation, `internal module`) |
+| Graph RAG lineage | Modified LightRAG fork (arXiv:2410.05779) | `microsoft/graphrag`-derived hierarchical community detection (own implementation, `crates/memory/src/graph_rag.rs`) |
 | Retrieval fusion | Hybrid vector + full-text + graph + summary + vision, per-index | Reciprocal rank fusion (Cormack 2009, `k=60`) over vector + keyword + freshness, plus graph-cascade and CRAG-gated re-retrieval (`AGENTIC-CORRECTIVE-RAG-GAP-CLOSURE`, 2026-07-10) |
-| Agents | Built-in tool-using agents with MCP tool support | Coding self-improve engine (`the self-improvement engine`) + chat-mode orchestrators (`internal module`, `internal module`) |
+| Agents | Built-in tool-using agents with MCP tool support | Coding self-improve engine (`SelfImproveEngine`) + chat-mode orchestrators (`deep_research.rs`, `agentic_verify_rank.rs`) |
 | MCP support | Ships an MCP **server** so external assistants (Dify/Claude/Cursor) can query ApeRAG's knowledge base | Also ships an MCP **server** (`brain_*` tools, Axum JSON-RPC on `:7421`/`:7422`/`:7423`) for the identical purpose — external agents querying TerranSoul's own brain. Structurally the same integration point, independently arrived at. |
-| Sync across devices | Not part of the published feature set (single deployed instance) | CRDT-based multi-device sync (`internal module`, HLC-ordered, opt-in Hive Protocol federation) |
+| Sync across devices | Not part of the published feature set (single deployed instance) | CRDT-based multi-device sync (`crdt_sync.rs`, HLC-ordered, opt-in Hive Protocol federation) |
 | Multimodal / vision | A named "Vision" index type for images/charts/visual content | Per-conversation multimodal input (e.g. résumé PDFs in the JD-DEMO flow) — **not independently verified in this pass whether TerranSoul has an equivalent standing, searchable *vision index*** as opposed to per-turn image handling; flagged rather than guessed either way |
 | License | Apache-2.0 | Proprietary, pre-release (per this repo's own `CLAUDE.md` vendoring policy) |
 

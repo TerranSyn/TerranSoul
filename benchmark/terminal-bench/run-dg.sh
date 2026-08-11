@@ -194,8 +194,42 @@ else
   _defer_note="**Writes land immediately:** each one returns the new entry's id and is searchable straight away, so you can append to, link, or re-find something you wrote earlier in this same task."
 fi
 
+# ── OUTCOME FEEDBACK: the missing half of the self-improvement loop ─────────
+#
+# THE DEFECT THIS CLOSES. The agent never learned whether it succeeded. The
+# verifier runs AFTER the trial ends, so every attempt finished believing it had
+# solved the task, and wrote its lesson in that voice.
+#
+# Measured on `dna-insert`, 5 attempts, all scoring 0.0:
+#   att1..att5  search=1  ingest=1  append=0  — five NEAR-DUPLICATE lessons,
+#   every one of them about environment setup ("oligotm is not preinstalled but
+#   `apt-get install -y primer3` works"), and NOT ONE recording that the attempt
+#   failed or why. Attempt 2 inherited the easy knowledge — which it would have
+#   rediscovered in a single command — and repeated the substantive mistake.
+#   Five times. Web use DECLINED across the attempts (1,1,1,0,0) instead of
+#   escalating, because nothing told the agent it was getting anything wrong.
+#
+# It also made "consult external sources when you are stuck" unimplementable:
+# an agent in a fresh container cannot know it is attempt 3 of a failing task.
+#
+# So the harness now tells it. `TB_PRIOR_OUTCOMES` carries the previous
+# attempts' verifier scores for THIS task, produced by run-sweep.par.sh between
+# single-attempt jobs.
+#
+# PURITY: this reports the RUNNER's own verdict on prior attempts — a score and
+# whether one occurred. It carries no task name, no hint, no walkthrough and
+# nothing about how to solve anything. It is the same class of fact as the
+# wall-clock budget above: describing the environment, not seeding an answer.
+# A product that never tells an agent whether its work was accepted is the
+# anomaly here; rules/bench-agi-purity.md forbids seeding ANSWERS.
+_prior="${TB_PRIOR_OUTCOMES:-}"
+if [ -z "$_prior" ]; then
+  _prior="This is your **first attempt** at this task. No earlier attempt has been scored."
+fi
+
 sed -e "s/{{THINKING_MODE}}/$_rung/g" -e "s|{{THINKING_MODE_COST}}|$_cost|g" \
     -e "s|{{TASK_BUDGET}}|$_budget|g" -e "s|{{DEFERRAL_NOTE}}|$_defer_note|g" \
+    -e "s|{{PRIOR_ATTEMPTS}}|$_prior|g" \
   "$HERE/extra-instruction.md" > "$INSTRUCTION_FILE"
 # Fail CLOSED: an unrendered placeholder reaching the agent is a silent
 # instruction bug, which is how the previous one survived a whole task.
@@ -545,10 +579,29 @@ fi
 #                    mapped to a readable name via the leaderboard's
 #                    display-names.json, which SUBMIT.md is explicit is the
 #                    place to do that.
+# ⛔ THE MODEL IS THE PROVENANCE OF THE NUMBER. It was hardcoded here, so
+# switching models required editing this file — which cannot be done while a
+# sweep runs (bash reads scripts lazily), and which leaves no record in the run
+# of what was actually used. `TB_MODEL` makes it a launch parameter that the
+# `.tb-parN.launch` record carries, so a relaunched worker cannot silently
+# change models mid-campaign.
+#
+# The default stays `claude-opus-5` deliberately: every trial in `jobs-submit/`
+# was produced by it, and a default that drifted would make an existing corpus
+# ambiguous about its own provenance.
+#
+# ⚠️ NEVER MIX MODELS IN ONE JOBS DIR. `merge-sweep.sh` takes the best trial per
+# task, so a directory holding both models yields a score attributable to
+# neither — and one that flatters whichever model happened to win each task.
+# Give each model its own TB_JOBS_DIR (e.g. jobs-submit/ for Opus 5,
+# jobs-sonnet5/ for Sonnet 5) and publish them as separate entries.
+#
+# Model ids are exact: `claude-opus-5`, `claude-sonnet-5`. `claude-opus-4-5` is
+# Opus 4.5 and was passed by mistake once; it is a different model.
 args=(
   run
   -a "${TB_AGENT:-claude-code}"
-  -m claude-opus-5
+  -m "${TB_MODEL:-claude-opus-5}"
   "${DATASET_ARGS[@]}"
   --env docker
   --mcp-config "$MCP_CONFIG"

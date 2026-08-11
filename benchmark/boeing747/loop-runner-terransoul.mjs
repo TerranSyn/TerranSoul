@@ -16,7 +16,7 @@
 //     -> runActorWithRetries (retry-with-backoff wrapper around
 //        actor/actor-claude.mjs's runActorEdit: TerranSoul's OWN generic
 //        agentic-edit CLI capability, `terransoul --agent-task`
-//        (WIRE-CLI-an internal work item rewire, 2026-07-10 — replaces the OLD
+//        (WIRE-CLI-PARITY-GAP-3 rewire, 2026-07-10 — replaces the OLD
 //        bespoke direct `claude` spawn), its own vision inspection,
 //        Read+Edit only, gated end-to-end through the `action_trust`
 //        earned-autonomy ledger)
@@ -36,7 +36,7 @@
 // actor_status and excludes actor_exhausted_retries entries from the arrays
 // passed to evaluateStopConditions, firing a SEPARATE, honestly-labeled
 // actor_exhausted_retries_cap stop reason instead of corrupting `stall`
-// (WIRE-CLI-an internal work item rewire: an `action_trust` DENIAL is a NEW member of
+// (WIRE-CLI-PARITY-GAP-3 rewire: an `action_trust` DENIAL is a NEW member of
 // this same excluded bucket — see `denied` on actorResult/attempts — and
 // short-circuits the retry loop immediately, since no timeout can fix a
 // ledger decision; lib/actor-retry.mjs's `shouldRetryActor`), (3) gets
@@ -249,7 +249,7 @@ async function runActorWithRetries({ retryCfg, ...actorArgs }) {
       observability: result.observability || null,
     });
     if (result.status !== 'actor_failed') break; // genuine outcome — stop retrying
-    // WIRE-CLI-an internal work item rewire: an `action_trust` ledger DENIAL is
+    // WIRE-CLI-PARITY-GAP-3 rewire: an `action_trust` ledger DENIAL is
     // passed through so shouldRetryActor can short-circuit immediately — a
     // longer per-attempt timeout can never change a trust decision, unlike a
     // genuine subprocess timeout, which a longer budget might legitimately
@@ -971,7 +971,7 @@ export async function runIterationTerransoul({
     console.log(`  RUNTIME ERROR (edit rejected, previous candidate restored): ${actorResult.runtime_error}`);
   }
   if (actorResult.status === 'actor_exhausted_retries') {
-    // WIRE-CLI-an internal work item rewire: distinguish a `action_trust` ledger
+    // WIRE-CLI-PARITY-GAP-3 rewire: distinguish a `action_trust` ledger
     // DENIAL (no retry was even attempted — shouldRetryActor short-circuits
     // it, see lib/actor-retry.mjs) from a genuine infra timeout/crash that
     // burned the full retry budget, in the human-readable log only — both

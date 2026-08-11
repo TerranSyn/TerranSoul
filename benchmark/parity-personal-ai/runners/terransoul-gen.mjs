@@ -28,7 +28,7 @@ const OLLAMA_URL = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
 const MODEL = process.env.PARITY_MODEL || 'gemma4:12b-it-qat';
 const GEN_TIMEOUT = 240_000;
 
-// TerranSoul's REAL production companion prompt (from internal module
+// TerranSoul's REAL production companion prompt (from tool_registry.rs
 // COMPANION_IDENTITY + style), so the bench reflects the actual assistant, not
 // a thin reconstruction. PARITY-RUNNER-FAIR (2026-06-08).
 const SYSTEM_PROMPT =
@@ -38,8 +38,8 @@ const SYSTEM_PROMPT =
   'question. Use the provided memory context to answer naturally and ' +
   'accurately; never invent facts unsupported by the context or general ' +
   'knowledge. Always reply in the same language the user writes in. ' +
-  // an internal work item (2026-07-03): mirrors the COMPANION_IDENTITY additions in
-  // internal module / internal module — recall completeness + capability affordance.
+  // PARITY-FLOOR-2 (2026-07-03): mirrors the COMPANION_IDENTITY additions in
+  // tool_registry.rs / chat.rs — recall completeness + capability affordance.
   // Iter-2 proved this pair recovers dr-3/cs-4 and sm-2's offer (q=9.82) but
   // its offers elaborated (+10/+12 tok on sm-1/sm-3, exactly the latency
   // median → p50 1.121 vs the 1.005 record). Iter-4's "one short sentence"
@@ -48,7 +48,7 @@ const SYSTEM_PROMPT =
   // (positive instructions work better with the 12B); every brevity
   // qualifier tried inside the offer clause ("in one short sentence",
   // "offer briefly", "briefly offer") killed sm-2's offer or perturbed other
-  // answers. FINAL (an internal work item): the iter-2 wording ships — quality 9.82
+  // answers. FINAL (PARITY-FLOOR-2): the iter-2 wording ships — quality 9.82
   // (deterministic, reproduced) at ~+0.1s p50 vs the sentence-free prompt;
   // the full 7-run frontier record is benchmark/results/parity_floor2_loop.md.
   'When you answer from remembered context, be complete — include every ' +
@@ -163,7 +163,7 @@ async function ollamaGenerate(context, input, systemPrompt = SYSTEM_PROMPT) {
 }
 
 function buildContext(prompt) {
-  // Mirror TerranSoul's real context-pack format (internal module
+  // Mirror TerranSoul's real context-pack format (context_pack.rs
   // [LONG-TERM MEMORY] block) so the model sees memory the way the
   // production pipeline injects it.
   //

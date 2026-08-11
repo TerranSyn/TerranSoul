@@ -1,0 +1,73 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 241918,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 369,
+    "tool_calls": {
+      "read_file": 5,
+      "edit_file": 1
+    },
+    "total_tool_calls": 6,
+    "text_chunks": 357,
+    "tool_failures": 4,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 5
+      },
+      {
+        "name": "edit_file",
+        "count": 1
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "no_change",
+  "plane_sha256_before": "faeee31c9638f4fec05ad322d81daab2e0406ba6eae52c8993af5494edc107af",
+  "plane_sha256_after": "faeee31c9638f4fec05ad322d81daab2e0406ba6eae52c8993af5494edc107af",
+  "changed": false,
+  "claude_result_text": "I apologize, but I am currently unable to locate any files in the specified directories because all my attempts to read standard filenames like `model.js` or `index.js` have failed with \"file not found\" errors. This might mean the project structure is different than expected or there's a typo in the path provided to me.\n\nCould you please confirm the correct file name and its location within the `D:\\Git\\TerranSoulApp\\benchmark\\boeing747\\candidates\\terransoul-gemma-transplant2` directory?",
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "no_change",
+      "ms": 241918,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 369,
+        "tool_calls": {
+          "read_file": 5,
+          "edit_file": 1
+        },
+        "total_tool_calls": 6,
+        "text_chunks": 357,
+        "tool_failures": 4,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 5
+          },
+          {
+            "name": "edit_file",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

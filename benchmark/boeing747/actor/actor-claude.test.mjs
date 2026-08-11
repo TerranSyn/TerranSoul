@@ -1,4 +1,4 @@
-// Tests for the WIRE-CLI-an internal work item rewire: actor-claude.mjs now spawns
+// Tests for the WIRE-CLI-PARITY-GAP-3 rewire: actor-claude.mjs now spawns
 // `terransoul --agent-task` instead of the bare `claude` binary. Every
 // test here mocks the subprocess boundary via `execImpl` (mirrors
 // lib/self-learning.mjs's injectable `callTool` pattern) AND the
@@ -550,7 +550,7 @@ describe('resolveTerranSoulCliBinary', () => {
   });
 
   // Regression guard: `<target>/<profile>/terransoul` is the DESKTOP APP /
-  // MCP host (src/internal module), a console-less GUI binary. Resolving it here
+  // MCP host (src/main.rs), a console-less GUI binary. Resolving it here
   // would hang the actor on a window instead of answering, so it must never
   // be probed — not even as a last resort.
   it('never resolves the desktop/MCP binary sitting at the profile root', () => {

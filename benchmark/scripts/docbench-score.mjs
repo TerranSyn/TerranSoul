@@ -4,7 +4,7 @@
 //
 // WHY THIS BENCH EXISTS. Nothing in `benchmark/` measures retrieval over
 // ingested DOCUMENTS: LongMemEval ingests through `add_many_bench`
-// (internal module) and jd-million through JSONL, so neither touches
+// (longmemeval_ipc.rs) and jd-million through JSONL, so neither touches
 // `docparse`, PDF chunking, or the source guide. That blind spot is why
 // `heading: None` on every PDF chunk (DOCBENCH-2) could sit in the product
 // unnoticed — and, under `rules/no-unexercised-features.md`, it is why the
@@ -18,7 +18,7 @@
 // grade a generated answer, so no judge — ours or theirs — is in the loop.
 //
 // ⚠️ THE OFF-BY-ONE, PROVEN RATHER THAN ASSUMED. `evidence_page_num` is
-// 0-INDEXED; `DocBlock.page` (internal module) is 1-based. Verified empirically,
+// 0-INDEXED; `DocBlock.page` (docparse.rs) is 1-based. Verified empirically,
 // not from the README: each evidence item also ships `evidence_text_full_page`,
 // and comparing that against the real PDF text matched at index `p` in 50/50
 // cases and at `p-1` in 0/50. Silent off-by-one page scoring produces numbers

@@ -71,7 +71,7 @@ function command() {
 }
 
 /**
- * an internal work item(a), 2026-07-30: `npm run brain:longmem:run` never called
+ * BENCH-OPS-1(a), 2026-07-30: `npm run brain:longmem:run` never called
  * `bench-guard.mjs --preflight`, so a 4-arm run once spent 32 minutes at
  * 17.9s/embed round-trip (against 0.13s GPU-resident, 135x) before anyone
  * thought to check `/api/ps` — the guard existed and would have caught it
@@ -343,7 +343,7 @@ function ipcCommand() {
       'run',
       '--quiet',
       '--manifest-path',
-      resolve(REPO_ROOT, 'the application repository', 'Cargo.toml'),
+      resolve(REPO_ROOT, 'src-tauri', 'Cargo.toml'),
       '--bin',
       'longmemeval-ipc',
       '--target-dir',
@@ -945,7 +945,7 @@ async function main() {
     // Thinking modes are the published surface; legacy rrf_*/search/emb are kept
     // during the transition for A/B and removed once the thinking-mode floors lock.
     const published = ['chat', 'think', 'research', 'max', 'search', 'rrf', 'emb', 'rrf_emb'];
-    // A/B arms: every one of these is implemented in `internal module`'s mode
+    // A/B arms: every one of these is implemented in `longmemeval_ipc.rs`'s mode
     // dispatch but was unreachable behind this allow-list, so no bench could ever
     // measure the SOTA-adopt features (MMR, HippoRAG PPR, reason-rerank, HyDE…).
     // A feature that cannot be benched cannot clear the never-regress floor, and
@@ -992,7 +992,7 @@ async function main() {
   if (cmd === 'sample') {
     rawEntries = sampleDataset();
   } else if (cmd === 'run') {
-    // an internal work item(a): a bad embedder placement or missing chat model has
+    // BENCH-OPS-1(a): a bad embedder placement or missing chat model has
     // burned 32 minutes of a run before anyone thought to check /api/ps —
     // gate BEFORE the (possibly slow, disk-consuming) dataset download too.
     runPreflight(outDir);

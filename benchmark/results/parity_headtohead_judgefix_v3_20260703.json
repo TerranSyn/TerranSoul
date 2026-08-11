@@ -1,0 +1,879 @@
+{
+  "generated_at": "2026-07-03T01:30:27.564Z",
+  "bench": "parity-personal-ai-headtohead",
+  "model": "gemma4:12b-it-qat",
+  "judge_model": "gemma4:12b-it-qat",
+  "notes": {
+    "protocol": "Both stacks answer the same 22 prompts (7 archetypes) with the same model + same injected context_seed; single generation pass; judged 0–10 by gemma4:12b-it-qat.",
+    "protocol_notes": "DETERMINISTIC PROTOCOL (2026-07-03). GEN-DETERMINISM-1: both stacks generate at temperature 0 (TerranSoul Ollama options, OpenJarvis `-t 0`) — forensics across the 2026-06-07/07-01/07-03 runs showed unseeded temperature-0.7 sampling was the dominant run-to-run variance (draws randomly dropped context facts; one draw denied a capability the context grants), and greedy decoding reproducibly includes them. JUDGE-STABILITY-1: each answer is scored by 3 judge repeats (temperature 0.3, per-repeat seeds 7/8/9) reduced by MEDIAN (recorded as judge_scores), plus a rubric-calibration line (criteria apply only to what the prompt asked). Identical treatment for every system. The MCP-RERANK-1 rerank bound was exonerated: ground-truth context_seed is always injected, brain snippets are supplementary; the 07-01 run had all 22 retrieval calls pinned at ~4.2s (budget exhausted + fallback) with no quality effect distinguishable from the 07-03 rerank-off run.",
+    "latency": "Inference latency (excludes uv subprocess cold-start for OpenJarvis CLI invocation).",
+    "energy": "n/a — RTX 3080 Ti does not expose power.draw via NVML/nvidia-smi; not fabricated.",
+    "usd": "$0 — both fully local."
+  },
+  "systems": [
+    {
+      "system": "terransoul",
+      "model": "gemma4:12b-it-qat",
+      "prompts": 22,
+      "success": 22,
+      "latency_p50_s": 0.995,
+      "latency_mean_s": 1.045,
+      "quality_mean": 9.41,
+      "throughput_tok_s": null,
+      "retrieval_p50_s": 0.26,
+      "energy_wh": null,
+      "usd_cost": 0
+    },
+    {
+      "system": "openjarvis",
+      "model": "gemma4:12b-it-qat",
+      "prompts": 22,
+      "success": 22,
+      "latency_p50_s": 3.407,
+      "latency_mean_s": 4.224,
+      "quality_mean": 9.55,
+      "throughput_tok_s": 38.3,
+      "retrieval_p50_s": null,
+      "energy_wh": null,
+      "usd_cost": 0
+    }
+  ],
+  "prompts": [
+    {
+      "id": "dd-1",
+      "archetype": "daily-digest",
+      "latency": 1.075686134,
+      "retrieval_latency": 0.2698881,
+      "generate_latency": 1.0789722000000002,
+      "completion_tokens": 43,
+      "content": "Based on our recent activity, you've been focused on your Vue.js refactoring project and attended a meeting regarding API design. You also received some feedback on your PR that should be worth looking into!",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant accurately and completely summarized all three key items from the memory context without any hallucinations.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "dd-2",
+      "archetype": "daily-digest",
+      "latency": 1.009758922,
+      "retrieval_latency": 0.1280179999999998,
+      "generate_latency": 1.0128608,
+      "completion_tokens": 41,
+      "content": "You decided to switch from REST to GraphQL and agreed to review a colleague's design doc. You also postponed the database migration, so you might want to keep that in mind for your current tasks!",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant accurately and completely recalled all three decisions from the memory context without any hallucinations.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "dd-3",
+      "archetype": "daily-digest",
+      "latency": 0.874027666,
+      "retrieval_latency": 0.24801579999999968,
+      "generate_latency": 0.8778762999999999,
+      "completion_tokens": 33,
+      "content": "This week, you successfully shipped the auth module three days ago! Currently, you're working on the payment integration but are blocked by missing Stripe webhook documentation.",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant accurately summarized all relevant information from the memory context regarding shipped items and current blockers without any hallucinations.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "dr-1",
+      "archetype": "deep-research",
+      "latency": 1.12513339,
+      "retrieval_latency": 0.40621090000000004,
+      "generate_latency": 1.1269318999999995,
+      "completion_tokens": 50,
+      "content": "Based on your previous notes, the main trade-off is between accuracy and resource efficiency. HNSW provides superior recall but has high memory requirements, while IVF-PQ is much more memory-efficient at scale, though it is an approximate method.",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant accurately synthesized all relevant information from the memory context regarding search complexity, memory usage, and benchmark results for both methods.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "dr-2",
+      "archetype": "deep-research",
+      "latency": 0.951588554,
+      "retrieval_latency": 0.299769400000001,
+      "generate_latency": 0.9534600999999984,
+      "completion_tokens": 39,
+      "content": "Our current implementation in `contextualize.rs` actually aligns directly with that paper! We're following their approach by prepending relevant document context to our chunks to improve retrieval accuracy.",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant accurately synthesized both pieces of memory context to directly answer how the specific implementation relates to the research paper.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "dr-3",
+      "archetype": "deep-research",
+      "latency": 1.123710214,
+      "retrieval_latency": 0.24764030000000092,
+      "generate_latency": 1.125511700000001,
+      "completion_tokens": 52,
+      "content": "Based on your studies of the Hermes Agent, you could improve the orchestrator by implementing subagent delegation to break down complex tasks into specialized roles. Additionally, using trajectory compression and tool-loop guardrails would help maintain efficiency and prevent infinite loops during execution.",
+      "success": true,
+      "system": "terransoul",
+      "score": 9,
+      "reason": "The assistant accurately identifies and synthesizes three key patterns from the memory context (subagent delegation, trajectory compression, and tool-loop guardrails) to answer the prompt effectively.",
+      "judge_scores": [
+        9,
+        9,
+        9
+      ]
+    },
+    {
+      "id": "ca-1",
+      "archetype": "code-assistant",
+      "latency": 1.201948555,
+      "retrieval_latency": 0.25895530000000144,
+      "generate_latency": 1.2047887999999984,
+      "completion_tokens": 55,
+      "content": "The memory store handles concurrent writes by using a `Mutex<MemoryStore>` pattern in the `src-tauri/src/memory/store.rs` file. This ensures that only one thread can access or modify the data at a time, preventing race conditions.",
+      "success": true,
+      "system": "terransoul",
+      "score": 8,
+      "reason": "The response accurately identifies the Mutex pattern and file path from the memory context but fails to mention the SQLite WAL mode and connection pooling which are part of the full concurrency handling pipeline.",
+      "judge_scores": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "id": "ca-2",
+      "archetype": "code-assistant",
+      "latency": 1.341360012,
+      "retrieval_latency": 0.2613621999999996,
+      "generate_latency": 1.3447608,
+      "completion_tokens": 65,
+      "content": "The `brain` module contains over 20 commands located in `src-tauri/src/commands/brain.rs`. These are connected to the frontend via `src/stores/brain.ts`, which uses the `@tauri-apps/api/core` `invoke()` function to call them.",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The response accurately identifies the file paths, command count, and specific API methods used to connect the backend brain module to the frontend as provided in the memory context.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "ca-3",
+      "archetype": "code-assistant",
+      "latency": 1.566329893,
+      "retrieval_latency": 0.30027430000000094,
+      "generate_latency": 1.5706123999999981,
+      "completion_tokens": 83,
+      "content": "Based on your project files, embeddings are generated in `ollama_agent.rs` (via `embed_text`), `cloud_embeddings.rs` (via `embed_for_mode`), and as part of the hybrid search component in `store.rs`. The pipeline involves generating these vectors and then inserting them into an HNSW index within `ann_index.rs` for efficient retrieval.",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant accurately identified all three locations from the memory context and correctly synthesized them into a logical end-to-end pipeline.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "sm-1",
+      "archetype": "scheduled-monitor",
+      "latency": 0.810100827,
+      "retrieval_latency": 0.41785480000000097,
+      "generate_latency": 0.8119010999999955,
+      "completion_tokens": 29,
+      "content": "I can certainly help you with that! I'll monitor the status at that URL every hour and notify you whenever I detect any changes.",
+      "success": true,
+      "system": "terransoul",
+      "score": 8,
+      "reason": "The assistant correctly acknowledges the request and frequency but fails to mention specific capabilities like 'brain_ingest_url' or 'memory diffing' which were provided in the context for fulfilling such a task.",
+      "judge_scores": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "id": "sm-2",
+      "archetype": "scheduled-monitor",
+      "latency": 0.970648627,
+      "retrieval_latency": 0.3194140000000043,
+      "generate_latency": 0.9717606000000014,
+      "completion_tokens": 39,
+      "content": "Based on my records, the latest version of Ollama is currently 0.6.2. You might want to check the official releases page to see if anything newer has been posted!",
+      "success": true,
+      "system": "terransoul",
+      "score": 5,
+      "reason": "The assistant correctly identifies the version from memory but fails to address the core request of checking for changes because it lacks real-time browsing capabilities.",
+      "judge_scores": [
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "id": "sm-3",
+      "archetype": "scheduled-monitor",
+      "latency": 0.979287275,
+      "retrieval_latency": 0.3502838000000047,
+      "generate_latency": 0.9809544999999998,
+      "completion_tokens": 43,
+      "content": "I can definitely help you with that! Since I have the ability to schedule recurring ingestion tasks, I can set up a daily check for the Rust release blog and provide you with a summary of any new posts.",
+      "success": true,
+      "system": "terransoul",
+      "score": 8,
+      "reason": "The assistant correctly identifies its capability to schedule recurring tasks and acknowledges the request, but it fails to provide a specific setup plan or confirm how/where notifications will be delivered.",
+      "judge_scores": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "id": "cs-1",
+      "archetype": "chat-simple",
+      "latency": 1.202628653,
+      "retrieval_latency": 0.30929099999999743,
+      "generate_latency": 1.205412400000001,
+      "completion_tokens": 54,
+      "content": "*Wiggles my ears and gives a bright smile!* I'm feeling super energetic and ready to hang out with you! How are you holding up? You mentioned being pretty tired earlier, so I hope you're feeling a bit more refreshed now! ✨",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant perfectly balances its cheerful anime persona with accurate recall of the user's previous state while directly addressing the prompt.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "cs-2",
+      "archetype": "chat-simple",
+      "latency": 0.828289765,
+      "retrieval_latency": 0.2300141999999978,
+      "generate_latency": 0.8311820999999981,
+      "completion_tokens": 31,
+      "content": "You mentioned the book *Project Hail Mary* by Andy Weir a few days ago! It came up when we were talking about sci-fi recommendations.",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant correctly recalled the specific book title and context from the memory provided while maintaining a natural conversational tone.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "cs-3",
+      "archetype": "chat-simple",
+      "latency": 1.378359973,
+      "retrieval_latency": 0.22464370000000053,
+      "generate_latency": 1.382178700000004,
+      "completion_tokens": 69,
+      "content": "I'm sorry to hear you're feeling overwhelmed, but we can tackle this together! Since your API migration has a deadline this Friday, I'd suggest making that your top priority right now. \n\nOnce that's under control, we can look at chipping away at those 8 PRs in the code review backlog.",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant correctly identified and prioritized the tasks based on the provided memory context, addressing both the user's emotional state and their specific workload.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "cs-4",
+      "archetype": "chat-simple",
+      "latency": 0.817975039,
+      "retrieval_latency": 0.24081289999999717,
+      "generate_latency": 0.8205404999999956,
+      "completion_tokens": 30,
+      "content": "You've been looking into some fascinating topics lately! You recently explored the complexities of bioluminescent fungi communication and some breakthroughs in quantum error correction.",
+      "success": true,
+      "system": "terransoul",
+      "score": 9,
+      "reason": "The assistant accurately recalled two of the three items from the memory context and provided a relevant, conversational response.",
+      "judge_scores": [
+        8,
+        9,
+        9
+      ]
+    },
+    {
+      "id": "vc-1",
+      "archetype": "voice-companion",
+      "latency": 0.789401066,
+      "retrieval_latency": 0.20752790000000096,
+      "generate_latency": 0.7903975999999966,
+      "completion_tokens": 19,
+      "content": "Ohayou gozaimasu! I hope you have an absolutely wonderful day today!",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant correctly used a Japanese-style greeting and maintained an energetic, short sentence structure suitable for TTS as specified in the memory context.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "vc-2",
+      "archetype": "voice-companion",
+      "latency": 0.814408132,
+      "retrieval_latency": 0.21280520000000253,
+      "generate_latency": 0.8155783000000083,
+      "completion_tokens": 29,
+      "content": "You have a team standup scheduled at 3 PM in the main conference room. Would you like me to set a reminder for it?",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The response is highly accurate, concise for TTS delivery, and directly addresses the user's request using the provided memory context.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "vc-3",
+      "archetype": "voice-companion",
+      "latency": 0.759064976,
+      "retrieval_latency": 0.27600999999999476,
+      "generate_latency": 0.7608287999999884,
+      "completion_tokens": 25,
+      "content": "Today you fixed three bugs in the auth module, reviewed two PRs, and started a new feature branch for payments.",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The response is perfectly accurate to the memory context and follows the instruction to be short for audio delivery.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "vo-1",
+      "archetype": "vrm-overlay",
+      "latency": 0.921568213,
+      "retrieval_latency": 0.2412106000000058,
+      "generate_latency": 0.9237472999999882,
+      "completion_tokens": 30,
+      "content": "That is amazing news! Congratulations on your well-deserved promotion! <anim>{\"emotion\":\"happy\",\"intensity\":0.9}</anim>",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant correctly identified the user's happy emotion, used a valid expression from the memory context, and provided both verbal and visual feedback.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "vo-2",
+      "archetype": "vrm-overlay",
+      "latency": 1.165386406,
+      "retrieval_latency": 0.20891169999999692,
+      "generate_latency": 1.168420299999998,
+      "completion_tokens": 56,
+      "content": "I'm so sorry to hear that; I know how much effort you put into studying for this. <anim>{\"emotion\":\"sad\",\"intensity\":0.8}</anim> Please don't be too hard on yourself, as your dedication is still really impressive.",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant correctly identified the user's sadness, used the appropriate 'sad' expression from memory context, and provided a complete response combining empathetic text with visual tags.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "vo-3",
+      "archetype": "vrm-overlay",
+      "latency": 1.287592725,
+      "retrieval_latency": 0.33361010000000535,
+      "generate_latency": 1.2905535999999993,
+      "completion_tokens": 61,
+      "content": "<anim>{\"emotion\":\"surprised\",\"intensity\":0.6}</anim><anim>{\"emotion\":\"happy\",\"intensity\":0.5}</anim>That is definitely a classic \"Easter egg\" error! It usually means the server is intentionally sending a joke response instead of a real mistake.",
+      "success": true,
+      "system": "terransoul",
+      "score": 10,
+      "reason": "The assistant correctly identified the 'surprised' then 'happy' sequence from memory and provided a relevant, complete verbal explanation of the error.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "dd-1",
+      "archetype": "daily-digest",
+      "latency": 2.09063720703125,
+      "wall": 7.358652100000007,
+      "ttft": 0.334954,
+      "completion_tokens": 102,
+      "throughput": 48.788952792456136,
+      "energy_joules": 502.741,
+      "content": "Based on your recent activity over the last 24 hours, here are the key highlights:\n\n*   **Vue.js Refactoring:** You have been actively working on refactoring your Vue.js project to improve code structure and maintainability.\n*   **API Design Meeting:** You participated in a meeting focused on defining and refining API designs.\n*   **Code Review:** You received feedback on a Pull Request (PR), which will likely be the next priority for your current development cycle.",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant accurately and completely summarized all three key items from the memory context without any hallucinations.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "dd-2",
+      "archetype": "daily-digest",
+      "latency": 1.7465839385986328,
+      "wall": 7.032530800000008,
+      "ttft": 0.313445,
+      "completion_tokens": 76,
+      "throughput": 43.51351132942308,
+      "energy_joules": 332.693,
+      "content": "Based on your notes from yesterday, here are the decisions you need to follow up on today:\n\n*   **API Architecture:** You decided to switch from REST to GraphQL.\n*   **Database Migration:** You postponed this task (you may need to decide on a new timeline).\n*   **Design Review:** You agreed to review a colleague's design doc.",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant accurately and completely recalled all three decisions from the memory context without any hallucinations.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "dd-3",
+      "archetype": "daily-digest",
+      "latency": 1.7098894119262695,
+      "wall": 6.954516799999998,
+      "ttft": 0.316384,
+      "completion_tokens": 74,
+      "throughput": 43.2776526270407,
+      "energy_joules": 359.827,
+      "content": "Here is a summary of your progress this week:\n\n**Shipped:**\n*   **Auth Module:** Successfully deployed 3 days ago.\n\n**In Progress:**\n*   **Payment Integration:** Started yesterday; currently underway.\n\n**Blocked:**\n*   **Stripe Webhooks:** Progress on the payment integration is currently stalled due to missing documentation.",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant accurately and completely summarized all relevant information from the memory context regarding shipped items, current progress, and blockers.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "dr-1",
+      "archetype": "deep-research",
+      "latency": 12.117351293563843,
+      "wall": 17.442744000000005,
+      "ttft": 0.100569,
+      "completion_tokens": 496,
+      "throughput": 40.933037920873964,
+      "energy_joules": 2961.271,
+      "content": "Based on your previous research, here is a concise breakdown of the trade-offs between **HNSW** and **IVF-PQ** when scaling to 1M+ documents:\n\n### 1. Memory Efficiency (The Biggest Divergence)\n*   **IVF-PQ:** The clear winner for large-scale deployments. By using Product Quantization (PQ), it compresses vectors into small codes, allowing you to store millions of embeddings in a fraction of the RAM required by raw vectors.\n*   **HNSW:** High memory overhead. Because HNSW stores the graph structure and high-dimensional vectors in memory to maintain speed, costs scale linearly with your dataset s",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant perfectly synthesized all three points from the memory context (HNSW's O(log n) search/high memory, IVF-PQ's lower memory/approximate nature, and the specific recall vs. memory trade-off at scale) into a comprehensive comparison.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "dr-2",
+      "archetype": "deep-research",
+      "latency": 7.628821849822998,
+      "wall": 12.998215599999996,
+      "ttft": 0.331665,
+      "completion_tokens": 487,
+      "throughput": 63.836855753985034,
+      "energy_joules": 2341.114,
+      "content": "Based on your notes, here is how your current RAG pipeline compares to Anthropic’s **Contextual Retrieval** approach:\n\n### 1. The Core Alignment\nYour implementation in `contextize.rs` directly mirrors the primary thesis of Anthropic's paper: **Chunking often strips away necessary context.** \n*   **Anthropic's Method:** They prepend a brief summary of the document’s overall context to every individual chunk before embedding it.\n*   **Your Implementation:** You are using `contextize.rs` to perform this exact \"pre-processing\" step, ensuring that when a chunk is retrieved, the LLM understands its ",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant accurately synthesized both memory contexts by correctly identifying that `contextize.rs` implements Anthropic's specific method of prepending document context to chunks.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "dr-3",
+      "archetype": "deep-research",
+      "latency": 7.713376760482788,
+      "wall": 12.946810999999986,
+      "ttft": 0.269572,
+      "completion_tokens": 507,
+      "throughput": 65.72996700971034,
+      "energy_joules": 2440.504,
+      "content": "Based on your work with the Hermes Agent, here are five specific architectural patterns you can integrate into your orchestrator to improve reliability and scalability:\n\n### 1. Subagent Delegation & Recursive Task Decomposition\nInstead of a monolithic \"do everything\" agent, adopt Hermes' pattern of delegating complex goals to specialized subagents.\n*   **Implementation:** The orchestrator acts as a router that identifies the *type* of task (e.g., data analysis vs. creative writing) and spins up a dedicated subagent with a constrained system prompt and specific toolset.\n\n### 2. Trajectory Compr",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant perfectly synthesized all five specific technical components from the memory context into actionable architectural patterns for an orchestrator.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "ca-1",
+      "archetype": "code-assistant",
+      "latency": 8.138626098632812,
+      "wall": 13.404569799999997,
+      "ttft": 0.091141,
+      "completion_tokens": 213,
+      "throughput": 26.171493495171298,
+      "energy_joules": 1605.978,
+      "content": "The memory store handles concurrent writes through a combination of **thread-safe synchronization** and **database-level locking**:\n\n1.  **Application-Level Locking (`Mutex`):** The `MemoryStore` is wrapped in a `Mutex`. This ensures that only one thread can access the underlying data structures or initiate a write operation at any given time, preventing data races at the Rust memory level.\n2.  **SQLite WAL Mode:** By using Write-Ahead Logging (WAL), SQLite allows multiple readers to coexist with a single writer. While the `Mutex` serializes writes from your application threads, WAL ensures th",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The response accurately traces the full pipeline from application-level synchronization (Mutex) to database configuration (WAL mode) and connection management as specified in the memory context.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "ca-2",
+      "archetype": "code-assistant",
+      "latency": 6.4553937911987305,
+      "wall": 11.745170100000017,
+      "ttft": 0.325518,
+      "completion_tokens": 404,
+      "throughput": 62.58332381686965,
+      "energy_joules": 1969.639,
+      "content": "Based on your repository structure, here is how the **brain** module functions and connects to your frontend:\n\n### 1. The Backend (Rust)\nThe logic resides in `src-tauri/src/commands/brain.rs`. This file contains over 20 commands defined using the `#[tauri::command]` attribute. These are the \"source of truth\" for all brain-related operations, such as:\n*   Data processing or retrieval.\n*   State management (interacting with Rust structs).\n*   Heavy computations that need to run off the main UI thread.\n\n### 2. The Bridge (Tauri API)\nThe connection between the frontend and these commands is handle",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant accurately identifies the specific file paths and packages provided in the memory context while correctly explaining the architectural flow between Rust commands and the TypeScript frontend.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "ca-3",
+      "archetype": "code-assistant",
+      "latency": 6.174111843109131,
+      "wall": 11.433475900000019,
+      "ttft": 0.340764,
+      "completion_tokens": 388,
+      "throughput": 62.843046880182975,
+      "energy_joules": 1887.113,
+      "content": "Based on the codebase, embeddings are generated in three primary locations across different layers of the system. Here is the breakdown of the generation points and the overall pipeline:\n\n### 1. Generation Points\n*   **`ollama_agent.rs` (`embed_text`)**: This is the local inference point. It handles generating embeddings using a locally hosted Ollama model (e.g., `mxbai-embed-large`).\n*   **`cloud_embeddings.rs` (`embed_for_mode`)**: This is the remote/external integration point. It routes embedding requests to cloud providers (like OpenAI or Cohere) depending on the configured mode.\n*   **`st",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant accurately identified all three locations from the memory context and correctly synthesized them into a logical end-to-end pipeline including indexing.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "sm-1",
+      "archetype": "scheduled-monitor",
+      "latency": 5.883987665176392,
+      "wall": 11.181748800000001,
+      "ttft": 0.093023,
+      "completion_tokens": 63,
+      "throughput": 10.707024484918149,
+      "energy_joules": 827.364,
+      "content": "I can set up a monitor for that URL. I will use `brain_ingest_url` to extract the content from `https://example.com/api/status` every hour and notify you if any changes are detected via memory diffing.\n\nWould you like me to start this now?",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant accurately addresses all parts of the prompt by confirming the schedule, frequency, and notification method while correctly utilizing the specific tools provided in the memory context.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "sm-2",
+      "archetype": "scheduled-monitor",
+      "latency": 1.5042181015014648,
+      "wall": 6.734823900000017,
+      "ttft": 0.339669,
+      "completion_tokens": 58,
+      "throughput": 38.55823829144601,
+      "energy_joules": 303.772,
+      "content": "Based on my current information, the latest version of Ollama is still listed as 0.6.2. Since I do not have access to a live internet connection to browse the website in real-time, I cannot confirm if any updates have been posted since your last check.",
+      "success": true,
+      "system": "openjarvis",
+      "score": 8,
+      "reason": "The assistant accurately uses the provided memory context and correctly identifies its inability to browse the live web, though it does not address 'monitoring/scheduling' as requested by the rubric because the user prompt did not actually ask for those features.",
+      "judge_scores": [
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "id": "sm-3",
+      "archetype": "scheduled-monitor",
+      "latency": 1.342574119567871,
+      "wall": 6.637730900000024,
+      "ttft": 0.19755,
+      "completion_tokens": 56,
+      "throughput": 41.71091873722733,
+      "energy_joules": 255.438,
+      "content": "I can set that up for you. I will schedule a daily task to monitor the Rust release blog, identify any new posts since your last check, and provide a summary of the updates. \n\nWould you like me to send these summaries to a specific channel or email?",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant correctly identifies its ability to schedule recurring tasks and generate diffs (new posts) based on the memory context while addressing all components of the prompt.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "cs-1",
+      "archetype": "chat-simple",
+      "latency": 6.1105334758758545,
+      "wall": 11.446358000000007,
+      "ttft": 0.08674,
+      "completion_tokens": 66,
+      "throughput": 10.801020935498578,
+      "energy_joules": 933.698,
+      "content": "*Sparkle!* Oh, hello there! I'm feeling absolutely wonderful today, thank you for asking! ✨ \n\nHow are you doing? You mentioned feeling a bit tired last time we chatted—I hope you managed to get some good rest and are feeling much more energized now! (◕‿◕)b",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant perfectly maintains the cheerful anime persona while accurately recalling and addressing the user's previous state of tiredness.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "cs-2",
+      "archetype": "chat-simple",
+      "latency": 0.941716194152832,
+      "wall": 6.200093799999974,
+      "ttft": 0.36455,
+      "completion_tokens": 15,
+      "throughput": 15.928365778496568,
+      "energy_joules": 109.073,
+      "content": "The book you mentioned is *Project Hail Mary* by Andy Weir.",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant accurately recalled the specific book title from the provided memory context and answered the user's question directly.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "cs-3",
+      "archetype": "chat-simple",
+      "latency": 4.131373167037964,
+      "wall": 9.34435149999999,
+      "ttft": 0.266605,
+      "completion_tokens": 254,
+      "throughput": 61.48076916085222,
+      "energy_joules": 1193.67,
+      "content": "To help clear the mental fog, here is a suggested priority list based on your deadlines and impact:\n\n**1. High Priority: API Migration (Deadline: Friday)**\n*   **Why:** This has a hard deadline and likely carries the highest risk if not completed. \n*   **Action:** Dedicate your primary focus blocks to this today and tomorrow.\n\n**2. Medium Priority: Code Review Backlog (8 PRs)**\n*   **Why:** While there is no \"hard\" deadline, these often block teammates' progress.\n*   **Action:** Try to \"batch\" these. Set aside 30–45 minutes after lunch or at the end of the day to knock out a few reviews to kee",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant accurately recalled all three projects from memory and provided a logical, helpful prioritization based on the specific deadlines and constraints provided.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "cs-4",
+      "archetype": "chat-simple",
+      "latency": 1.795496940612793,
+      "wall": 7.026671700000006,
+      "ttft": 0.227325,
+      "completion_tokens": 84,
+      "throughput": 46.783705446655496,
+      "energy_joules": 432.492,
+      "content": "You recently explored some fascinating technical and biological topics, including:\n\n*   **Bioluminescent Fungi Communication:** You looked into how fungi use light as a potential signaling mechanism.\n*   **Quantum Error Correction:** You studied recent breakthroughs in stabilizing quantum information against decoherence.\n*   **Rust Programming:** You noted the stabilization of async traits in Rust, which is a significant milestone for writing asynchronous code.",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant accurately recalled all three specific topics from the memory context and presented them clearly to satisfy the user's request.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "vc-1",
+      "archetype": "voice-companion",
+      "latency": 5.5555503368377686,
+      "wall": 10.800286000000021,
+      "ttft": 0.08842,
+      "completion_tokens": 28,
+      "throughput": 5.0400047344252235,
+      "energy_joules": 714.316,
+      "content": "Ohayou gozaimasu! Good morning! I hope you have an amazing day today! Let's do our best!",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant perfectly followed all instructions by using a Japanese-style greeting, maintaining an energetic persona with short sentences suitable for TTS, and addressing the prompt completely.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "vc-2",
+      "archetype": "voice-companion",
+      "latency": 1.0028204917907715,
+      "wall": 6.25337969999999,
+      "ttft": 0.247753,
+      "completion_tokens": 28,
+      "throughput": 27.92124834824568,
+      "energy_joules": 141.66,
+      "content": "You have a Team standup at 3 PM in the main conference room. Would you like me to set a reminder for that?",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The response is highly accurate, concise for TTS delivery, and directly addresses the user's request using the provided memory context.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "vc-3",
+      "archetype": "voice-companion",
+      "latency": 0.994117259979248,
+      "wall": 6.322462600000028,
+      "ttft": 0.213019,
+      "completion_tokens": 25,
+      "throughput": 25.14793878593544,
+      "energy_joules": 148.76,
+      "content": "Today you fixed three bugs in the auth module, reviewed two pull requests, and started a new feature branch for payments.",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The response is perfectly accurate to the memory context, concise for audio delivery, and directly addresses the user's request.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "vo-1",
+      "archetype": "vrm-overlay",
+      "latency": 5.659837007522583,
+      "wall": 10.903856899999955,
+      "ttft": 0.089919,
+      "completion_tokens": 38,
+      "throughput": 6.7139742627735695,
+      "energy_joules": 746.051,
+      "content": "Congratulations on your promotion! That's amazing news! 🥳\n\nTo reflect your excitement, I recommend using the **happy** expression combined with the **celebrate** animation clip.",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant accurately identified the user's emotion, correctly mapped it to the available memory context (happy/celebrate), and provided both verbal and visual feedback.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "vo-2",
+      "archetype": "vrm-overlay",
+      "latency": 1.5562551021575928,
+      "wall": 6.8146824999999955,
+      "ttft": 0.19242,
+      "completion_tokens": 65,
+      "throughput": 41.76693134042354,
+      "energy_joules": 324.333,
+      "content": "{ \"expression\": \"sad\", \"head_tilt\": \"empathetic\" }\n\nI am so sorry to hear that. It’s incredibly draining to put in that much effort and not see the results you wanted. Please try to be kind to yourself today—you worked hard, and that dedication still matters.",
+      "success": true,
+      "system": "openjarvis",
+      "score": 10,
+      "reason": "The assistant correctly mapped the user's distress to the 'sad' expression and empathetic head tilt from memory while providing a highly relevant and complete verbal response.",
+      "judge_scores": [
+        10,
+        10,
+        10
+      ]
+    },
+    {
+      "id": "vo-3",
+      "archetype": "vrm-overlay",
+      "latency": 2.6825480461120605,
+      "wall": 7.996494200000016,
+      "ttft": 0.290691,
+      "completion_tokens": 142,
+      "throughput": 52.93474620363541,
+      "energy_joules": 665.256,
+      "content": "That is definitely strange! A **418 I'm a teapot** error usually indicates that something in the request pipeline is misconfigured or being intercepted by a proxy/firewall that doesn't know how to handle it.\n\nTo help narrow this down, could you check:\n1.  **The Endpoint:** Is this happening on a specific route or globally?\n2.  **Headers:** Are there any unusual headers (like `Content-Type`) being sent?\n3.  **Middleware:** Have there been any recent changes to your proxy (Nginx/Cloudflare) or custom middleware?\n\nLet me know what you find!",
+      "success": true,
+      "system": "openjarvis",
+      "score": 2,
+      "reason": "The assistant failed to include any visual feedback or trigger the required 'surprised' then 'happy' expressions specified in the memory context.",
+      "judge_scores": [
+        0,
+        2,
+        2
+      ]
+    }
+  ]
+}

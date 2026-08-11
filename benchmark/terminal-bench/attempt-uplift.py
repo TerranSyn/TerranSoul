@@ -1,5 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Measure the attempts-2-5 uplift: the attribution signal for cross-attempt memory.
+"""⚠️ SUPERSEDED FOR THE k=1-PER-JOB ERA — USE attempt-uplift-perjob.py.
+
+This file counts attempts WITHIN one harbor job. Since the k=1-per-job change
+every job holds exactly ONE trial, so the treatment arm is always empty and
+this reports "stratum B is EMPTY. This corpus cannot answer whether memory
+helps". That sentence is quotable, reads like a finding, and is WRONG: the
+attempts are real, they just live in separate jobs and must be indexed across
+them by started_at. Measured 2026-08-08 on jobs-sonnet5 — this tool said "no
+uplift signal, 230 one-attempt jobs" while the corpus held 46 tasks x up to 5
+attempts, with 4 of 6 stratum-B tasks rescued by a later attempt.
+
+Measure the attempts-2-5 uplift: the attribution signal for cross-attempt memory.
 
 THE CLAIM UNDER TEST. With TB_DEFER_WRITES=0, attempt 1 of a task writes lessons
 that attempts 2-5 of the SAME task can read. If memory is doing anything, later

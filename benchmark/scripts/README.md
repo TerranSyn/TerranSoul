@@ -22,27 +22,27 @@
 | `--task=<name>` | `all` (mteb), `adversarial` (scale) | LoCoMo task slice |
 | `--query-count=<N>` | full | Cap queries for smoke runs |
 | `--systems=<csv>` | canonical | Which retrieval modes to bench |
-| `--shard-mode=<routed\|all>` | `routed` | an internal work item toggle — `all` is the single-index baseline |
+| `--shard-mode=<routed\|all>` | `routed` | BENCH-SCALE-2 toggle — `all` is the single-index baseline |
 | `--scale=<N>` | n/a | locomo-at-scale only — corpus size to ingest |
 
 ## Bench bin
 
-The Rust IPC bench bin is [internal module](../../internal module). Build with:
+The Rust IPC bench bin is [src-tauri/src/bin/longmemeval_ipc.rs](../../src-tauri/src/bin/longmemeval_ipc.rs). Build with:
 
 ```pwsh
-cd the application repository
+cd src-tauri
 cargo build --bin longmemeval-ipc --features bench-million --target-dir ../target-copilot-bench
 ```
 
 It reads NDJSON commands on stdin and emits NDJSON results on stdout, called by every JS bench harness above. Honored env vars:
 
 - `LONGMEM_KG_EDGES=1` — enable ingest-time `shares_entities` edges for `rrf_kg` / `rrf_kg_rerank` modes.
-- `LONGMEM_SHARD_MODE=routed|all|router|default|allshards|all_shards|single` — an internal work item shard-mode toggle.
+- `LONGMEM_SHARD_MODE=routed|all|router|default|allshards|all_shards|single` — BENCH-SCALE-2 shard-mode toggle.
 
 ## Smoke-slice rule
 
-Always run a **100-query smoke first**. After the 100-q smoke shows the expected directional change on the target task **AND no >5 pp regression on any non-target task**, promote to 250-q or full. See the smoke-slice caveat in [rules/milestones.md](../../rules/milestones.md) (an internal work item lesson).
+Always run a **100-query smoke first**. After the 100-q smoke shows the expected directional change on the target task **AND no >5 pp regression on any non-target task**, promote to 250-q or full. See the smoke-slice caveat in [rules/milestones.md](../../rules/milestones.md) (BENCH-LCM-7 lesson).
 
 ## Audit-before-invent rule
 
-Before adding a new retrieval heuristic to fix a bench regression, audit [docs/brain-advanced-design.md](../../docs/brain-advanced-design.md) and [internal module/](../../internal module/) to confirm an existing pipeline stage isn't being skipped. an internal work item closed the rerank gap; an internal work item closed the HyDE gap; an internal work item/-2 closed the cascade gap; an internal work item closed the temporal-filter gap. Future regressions should follow the same audit-first pattern.
+Before adding a new retrieval heuristic to fix a bench regression, audit [docs/brain-advanced-design.md](../../docs/brain-advanced-design.md) and [src-tauri/src/memory/](../../src-tauri/src/memory/) to confirm an existing pipeline stage isn't being skipped. BENCH-LCM-8 closed the rerank gap; CHAT-PARITY-2 closed the HyDE gap; BENCH-KG-1/-2 closed the cascade gap; BENCH-PARITY-3 closed the temporal-filter gap. Future regressions should follow the same audit-first pattern.

@@ -97,13 +97,13 @@ the other 35 average 3.50 %. The real recognition number lives in
 ## What is proved, and what is still owed
 
 **Proved:** the corpus routes correctly under production's own accept-rule — trim +
-NFC, then reject empty or `looks_like_garbage` (`internal module:513-520`) — applied
+NFC, then reject empty or `looks_like_garbage` (`docparse.rs:513-520`) — applied
 per page by `Real-E2E/jd/pdf-text-layer.mjs`, and the split is exactly the expected
 160/40 with zero errors in either direction.
 
 > **Correction (2026-07-27).** That check was itself broken and reported `PENDING`
 > for the wrong reason. It watched `target/{debug,release}/terransoul-cli.exe`, but
-> the CLI cargo target is **`terransoul-console`** (`internal module`), which
+> the CLI cargo target is **`terransoul-console`** (`src-tauri/Cargo.toml:47`), which
 > `npm run build:cli` installs as `target/release/cli/terransoul.exe`. The
 > `terransoul-cli.exe` files still on disk are orphans of a target name Cargo.toml no
 > longer declares, so **nothing can ever rebuild them** — the check could never have
@@ -111,17 +111,17 @@ per page by `Real-E2E/jd/pdf-text-layer.mjs`, and the split is exactly the expec
 > a false `YES` for a binary built from the old document-level gate. Now fixed: it
 > checks the three real paths, excludes the orphans, and prints each candidate's build
 > time. Current verdict, with evidence rather than assertion — the newest real binary
-> is `2026-07-26T14:53:31Z`, `internal module` is `2026-07-27T11:42:49Z`, so it genuinely
+> is `2026-07-26T14:53:31Z`, `docparse.rs` is `2026-07-27T11:42:49Z`, so it genuinely
 > predates the per-page router. The item stays owed; the reason is now true.
 
 **CLOSED (2026-07-28, PDF-2/JD-CLI-3).** No CLI target reached `DocParser` at all —
-`internal module` returned nothing. Fixed by adding
+`grep -rn "DocParser\|docparse::" src-tauri/src/bin/` returned nothing. Fixed by adding
 `DocParser::route_pdf_pages` (the real `pages_needing_ocr` decision, no OCR performed)
 and `terransoul --docparse-route <pdf-or-dir>` (JSONL routing dump) /
-`--docparse-parse <file>` (full `ParsedDoc` dump) to `internal module`. Reproduce:
+`--docparse-parse <file>` (full `ParsedDoc` dump) to `cli.rs`. Reproduce:
 
 ```bash
-cd the application repository && cargo build --bin terransoul-console
+cd src-tauri && cargo build --bin terransoul-console
 node Real-E2E/jd/docparse-route-proof.mjs          # this corpus (jd-mixed)
 ```
 

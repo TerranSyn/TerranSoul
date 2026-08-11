@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Bench chat-call latency. Simulates a long back-and-forth conversation
-// against Ollama with the SAME options our internal module uses, so we
+// against Ollama with the SAME options our streaming.rs uses, so we
 // measure exactly the latency the user sees.
 //
 // Usage: node scripts/bench-chat-latency.mjs [--turns=20] [--model=gemma4:12b-it-qat]
@@ -120,7 +120,7 @@ async function main() {
   console.log('');
 
   // Warm-up: load weights into VRAM with the SAME options used by the
-  // app's warm-up function (terransoul internal module:spawn_local_ollama_warmup).
+  // app's warm-up function (terransoul lib.rs:spawn_local_ollama_warmup).
   console.log('## Warm-up');
   const warm = await streamOnce(
     [{ role: 'user', content: 'Hi' }],

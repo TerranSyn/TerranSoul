@@ -88,9 +88,21 @@ STATE="$REPO/mcp-data/.tb-sweep-state.txt"   # gitignored; one completed task id
 # than retried forever across resumes. Deliberately NOT truncated with $STATE:
 # the attempt history has to survive the resume that consults it.
 RETRIES="$REPO/mcp-data/.tb-sweep-retries.txt"
+# The report's "accepted failures" list. merge-sweep.sh READS this file and
+# checkpoint.sh archives it, but until 2026-08-05 NOTHING WROTE IT — the three
+# entries it held had been added by hand, so the report's provenance line was
+# only as good as somebody's memory. It is informational, not arithmetic: the
+# merge counts an errored trial as 0.0 from result.json whether or not the task
+# is named here, so a stale file understated the list without ever moving the
+# number. Writing it here makes the report self-maintaining.
+ACCEPTED="$REPO/mcp-data/.tb-sweep-accepted-failures.txt"
 touch "$RETRIES" 2>/dev/null || true
 touch "$STATE"
+# A fresh run truncates BOTH ledgers. Previously only $STATE was cleared, so a new
+# campaign inherited the old retry counts and previously-flaky tasks started with
+# their retry budget already spent.
 [ "${TB_RESUME:-0}" = "1" ] || : > "$STATE"
+[ "${TB_RESUME:-0}" = "1" ] || : > "$RETRIES"
 
 # Task list: directories under tasks/, excluding non-task entries.
 mapfile -t ALL < <(find "$TB21_DIR/tasks" -maxdepth 1 -mindepth 1 -type d -printf '%f\n' | sort)
@@ -103,6 +115,11 @@ done
 
 export TB_JOB_PREFIX="${TB_JOB_PREFIX:-sweep$(date +%m%d%H%M)}"
 echo "[sweep] job prefix: $TB_JOB_PREFIX"
+# Every restart mints a new prefix and the merge reads a prefix LIST. Appending
+# here is what stops a resumed campaign publishing a number computed from one
+# restart out of six.
+echo "$TB_JOB_PREFIX" >> "$REPO/mcp-data/.tb-sweep-prefixes.txt"
+sort -u -o "$REPO/mcp-data/.tb-sweep-prefixes.txt" "$REPO/mcp-data/.tb-sweep-prefixes.txt"
 echo "[sweep] merge this run with: bash merge-sweep.sh jobs $TB_JOB_PREFIX"
 echo "[sweep] $(( ${#ALL[@]} )) tasks total, ${#TODO[@]} to run, batch=$BATCH, attempts=$TB_ATTEMPTS, concurrency=$TB_CONCURRENCY"
 echo "[sweep] mode=$TB_PROXY_MODE  (learn = isolated brain :7424, writes limited to lesson ingest)"
@@ -190,6 +207,19 @@ last_job_hit_rate_limit() {
   [ -n "$newest" ] && [ -f "$newest/result.json" ] || return 1
   grep -q "RateLimit" "$newest/result.json" 2>/dev/null
 }
+# Does the newest job dir actually belong to THIS task? Every `last_job_*`
+# helper resolves "newest job dir", which is only the current task's job while
+# the current task produced one. When run-dg.sh dies in preflight it creates no
+# job at all, so "newest" silently becomes the PREVIOUS task's job — and
+# classifying task B from task A's result.json is how an infrastructure outage
+# gets published as a capability failure. Trial dirs are named `<task>__<suffix>`,
+# so the task id is recoverable from disk without trusting the job name.
+last_job_is_for_task() {
+  local newest
+  newest="$(ls -1dt "$HERE/jobs"/*/ 2>/dev/null | head -1)"
+  [ -n "$newest" ] || return 1
+  ls -1d "$newest/$1"__* >/dev/null 2>&1
+}
 last_job_error_is_terminal() {
   local newest
   newest="$(ls -1dt "$HERE/jobs"/*/ 2>/dev/null | head -1)"
@@ -208,6 +238,31 @@ for ev in ((d.get('stats') or {}).get('evals') or {}).values():
 # a mixed job still deserves its retry.
 sys.exit(0 if names and names <= terminal else 1)
 " "$newest/result.json" 2>/dev/null
+}
+
+# Classify a task whose job produced an ERRORED result.json, and record it in
+# every ledger. Assigns `batch_ok` in the caller's scope (bash is dynamically
+# scoped) when the task still deserves a retry.
+#
+# Factored out because it now has TWO call sites: run-dg.sh exiting 0 with an
+# errored trial inside, and run-dg.sh exiting non-zero. Those had drifted into
+# very different behaviour — see the non-zero branch below for what that cost.
+classify_errored_task() {
+  local t="$1" attempts
+  attempts="$(grep -c "^$t\$" "$RETRIES" 2>/dev/null | head -1 | tr -dc '0-9')"
+  attempts="${attempts:-0}"
+  echo "$t" >> "$RETRIES"
+  attempts=$((attempts + 1))
+  if last_job_error_is_terminal; then
+    echo "$t" >> "$STATE"; echo "$t" >> "$ACCEPTED"
+    echo "[sweep]   task $t ERRORED terminally (${TERMINAL_ERRORS}) — accepting as a failed trial (0.0); a retry reproduces it" >&2
+  elif [ "$attempts" -ge "${TB_MAX_ATTEMPTS_PER_TASK:-2}" ]; then
+    echo "$t" >> "$STATE"; echo "$t" >> "$ACCEPTED"
+    echo "[sweep]   task $t ERRORED ${attempts}x — accepting it as a failed trial (0.0), not retrying again" >&2
+  else
+    batch_ok=0
+    echo "[sweep]   task $t ERRORED (attempt ${attempts}; TB_RESUME=1 will retry it once more)" >&2
+  fi
 }
 
 batch_no=0
@@ -230,7 +285,13 @@ for ((i=0; i<${#TODO[@]}; i+=BATCH)); do
   # later task does. Batching tasks into one job would let tasks in the same
   # batch feed each other's attempts — the leakage this exists to prevent.
   batch_ok=1
-  if [ "${TB_DEFER_WRITES:-}" = "1" ]; then
+  # ONE JOB PER TASK is a separate concern from deferral, and conflating them
+  # would silently void the attribution run: with TB_DEFER_WRITES=0 the old code
+  # fell through to the BATCH branch (10 tasks x k attempts in ONE harbor job at
+  # concurrency 4), where a task's attempts can overlap and attempt 1's lesson
+  # does not exist when attempt 2 starts. The experiment would report "no uplift"
+  # -- reading as "memory does not help" rather than "the harness never let it".
+  if [ "${TB_ONE_JOB_PER_TASK:-${TB_DEFER_WRITES:-0}}" = "1" ]; then
     for t in "${chunk[@]}"; do
       # REFRESH PER TASK, not per batch. Measured 2026-08-05: the batch-level
       # refresh reported "88 min of headroom" and then ran TEN sequential jobs
@@ -267,20 +328,7 @@ for ((i=0; i<${#TODO[@]}; i+=BATCH)); do
           # retry, a genuinely-too-hard task stops burning the budget, and the
           # count is recorded so the report can say which tasks were accepted
           # as failures rather than solved.
-          attempts="$(grep -c "^$t\$" "$RETRIES" 2>/dev/null | head -1 | tr -dc '0-9')"
-          attempts="${attempts:-0}"
-          echo "$t" >> "$RETRIES"
-          attempts=$((attempts + 1))
-          if last_job_error_is_terminal; then
-            echo "$t" >> "$STATE"
-            echo "[sweep]   task $t ERRORED terminally (${TERMINAL_ERRORS}) — accepting as a failed trial (0.0); a retry reproduces it" >&2
-          elif [ "$attempts" -ge "${TB_MAX_ATTEMPTS_PER_TASK:-2}" ]; then
-            echo "$t" >> "$STATE"
-            echo "[sweep]   task $t ERRORED ${attempts}x — accepting it as a failed trial (0.0), not retrying again" >&2
-          else
-            batch_ok=0
-            echo "[sweep]   task $t ERRORED (attempt ${attempts}; TB_RESUME=1 will retry it once more)" >&2
-          fi
+          classify_errored_task "$t"
         else
           echo "$t" >> "$STATE"
         fi
@@ -292,8 +340,39 @@ for ((i=0; i<${#TODO[@]}; i+=BATCH)); do
           sleep "$pause"
         fi
       else
-        batch_ok=0
-        echo "[sweep]   task $t FAILED" >&2
+        # run-dg.sh itself exited NON-ZERO. Before 2026-08-05 this branch did
+        # only `batch_ok=0`, so the task landed in NO ledger at all: not $STATE,
+        # not $RETRIES, not $ACCEPTED. Every piece of the errored-trial policy
+        # above — bounded retries, terminal-error acceptance, the report list —
+        # applied only when run-dg.sh happened to exit 0.
+        #
+        # MEASURED on train-fasttext: it burned its full 3600 s ceiling,
+        # returned AgentTimeoutError (a TERMINAL class that reproduces on every
+        # attempt), and left no trace. TB_RESUME=1 would have re-run it for
+        # another hour and ~$2 to fail identically — and, because $RETRIES was
+        # never written, its attempt counter still read 0, so the bound that
+        # exists precisely to stop that could never engage.
+        #
+        # THE PUBLISHED NUMBER WAS NEVER AT RISK, and it matters to say so:
+        # merge-sweep.sh globs result.json and scores an errored trial 0.0 in
+        # the denominator regardless of any ledger (it read 84/89 with
+        # train-fasttext correctly included). This is a cost and convergence
+        # bug. Do not "fix" the merge.
+        #
+        # A non-zero exit has TWO causes and conflating them is the trap:
+        #   * the job RAN and errored     -> result.json exists -> classify it
+        #   * preflight died (no brain, no credential, docker down)
+        #                                 -> no result.json     -> must retry
+        # Scoring the second as 0.0 would publish an infrastructure outage as a
+        # capability failure. `last_job_is_for_task` is what separates them:
+        # without it, "newest job dir" is the PREVIOUS task's job whenever this
+        # task never created one, and we would classify task B from task A.
+        if last_job_is_for_task "$t" && last_job_errored; then
+          classify_errored_task "$t"
+        else
+          batch_ok=0
+          echo "[sweep]   task $t FAILED before producing a result (preflight/infra) — not scored; TB_RESUME=1 will retry it" >&2
+        fi
       fi
     done
   elif TB_TASKS="${chunk[*]}" bash "$HERE/run-dg.sh" ""; then

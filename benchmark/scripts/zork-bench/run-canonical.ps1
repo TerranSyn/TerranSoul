@@ -1,6 +1,6 @@
 # benchmark/scripts/zork-bench/run-canonical.ps1
 #
-# an internal work item.5 canonical orchestrator.
+# BENCH-ZORK-1.5 canonical orchestrator.
 # Runs 3 arms × 3 episodes × 300 turns sequentially against the gemma4:e4b
 # Ollama model inside the zork-bench docker image. Writes a per-arm log,
 # and a parallel watcher updates benchmark/progress.md every 15 minutes.
@@ -191,7 +191,7 @@ function Write-Status {
 
 # --- Launch progress watcher as background job ---------------------------
 # Two outputs per tick (every $WatcherMinutes min):
-#   1. APPEND a one-line tick to the an internal work item.5 Live tail section at the
+#   1. APPEND a one-line tick to the BENCH-ZORK-1.5 Live tail section at the
 #      end of benchmark/progress.md so accumulated history is visible.
 #   2. Update the BENCH_PROGRESS_START/END block near the top with the current
 #      snapshot.
@@ -308,8 +308,8 @@ $watcherScript = {
                     foreach ($s in $st.stages) { $stagesBlock += $s }
                     $body = @"
 ```
-TerranSoul an internal work item.5 canonical run progress
-chunk:         an internal work item.5
+TerranSoul BENCH-ZORK-1.5 canonical run progress
+chunk:         BENCH-ZORK-1.5
 scope:         3 arms × $($st.episodes_per_arm) episodes × $($st.max_turns) turns
 model:         $($st.model) (Ollama, ctx=4096)
 game:          Zork 1 (zork1.z5)

@@ -1,0 +1,74 @@
+{
+  "model": "gemma4:12b-it-qat",
+  "effort": "max",
+  "ms": 527931,
+  "cost_usd": 0,
+  "timeout_ms": 600000,
+  "observability": {
+    "event_count": 779,
+    "tool_calls": {
+      "read_file": 4,
+      "edit_file": 4
+    },
+    "total_tool_calls": 8,
+    "text_chunks": 763,
+    "tool_failures": 3,
+    "tool_calls_reported": [
+      {
+        "name": "read_file",
+        "count": 4
+      },
+      {
+        "name": "edit_file",
+        "count": 4
+      }
+    ]
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "runtime_failed",
+  "runtime_error": "SyntaxError: Identifier 'pylonGeo' has already been declared\n    at new Function (<anonymous>)\n    at smokeCheckPlane (file:///D:/Git/TerranSoulApp/benchmark/boeing747/actor/actor-claude.mjs:750:24)\n    at runActorEdit (file:///D:/Git/TerranSoulApp/benchmark/boeing747/actor/actor-claude.mjs:688:23)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async runActorWithRetries (file:///D:/Git/TerranSoulApp/benchmark/boeing747/loop-runner-terransoul.mjs:642:14)\n    at async runIterationTerransoul (file:///D:/Git/TerranSoulApp/benchmark/boeing747/loop-runner-terransoul.mjs:1384:19)\n    at async runLoopTerransoul (file:///D:/Git/TerranSoulApp/benchmark/boeing747/loop-runner-terransoul.mjs:1657:14)",
+  "plane_sha256_before": "90c51d31eb929154b6fe3bd2f143bacb70c013f37cc1cb93fbdf7eadc9396b3a",
+  "plane_sha256_after": "90c51d31eb929154b6fe3bd2f143bacb70c013f37cc1cb93fbdf7eadc9396b3a",
+  "plane_sha256_rejected": "b8da0a6234ff69e9229798cc1520d6167c32e359d982012a5dee54b9dd9eda30",
+  "changed": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "runtime_failed",
+      "ms": 527931,
+      "actor_error": null,
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 779,
+        "tool_calls": {
+          "read_file": 4,
+          "edit_file": 4
+        },
+        "total_tool_calls": 8,
+        "text_chunks": 763,
+        "tool_failures": 3,
+        "tool_calls_reported": [
+          {
+            "name": "read_file",
+            "count": 4
+          },
+          {
+            "name": "edit_file",
+            "count": 4
+          }
+        ]
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": true
+}

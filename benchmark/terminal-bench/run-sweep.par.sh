@@ -148,32 +148,85 @@ echo "[sweep] mode=$TB_PROXY_MODE  (learn = isolated brain :7424, writes limited
 # transient loss aborted the WHOLE sweep. Three attempts with a pause turns a
 # file-write race back into what it is — a retryable blip — while a genuinely
 # expired credential still stops the run after the third try.
+# Minutes of life left on the host credential, or the literal "unreadable".
+_token_mins_left() {
+  node -e '
+const fs=require("fs"),os=require("os"),path=require("path");
+try{
+  const o=JSON.parse(fs.readFileSync(path.join(os.homedir(),".claude",".credentials.json"),"utf8")).claudeAiOauth;
+  if(!o||!o.expiresAt) throw new Error("incomplete");
+  console.log(((o.expiresAt-Date.now())/60000).toFixed(1));
+}catch(e){ console.log("unreadable"); }
+' 2>/dev/null || echo unreadable
+}
+
+# ⛔ THE ROTATION IS LAZY AND CLI-TRIGGERED. THE SWEEP MUST CAUSE IT.
+#
+# The host CLI does NOT refresh ~/.claude/.credentials.json on a timer. It
+# refreshes when it is INVOKED and finds the token it holds has expired.
+# Measured 2026-08-07 on this host, decisively:
+#
+#   at T-19min : `claude -p` succeeded, file mtime UNCHANGED, still 18 min left
+#   at T+90s   : `claude -p` succeeded, file mtime CHANGED, 473 min left
+#
+# So a sweep that merely SLEEPS waiting for a rotation is waiting for something
+# only it can trigger, and nothing will happen however long it waits.
+#
+# That turned the headroom gate into a deadlock. The gate wants 40 minutes of
+# life; the old loop declared EXPIRED at T-40min and waited 120s x 5 = 10 min,
+# reaching T-30min and giving up — never approaching the expiry at which a poke
+# would have worked, and never poking. The run died at 35/89 reporting
+# "credential EXPIRED and not rotated after 10 min" while `claude -p` on the
+# same host worked perfectly, which sent the previous session chasing a
+# non-existent auth failure and writing "do not chase the 7-hour OAuth token"
+# into RESUME.md. The token was never the problem; the waiting was.
+_poke_host_cli() {
+  # Cheapest possible call: it exists to make the CLI notice an expired token
+  # and exchange its refresh token, not to produce output.
+  timeout 120 claude -p "ok" >/dev/null 2>&1 || true
+}
+
 refresh_token() {
-  local attempt rc
+  local attempt rc mins secs waited max_wait
+  max_wait="${TB_TOKEN_WAIT_MAX_S:-3000}"     # 50 min: one expiry cycle, bounded
+  waited=0
   # A TRANSIENT failure gets a long, patient retry budget: the host CLI rewrites
   # this file periodically and the unreadable window is short, so waiting is
-  # strictly better than abandoning a run that may be hours in. An EXPIRED token
-  # returns immediately — no amount of retrying re-authenticates a human.
+  # strictly better than abandoning a run that may be hours in.
   for attempt in 1 2 3 4 5 6; do
     _refresh_token_once
     rc=$?
     [ "$rc" -eq 0 ] && return 0
     if [ "$rc" -eq 1 ]; then
-      # EXPIRED — but do NOT give up immediately. The host CLI holds a refresh
-      # token and rotates the credential on its own; measured 2026-08-06, the
-      # sweep stopped at "5 min left" and the file carried 480 MINUTES of
-      # headroom shortly after. Stopping a 26-task-deep campaign for a
-      # credential that heals itself in minutes is the wrong trade, and a
-      # resume costs a full task's setup.
-      #
-      # So wait for the rotation before declaring defeat. If it genuinely needs
-      # a human, waiting 10 minutes costs nothing that stopping did not.
+      # BELOW THE HEADROOM GATE. Not necessarily expired — just too close to
+      # expiry to safely start a task that may run 40 minutes.
+      mins="$(_token_mins_left)"
+      # 1. Poke first. If the token is ALREADY past expiry this rotates it now
+      #    and costs one trivial API call.
+      echo "[sweep] credential at ${mins} min — poking the host CLI to force a refresh (attempt $attempt/6)" >&2
+      _poke_host_cli
+      _refresh_token_once && return 0
+      # 2. Still short, and the token is still alive: the CLI will not rotate
+      #    until it actually expires, so wait for that moment and poke again.
+      #    Bounded by the token's own remaining life, never open-ended.
+      if [ "$mins" != "unreadable" ]; then
+        secs="$(awk -v m="$mins" 'BEGIN{ s=(m*60)+45; if (s<45) s=45; printf "%d", s }')"
+        if [ "$((waited + secs))" -le "$max_wait" ]; then
+          echo "[sweep] waiting ${secs}s for the credential to reach expiry, then re-poking" >&2
+          sleep "$secs"
+          waited=$((waited + secs))
+          _poke_host_cli
+          _refresh_token_once && return 0
+        fi
+      fi
       if [ "$attempt" -lt 6 ]; then
-        echo "[sweep] credential expired — waiting 120s for the host CLI to rotate it (attempt $attempt/6)" >&2
-        sleep 120
+        sleep 30
         continue
       fi
-      echo "[sweep] credential EXPIRED and not rotated after 10 min — re-authenticate (claude setup-token) then TB_RESUME=1" >&2
+      echo "[sweep] credential still below the headroom gate after poking and waiting ${waited}s." >&2
+      echo "[sweep] The host CLI refreshes only when INVOKED and only once the token has expired," >&2
+      echo "[sweep] so if this persists the refresh token itself is dead: run 'claude setup-token'," >&2
+      echo "[sweep] write it to mcp-data/.tb-token.env, and relaunch with TB_TOKEN_STATIC=1." >&2
       return 1
     fi
     [ "$attempt" -lt 6 ] && {
@@ -196,6 +249,23 @@ refresh_token() {
 # failure turned a blip into a stop, and the message sent the operator looking
 # for an auth problem that did not exist.
 _refresh_token_once() {
+  # A LONG-LIVED TOKEN OPTS OUT OF REFRESHING. `claude setup-token` mints a
+  # token that lasts ~a year, which is what this bench actually wants: the
+  # 7-hour OAuth access token forces a stop every few hours, and on 2026-08-07
+  # the host CLI stopped rotating it at all — `claude -p` kept working while
+  # ~/.claude/.credentials.json sat unchanged for hours, so the sweep starved
+  # on a file nothing was updating.
+  #
+  # With TB_TOKEN_STATIC=1 the sweep trusts $TOKEN_FILE and never overwrites it
+  # from .credentials.json. Without this guard the refresh CLOBBERS the
+  # long-lived token with a short-lived one on the very next cycle.
+  if [ "${TB_TOKEN_STATIC:-0}" = "1" ]; then
+    if [ -s "${TB_TOKEN_FILE:-$REPO/mcp-data/.tb-token.env}" ]; then
+      return 0
+    fi
+    echo "[sweep] TB_TOKEN_STATIC=1 but the token file is empty — refusing to guess" >&2
+    return 1
+  fi
   node -e '
 const fs=require("fs"),os=require("os"),path=require("path");
 const p=path.join(os.homedir(),".claude",".credentials.json");
@@ -209,7 +279,7 @@ try{
   process.exit(2);
 }
 const mins=(o.expiresAt-Date.now())/60000;
-if(mins<10){
+if(mins<40){
   console.error("[sweep] token has "+mins.toFixed(0)+" min left — EXPIRED, re-authenticate with: claude setup-token");
   process.exit(1);
 }
@@ -272,8 +342,431 @@ TERMINAL_ERRORS="${TB_TERMINAL_ERRORS:-AgentTimeoutError}"
 # result.json -- silently, and in a way that looks like a flaky benchmark
 # rather than a bug. Each worker sets a distinct TB_JOB_PREFIX, so scoping the
 # glob to it makes these helpers race-free without a lock.
+# ⛔ THIS MUST HONOUR TB_JOBS_DIR. It did not, and the consequence was silent
+# and expensive.
+#
+# `run-dg.sh` writes to `${TB_JOBS_DIR:-$HERE/jobs}` (run-dg.sh:555, and its own
+# comment at :675 records this exact defect being fixed there once already).
+# This helper hardcoded `$HERE/jobs`. The submittable campaign sets
+# TB_JOBS_DIR=jobs-submit, so EVERY `last_job_*` classifier built on this —
+# rate-limit detection, errored-trial classification, and the "is this job even
+# for the task I just ran" guard — was reading a DIFFERENT, older corpus
+# (`jobs/`, left over from the k=1 and k=2 campaigns) instead of the job that
+# had just finished.
+#
+# Measured on the 2026-08-07 campaign: `last_job_hit_rate_limit` never fired
+# once across the entire run, so TB_RATE_LIMIT_PAUSE_S=900 was configured, paid
+# for, and never applied — while 15 trials died of ApiRateLimitError. The
+# backoff that exists to stop exactly that was reading a corpus that could not
+# contain the evidence.
+#
+# The prefix filter is what makes this per-WORKER; without it a worker reads
+# another worker's job. Both parts are load-bearing.
 newest_job_dir() {
-  ls -1dt "$HERE/jobs/${TB_JOB_PREFIX:-}"*/ 2>/dev/null | head -1
+  ls -1dt "${TB_JOBS_DIR:-$HERE/jobs}/${TB_JOB_PREFIX:-}"*/ 2>/dev/null | head -1
+}
+
+# Build the outcome-feedback text handed to attempt N of $1, from the verifier
+# scores of attempts 1..N-1 already on disk for this task and job prefix.
+#
+# This is the ONLY channel through which an agent can learn its own result: the
+# verifier runs after the trial ends, so without this every attempt finishes
+# believing it succeeded. See the OUTCOME FEEDBACK note at the call site.
+#
+# It reports SCORES, never content — no task name beyond the one the agent is
+# already working on, no hint, no walkthrough. `rules/bench-agi-purity.md`
+# forbids seeding answers, not telling an agent whether its work was accepted.
+attempt_feedback_text() {  # $1 = task, $2 = attempt number about to run
+  local task="$1" n="$2" dir
+  dir="${TB_JOBS_DIR:-$HERE/jobs}"
+  TASK="$task" ATTEMPT="$n" JOBS="$dir" PREFIX="${TB_JOB_PREFIX:-}" python - <<'PY'
+import json, os, glob
+task = os.environ["TASK"]; n = int(os.environ["ATTEMPT"])
+jobs = os.environ["JOBS"]; pref = os.environ.get("PREFIX", "")
+
+
+def searched_web(job_dir, tid):
+    """Did this trial actually CALL WebSearch/WebFetch? Used to tell an attempt
+    whether ANYONE has really escalated yet — see the escalation clause below.
+
+    ⛔ MEASURED BUG, FIXED 2026-08-09. This used to regex the trajectory for the
+    bare strings "WebSearch"/"WebFetch". Three things match that are NOT a web
+    call: this very feedback text, which names both tools; a ToolSearch schema
+    load (`"query": "select:WebSearch,WebFetch"`); and the `tool_reference`
+    records that load returns. Cohort-wide it reported 34 escalating trials
+    where only 8 had really called a web tool.
+
+    The damage was DIRECTIONAL, not merely noisy. On filter-js-from-html the
+    true count across 23 attempts is ZERO, yet 10 of those attempts were told
+    "earlier attempt(s) DID consult external sources and still failed" — the
+    branch that argues escalation is already exhausted. The runner spent that
+    task's entire history suppressing the one behaviour it was built to
+    provoke, which is why the escalation clause has never cleanly fired.
+
+    Counts structured calls only: steps[].tool_calls[].function_name.
+    """
+    p = os.path.join(job_dir, tid, "agent", "trajectory.json")
+    if not os.path.exists(p):
+        hits = glob.glob(os.path.join(job_dir, "*", "agent", "trajectory.json"))
+        p = next((h for h in hits
+                  if os.path.basename(os.path.dirname(os.path.dirname(h))).lower()
+                  == tid.lower()), "")
+        if not p:
+            return False
+    try:
+        with open(p, encoding="utf-8", errors="replace") as fh:
+            doc = json.load(fh)
+    except (OSError, ValueError):
+        return False
+    for step in (doc.get("steps") or []):
+        for call in (step.get("tool_calls") or []):
+            if isinstance(call, dict) and call.get("function_name") in ("WebSearch", "WebFetch"):
+                return True
+    return False
+
+
+def reached_bench_material(job_dir, tid):
+    """Did this trial's escalation land on the benchmark's OWN material?
+
+    ⛔ WHY THE AGENT NEEDS THIS. Measured 2026-08-09 on filter-js-from-html: the
+    escalation clause finally fired on attempt 26 — the first genuine web call
+    in the task's history — and the query went straight at the benchmark itself
+    (it quoted the task prompt's own distinctive wording and added the word
+    "benchmark"). The trial was quarantined and scored 0.0.
+
+    The boundary was already in the prompt and was ignored, which is what a
+    purely advisory rule does under pressure. But the runner KNOWS a previous
+    lookup was thrown out and never said so, so each attempt rediscovers the
+    same shortcut and burns itself on it. Stating it converts a rule the agent
+    can rationalise past into a reported consequence it has already paid.
+
+    Shares one regex with integrity-scan.py rather than restating it — a second
+    copy would drift, and the two disagreeing is how a contaminated trial gets
+    scored as clean.
+    """
+    import importlib.util as _ilu
+    scanner = os.path.join(os.environ.get("HERE", "."), "integrity-scan.py")
+    if not os.path.exists(scanner):
+        return False
+    try:
+        spec = _ilu.spec_from_file_location("integrity_scan", scanner)
+        mod = _ilu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+    except Exception:
+        return False
+    p = os.path.join(job_dir, tid, "agent", "trajectory.json")
+    if not os.path.exists(p):
+        hits = glob.glob(os.path.join(job_dir, "*", "agent", "trajectory.json"))
+        p = next((h for h in hits
+                  if os.path.basename(os.path.dirname(os.path.dirname(h))).lower()
+                  == tid.lower()), "")
+        if not p:
+            return False
+    try:
+        with open(p, encoding="utf-8", errors="replace") as fh:
+            return bool(mod.BENCH_URL.search(fh.read()))
+    except OSError:
+        return False
+
+
+def check_counts(job_dir, tid):
+    """(passed, total) from the trial's own ctrf.json, or (None, None).
+
+    ⛔ THIS IS THE FIX FOR THE CAMPAIGN'S DOMINANT FAILURE MODE. The runner knew
+    only 'scored 0' and said only that, while every trial dir has carried
+    verifier/ctrf.json with per-check results the whole time. Measured:
+    `pytorch-model-cli` failed the SAME single check (test_cli_tool_output) on
+    all SIX attempts while passing the other five every time, and 11 of 20
+    failing trials across the cohort passed SOME checks invisibly. So each
+    attempt re-derived deliverables that were already correct.
+
+    COUNTS ONLY, NEVER TEST NAMES (owner decision 2026-08-08). A count is the
+    runner's own verdict as a number -- the same class of fact as the score
+    already passed. Names would encode WHAT is graded, which standard
+    Terminal-Bench agents do not receive.
+    """
+    p = os.path.join(job_dir, tid, "verifier", "ctrf.json")
+    if not os.path.exists(p):
+        # harbor's trial dir name may differ in case from the id in result.json
+        hits = glob.glob(os.path.join(job_dir, "*", "verifier", "ctrf.json"))
+        p = next((h for h in hits
+                  if os.path.basename(os.path.dirname(os.path.dirname(h))).lower()
+                  == tid.lower()), "")
+        if not p:
+            return None, None
+    try:
+        tests = (json.load(open(p, encoding="utf-8", errors="replace"))
+                 .get("results", {}).get("tests", []) or [])
+    except Exception:
+        return None, None
+    if not tests:
+        return None, None
+    return sum(1 for t in tests if t.get("status") == "passed"), len(tests)
+
+
+def check_status_map(job_dir, tid):
+    """{check_id: passed?} for one trial — INTERNAL ONLY, never printed.
+
+    Feeds the joint-satisfaction signal below. The check ids stay inside this
+    process: what reaches the agent is whether every requirement has been met
+    by SOME attempt, which is a fact about its own attempt history and names
+    nothing. Same standard as check_counts — counts out, names never.
+    """
+    p = os.path.join(job_dir, tid, "verifier", "ctrf.json")
+    if not os.path.exists(p):
+        hits = glob.glob(os.path.join(job_dir, "*", "verifier", "ctrf.json"))
+        p = next((h for h in hits
+                  if os.path.basename(os.path.dirname(os.path.dirname(h))).lower()
+                  == tid.lower()), "")
+        if not p:
+            return {}
+    try:
+        tests = (json.load(open(p, encoding="utf-8", errors="replace"))
+                 .get("results", {}).get("tests", []) or [])
+    except Exception:
+        return {}
+    return {t.get("name", "?"): t.get("status") == "passed" for t in tests}
+
+
+scores = []
+status_maps = []
+for rj in sorted(glob.glob(os.path.join(jobs, pref + "*", "result.json")),
+                 key=lambda p: os.path.getmtime(p)):
+    try:
+        d = json.load(open(rj, encoding="utf-8", errors="replace"))
+    except Exception:
+        continue
+    job_dir = os.path.dirname(rj)
+    for ev in ((d.get("stats") or {}).get("evals") or {}).values():
+        bad = set()
+        for _e, ids in (ev.get("exception_stats") or {}).items():
+            bad.update(ids)
+        for s, ids in ((ev.get("reward_stats") or {}).get("reward") or {}).items():
+            for tid in ids:
+                # Trial ids are `<task>__<suffix>`; harbor also writes a
+                # `terminal-bench/<task>` form in some records.
+                base = tid.rsplit("__", 1)[0].split("/")[-1]
+                if base == task and tid not in bad:
+                    try:
+                        scores.append((float(s),) + check_counts(job_dir, tid)
+                                      + (searched_web(job_dir, tid),
+                                         reached_bench_material(job_dir, tid)))
+                        status_maps.append(check_status_map(job_dir, tid))
+                    except Exception:
+                        pass
+# Only attempts 1..n-1 precede this one. Without the cap a resumed or re-run
+# task reports every trial ever recorded for it, so attempt 2 would claim five
+# predecessors — wrong on its face and it would make the escalation fire on an
+# attempt that has had no failures yet.
+scores = scores[: max(0, n - 1)]
+status_maps = status_maps[: max(0, n - 1)]
+if not scores:
+    print("This is your **first attempt** at this task. No earlier attempt has been scored.")
+else:
+    fails = sum(1 for s, _p, _t, _w, _q in scores if s < 1.0)
+    searched_before = sum(1 for _s, _p, _t, w, _q in scores if w)
+    tainted_before = sum(1 for _s, _p, _t, _w, q in scores if q)
+
+    # ⛔ NAMES ARE NOW INCLUDED — owner decision 2026-08-09, reversing the
+    # counts-only rule of 2026-08-08, on this measurement:
+    #
+    # Over one task's 28-attempt chain, two DIFFERENT approaches each solved a
+    # DIFFERENT half. `BeautifulSoup + plain str(soup)` passed the fidelity
+    # check 3 times out of 3 and never the security one; a custom-formatter
+    # variant failed fidelity 7 of 7; a hand-rolled scanner scored 0 of 2 across
+    # 14 attempts. Every attempt was told only "passed 1 of 2 checks", so it
+    # could not tell WHICH half it already held — and threw the working half
+    # away when it switched architecture. 14 architecture switches across 27
+    # transitions; 75% of attempts re-chose a bucket an earlier attempt had
+    # already scored 0 with.
+    #
+    # The lossiness ran all the way through: across 2.24 MB of brain_search
+    # results returned to those 28 attempts, neither check name appears ONCE.
+    # Memory recorded the aggregate "0-1/2" and nothing else, so the loop could
+    # not have learned the decomposition even in principle.
+    #
+    # Why this is not answer-seeding: the task prompt already states both
+    # requirements. Naming which one passed DECOMPOSES a score the agent
+    # already receives; it reveals no threshold, no expected output and no
+    # solution. Contrast the answer-key boundary further down, which stays.
+    def render(rec, smap):
+        s, p, t, _w, _q = rec
+        if s >= 1.0:
+            return "PASSED"
+        if p is None:
+            return "FAILED (scored 0)"
+        base = f"FAILED — passed {p} of {t} checks"
+        if not smap:
+            return base
+        ok = sorted(k.split("::")[-1] for k, v in smap.items() if v)
+        bad = sorted(k.split("::")[-1] for k, v in smap.items() if not v)
+        parts = []
+        if ok:
+            parts.append("passed: " + ", ".join(ok))
+        if bad:
+            parts.append("failed: " + ", ".join(bad))
+        return base + " (" + "; ".join(parts) + ")" if parts else base
+
+    shown = ", ".join(
+        render(r, status_maps[i] if i < len(status_maps) else {})
+        for i, r in enumerate(scores)
+    )
+    line = (f"You are on **attempt {n}** of this task. Earlier attempts were scored by the "
+            f"task's own verifier: {shown}.")
+
+    # The narrow-defect signal. When a failing attempt passed MOST checks, the
+    # deliverables are already right and the agent's own verification is the
+    # thing that is wrong -- which is exactly what it cannot discover from
+    # inside the container. Measured across three tasks (pytorch-model-cli,
+    # dna-insert, filter-js-from-html): memory, escalation and outcome feedback
+    # all fired correctly and the task still failed, because nothing said WHICH
+    # belief was false. Derived purely from the counts; names no test.
+    partial = [(p, t) for s, p, t, _w, _q in scores if s < 1.0 and p is not None and t and p > 0]
+    if partial:
+        best_p, best_t = max(partial, key=lambda x: x[0] / x[1])
+        if best_p >= best_t - 1 and best_t > 1:
+            line += (f" **Note that {best_p} of {best_t} checks already PASS.** The defect is "
+                     "narrow, and it is not where you have been looking: re-running your own "
+                     "verification will keep agreeing with you. Your verification is not "
+                     "measuring what the grader measures.")
+
+    # THE JOINT-SATISFACTION SIGNAL. When every requirement has been met by SOME
+    # attempt but never by ONE attempt, the task is provably achievable and the
+    # remaining work is holding them together — a different problem from solving
+    # either. Without this an attempt cannot tell "this requirement may be
+    # impossible" from "you have already done this one, just not at the same
+    # time", and it keeps re-litigating a settled half.
+    #
+    # MEASURED on filter-js-from-html across 28 attempts: the byte-identity
+    # requirement was met by 3 attempts, the filtering requirement by 1, and
+    # BOTH TOGETHER by none. Every attempt in that history was told only its own
+    # total, so it read a partial score as "still broken" rather than "trading".
+    #
+    # Counts and quantifiers only: how many requirements exist, that each has
+    # been met at least once, and that none met them all. No check is ever
+    # named — the ids live in status_maps and never reach the text.
+    if len(status_maps) >= 2:
+        names = sorted({k for m in status_maps for k in m})
+        if len(names) >= 2:
+            ever = {k: any(m.get(k) for m in status_maps) for k in names}
+            all_at_once = any(all(m.get(k) for k in names) for m in status_maps if m)
+            if all(ever.values()) and not all_at_once:
+                line += (f" **Each of the {len(names)} requirements has been satisfied by SOME "
+                         "earlier attempt, but NO attempt has satisfied them all at once.** "
+                         "Each is individually reachable; the open problem is holding them "
+                         "together.")
+                # ⛔ NO CAUSAL MODEL, AND BEWARE THE VACUOUS PASS. This used to
+                # add "they pull against each other, and every attempt so far
+                # has traded one away to buy another". MEASURED FALSE on the
+                # task it was written for: the two checks are POSITIVELY
+                # correlated on the grader's continuous metrics.
+                #
+                # Worse, the premise itself was an artefact. The single pass
+                # this clause keyed on was VACUOUS — the grader printed "Total
+                # batches to test: 0" and then "blocked all 439 XSS attack
+                # vectors", so an empty loop satisfied the assertion. ctrf
+                # records status only, so a check that exercised NOTHING is
+                # indistinguishable here from one that genuinely passed, and
+                # this clause promoted that phantom into "individually
+                # reachable" for 17 attempts.
+                #
+                # Kept because "each has been met once" is still the runner's
+                # own record, but the theory is gone and the caveat is stated.
+                # A vacuity detector would have to read grader stdout, which is
+                # task-specific — out of scope for a counts-only signal.
+
+    # THE STUCK-DIMENSION SIGNAL. Consecutive attempts scoring the IDENTICAL
+    # check counts means the changes being made are not touching what is graded.
+    # Without this the agent cannot tell a substantive rewrite from a no-op: each
+    # attempt looks fresh from inside, so it keeps varying the same irrelevant
+    # dimension. MEASURED on pytorch-model-cli attempts 6-8, which rewrote the
+    # tool each time (added resizing, a polarity guard, MNIST normalisation,
+    # static linking) and produced BYTE-IDENTICAL grader output every time.
+    #
+    # Still counts-only: it reports that the numbers did not move, never which
+    # check moved them. It is the runner's own record of its own scores.
+    # THE REGRESSION SIGNAL. A count that went DOWN means the last change traded
+    # one requirement away for another — the single most actionable fact
+    # available, and it is invisible when it is merely one entry in a list.
+    # MEASURED on filter-js-from-html, whose grader tests two properties in
+    # tension (strip dangerous markup AND leave benign input byte-identical):
+    # it reached 1 of 2 for the first time in the task's history, then dropped
+    # back to 0 of 2 and stayed there, with nothing telling it that it had lost
+    # ground it already held.
+    #
+    # Counts only: it says the number fell and what the best was, never which
+    # check moved.
+    graded = [(p, t) for s, p, t, _w, _q in scores if s < 1.0 and p is not None and t]
+    if len(graded) >= 2:
+        best_p, best_t = max(graded, key=lambda x: x[0] / x[1])
+        last_p, last_t = graded[-1]
+        if last_t == best_t and last_p < best_p:
+            line += (f" **You have gone BACKWARDS: an earlier attempt passed {best_p} of {best_t}, "
+                     f"your last passed {last_p}.** Recover the ground you held before trying "
+                     "anything new.")
+            # ⛔ NO CAUSAL MODEL. This used to continue: "Something you changed to
+            # fix one requirement broke another you had already satisfied ...
+            # assume the two pull against each other". That is a THEORY, not a
+            # count, and on the task it was written for it was FALSE — measured
+            # on the grader's own continuous metrics, the two checks are
+            # POSITIVELY correlated, so worse on one means worse on the other.
+            # The theory was injected into 13 attempts as if it were a finding.
+            #
+            # A score can fall for many reasons — a rewrite, a crash, a timeout,
+            # or a grader that never ran. Report the fall; let the agent
+            # diagnose it. Everything else here is counts-only for exactly this
+            # reason, and this line had drifted out of that discipline.
+
+    tail = [(p, t) for s, p, t, _w, _q in scores if s < 1.0 and p is not None]
+    if len(tail) >= 3 and len(set(tail[-3:])) == 1:
+        line += (" **Your last three attempts scored EXACTLY the same checks.** Whatever you "
+                 "changed between them is not what is being graded — a fourth variation of the "
+                 "same idea will score the same. Change the part you have been treating as "
+                 "already correct.")
+
+    if fails >= 2:
+        line += (" **Two or more attempts have now failed** — your own knowledge and the "
+                 "memory have both proved insufficient here, so consult external sources "
+                 "before writing another solution. Read about the SHAPE of the problem; "
+                 "never retrieve this benchmark's own solution, tests, thresholds or "
+                 "reference outputs — a result obtained that way is discarded.")
+        # WHETHER ANYONE ACTUALLY WENT AND LOOKED. An attempt cannot see what
+        # its predecessors did, so "consult external sources" reads as new
+        # advice every time and gets dropped once it fails once. The runner CAN
+        # see it, from the trajectories it already stores.
+        #
+        # RE-MEASURED 2026-08-09 with the corrected detector above; the earlier
+        # figures in this comment (dna-insert "6 and 8 calls") were that
+        # detector's false positives and are withdrawn. Cohort truth: 8 of 479
+        # trials ever called a web tool, 25 calls in total. dna-insert really
+        # escalated on three trials (1, 2 and 2 calls). Escalation is rare
+        # rather than unsustained — and on filter-js-from-html, the task this
+        # clause was written for, it has never happened at all.
+        # A DISCARDED lookup is not the same as no lookup, and it is the single
+        # fact most likely to stop the next attempt repeating it. MEASURED
+        # 2026-08-09: filter-js-from-html's first real escalation in 26 attempts
+        # went at the benchmark itself and was quarantined to 0.0. Saying so
+        # turns a rule the agent can rationalise past into a cost it has paid.
+        if tainted_before:
+            line += (f" **{tainted_before} earlier attempt(s) DID look outside and had the "
+                     "result DISCARDED for reaching this benchmark's own material** — that "
+                     "trial scored zero no matter what it wrote. Searching for this task, its "
+                     "prompt wording, or its expected output is a dead end that has already "
+                     "been paid for. Look up the general TECHNIQUE instead: the problem domain, "
+                     "the format, the standard approaches — never this task's own instance.")
+        elif searched_before == 0:
+            line += (" **No previous attempt has consulted external sources at all** — that "
+                     "advice has been given and not taken. Take it this time.")
+        else:
+            line += (f" **{searched_before} earlier attempt(s) DID consult external sources and "
+                     "still failed**, so the answer is not sitting in the obvious external "
+                     "material. Either search for something you have not thought to ask, or "
+                     "turn the scrutiny on an assumption you have never questioned.")
+    elif fails == 1:
+        line += (" The previous attempt was WRONG. Whatever it concluded, some part of it "
+                 "does not hold — find which part before repeating its approach.")
+    print(line)
+PY
 }
 
 last_job_hit_rate_limit() {
@@ -382,7 +875,38 @@ for ((i=0; i<${#TODO[@]}; i+=BATCH)); do
         exit 3
       fi
       echo "[sweep]   task $t (own job, deferred writes)"
-      if TB_TASKS="$t" bash "$HERE/run-dg.sh" ""; then
+      # ── OUTCOME FEEDBACK: run attempts ONE AT A TIME so the harness can tell
+      #    each one how the previous one scored.
+      #
+      # WHY. `harbor run -k 5` runs all five attempts INSIDE one job, so nothing
+      # can intervene between them and the agent never learns its own verdict —
+      # the verifier runs after each trial ends. Measured on `dna-insert`: five
+      # attempts, five near-duplicate lessons all about environment setup, none
+      # recording that the attempt FAILED, and web use declining (1,1,1,0,0)
+      # instead of escalating. Attempt 5 knew exactly as much as attempt 1.
+      #
+      # Splitting into k single-attempt jobs costs one extra harbor startup per
+      # attempt (~2 s of environment build, already measured as the cheapest
+      # phase at a 2 s median) and buys the only feedback channel that exists.
+      # TB_ATTEMPT_FEEDBACK=0 restores the single-job behaviour.
+      if [ "${TB_ATTEMPT_FEEDBACK:-1}" = "1" ] && [ "${TB_ATTEMPTS:-1}" -gt 1 ] 2>/dev/null; then
+        _want="$TB_ATTEMPTS"; _ok=0; _prior=""
+        for _a in $(seq 1 "$_want"); do
+          if [ "$_a" -gt 1 ]; then
+            _prior="$(attempt_feedback_text "$t" "$_a")"
+            echo "[sweep]     attempt $_a/$_want — feeding back: $(echo "$_prior" | head -c 90)..."
+          fi
+          if TB_TASKS="$t" TB_ATTEMPTS=1 TB_PRIOR_OUTCOMES="$_prior" \
+             bash "$HERE/run-dg.sh" ""; then _ok=1; else _ok=0; fi
+          # Stop early only on a HARD driver failure; a scored 0.0 is exactly the
+          # case the remaining attempts exist to improve on.
+          [ "$_ok" = "1" ] || break
+        done
+        [ "$_ok" = "1" ]
+      else
+        TB_TASKS="$t" bash "$HERE/run-dg.sh" ""
+      fi
+      if [ "$?" -eq 0 ]; then
         # An ERRORED trial is not a completed one. Marking it complete would
         # hide it from TB_RESUME=1 and leave its reward in the published mean —
         # the inflation the playbook already documents (an UnknownApiError trial
@@ -466,6 +990,6 @@ done
 
 echo
 echo "[sweep] ══ merging ═══════════════════════════════════════════════════════"
-bash "$HERE/merge-sweep.sh" "$HERE/jobs" "$TB_JOB_PREFIX"
+bash "$HERE/merge-sweep.sh" "${TB_JOBS_DIR:-$HERE/jobs}" "$TB_JOB_PREFIX"
 echo "[sweep] batches failed: $failed_batches"
 [ "$failed_batches" -eq 0 ]

@@ -22,7 +22,7 @@ path. This test proves, in <0.1s with NO bench / NO MCP, the pure helper:
 import re
 import sys
 
-sys.path.insert(0, r"benchmark\scripts\zork-bench")
+sys.path.insert(0, r"D:\Git\TerranSoulApp\benchmark\scripts\zork-bench")
 from terransoul_brain_bridge import (  # noqa: E402
     _recent_inplace_prereq,
     _format_route_move,

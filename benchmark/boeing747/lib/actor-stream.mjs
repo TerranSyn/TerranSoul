@@ -1,19 +1,19 @@
 // Progress-line classifier/observability summarizer for the Boeing 747
 // autonomous actor's `terransoul --agent-task` calls
 // (benchmark/boeing747/actor/actor-claude.mjs). NOT frozen — part of the
-// WIRE-CLI-an internal work item rewire (2026-07-10).
+// WIRE-CLI-PARITY-GAP-3 rewire (2026-07-10).
 //
 // REWIRE NOTE: this module previously parsed the bare `claude --output-
 // format stream-json --verbose` JSONL directly (LESSON BOEING-747-ACTOR-
 // RETRY-1's fix 3), back when actor-claude.mjs spawned the `claude` binary
 // itself. The actor now spawns `terransoul --agent-task` instead
 // (TerranSoul's own generic agentic-edit CLI capability,
-// internal module, which internally drives `claude` via
-// internal module and does its OWN JSONL parsing in Rust) —
+// src-tauri/src/cli.rs, which internally drives `claude` via
+// crates/brain/src/agentic_cli.rs and does its OWN JSONL parsing in Rust) —
 // so the raw `claude` JSONL stream is no longer visible to this Node
 // harness at all. What IS visible:
 //   - stderr: `terransoul`'s own human-readable progress lines, printed
-//     by `internal module::print_agentic_event` — `[tool] <name> <input_summary>`,
+//     by `cli.rs::print_agentic_event` — `[tool] <name> <input_summary>`,
 //     `[tool-result] <name> (ok|FAILED)`, and raw assistant text chunks
 //     (printed via `eprint!` with no prefix, so they arrive as ordinary
 //     lines here).

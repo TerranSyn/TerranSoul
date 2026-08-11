@@ -1,0 +1,144 @@
+{
+  "benchmark": "MILLION-RESUME JD-DEMO — MAX (agentic wide retrieve + verify-from-text)",
+  "generated_at": "2026-07-04T16:10:18.071Z",
+  "mode": "million",
+  "config": {
+    "rrf_mode": "rrf",
+    "dense": false,
+    "per_q": 1000,
+    "discover_n": 8,
+    "max_rounds": 2,
+    "epsilon": 0.004,
+    "judge_model": "gemma4:12b-it-qat",
+    "judge_head": 120,
+    "judge_batch": 10,
+    "judge_ctx": 8192,
+    "no_judge": false
+  },
+  "env": {
+    "longmem_vars": {
+      "LONGMEM_DATA_DIR": "D:/Git/TerranSoulApp/target-copilot-bench/jdbench/store",
+      "LONGMEM_SHIM_EXE": "D:/Git/TerranSoulApp/target-copilot-bench/debug/longmemeval-ipc.exe"
+    },
+    "ollama_host": "http://127.0.0.1:11434",
+    "node": "v24.3.0",
+    "platform": "win32 x64"
+  },
+  "results": [
+    {
+      "jd_id": "jd-vi-data-engineering",
+      "jd_lang": "vi",
+      "gold_size": 1166,
+      "retrieval": {
+        "rrf_mode": "rrf",
+        "dense": false,
+        "query_count": 70,
+        "pool_size": 21896,
+        "rounds": [
+          {
+            "round": 1,
+            "kind": "required-pairs",
+            "queries": 6,
+            "added": 4253,
+            "pool": 4253
+          },
+          {
+            "round": 2,
+            "kind": "discovered-pairs",
+            "discovered": [
+              "Data",
+              "Backend",
+              "ETL",
+              "Snowflake",
+              "Data Engineer",
+              "Scala",
+              "dbt",
+              "Engineering"
+            ],
+            "queries": 32,
+            "added": 12983,
+            "pool": 17236,
+            "passers": 3299,
+            "new_passers": 376
+          },
+          {
+            "round": 3,
+            "kind": "discovered-pairs",
+            "discovered": [
+              "Modeling",
+              "Data Modeling",
+              "Backend Engineer",
+              "Computer",
+              "Mentored teammates",
+              "teammates",
+              "practices while",
+              "while"
+            ],
+            "queries": 32,
+            "added": 4660,
+            "pool": 21896,
+            "passers": 3530,
+            "new_passers": 231
+          }
+        ],
+        "gold_in_pool": 1057,
+        "gold_in_pool_pct": 90.65,
+        "gold_in_pool_by_lang": {
+          "zh": 67,
+          "en": 446,
+          "vi": 154,
+          "ja": 144,
+          "fr": 85,
+          "ko": 90,
+          "es": 71
+        },
+        "gold_total_by_lang": {
+          "en": 459,
+          "zh": 85,
+          "fr": 94,
+          "vi": 177,
+          "ko": 95,
+          "es": 87,
+          "ja": 169
+        },
+        "latency_ms": 733111
+      },
+      "verify": {
+        "passers": 3530,
+        "judged": 120,
+        "domain_kept": 3428,
+        "judge_calls": 12,
+        "judge_ms": 68558,
+        "judge_tokens": {
+          "prompt": 20572,
+          "eval": 1439
+        },
+        "verify_ms": 48,
+        "no_judge": false
+      },
+      "accuracy": {
+        "recall_at_10": {
+          "capped": 1,
+          "raw": 0.008576329331046312,
+          "hits": 10
+        },
+        "precision_at_10": 1,
+        "ndcg_at_10": 1,
+        "top_10": [
+          "res-421187",
+          "res-686473",
+          "res-293748",
+          "res-84788",
+          "res-142621",
+          "res-799742",
+          "res-54993",
+          "res-584554",
+          "res-595966",
+          "res-737017"
+        ]
+      },
+      "total_ms": 801718
+    }
+  ],
+  "wall_seconds_total": 896.266
+}

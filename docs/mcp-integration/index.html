@@ -62,7 +62,7 @@ node scripts/mcp-tray-proxy.mjs --probe  # Show which server agents will use</co
   <p>TerranSoul can write its own MCP config into a target repo for VS Code (<code>.vscode/mcp.json</code>) or Zed (ACP-style <code>context_servers</code> config in <code>.zed/settings.json</code>) so you don't have to hand-author the JSON. It also exposes read-only MCP <i>resources</i> (e.g. a symbol's callers/callees) and guided <i>prompts</i> (find-references, impact-of-change, explain-cluster) on top of the tool list below — the same code-intelligence queries the app's own coding subsystem uses internally, reshaped for an editor to call directly.</p>
 
   <h2>What's callable</h2>
-  <p>The tool list is capability-gated: without code-read access an MCP client sees 75 brain/knowledge-graph/observability tools; with full read/write + code-read it sees 94 — the same 75 plus 18 code-intelligence tools plus <code>channel_send</code>. These counts are pinned by tests in <code>ai_integrations/mcp/internal module</code>, not documentation that can silently drift.</p>
+  <p>The tool list is capability-gated: without code-read access an MCP client sees 75 brain/knowledge-graph/observability tools; with full read/write + code-read it sees 94 — the same 75 plus 18 code-intelligence tools plus <code>channel_send</code>. These counts are pinned by tests in <code>ai_integrations/mcp/tools.rs</code>, not documentation that can silently drift.</p>
   <p>The ones worth knowing by name:</p>
   <table>
     <tr><th>Tool</th><th>What it does</th></tr>
@@ -80,8 +80,8 @@ node scripts/mcp-tray-proxy.mjs --probe  # Show which server agents will use</co
 
 <footer>
   <a href="../">← TerranSoul home</a>
-  <a href="https://github.com/Terranimus/TerranSoul/blob/main/internal module">Source (internal module)</a>
-  <a href="https://github.com/Terranimus/TerranSoul/blob/main/rules/agent-mcp-bootstrap.md">agent-mcp-bootstrap.md</a>
+  <a href="https://github.com/Terranimus/TerranSoulApp/blob/main/src-tauri/src/ai_integrations/mcp/tools.rs">Source (tools.rs)</a>
+  <a href="https://github.com/Terranimus/TerranSoulApp/blob/main/rules/agent-mcp-bootstrap.md">agent-mcp-bootstrap.md</a>
   <span class="spacer"></span><span>75 brain tools / 94 with code-read+write, test-pinned</span>
 </footer>
 <script src="../assets/site-nav.js" defer></script>

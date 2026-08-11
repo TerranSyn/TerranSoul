@@ -150,7 +150,7 @@ async function main() {
   if (!existsSync(PREBUILT_SHIM)) {
     throw new Error(`prebuilt shim missing: ${PREBUILT_SHIM}\n`
       + 'Build it first (verify rustc/cargo idle, then -j 1):\n'
-      + '  cd the application repository && cargo build --bin longmemeval-ipc --target-dir ../target-copilot-bench');
+      + '  cd src-tauri && cargo build --bin longmemeval-ipc --target-dir ../target-copilot-bench');
   }
 
   // Env shared by every stage: pin the store + the prebuilt shim (no cargo).

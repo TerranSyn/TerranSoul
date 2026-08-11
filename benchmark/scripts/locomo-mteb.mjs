@@ -683,7 +683,7 @@ class JsonlClient {
       'run',
       '--quiet',
       '--manifest-path',
-      resolve(REPO_ROOT, 'the application repository', 'Cargo.toml'),
+      resolve(REPO_ROOT, 'src-tauri', 'Cargo.toml'),
       '--features', 'bench-million', '--bin',
       'longmemeval-ipc',
       '--target-dir',

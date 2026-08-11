@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-const BENCH = 'benchmark/boeing747';
+const BENCH = 'D:/Git/TerranSoulApp/benchmark/boeing747';
 const r = JSON.parse(readFileSync(`${BENCH}/rubric.json`, 'utf8'));
 
 // ---- v6: OBJECTIVE CORRECTNESS CHECKLIST ----

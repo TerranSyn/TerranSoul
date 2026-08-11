@@ -1,0 +1,79 @@
+{
+  "model": "claude-opus-4-8",
+  "effort": "max",
+  "ms": 439,
+  "cost_usd": 0,
+  "timeout_ms": 1800000,
+  "observability": {
+    "event_count": 9,
+    "tool_calls": {},
+    "total_tool_calls": 0,
+    "text_chunks": 9,
+    "tool_failures": 0
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "actor_exhausted_retries",
+  "actor_error": "terransoul-cli agent-task failed (exit 101): [mcp] seed shared dir: D:\\Git\\TerranSoulApp\\mcp-data\\shared\n[mcp] warning: failed to initialize schema: no such column: origin_device in SELECT id, src_id, dst_id, rel_type, confidence, source, created_at,\n                valid_from, valid_to, edge_source, origin_device, hlc_counter, holder\n         FROM memory_edges LIMIT 0 at offset 120\n[brain] WARNING: configured brain model 'gemma4:12b-it-qat' needs ~8909 MB VRAM but only 1287 MB is free. Honoring the explicit brain_config.json choice anyway",
+  "plane_sha256_before": "92f5e42a445e5dc92179c933be846c4626649c7a5c5dc4a677858acdf8a77d18",
+  "plane_sha256_after": "92f5e42a445e5dc92179c933be846c4626649c7a5c5dc4a677858acdf8a77d18",
+  "changed": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 4531,
+      "actor_error": "terransoul-cli agent-task failed (exit 101): [mcp] seed shared dir: D:\\Git\\TerranSoulApp\\mcp-data\\shared\n[mcp] warning: failed to initialize schema: no such column: origin_device in SELECT id, src_id, dst_id, rel_type, confidence, source, created_at,\n                valid_from, valid_to, edge_source, origin_device, hlc_counter, holder\n         FROM memory_edges LIMIT 0 at offset 120\n[brain] WARNING: configured brain model 'gemma4:12b-it-qat' needs ~8909 MB VRAM but only 1293 MB is free. Honoring the explicit brain_config.json choice anyway",
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 9,
+        "tool_calls": {},
+        "total_tool_calls": 0,
+        "text_chunks": 9,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "actor_failed",
+      "ms": 382,
+      "actor_error": "terransoul-cli agent-task failed (exit 101): [mcp] seed shared dir: D:\\Git\\TerranSoulApp\\mcp-data\\shared\n[mcp] warning: failed to initialize schema: no such column: origin_device in SELECT id, src_id, dst_id, rel_type, confidence, source, created_at,\n                valid_from, valid_to, edge_source, origin_device, hlc_counter, holder\n         FROM memory_edges LIMIT 0 at offset 120\n[brain] WARNING: configured brain model 'gemma4:12b-it-qat' needs ~8909 MB VRAM but only 1293 MB is free. Honoring the explicit brain_config.json choice anyway",
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 9,
+        "tool_calls": {},
+        "total_tool_calls": 0,
+        "text_chunks": 9,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 3,
+      "timeout_ms": 1800000,
+      "status": "actor_failed",
+      "ms": 439,
+      "actor_error": "terransoul-cli agent-task failed (exit 101): [mcp] seed shared dir: D:\\Git\\TerranSoulApp\\mcp-data\\shared\n[mcp] warning: failed to initialize schema: no such column: origin_device in SELECT id, src_id, dst_id, rel_type, confidence, source, created_at,\n                valid_from, valid_to, edge_source, origin_device, hlc_counter, holder\n         FROM memory_edges LIMIT 0 at offset 120\n[brain] WARNING: configured brain model 'gemma4:12b-it-qat' needs ~8909 MB VRAM but only 1287 MB is free. Honoring the explicit brain_config.json choice anyway",
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 9,
+        "tool_calls": {},
+        "total_tool_calls": 0,
+        "text_chunks": 9,
+        "tool_failures": 0
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

@@ -1,0 +1,87 @@
+{
+  "model": "bonsai-27b",
+  "effort": "max",
+  "ms": 323903,
+  "cost_usd": 0,
+  "timeout_ms": 1800000,
+  "observability": {
+    "event_count": 8,
+    "tool_calls": {
+      "read_file": 1
+    },
+    "total_tool_calls": 1,
+    "text_chunks": 6,
+    "tool_failures": 0
+  },
+  "timed_out": false,
+  "denied": false,
+  "status": "actor_exhausted_retries",
+  "actor_error": "terransoul-cli agent-task failed (exit 1): [headless] data dir: C:/Users/DevStar/AppData/Roaming/com.terransoul/dev\n[mcp] seed shared dir: D:\\Git\\TerranSoulApp\\mcp-data\\shared\n[mcp] init seed already applied (v001)\n[write-engine] db.write_engine.enabled=true: sharded write engine ENABLED (brain-seeded db.write_engine.*); engine_open=true\n<read_file>{\"file_path\":\"D:\\\\Git\\\\TerranSoulApp\\\\benchmark\\\\boeing747\\\\candidates\\\\terransoul-bonsai\\\\plane.js\"}</read_file>\n[tool] read_file {\"file_path\":\"D:\\\\Git\\\\TerranSoulApp\\\\benchmark\\\\boeing747\\\\c",
+  "plane_sha256_before": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "plane_sha256_after": "a68c734abc193d4d24603b18c5be6a56c28d5e8419fdb6423391ce656f3d8085",
+  "changed": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "timeout_ms": 600000,
+      "status": "actor_failed",
+      "ms": 333303,
+      "actor_error": "terransoul-cli agent-task failed (exit 1): [headless] data dir: C:/Users/DevStar/AppData/Roaming/com.terransoul/dev\n[mcp] seed shared dir: D:\\Git\\TerranSoulApp\\mcp-data\\shared\n[mcp] init seed already applied (v001)\n[write-engine] db.write_engine.enabled=true: sharded write engine ENABLED (brain-seeded db.write_engine.*); engine_open=true\n<read_file>{\"file_path\":\"D:\\\\Git\\\\TerranSoulApp\\\\benchmark\\\\boeing747\\\\candidates\\\\terransoul-bonsai\\\\plane.js\"}</read_file>\n[tool] read_file {\"file_path\":\"D:\\\\Git\\\\TerranSoulApp\\\\benchmark\\\\boeing747\\\\c",
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 8,
+        "tool_calls": {
+          "read_file": 1
+        },
+        "total_tool_calls": 1,
+        "text_chunks": 6,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 2,
+      "timeout_ms": 1200000,
+      "status": "actor_failed",
+      "ms": 432205,
+      "actor_error": "terransoul-cli agent-task failed (exit 1): [headless] data dir: C:/Users/DevStar/AppData/Roaming/com.terransoul/dev\n[mcp] seed shared dir: D:\\Git\\TerranSoulApp\\mcp-data\\shared\n[mcp] init seed already applied (v001)\n[write-engine] db.write_engine.enabled=true: sharded write engine ENABLED (brain-seeded db.write_engine.*); engine_open=true\n<read_file>{\"file_path\":\"D:\\\\Git\\\\TerranSoulApp\\\\benchmark\\\\boeing747\\\\candidates\\\\terransoul-bonsai\\\\plane.js\"}</read_file>\n[tool] read_file {\"file_path\":\"D:\\\\Git\\\\TerranSoulApp\\\\benchmark\\\\boeing747\\\\c",
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 11,
+        "tool_calls": {
+          "read_file": 2
+        },
+        "total_tool_calls": 2,
+        "text_chunks": 7,
+        "tool_failures": 0
+      }
+    },
+    {
+      "attempt": 3,
+      "timeout_ms": 1800000,
+      "status": "actor_failed",
+      "ms": 323903,
+      "actor_error": "terransoul-cli agent-task failed (exit 1): [headless] data dir: C:/Users/DevStar/AppData/Roaming/com.terransoul/dev\n[mcp] seed shared dir: D:\\Git\\TerranSoulApp\\mcp-data\\shared\n[mcp] init seed already applied (v001)\n[write-engine] db.write_engine.enabled=true: sharded write engine ENABLED (brain-seeded db.write_engine.*); engine_open=true\n<read_file>{\"file_path\":\"D:\\\\Git\\\\TerranSoulApp\\\\benchmark\\\\boeing747\\\\candidates\\\\terransoul-bonsai\\\\plane.js\"}</read_file>\n[tool] read_file {\"file_path\":\"D:\\\\Git\\\\TerranSoulApp\\\\benchmark\\\\boeing747\\\\c",
+      "timed_out": false,
+      "denied": false,
+      "observability": {
+        "event_count": 8,
+        "tool_calls": {
+          "read_file": 1
+        },
+        "total_tool_calls": 1,
+        "text_chunks": 6,
+        "tool_failures": 0
+      }
+    }
+  ],
+  "retry_config": {
+    "maxRetries": 2,
+    "baseTimeoutMs": 600000,
+    "timeoutCapMs": 2400000,
+    "exhaustionCap": 3,
+    "source": "seed"
+  },
+  "escalation_armed": false
+}

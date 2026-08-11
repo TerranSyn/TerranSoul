@@ -1,0 +1,139 @@
+{
+  "benchmark": "LongMemEval-S retrieval-only",
+  "generated_at": "2026-07-25T13:18:08.168Z",
+  "env": "LONGMEM_EMBED=1 | effective embed model: mxbai-embed-large (harness default)",
+  "dataset_source": "D:\\Git\\TerranSoulApp\\target-copilot-bench\\longmemeval\\longmemeval_s_cleaned.json",
+  "dataset_url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/main/longmemeval_s_cleaned.json",
+  "methodology_source": "https://github.com/rohitg00/agentmemory/blob/main/benchmark/longmemeval-bench.ts",
+  "questions": 3,
+  "excluded_abstention": 0,
+  "systems": [
+    {
+      "system": "chat",
+      "questions": 3,
+      "recall_any_at_5": 1,
+      "recall_any_at_10": 1,
+      "recall_any_at_20": 1,
+      "ndcg_at_10": 0.8769765845238192,
+      "mrr": 0.8333333333333334,
+      "avg_latency_ms": 934.9940333333216,
+      "avg_retrieved_tokens": 46566,
+      "judge_support_rate": null,
+      "per_question": [
+        {
+          "question_id": "e47becba",
+          "question_type": "single-session-user",
+          "question": "What degree did I graduate with?",
+          "recall_any_at_5": 1,
+          "recall_any_at_10": 1,
+          "recall_any_at_20": 1,
+          "ndcg_at_10": 0.6309297535714575,
+          "mrr": 0.5,
+          "latency_ms": 2173.652299999958,
+          "retrieved_tokens": 54323,
+          "retrieved_session_ids": [
+            "d94b721b",
+            "answer_280352e9",
+            "ultrachat_458322",
+            "sharegpt_QZMeA7V_17",
+            "f6859b48_2",
+            "ultrachat_336116",
+            "ultrachat_574556",
+            "02bd2b90_3",
+            "ec6ca9ef",
+            "ultrachat_214101",
+            "ultrachat_530213",
+            "d414cac5_4",
+            "sharegpt_PdnvIns_0",
+            "ultrachat_514031",
+            "e27891d3_2",
+            "sharegpt_Jcy1CVN_0",
+            "sharegpt_UnjngE7_65",
+            "ultrachat_486410",
+            "c3cd646c_1",
+            "3418b277_3"
+          ],
+          "gold_session_ids": [
+            "answer_280352e9"
+          ],
+          "judge_supported": null,
+          "judge_reason": null
+        },
+        {
+          "question_id": "118b2229",
+          "question_type": "single-session-user",
+          "question": "How long is my daily commute to work?",
+          "recall_any_at_5": 1,
+          "recall_any_at_10": 1,
+          "recall_any_at_20": 1,
+          "ndcg_at_10": 1,
+          "mrr": 1,
+          "latency_ms": 319.46859999996377,
+          "retrieved_tokens": 65878,
+          "retrieved_session_ids": [
+            "answer_40a90d51",
+            "db73b7e4_4",
+            "ultrachat_392094",
+            "db50c0f6",
+            "afe04238_1",
+            "5dce60dd",
+            "a0b8b0ad_6",
+            "d600c646",
+            "3ea9f765",
+            "ultrachat_577747",
+            "0afa904a",
+            "7d8b5834_1",
+            "sharegpt_i1iuP70_0",
+            "1f88b2b3",
+            "9ee69ca6_2",
+            "sharegpt_6poO9nA_41",
+            "sharegpt_dabXXRO_10",
+            "004edb32",
+            "5209e813_2",
+            "628c958c_7"
+          ],
+          "gold_session_ids": [
+            "answer_40a90d51"
+          ],
+          "judge_supported": null,
+          "judge_reason": null
+        },
+        {
+          "question_id": "51a45a95",
+          "question_type": "single-session-user",
+          "question": "Where did I redeem a $5 coupon on coffee creamer?",
+          "recall_any_at_5": 1,
+          "recall_any_at_10": 1,
+          "recall_any_at_20": 1,
+          "ndcg_at_10": 1,
+          "mrr": 1,
+          "latency_ms": 311.861200000043,
+          "retrieved_tokens": 19497,
+          "retrieved_session_ids": [
+            "answer_d61669c7",
+            "98c198fb",
+            "07ba9acd_2",
+            "5c44d9fe_1",
+            "217debf7",
+            "6e0b1800_2"
+          ],
+          "gold_session_ids": [
+            "answer_d61669c7"
+          ],
+          "judge_supported": null,
+          "judge_reason": null
+        }
+      ],
+      "per_type": {
+        "single-session-user": {
+          "count": 3,
+          "recall_any_at_5": 1,
+          "recall_any_at_10": 1,
+          "ndcg_at_10": 0.8769765845238192,
+          "mrr": 0.8333333333333334
+        }
+      }
+    }
+  ],
+  "judge": null
+}

@@ -5,7 +5,7 @@
 
 ## LongMemEval-S — published
 
-| Metric | MemPalace (published) | TerranSoul (an internal work item/6.1) |
+| Metric | MemPalace (published) | TerranSoul (BENCH-AM-6/6.1) |
 |---|---|---|
 | R@5 | ~96.6 % | **99.2 %** |
 | R@10 | — | **99.6 %** |

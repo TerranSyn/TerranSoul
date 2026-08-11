@@ -1,6 +1,6 @@
 // scripts/chat-ttft-bench.mjs
 // BENCH-CHAT-LATENCY (2026-05-15): measure TTFT for the 5 chat cases
-// against the recommended local Ollama setup. Concurrent with an internal work item.
+// against the recommended local Ollama setup. Concurrent with BENCH-SCALE-3.
 //
 // Methodology: hit Ollama /api/chat with `stream: true` and measure wall
 // clock from request-send to first non-empty content chunk in the SSE
@@ -224,7 +224,7 @@ async function runCase(name) {
     // Block on the warmup so we measure post-warm TTFT, which is what
     // the app's user experiences if they read the UI for a few seconds
     // before typing. num_ctx MUST match the real chat path's num_ctx
-    // (internal module uses 2048) so Ollama doesn't reload the model on
+    // (streaming.rs uses 2048) so Ollama doesn't reload the model on
     // the first measured request.
     await postChat({
       messages: [{ role: 'user', content: 'Hi' }],

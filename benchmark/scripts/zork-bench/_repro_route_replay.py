@@ -25,7 +25,7 @@ test proves, in <0.1s with NO bench / NO MCP, the pure route helpers:
 import re
 import sys
 
-sys.path.insert(0, r"benchmark\scripts\zork-bench")
+sys.path.insert(0, r"D:\Git\TerranSoulApp\benchmark\scripts\zork-bench")
 from terransoul_brain_bridge import (  # noqa: E402
     _route_nav_moves,
     _format_route_move,

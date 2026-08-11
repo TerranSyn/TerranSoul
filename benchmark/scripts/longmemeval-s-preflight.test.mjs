@@ -1,4 +1,4 @@
-// an internal work item(a): regression test for the bench-guard preflight wiring in
+// BENCH-OPS-1(a): regression test for the bench-guard preflight wiring in
 // longmemeval-s.mjs's `run` command. A prior pass on this exact chunk
 // defined `runPreflight()` but never actually CALLED it — the function
 // existed, compiled clean, and did nothing; only manually running the CLI

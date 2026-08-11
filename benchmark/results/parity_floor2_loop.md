@@ -1,4 +1,4 @@
-# an internal work item — never-regress loop record (2026-07-03, quality record RESTORED)
+# PARITY-FLOOR-2 — never-regress loop record (2026-07-03, quality record RESTORED)
 
 > **Resolution (user directive, 2026-07-03 evening):** "why do we drop from
 > 9.82 to 9.68 and you still allow it? Please loop fix, optimal and rebench
@@ -30,7 +30,7 @@ surfaced capability affordances:
 ## The fix (production, shipped)
 
 Two sentences appended to the production companion identity
-(`internal module` `COMPANION_IDENTITY`, `internal module`
+(`tool_registry.rs` `COMPANION_IDENTITY`, `chat.rs`
 `SYSTEM_PROMPT_FOR_STREAMING`, mirrored in the bench runner per
 PARITY-RUNNER-FAIR):
 

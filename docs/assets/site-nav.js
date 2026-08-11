@@ -47,6 +47,11 @@
       label: '&mdash; Techniques, animated',
       sub: true,
     },
+    {
+      href: 'LLM-Brain-Design-Research-Paper/self-improvement.html',
+      label: '&mdash; Self-improvement, measured',
+      sub: true,
+    },
     { href: 'channels/', label: 'Channels' },
     { href: 'channels/telegram/', label: '&mdash; Telegram', sub: true },
     { href: 'channels/discord/', label: '&mdash; Discord', sub: true },

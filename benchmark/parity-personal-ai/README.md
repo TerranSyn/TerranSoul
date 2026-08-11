@@ -1,6 +1,6 @@
 # Parity Personal-AI Benchmark — TerranSoul
 
-> **Phase:** an internal work item
+> **Phase:** PARITY-OJ-14
 > **Date:** 2026-05-26
 
 > **MCP Gateway Parity:** all 22 prompts route through the live MCP server (ports 7421/7423/7422) — that routing is what this benchmark validates. Current results (run 2026-06-07T03:23:30Z, judge `gemma3:4b`, see [results/parity_personal_ai.md](../results/parity_personal_ai.md)): 2/7 archetypes passing — `code-assistant` (3/3) and `chat-simple` (4/4). The other five (`daily-digest`, `deep-research`, `scheduled-monitor`, `voice-companion`, `vrm-overlay`) are 0/3. Quality scoring (LLM-judge 0–10) is not wired up for any archetype yet — every row reads N/A. See [parity-enforcement-rules.md](../parity-enforcement-rules.md).

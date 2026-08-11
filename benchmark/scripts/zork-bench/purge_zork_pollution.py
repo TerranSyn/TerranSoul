@@ -5,7 +5,7 @@ Usage:
     python purge_zork_pollution.py --execute  # delete + vacuum
 
 Per rules/bench-agi-purity.md Rule 1: bench iters must start TASK-NAÏVE.
-Memories ingested by prior bench runs (an internal work item.5/1.6, spec-007..013)
+Memories ingested by prior bench runs (BENCH-ZORK-1.5/1.6, spec-007..013)
 contain literal Zork walkthroughs, room/object names, and trajectory
 replays. They violate AGI-1 (task-naïve start) and AGI-7 (bench-independent
 harness). This script removes them so the next iter is a fair AGI test.

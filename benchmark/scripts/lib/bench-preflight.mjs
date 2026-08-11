@@ -2,7 +2,7 @@
 //
 // ## Why this file exists
 //
-// `scripts/bench-guard.mjs --preflight` was written (an internal work item(a)) after a bad
+// `scripts/bench-guard.mjs --preflight` was written (BENCH-OPS-1(a)) after a bad
 // embedder placement burned 32 minutes of a run before anyone thought to check
 // `/api/ps`. It was then wired into exactly ONE harness — `longmemeval-s.mjs`.
 //
@@ -15,7 +15,7 @@
 //
 // ## The trap being guarded
 //
-// `embed_num_gpu()` (`internal module`) returns **0** when
+// `embed_num_gpu()` (`crates/brain/src/ollama_agent.rs`) returns **0** when
 // `OLLAMA_EMBED_NUM_GPU` is unset, and `/api/embed` honours 0 verbatim — a
 // CPU-pinned embedder. **That default is correct for the product**: it keeps the
 // whole 12 GB card free for the 12B chat model, which alone takes ~7.6 GB. It is

@@ -67,7 +67,7 @@ function syntheticChunk(rand, idx) {
 
 export function buildScaleCorpus({ targetCorpus, otherCorpora, qrels, scale, seed, synthOnly = false }) {
   const rand = mulberry32(seed);
-  // an internal work item (2026-05-18): --synth-only mode pushes the bench through
+  // BENCH-SCALE-6 (2026-05-18): --synth-only mode pushes the bench through
   // the `add_synth_distractors` IPC fast path for every record. Gold rows
   // (and natural/swap distractors) traverse the per-row `add_sessions` path
   // which is ~74 docs/s even with synthetic embeddings due to SQLite + KG
@@ -123,10 +123,10 @@ export function buildScaleCorpus({ targetCorpus, otherCorpora, qrels, scale, see
     });
     synthIdx++;
   }
-  // an internal work item (2026-05-15): at 10M+ scale, building a Set over every
+  // BENCH-SCALE-3 (2026-05-15): at 10M+ scale, building a Set over every
   // corpus id exceeds V8 Set's internal max table size. Invert the check:
   // collect the (small) set of qrel target ids first, then scan corpus once.
-  // an internal work item: synth-only mode skips qrel validation (no gold in corpus,
+  // BENCH-SCALE-6: synth-only mode skips qrel validation (no gold in corpus,
   // recall is undefined; mode is for ingest-throughput gating only).
   if (synthOnly) {
     return { corpus, missingQrels: 0 };

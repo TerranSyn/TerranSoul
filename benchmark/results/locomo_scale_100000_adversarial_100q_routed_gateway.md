@@ -1,4 +1,4 @@
-# TerranSoul LoCoMo-at-Scale Report (an internal work item)
+# TerranSoul LoCoMo-at-Scale Report (BENCH-SCALE-1)
 
 Date: 2026-05-26T18:31:45.340Z
 Task: adversarial
@@ -19,4 +19,4 @@ Ingest time: 1997.3s (100000 embedded)
 - Augments with cross-task LoCoMo prose as natural distractors, then deterministic entity-swap paraphrases of gold chunks, then synthetic template prose to reach `--scale`.
 - Ingests in batches of 500 through `longmemeval-ipc` with `LONGMEM_EMBED=1` (mxbai-embed-large via Ollama, HNSW ANN).
 - Runs each `--systems` mode against the buried corpus, records per-query latency.
-- Acceptance (an internal work item): R@10 within 10pp of an internal work item 5k baseline AND p99 <= 200ms.
+- Acceptance (BENCH-SCALE-1): R@10 within 10pp of LCM-8 5k baseline AND p99 <= 200ms.

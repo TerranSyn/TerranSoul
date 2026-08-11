@@ -2,7 +2,7 @@
 #
 # Waits for the currently running terransoul-brain container to finish,
 # then sequentially runs the remaining arms (none, zorkgpt-default)
-# to complete the an internal work item.5 canonical 3×3×300 dataset.
+# to complete the BENCH-ZORK-1.5 canonical 3×3×300 dataset.
 #
 # Usage (from repo root):
 #   pwsh -File benchmark/scripts/zork-bench/complete-canonical.ps1

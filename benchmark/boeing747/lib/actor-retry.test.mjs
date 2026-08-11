@@ -172,7 +172,7 @@ describe('shouldRetryActor', () => {
     expect(shouldRetryActor(0, 0)).toBe(false);
   });
 
-  // WIRE-CLI-an internal work item rewire: `denied` (an `action_trust` ledger DENIAL,
+  // WIRE-CLI-PARITY-GAP-3 rewire: `denied` (an `action_trust` ledger DENIAL,
   // a NEW failure mode introduced by driving the edit through
   // `terransoul --agent-task`) short-circuits retrying even on attempt 0
   // with a full retry budget remaining — a longer timeout cannot change a

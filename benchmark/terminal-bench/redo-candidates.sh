@@ -101,8 +101,28 @@ if os.path.exists(log_path):
 TERMINAL = {"AgentTimeoutError"}
 INFRA = {"UnknownApiError", "ApiRateLimitError", "AgentSetupTimeoutError", "NonZeroAgentExitCodeError"}
 
+# ⛔ "NEVER RAN" IS NOT "SCORED ZERO". `best` defaults to 0.0 for any task
+# missing from the jobs dir, and the task roster here is a UNION that includes
+# names harvested from the sweep LOG — which spans earlier campaigns. So every
+# task the analysed corpus has not reached yet arrived at `score = 0.0` with no
+# recorded exception, and fell straight into the CAPABILITY bucket.
+#
+# Measured against jobs-submit/ on 2026-08-07: 51 of the 52 tasks that had never
+# been attempted were reported as "CAPABILITY — scored 0, no error recorded",
+# and the footer announced "52 unsolved task(s)". The corpus actually contained
+# 35 tasks at 5/5 clean and 52 with no trials at all. An operator reading that
+# would conclude the agent was failing 51 tasks on ability, and would go looking
+# for a reasoning regression that does not exist — when the only true capability
+# failure was ONE task.
+#
+# `best` is now consulted only for tasks that really produced a trial.
+attempted_tasks = set(best) | set(errs)
 rows = []
+not_run = []
 for task in sorted(set(list(best) + list(errs) + list(accepted))):
+    if task not in attempted_tasks:
+        not_run.append(task)
+        continue
     score = best.get(task, 0.0)
     e = errs.get(task, collections.Counter())
     if any(k in TERMINAL for k in e):
@@ -133,6 +153,16 @@ for c in ("TIMEOUT", "LOST-LESSON", "INFRA", "CAPABILITY"):
 print()
 unsolved = [r for r in rows if r[2] < 1.0]
 print(f"  {len(unsolved)} unsolved task(s). Each one converted is +{100/89:.2f} pp on an 89-task suite.")
+
+# NEVER-RUN tasks are reported as their own line, from the dataset roster rather
+# than from whatever the log happened to mention. They are remaining WORK, not
+# remaining failures, and conflating the two is what made this script announce
+# 52 unsolved tasks against a corpus with exactly one capability failure.
+roster = set(ceiling)
+never = sorted((roster - attempted_tasks) | set(not_run)) if roster else sorted(not_run)
+if never:
+    print(f"  {len(never)} task(s) have NO trial in this corpus — not run, not failed:")
+    print("    " + " ".join(never[:12]) + (" ..." if len(never) > 12 else ""))
 print()
 print("  Re-run one with:  bash redo-task.sh <task-id>")
 print("  It runs in its OWN prefix; merge-sweep takes the best trial per task,")

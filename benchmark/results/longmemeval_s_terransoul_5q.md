@@ -1,7 +1,7 @@
 # TerranSoul LongMemEval-S Retrieval Report
 
 Date: 2026-07-24T14:40:41.091Z
-Dataset: target-copilot-bench\longmemeval\longmemeval_s_cleaned.json
+Dataset: D:\Git\TerranSoulApp\target-copilot-bench\longmemeval\longmemeval_s_cleaned.json
 Questions: 5 (0 abstention rows excluded)
 Methodology: retrieval-only recall_any@K, matching agentmemory benchmark/longmemeval-bench.ts
 Env: LONGMEM_CHAT_MODEL=gemma4:12b-it-qat LONGMEM_RERANK_MODEL=gemma4:12b-it-qat | effective embed model: none (LONGMEM_EMBED unset — dense channel OFF)

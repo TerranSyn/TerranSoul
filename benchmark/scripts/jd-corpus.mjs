@@ -8,7 +8,7 @@
 // importable library + CLI. Never holds the corpus in RAM: the CLI streams
 // resumes.jsonl / meta.jsonl line by line with write-stream backpressure.
 //
-// Determinism contract (an internal work item resume pattern): resume N is a pure
+// Determinism contract (BENCH-SCALE-3 resume pattern): resume N is a pure
 // function of (seed, N) — independent of --count and of any previously
 // generated row — so a partially-ingested store can be resumed by slicing
 // the corpus at the store's `count`.

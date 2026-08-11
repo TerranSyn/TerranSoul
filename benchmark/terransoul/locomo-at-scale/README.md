@@ -4,7 +4,7 @@
 
 **Harness:** [benchmark/scripts/locomo-at-scale.mjs](../../scripts/locomo-at-scale.mjs).
 
-> **MCP Gateway Parity: ✅ PASS** — Dual-parity validation at 100k scale (BENCH-MCP-an internal work item). Quality: R@10=64.0% via both paths (±0.0 pp drift). Per-query: 85/100 bit-identical ID lists, 15/100 differ in ordering due to Ollama embedding non-determinism (GPU floats differ across calls). Gateway is architecturally identical — `AppStateGateway::search()` delegates to `store.hybrid_search_rrf()`. Unit test confirms 0 mismatches when embedding is shared. See [parity-enforcement-rules.md](../../parity-enforcement-rules.md).
+> **MCP Gateway Parity: ✅ PASS** — Dual-parity validation at 100k scale (BENCH-MCP-PARITY-5). Quality: R@10=64.0% via both paths (±0.0 pp drift). Per-query: 85/100 bit-identical ID lists, 15/100 differ in ordering due to Ollama embedding non-determinism (GPU floats differ across calls). Gateway is architecturally identical — `AppStateGateway::search()` delegates to `store.hybrid_search_rrf()`. Unit test confirms 0 mismatches when embedding is shared. See [parity-enforcement-rules.md](../../parity-enforcement-rules.md).
 
 ## Round table
 
@@ -12,7 +12,7 @@
 |---|---|---|---|---|---|---|---|---|---|
 | SCALE-1 | 2026-05-13 | 100,000 | rrf_rerank | 59.5 % | — | — | — | 30.77 s | MIXED — quality OK, latency dominated by reranker |
 | **SCALE-1b** | **2026-05-13** | 100,000 | **rrf only** | **64.0 %** | **46.7 %** | 42.3 % | **1.21 s** | 25.32 s | **PASS — promoted canonical** |
-| **an internal work item** | **2026-05-27** | 100,000 | **rrf dual-parity** | **64.0 %** | **46.6 %** | 42.1 % | **1.16 s** | 2.48 s | **✅ PASS — gateway quality ≡ direct-store** |
+| **PARITY-5** | **2026-05-27** | 100,000 | **rrf dual-parity** | **64.0 %** | **46.6 %** | 42.1 % | **1.16 s** | 2.48 s | **✅ PASS — gateway quality ≡ direct-store** |
 | SCALE-2 | 2026-05-14 | (1,000,000 pending) | router-routed vs all-shards | — | — | — | — | — | **harness-shipped, run-pending** |
 
 ## SCALE-1b detail (canonical at-scale result)
@@ -20,7 +20,7 @@
 - Corpus: 100,000 memories (5,882 gold + 23,528 natural cross-task distractors + 70,590 entity-swap/synthetic), mxbai-embed-large 1024-d, HNSW ANN.
 - Ingestion: 37 min (one-pass).
 - Query slice: 100 adversarial queries, `rrf` system (no reranker).
-- Vs an internal work item 5k baseline (R@10 67.7 % adversarial): -3.7 pp at 100k — within the 10 pp acceptance bar from [docs/billion-scale-retrieval-design.md](../../../docs/billion-scale-retrieval-design.md) § acceptance.
+- Vs LCM-8 5k baseline (R@10 67.7 % adversarial): -3.7 pp at 100k — within the 10 pp acceptance bar from [docs/billion-scale-retrieval-design.md](../../../docs/billion-scale-retrieval-design.md) § acceptance.
 - Vs SCALE-1 reranked R@10 59.5 % at the same scale: +4.5 pp **better** without the reranker. The `gemma3:4b` cross-encoder is a measurable quality regression on this corpus.
 
 ## SCALE-2 protocol (harness shipped 2026-05-14, run pending)
