@@ -747,6 +747,11 @@
         <td>An LLM-judge rerank pass over the retrieved candidates, under the fail-open discipline that governs every judge on the read path: judges fail open and never veto, following the DEAD-JUDGE-1 incident in which a stale model tag silently erased all recall. The <code>think</code> mode used to run this pass on its retrieval path. Since 2026-08-02 it does not, and the reason is the measured number beside this row.</td>
         <td>Measured, and <strong>net-negative</strong>. <code>think</code> full-500 (<code>benchmark/results/fix11b-full500-think/</code>, 2026-07-27; valid only on post-<code>76f2276d</code> code): NDCG@10 93.26, MRR 94.21, R@5 98.6&nbsp;%, R@10 99.6&nbsp;%, R@20 99.8&nbsp;%, mean 4,765.40&nbsp;ms. <strong>Cost in the same row:</strong> 0.52 NDCG@10 <em>below</em> <code>chat</code> at 7.1&times; the latency (4,765.40&nbsp;ms against 675.01&nbsp;ms), with R@20 tied at 99.8. The commit's own acceptance line reads &ldquo;bench owed: <code>think</code> &ge; 93.782&rdquo;, which 93.26 does not clear. <strong>That obligation is discharged by construction rather than by a better score.</strong> The rerank came off <code>think</code>'s retrieval path on 2026-08-02: <code>think</code> and <code>chat</code> now call the same retrieval function with the same arguments, and the rerank decision they pass is resolved by one shared production rule rather than by two matching literals, so the two cannot produce different orderings. The numbers above stay printed as what the reranking <code>think</code> actually scored &mdash; they are a record of a retired configuration, not a live rung.</td>
       </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td><strong>CORRECTED 2026-08-11</strong> &mdash; &ldquo;call the same retrieval function with the same arguments&rdquo; stopped being true that day. A cross-surface audit found <code>think</code> triggering a knowledge-graph multi-hop bridge on MCP's <code>brain_search</code> (via a separate ladder mechanism) while Desktop chat's and the CLI's <code>think</code> stayed on plain RRF &mdash; a direct violation of the standing rule that a surface may never differ in whether multi-hop runs. Desktop/CLI's <code>think</code> now pins the same multi-hop bridge explicitly, so it once again differs from <code>chat</code> in <em>mechanism</em> &mdash; and, once a same-day bench-harness bug in the <code>chat</code> arm itself was found and fixed (row 12), in measured value too: <code>think</code> NDCG@10 93.8 against <code>chat</code>'s 93.9, close but not identical, for the reason row 12 gives.</td>
+      </tr>
 
       <tr>
         <td>8 &mdash; two-way memory</td>
@@ -775,7 +780,12 @@
       <tr>
         <td>12 &mdash; the product surface</td>
         <td>Four thinking modes &mdash; <code>chat</code>, <code>think</code>, <code>research</code>, <code>max</code> &mdash; each one <code>(reasoning-effort, harness)</code> pair, identical across the app, the CLI and MCP, with an Auto router that dispatches per turn. Benchmarks drive the same modes a user gets.</td>
-        <td>Measured, full-500, one arm per process. The four drawn modes are <strong>three measured behaviours</strong>: research = rrf 95.04 &gt; chat 93.78 &gt; think 93.26; <code>max</code> is absent. <code>research</code> is identical to plain <code>rrf</code> on every metric to four decimals with 499 of 500 orderings the same, at 4,928.46&nbsp;ms against 654.92&nbsp;ms &mdash; a measured no-op at 7.5&times; the cost. <strong>That full-500 <code>research</code> figure predates the current code</strong>: it was measured <em>before</em> commit <code>76f2276d</code>, and it stays on this page labelled as such rather than being quietly refreshed. <code>research</code> HAS since been re-run on current code &mdash; NDCG@10 95.7 at n&nbsp;=&nbsp;50, in the four-rung table below &mdash; and that run does <em>not</em> replace 95.04, because 50 questions and 500 questions never share a series in either direction. What this row still owes is a full-500 repeat, not a re-run. <code>think</code> shared 6 of 500 orderings with <code>chat</code> on those arms, so the reranker had stopped being a no-op and become a different, slightly worse answer; the 2026-08-02 rung fix then retired the reranker from <code>think</code>'s retrieval path altogether, so <code>think</code> now runs <code>chat</code>'s retrieval unchanged and the three-behaviours reading applies to the arms as measured, not to the code as it stands. <strong><code>max</code> at full-500 is UNMEASURED</strong> &mdash; but 50-question arms DO exist and are committed (<code>benchmark/results/slice50-max-repeat/</code>, <code>slice50-max-newrubric/</code>, and now <code>p50-max-postrungfix/</code> on current code), so the earlier wording &ldquo;no artifact exists at any size&rdquo; was wrong and is corrected here. Those arms are drawn in the 50-question figure above and are never mixed into a full-500 series. Two of them were run at IDENTICAL configuration and returned bit-identical recall with NDCG@10 moving 1.0 and MRR moving 1.3, which is where this page&rsquo;s &plusmn;1.3 noise band comes from.</td>
+        <td>Measured, full-500, one arm per process. The four drawn modes are <strong>three measured behaviours</strong>: research = rrf 95.04 &gt; chat 93.78 &gt; think 93.26; <code>max</code> is absent. <code>research</code> is identical to plain <code>rrf</code> on every metric to four decimals with 499 of 500 orderings the same, at 4,928.46&nbsp;ms against 654.92&nbsp;ms &mdash; a measured no-op at 7.5&times; the cost. <strong>That full-500 <code>research</code> figure predates the current code</strong>: it was measured <em>before</em> commit <code>76f2276d</code>, and it stays on this page labelled as such rather than being quietly refreshed. <code>research</code> HAS since been re-run on current code &mdash; NDCG@10 95.7 at n&nbsp;=&nbsp;50, in the four-rung table below &mdash; and that run does <em>not</em> replace 95.04, because 50 questions and 500 questions never share a series in either direction. What this row still owes is a full-500 repeat, not a re-run. <code>think</code> shared 6 of 500 orderings with <code>chat</code> on those arms, so the reranker had stopped being a no-op and become a different, slightly worse answer; the 2026-08-02 rung fix then retired the reranker from <code>think</code>'s retrieval path altogether, so <code>think</code> now runs <code>chat</code>'s retrieval unchanged and the three-behaviours reading applies to the arms as measured, not to the code as it stands.</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td><strong>CORRECTED 2026-08-11</strong> &mdash; <code>think</code> is no longer &ldquo;<code>chat</code>'s retrieval unchanged,&rdquo; and all three re-run full-500. <code>think</code> now pins a knowledge-graph multi-hop bridge, matching MCP's own <code>brain_search</code> think rung (which had been running it, undisclosed on this page, since before the correction above was written &mdash; a genuine <code>rules/one-path-three-surfaces.md</code> gap, not a rhetorical one). Re-run in one session, one arm per process, <code>OLLAMA_EMBED_NUM_GPU=99</code>: <code>chat</code> NDCG@10 93.9 / R@5 99.2% / R@10 99.8% / R@20 100.0%, mean 223&nbsp;ms; <code>think</code> NDCG@10 93.8 / R@5 99.4% / R@10 99.8% / R@20 100.0%, mean 1260&nbsp;ms &mdash; close to <code>chat</code> but no longer identical (<code>think</code> is 0.1 NDCG@10 lower and 0.2&nbsp;pp higher on R@5). <strong>A bench-harness bug was caught and fixed producing this row, not before:</strong> the <code>chat</code> arm calls the same shared retrieval entry point as <code>think</code>, which now resolves its rung from the app's reasoning effort; the harness's <code>AppState</code> is built without ever running the per-turn auto-mode router every real chat/CLI turn runs first, so its <code>chat_mode</code> stayed at the struct default (<code>Auto</code>), which resolves to the effort the router falls back to when the classifier is unavailable (<code>Medium</code>) &mdash; the same effort <code>think</code> uses, which now also selects the multi-hop bridge. The <code>chat</code> arm was therefore silently measuring <code>think</code>'s retrieval (both scored NDCG@10 93.8395% identically) until the harness was fixed to pin <code>ChatMode::Chat</code> explicitly, mirroring an existing unit test that already did this correctly. This is a bench-fidelity gap, not a live product bug: a real user's turn always runs the router before retrieval. The numbers above are from the corrected re-run; R@5/R@10/R@20 are bit-identical to the independently-reproduced 2026-08-01/08-03 <code>chat</code> floor (99.2/99.8/100.0), and the 0.17-point NDCG@10 gap against that floor (94.11) reads as embedder run-to-run noise, the same class this page has already measured once at 0.33 points from a CPU/GPU kernel difference. What the corrected numbers DO confirm: multi-hop is close to a no-op on this corpus but not an exact one, consistent with LongMemEval-S building each question's memory store fresh with <code>LONGMEM_KG_EDGES</code> unset (row 4's own disclosure) &mdash; there are no graph edges to bridge over, so the residual difference comes from fusion/candidate-pool mechanics rather than the graph walk itself. The fix's real effect was proven separately with a hand-built edge-bridge corpus (a unit test, not a bench arm). <code>research</code> NDCG@10 moved to 94.3 (from 95.04 in the paragraph above) with R@5/R@10/R@20 unchanged at 99.4/99.8/100.0 &mdash; investigated before publishing per this page's own never-regress discipline: a git-worktree re-run of the exact commit preceding this session's changes, on the identical first 100 questions, measured NDCG@10 94.30 &mdash; byte-identical to the post-session number. The drift predates this session; its cause across the intervening two weeks of commits is unbisected and stays an open item, not attributed to the multihop fix. <strong><code>max</code> at full-500 is UNMEASURED</strong> &mdash; but 50-question arms DO exist and are committed (<code>benchmark/results/slice50-max-repeat/</code>, <code>slice50-max-newrubric/</code>, and now <code>p50-max-postrungfix/</code> on current code), so the earlier wording &ldquo;no artifact exists at any size&rdquo; was wrong and is corrected here. Those arms are drawn in the 50-question figure above and are never mixed into a full-500 series. Two of them were run at IDENTICAL configuration and returned bit-identical recall with NDCG@10 moving 1.0 and MRR moving 1.3, which is where this page&rsquo;s &plusmn;1.3 noise band comes from.</td>
       </tr>
     </table></div>
 
@@ -1018,9 +1028,9 @@
 .c1 .d1{fill:var(--s1);stroke:var(--sf);stroke-width:2}
 .c1 .d2{fill:var(--s2);stroke:var(--sf);stroke-width:2}
 </style>
-<svg class="c1" viewBox="0 0 680 412" role="img" aria-labelledby="cap-lme500">
-  <title id="cap-lme500">LongMemEval-S retrieval, full 500 questions: the four thinking-mode rungs, with max drawn as a blank track because no full-500 arm exists. The think row records the reranking configuration that was retired on 2026-08-02 and is no longer what the mode runs.</title>
-  <rect class="sf" x="0" y="0" width="680" height="412" rx="10"/>
+<svg class="c1" viewBox="0 0 680 442" role="img" aria-labelledby="cap-lme500">
+  <title id="cap-lme500">LongMemEval-S retrieval, full 500 questions: the four thinking-mode rungs, with max drawn as a blank track because no full-500 arm exists. Re-measured 2026-08-11 after wiring think's retrieval to bridge over the knowledge graph, matching MCP's own think rung. A same-day harness bug (the chat arm skipped the per-turn mode router and fell into an effort fallback that also selected multihop) was caught before publication and fixed; the chat row reflects the corrected re-run.</title>
+  <rect class="sf" x="0" y="0" width="680" height="442" rx="10"/>
 
   <circle class="d1" cx="14" cy="16" r="5"/><text x="25" y="20">R@5</text>
   <circle class="d2" cx="70" cy="16" r="5"/><text x="81" y="20">NDCG@10</text>
@@ -1036,25 +1046,25 @@
   <text class="val" x="488.7" y="338" text-anchor="middle">95</text>
   <text class="val" x="616" y="338" text-anchor="middle">100 %</text>
 
-  <text class="key" x="222" y="56" text-anchor="end">TERRANSOUL RUNGS &#183; 2026-08-01</text>
+  <text class="key" x="222" y="56" text-anchor="end">TERRANSOUL RUNGS &#183; 2026-08-11</text>
 
-  <g><line class="conn" x1="465.7" y1="76" x2="595.7" y2="76"/>
-    <circle class="d2" cx="465.7" cy="76" r="5"/><circle class="d1" cx="595.7" cy="76" r="5"/>
+  <g><line class="conn" x1="460.7" y1="76" x2="595.6" y2="76"/>
+    <circle class="d2" cx="460.7" cy="76" r="5"/><circle class="d1" cx="595.6" cy="76" r="5"/>
     <text class="lab" x="222" y="80" text-anchor="end">chat</text>
-    <text class="val" x="453.7" y="80" text-anchor="end">94.1</text>
-    <text class="val" x="607.7" y="80">99.2</text></g>
+    <text class="val" x="448.7" y="80" text-anchor="end">93.9</text>
+    <text class="val" x="607.6" y="80">99.2</text></g>
 
-  <g><line class="conn" x1="427.5" y1="102" x2="600.8" y2="102"/>
-    <circle class="d2" cx="427.5" cy="102" r="5"/><circle class="d1" cx="600.8" cy="102" r="5"/>
+  <g><line class="conn" x1="458.1" y1="102" x2="600.7" y2="102"/>
+    <circle class="d2" cx="458.1" cy="102" r="5"/><circle class="d1" cx="600.7" cy="102" r="5"/>
     <text class="lab" x="222" y="106" text-anchor="end">think</text>
-    <text class="val" x="415.5" y="106" text-anchor="end">92.6</text>
-    <text class="val" x="612.8" y="106">99.4</text></g>
+    <text class="val" x="446.1" y="106" text-anchor="end">93.8</text>
+    <text class="val" x="612.7" y="106">99.4</text></g>
 
-  <g><line class="conn" x1="488.7" y1="128" x2="600.8" y2="128"/>
-    <circle class="d2" cx="488.7" cy="128" r="5"/><circle class="d1" cx="600.8" cy="128" r="5"/>
+  <g><line class="conn" x1="470.8" y1="128" x2="600.7" y2="128"/>
+    <circle class="d2" cx="470.8" cy="128" r="5"/><circle class="d1" cx="600.7" cy="128" r="5"/>
     <text class="lab" x="222" y="132" text-anchor="end">research</text>
-    <text class="val" x="476.7" y="132" text-anchor="end">95.0</text>
-    <text class="val" x="612.8" y="132">99.4</text></g>
+    <text class="val" x="458.8" y="132" text-anchor="end">94.3</text>
+    <text class="val" x="612.7" y="132">99.4</text></g>
 
   <g><line class="blank" x1="234" y1="154" x2="616" y2="154"/>
     <text class="lab" x="222" y="158" text-anchor="end">max</text>
@@ -1091,8 +1101,10 @@
     <text class="val" x="541.4" y="310">~96.6</text></g>
 
   <text class="note" x="0" y="360">Scale reference: 0.2 pp = 1 question of 500 &#8212; the whole R@5 spread drawn here is 21 questions.</text>
-  <text class="note" x="0" y="380">The think row ran the LLM-judge reranker, which was removed from think&#8217;s retrieval path on 2026-08-02.</text>
-  <text class="note" x="0" y="396">It is a record of a retired configuration. think now runs chat&#8217;s retrieval unchanged and cannot sit below it.</text>
+  <text class="note" x="0" y="380">think&#8217;s retrieval now bridges over the knowledge graph (2026-08-11), matching the multi-hop rung MCP&#8217;s brain_search already ran.</text>
+  <text class="note" x="0" y="396">think is measurably below chat again here (93.8 vs 93.9, R@5 99.4 vs 99.2) &#8212; close but not a no-op, since this benchmark builds each question&#8217;s store fresh with no graph edges to bridge over.</text>
+  <text class="note" x="0" y="412">research&#8217;s NDCG@10 moved from 95.0 (2026-07) to 94.3: confirmed unrelated to the 2026-08-11 fixes via an isolated pre/post re-run; cause still open.</text>
+  <text class="note" x="0" y="424">chat&#8217;s own arm had a same-day harness bug (skipped mode router &#8594; effort fallback &#8594; accidental multihop, caught pre-publication); fixed and re-run, R@5/R@10/R@20 bit-identical to the 2026-08-01/08-03 floor.</text>
 </svg>
 </div>
 <div class="chart-block">

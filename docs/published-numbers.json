@@ -24,7 +24,11 @@
     "full500-rrf": "benchmark/results/head-full500-rrf/longmemeval_s_terransoul.json",
     "full500-chat": "benchmark/results/head-full500-chat/longmemeval_s_terransoul.json",
     "full500-think": "benchmark/results/fix11b-full500-think/longmemeval_s_terransoul.json",
-    "full500-research": "benchmark/results/head-full500-research/longmemeval_s_terransoul.json"
+    "full500-research": "benchmark/results/head-full500-research/longmemeval_s_terransoul.json",
+    "$comment-arms-4": "ADDED 2026-08-11, NOT a rebind. `full500-chat`/`full500-think`/`full500-research` above stay pointed at their 2026-07-26/27 arms on purpose: `me-fig17-*` bind to the row-12/row-1902 HISTORICAL sentences this page deliberately preserves verbatim (\"research = rrf 95.04 > chat 93.78 > think 93.26\"), and rebinding those three keys would flip those claims to MISMATCH against text that is correctly describing a past measurement, not a live one. The three keys below are the SAME-DAY re-run that landed AFTER `think` was wired to bridge over the knowledge graph, cited by the row-12/row-7 CORRECTED addenda instead. `full500-postfix-2026-08-11-chat` additionally fixes a bench-harness bug found while producing this row: the `chat` arm never ran the per-turn auto-mode router, so its `AppState` fell through to `ChatMode::Auto`'s classifier-unavailable fallback (`ReasoningEffort::Medium`), which now also selects the multi-hop bridge — the `chat` arm was silently measuring `think`'s retrieval (both scored NDCG@10 93.8395% identically) until the harness was fixed to pin `ChatMode::Chat` explicitly. `full500-postfix-2026-08-11-think` and `-research` are the unaffected arms from the same session (each already resolves its rung explicitly, neither reads the ambient `chat_mode` this bug lived in) and are carried over unchanged.",
+    "full500-postfix-2026-08-11-chat": "benchmark/results/full500-postfix-2026-08-11-chat/longmemeval_s_terransoul.json",
+    "full500-postfix-2026-08-11-think": "benchmark/results/full500-postfix-2026-08-11-think/longmemeval_s_terransoul.json",
+    "full500-postfix-2026-08-11-research": "benchmark/results/full500-postfix-2026-08-11-research/longmemeval_s_terransoul.json"
   },
   "hundredPercentGuard": {
     "$comment": [
@@ -134,6 +138,63 @@
       "scale": 100,
       "decimals": 2,
       "note": "think is BELOW chat here: 93.26 against 93.78, a 0.52-point shortfall on current code, published as such rather than omitted. CORRECTED 2026-07-28: this note previously read 'a real regression ... the same arm on 2026-07-25 code matched chat to four decimals' and the bound value was 87.25, which came from the PRE-MAX-100-11 artifact (see $comment-arms-3). The genuine shortfall is 0.52, not 6.53. `76f2276d`'s own acceptance line reads 'Bench owed: think >= 93.782' - 93.2609 does not clear it, so the obligation stays open, it is just an order of magnitude smaller than the page claimed."
+    },
+    {
+      "$comment-2026-08-11": [
+        "The six claims below bind the row-12/row-7 CORRECTED 2026-08-11 addenda (both files), NOT the historical row-12/row-1902 sentences above - those keep pointing at the 2026-07-26/27 arms on purpose, see $comment-arms-4. This is the same-day re-run after `think` was wired to bridge over the knowledge graph, with a bench-harness bug in the `chat` arm (auto-mode-router skip -> effort fallback -> accidental multihop) found and fixed producing it."
+      ],
+      "id": "me-2026-08-11-chat-ndcg",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "NDCG@10 {value} / R@5 99.2",
+      "artifact": "full500-postfix-2026-08-11-chat",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1
+    },
+    {
+      "id": "me-2026-08-11-think-ndcg",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "think</code> NDCG@10 {value} / R@5 99.4",
+      "artifact": "full500-postfix-2026-08-11-think",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1
+    },
+    {
+      "id": "me-2026-08-11-research-ndcg",
+      "file": "docs/LLM-Brain-Design-Research-Paper/memory-evolution.html",
+      "needle": "research</code> NDCG@10 moved to {value} (from 95.04",
+      "artifact": "full500-postfix-2026-08-11-research",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1
+    },
+    {
+      "id": "md-2026-08-11-chat-ndcg",
+      "file": "docs/LLM-Brain-Design-Research-Paper-memory-evolution.md",
+      "needle": "NDCG@10 {value} / R@5 99.2",
+      "artifact": "full500-postfix-2026-08-11-chat",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1
+    },
+    {
+      "id": "md-2026-08-11-think-ndcg",
+      "file": "docs/LLM-Brain-Design-Research-Paper-memory-evolution.md",
+      "needle": "think` NDCG@10 {value} / R@5 99.4",
+      "artifact": "full500-postfix-2026-08-11-think",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1
+    },
+    {
+      "id": "md-2026-08-11-research-ndcg",
+      "file": "docs/LLM-Brain-Design-Research-Paper-memory-evolution.md",
+      "needle": "research` NDCG@10 moved to {value} (from 95.04",
+      "artifact": "full500-postfix-2026-08-11-research",
+      "metric": "ndcg_at_10",
+      "scale": 100,
+      "decimals": 1
     },
     {
       "id": "index-rrf-r5",
